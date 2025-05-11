@@ -1,4 +1,4 @@
-package fr.skytasul.quests.api.events;
+package fr.skytasul.quests.api.quests.events.questers;
 
 import org.bukkit.event.HandlerList;
 import org.jetbrains.annotations.NotNull;
@@ -10,11 +10,11 @@ import fr.skytasul.quests.api.stages.StageController;
 /**
  * Called when a player finish a stage
  */
-public class PlayerSetStageEvent extends PlayerQuestEvent {
+public class QuesterSetStageEvent extends AbstractQuesterQuestEvent {
 
 	private final @NotNull StageController stage;
 	
-	public PlayerSetStageEvent(@NotNull Quester account, @NotNull Quest quest, @NotNull StageController stage) {
+	public QuesterSetStageEvent(@NotNull Quester account, @NotNull Quest quest, @NotNull StageController stage) {
 		super(account, quest);
 		this.stage = stage;
 	}

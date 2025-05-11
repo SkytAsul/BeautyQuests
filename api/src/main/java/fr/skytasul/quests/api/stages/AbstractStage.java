@@ -158,7 +158,7 @@ public abstract class AbstractStage implements HasPlaceholders {
 	 * @param player who joined
 	 * @param quester associated
 	 */
-	public void joined(@NotNull Player player, Quester quester) {}
+	public void joined(@NotNull Player player, @NotNull Quester quester) {}
 
 	/**
 	 * Called when a player with this stage launched leaves
@@ -166,7 +166,7 @@ public abstract class AbstractStage implements HasPlaceholders {
 	 * @param player who left
 	 * @param quester associated
 	 */
-	public void left(@NotNull Player player, Quester quester) {}
+	public void left(@NotNull Player player, @NotNull Quester quester) {}
 
 	public void initPlayerDatas(@NotNull Quester acc, @NotNull Map<@NotNull String, @Nullable Object> datas) {}
 

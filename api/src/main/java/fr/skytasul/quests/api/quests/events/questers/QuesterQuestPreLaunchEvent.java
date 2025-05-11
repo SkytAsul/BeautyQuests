@@ -1,20 +1,20 @@
-package fr.skytasul.quests.api.events;
+package fr.skytasul.quests.api.quests.events.questers;
 
-import org.bukkit.entity.Player;
+import fr.skytasul.quests.api.questers.Quester;
+import fr.skytasul.quests.api.quests.Quest;
 import org.bukkit.event.Cancellable;
 import org.bukkit.event.HandlerList;
 import org.jetbrains.annotations.NotNull;
-import fr.skytasul.quests.api.quests.Quest;
 
 /**
  * Called before a player starts a quest
  */
-public class QuestPreLaunchEvent extends PlayerQuestEvent implements Cancellable{
+public class QuesterQuestPreLaunchEvent extends AbstractQuesterQuestEvent implements Cancellable{
 
 	private boolean cancel = false;
-	
-	public QuestPreLaunchEvent(@NotNull Player who, @NotNull Quest quest) {
-		super(who, quest);
+
+	public QuesterQuestPreLaunchEvent(@NotNull Quester quester, @NotNull Quest quest) {
+		super(quester, quest);
 	}
 
 	@Override
@@ -26,16 +26,16 @@ public class QuestPreLaunchEvent extends PlayerQuestEvent implements Cancellable
 	public void setCancelled(boolean paramBoolean){
 		this.cancel = paramBoolean;
 	}
-	
+
 	@Override
 	public HandlerList getHandlers() {
 		return handlers;
 	}
-	
+
 	public static HandlerList getHandlerList() {
 		return handlers;
 	}
-	
+
 	private static final HandlerList handlers = new HandlerList();
 
 }

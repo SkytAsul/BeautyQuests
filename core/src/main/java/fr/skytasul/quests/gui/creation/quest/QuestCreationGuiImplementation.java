@@ -4,8 +4,6 @@ import com.cryptomorin.xseries.XMaterial;
 import fr.skytasul.quests.BeautyQuests;
 import fr.skytasul.quests.api.QuestsAPI;
 import fr.skytasul.quests.api.QuestsPlugin;
-import fr.skytasul.quests.api.events.QuestCreateEvent;
-import fr.skytasul.quests.api.events.accounts.PlayerAccountJoinEvent;
 import fr.skytasul.quests.api.gui.ItemUtils;
 import fr.skytasul.quests.api.gui.close.StandardCloseBehavior;
 import fr.skytasul.quests.api.gui.layout.LayoutedButton;
@@ -19,9 +17,11 @@ import fr.skytasul.quests.api.options.QuestOptionCreator;
 import fr.skytasul.quests.api.options.UpdatableOptionSet;
 import fr.skytasul.quests.api.questers.Quester;
 import fr.skytasul.quests.api.questers.QuesterQuestData;
+import fr.skytasul.quests.api.questers.events.QuesterJoinEvent;
 import fr.skytasul.quests.api.quests.branches.EndingStage;
 import fr.skytasul.quests.api.quests.creation.QuestCreationGui;
 import fr.skytasul.quests.api.quests.creation.QuestCreationGuiClickEvent;
+import fr.skytasul.quests.api.quests.events.QuestCreateEvent;
 import fr.skytasul.quests.api.stages.AbstractStage;
 import fr.skytasul.quests.api.stages.creation.StageCreationContext;
 import fr.skytasul.quests.api.utils.messaging.DefaultErrors;
@@ -185,7 +185,7 @@ public class QuestCreationGuiImplementation extends LayoutedGUI implements Quest
 		qu.getBranchesManager().addBranch(mainBranch);
 		boolean failure = loadBranch(mainBranch, session.getStagesGUI());
 
-		QuestCreateEvent event = new QuestCreateEvent(session.getPlayer(), qu, session.isEdition());
+		QuestCreateEvent event = new QuestCreateEvent(qu, session.isEdition(), session.getPlayer());
 		Bukkit.getPluginManager().callEvent(event);
 		if (event.isCancelled()){
 			qu.delete(true, false);
@@ -240,7 +240,7 @@ public class QuestCreationGuiImplementation extends LayoutedGUI implements Quest
 			quester.getDataHolder().getQuestDataIfPresent(qu).filter(QuesterQuestData::hasStarted).ifPresent(data -> {
 				var branch = qu.getBranchesManager().getBranch(data.getBranch().getAsInt());
 				for (Player player : quester.getOnlinePlayers()) {
-					var joinEvent = new PlayerAccountJoinEvent(quester, player, false);
+					var joinEvent = new QuesterJoinEvent(quester, player, false);
 					if (data.getState() == QuesterQuestData.State.IN_ENDING_STAGES) {
 						for (EndingStage endingStage : branch.getEndingStages()) {
 							((StageControllerImplementation<?>) endingStage.getStage()).onJoin(joinEvent);

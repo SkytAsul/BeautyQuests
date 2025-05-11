@@ -4,13 +4,13 @@ import fr.skytasul.quests.BeautyQuests;
 import fr.skytasul.quests.QuestsConfigurationImplementation;
 import fr.skytasul.quests.api.QuestsConfiguration;
 import fr.skytasul.quests.api.QuestsPlugin;
-import fr.skytasul.quests.api.events.PlayerSetStageEvent;
 import fr.skytasul.quests.api.localization.Lang;
 import fr.skytasul.quests.api.options.description.DescriptionSource;
 import fr.skytasul.quests.api.questers.Quester;
 import fr.skytasul.quests.api.questers.QuesterQuestData;
 import fr.skytasul.quests.api.quests.branches.EndingStage;
 import fr.skytasul.quests.api.quests.branches.QuestBranch;
+import fr.skytasul.quests.api.quests.events.questers.QuesterSetStageEvent;
 import fr.skytasul.quests.api.requirements.Actionnable;
 import fr.skytasul.quests.api.stages.StageController;
 import fr.skytasul.quests.api.utils.messaging.MessageUtils;
@@ -273,7 +273,7 @@ public class QuestBranchImplementation implements QuestBranch {
 		questDatas.setStage(OptionalInt.of(getRegularStageId(stage)));
 		quester.getOnlinePlayers().forEach(this::playNextStage);
 		((StageControllerImplementation<?>) stage).start(quester);
-		Bukkit.getPluginManager().callEvent(new PlayerSetStageEvent(quester, getQuest(), stage));
+		Bukkit.getPluginManager().callEvent(new QuesterSetStageEvent(quester, getQuest(), stage));
 	}
 
 	@Override
@@ -287,7 +287,7 @@ public class QuestBranchImplementation implements QuestBranch {
 		datas.setState(QuesterQuestData.State.IN_ENDING_STAGES);
 		for (EndingStageImplementation endStage : endStages) {
 			endStage.getStage().start(quester);
-			Bukkit.getPluginManager().callEvent(new PlayerSetStageEvent(quester, getQuest(), endStage.getStage()));
+			Bukkit.getPluginManager().callEvent(new QuesterSetStageEvent(quester, getQuest(), endStage.getStage()));
 		}
 		quester.getOnlinePlayers().forEach(this::playNextStage);
 	}

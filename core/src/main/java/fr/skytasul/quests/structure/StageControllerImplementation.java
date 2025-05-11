@@ -4,12 +4,12 @@ import com.google.gson.JsonSyntaxException;
 import fr.skytasul.quests.BeautyQuests;
 import fr.skytasul.quests.api.QuestsAPI;
 import fr.skytasul.quests.api.QuestsPlugin;
-import fr.skytasul.quests.api.events.accounts.PlayerAccountJoinEvent;
-import fr.skytasul.quests.api.events.accounts.PlayerAccountLeaveEvent;
 import fr.skytasul.quests.api.options.description.DescriptionSource;
 import fr.skytasul.quests.api.players.PlayersManager;
 import fr.skytasul.quests.api.questers.Quester;
 import fr.skytasul.quests.api.questers.QuesterQuestData;
+import fr.skytasul.quests.api.questers.events.QuesterJoinEvent;
+import fr.skytasul.quests.api.questers.events.QuesterLeaveEvent;
 import fr.skytasul.quests.api.stages.*;
 import fr.skytasul.quests.api.utils.CustomizedObjectTypeAdapter;
 import fr.skytasul.quests.api.utils.messaging.MessageType;
@@ -201,7 +201,7 @@ public class StageControllerImplementation<T extends AbstractStage> implements S
 	}
 
 	@EventHandler
-	public void onJoin(PlayerAccountJoinEvent e) {
+	public void onJoin(QuesterJoinEvent e) {
 		if (e.isFirstJoin())
 			return;
 
@@ -212,7 +212,7 @@ public class StageControllerImplementation<T extends AbstractStage> implements S
 	}
 
 	@EventHandler
-	public void onLeave(PlayerAccountLeaveEvent e) {
+	public void onLeave(QuesterLeaveEvent e) {
 		if (hasStarted(e.getQuester())) {
 			propagateStageHandlers(handler -> handler.stageLeave(e.getPlayer(), e.getQuester(), this));
 			stage.left(e.getPlayer(), e.getQuester());

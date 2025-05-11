@@ -5,9 +5,9 @@ import fr.skytasul.quests.BeautyQuests;
 import fr.skytasul.quests.api.QuestsConfiguration;
 import fr.skytasul.quests.api.QuestsHandler;
 import fr.skytasul.quests.api.QuestsPlugin;
-import fr.skytasul.quests.api.events.accounts.PlayerAccountJoinEvent;
-import fr.skytasul.quests.api.events.accounts.PlayerAccountLeaveEvent;
 import fr.skytasul.quests.api.questers.Quester;
+import fr.skytasul.quests.api.questers.events.QuesterJoinEvent;
+import fr.skytasul.quests.api.questers.events.QuesterLeaveEvent;
 import fr.skytasul.quests.api.quests.Quest;
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.ConfigurationSection;
@@ -154,12 +154,12 @@ public class ScoreboardManager implements Listener, QuestsHandler {
 	}
 
 	@EventHandler
-	public void onAccountJoin(PlayerAccountJoinEvent e) {
+	public void onAccountJoin(QuesterJoinEvent e) {
 		create(e.getPlayer());
 	}
 
 	@EventHandler (priority = EventPriority.LOW)
-	public void onAccountLeave(PlayerAccountLeaveEvent e) {
+	public void onAccountLeave(QuesterLeaveEvent e) {
 		removePlayerScoreboard(e.getPlayer());
 	}
 

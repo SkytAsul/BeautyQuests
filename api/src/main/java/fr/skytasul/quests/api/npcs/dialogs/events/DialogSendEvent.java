@@ -1,4 +1,4 @@
-package fr.skytasul.quests.api.events;
+package fr.skytasul.quests.api.npcs.dialogs.events;
 
 import org.bukkit.entity.Player;
 import org.bukkit.event.Cancellable;

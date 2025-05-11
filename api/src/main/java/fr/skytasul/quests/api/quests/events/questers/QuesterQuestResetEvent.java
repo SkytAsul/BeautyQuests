@@ -1,19 +1,19 @@
-package fr.skytasul.quests.api.events;
+package fr.skytasul.quests.api.quests.events.questers;
 
-import org.bukkit.entity.Player;
 import org.bukkit.event.HandlerList;
 import org.jetbrains.annotations.NotNull;
+import fr.skytasul.quests.api.questers.Quester;
 import fr.skytasul.quests.api.quests.Quest;
 
 /**
- * Called when a player starts a quest
+ * Called when the stage of a player is cancelled
  */
-public class QuestLaunchEvent extends PlayerQuestEvent {
-	
-	public QuestLaunchEvent(@NotNull Player who, @NotNull Quest quest) {
-		super(who, quest);
+public class QuesterQuestResetEvent extends AbstractQuesterQuestEvent {
+
+	public QuesterQuestResetEvent(@NotNull Quester account, @NotNull Quest quest) {
+		super(account, quest);
 	}
-	
+
 	@Override
 	public HandlerList getHandlers() {
 		return handlers;
@@ -24,5 +24,5 @@ public class QuestLaunchEvent extends PlayerQuestEvent {
 	}
 	
 	private static final HandlerList handlers = new HandlerList();
-
+	
 }

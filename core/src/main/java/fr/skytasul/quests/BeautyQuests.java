@@ -774,6 +774,10 @@ public class BeautyQuests extends JavaPlugin implements QuestsPlugin {
 		return ensureLoaded(logger);
 	}
 
+	public @Nullable BqLoggerHandler getLoggerHandler() {
+		return loggerHandler;
+	}
+
 	public @NotNull String getPrefix() {
 		return config.getPrefix();
 	}

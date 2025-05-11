@@ -1,6 +1,7 @@
 package fr.skytasul.quests.api.utils.messaging;
 
 import fr.skytasul.quests.api.QuestsPlugin;
+import fr.skytasul.quests.api.players.PlayerQuester;
 import fr.skytasul.quests.api.players.PlayersManager;
 import fr.skytasul.quests.api.questers.Quester;
 import net.kyori.adventure.audience.Audience;
@@ -83,7 +84,7 @@ public interface PlaceholdersContext {
 
 		@Override
 		@NotNull
-		default Quester getQuester() {
+		default PlayerQuester getQuester() {
 			return PlayersManager.getPlayerAccount(getActor());
 		}
 

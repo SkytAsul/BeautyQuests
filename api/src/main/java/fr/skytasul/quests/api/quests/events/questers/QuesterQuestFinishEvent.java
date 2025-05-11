@@ -1,4 +1,4 @@
-package fr.skytasul.quests.api.events;
+package fr.skytasul.quests.api.quests.events.questers;
 
 import fr.skytasul.quests.api.questers.Quester;
 import fr.skytasul.quests.api.quests.Quest;
@@ -8,9 +8,9 @@ import org.jetbrains.annotations.NotNull;
 /**
  * Called when a player finish a quest
  */
-public class QuestFinishEvent extends PlayerQuestEvent{
+public class QuesterQuestFinishEvent extends AbstractQuesterQuestEvent{
 
-	public QuestFinishEvent(@NotNull Quester who, @NotNull Quest quest) {
+	public QuesterQuestFinishEvent(@NotNull Quester who, @NotNull Quest quest) {
 		super(who, quest);
 	}
 

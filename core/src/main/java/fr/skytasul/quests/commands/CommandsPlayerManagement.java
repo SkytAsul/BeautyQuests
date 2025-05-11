@@ -3,7 +3,6 @@ package fr.skytasul.quests.commands;
 import fr.skytasul.quests.BeautyQuests;
 import fr.skytasul.quests.api.QuestsAPI;
 import fr.skytasul.quests.api.QuestsPlugin;
-import fr.skytasul.quests.api.events.accounts.PlayerAccountResetEvent;
 import fr.skytasul.quests.api.localization.Lang;
 import fr.skytasul.quests.api.npcs.dialogs.DialogRunner;
 import fr.skytasul.quests.api.npcs.dialogs.DialogRunner.DialogNextReason;
@@ -13,6 +12,7 @@ import fr.skytasul.quests.api.pools.QuestPool;
 import fr.skytasul.quests.api.questers.Quester;
 import fr.skytasul.quests.api.questers.QuesterQuestData;
 import fr.skytasul.quests.api.questers.QuesterQuestData.State;
+import fr.skytasul.quests.api.questers.events.QuesterResetEvent;
 import fr.skytasul.quests.api.quests.Quest;
 import fr.skytasul.quests.api.stages.AbstractStage;
 import fr.skytasul.quests.api.stages.types.Dialogable;
@@ -219,7 +219,7 @@ public class CommandsPlayerManagement implements OrphanCommand {
 			final int poolsFinal = pools;
 			CompletableFuture.allOf(futures.toArray(new CompletableFuture[0]))
 					.whenComplete(QuestUtils.runSyncConsumer(() -> {
-						Bukkit.getPluginManager().callEvent(new PlayerAccountResetEvent(acc));
+						Bukkit.getPluginManager().callEvent(new QuesterResetEvent(acc));
 						Lang.DATA_REMOVED.send(player, PlaceholderRegistry.of("quest_amount", questsFinal,
 								"deleter_name", actor.name(), "pool_amount", poolsFinal));
 						Lang.DATA_REMOVED_INFO.send(actor.sender(), PlaceholderRegistry.of("quest_amount", questsFinal,

@@ -4,14 +4,14 @@ import com.cryptomorin.xseries.XMaterial;
 import fr.skytasul.quests.api.QuestsAPI;
 import fr.skytasul.quests.api.QuestsConfiguration;
 import fr.skytasul.quests.api.QuestsPlugin;
-import fr.skytasul.quests.api.events.accounts.PlayerAccountJoinEvent;
-import fr.skytasul.quests.api.events.accounts.PlayerAccountLeaveEvent;
 import fr.skytasul.quests.api.events.internal.BQBlockBreakEvent;
 import fr.skytasul.quests.api.events.internal.BQCraftEvent;
 import fr.skytasul.quests.api.localization.Lang;
 import fr.skytasul.quests.api.npcs.BqNpc;
 import fr.skytasul.quests.api.players.PlayerQuester;
 import fr.skytasul.quests.api.pools.QuestPool;
+import fr.skytasul.quests.api.questers.events.QuesterJoinEvent;
+import fr.skytasul.quests.api.questers.events.QuesterLeaveEvent;
 import fr.skytasul.quests.api.quests.Quest;
 import fr.skytasul.quests.api.utils.Utils;
 import fr.skytasul.quests.api.utils.messaging.MessageType;
@@ -125,14 +125,14 @@ public class QuestsListener implements Listener{
 	}
 
 	@EventHandler (priority = EventPriority.LOW)
-	public void onAccountJoin(PlayerAccountJoinEvent e) {
+	public void onAccountJoin(QuesterJoinEvent e) {
 		if (e.isFirstJoin()) {
 			QuestsAPI.getAPI().getQuestsManager().getQuests().stream().filter(qu -> qu.getOptionValueOrDef(OptionAutoQuest.class)).forEach(qu -> qu.start(e.getPlayer()));
 		}
 	}
 
 	@EventHandler
-	public void onAccountLeave(PlayerAccountLeaveEvent e) {
+	public void onAccountLeave(QuesterLeaveEvent e) {
 		BeautyQuests.getInstance().getQuestsManager().getQuestsRaw().forEach(x -> x.leave(e.getPlayer()));
 	}
 

@@ -4,7 +4,6 @@ import fr.skytasul.quests.BeautyQuests;
 import fr.skytasul.quests.api.QuestsAPI;
 import fr.skytasul.quests.api.QuestsConfiguration;
 import fr.skytasul.quests.api.QuestsPlugin;
-import fr.skytasul.quests.api.events.*;
 import fr.skytasul.quests.api.localization.Lang;
 import fr.skytasul.quests.api.npcs.BqNpc;
 import fr.skytasul.quests.api.options.QuestOption;
@@ -16,6 +15,11 @@ import fr.skytasul.quests.api.players.PlayersManager;
 import fr.skytasul.quests.api.questers.Quester;
 import fr.skytasul.quests.api.questers.QuesterQuestData;
 import fr.skytasul.quests.api.quests.Quest;
+import fr.skytasul.quests.api.quests.events.QuestRemoveEvent;
+import fr.skytasul.quests.api.quests.events.questers.QuesterQuestFinishEvent;
+import fr.skytasul.quests.api.quests.events.questers.QuesterQuestLaunchEvent;
+import fr.skytasul.quests.api.quests.events.questers.QuesterQuestPreLaunchEvent;
+import fr.skytasul.quests.api.quests.events.questers.QuesterQuestResetEvent;
 import fr.skytasul.quests.api.requirements.Actionnable;
 import fr.skytasul.quests.api.utils.PlayerListCategory;
 import fr.skytasul.quests.api.utils.QuestVisibilityLocation;
@@ -237,7 +241,7 @@ public class QuestImplementation implements Quest, QuestDescriptionProvider {
 	private void cancelInternal(@NotNull Quester quester) {
 		manager.remove(quester);
 		QuestsAPI.getAPI().propagateQuestsHandlers(handler -> handler.questReset(quester, this));
-		Bukkit.getPluginManager().callEvent(new PlayerQuestResetEvent(quester, this));
+		Bukkit.getPluginManager().callEvent(new QuesterQuestResetEvent(quester, this));
 
 		getOptionValueOrDef(OptionCancelRewards.class).giveRewards(quester)
 				.whenComplete((__, ex) -> QuestsPlugin.getPlugin().getLoggerExpanded().severe(
@@ -426,7 +430,7 @@ public class QuestImplementation implements Quest, QuestDescriptionProvider {
 			return;
 		}
 
-		QuestPreLaunchEvent event = new QuestPreLaunchEvent(p, this);
+		QuesterQuestPreLaunchEvent event = new QuesterQuestPreLaunchEvent(quester, this);
 		Bukkit.getPluginManager().callEvent(event);
 		if (event.isCancelled()) return;
 		AdminMode.broadcast(p.getName() + " started the quest " + id);
@@ -460,7 +464,7 @@ public class QuestImplementation implements Quest, QuestDescriptionProvider {
 			QuestUtils.runOrSync(() -> {
 				manager.startPlayer(quester);
 				QuestsAPI.getAPI().propagateQuestsHandlers(handler -> handler.questStart(quester, this));
-				Bukkit.getPluginManager().callEvent(new QuestLaunchEvent(p, QuestImplementation.this));
+				Bukkit.getPluginManager().callEvent(new QuesterQuestLaunchEvent(quester, QuestImplementation.this));
 			});
 		});
 	}
@@ -521,7 +525,7 @@ public class QuestImplementation implements Quest, QuestDescriptionProvider {
 				QuestUtils.playPluginSound(quester, getOptionValueOrDef(OptionEndSound.class), 1);
 
 				QuestsAPI.getAPI().propagateQuestsHandlers(handler -> handler.questFinish(quester, this));
-				Bukkit.getPluginManager().callEvent(new QuestFinishEvent(quester, this));
+				Bukkit.getPluginManager().callEvent(new QuesterQuestFinishEvent(quester, this));
 			});
 		}).whenComplete(
 				QuestsPlugin.getPlugin().getLoggerExpanded().logError("An error occured when finishing the quest", quester));

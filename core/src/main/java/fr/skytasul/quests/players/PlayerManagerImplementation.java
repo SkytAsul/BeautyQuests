@@ -3,12 +3,12 @@ package fr.skytasul.quests.players;
 import fr.skytasul.quests.BeautyQuests;
 import fr.skytasul.quests.api.QuestsPlugin;
 import fr.skytasul.quests.api.data.DataSavingException;
-import fr.skytasul.quests.api.events.accounts.PlayerAccountJoinEvent;
-import fr.skytasul.quests.api.events.accounts.PlayerAccountLeaveEvent;
 import fr.skytasul.quests.api.players.PlayerQuester;
 import fr.skytasul.quests.api.players.PlayersManager;
 import fr.skytasul.quests.api.questers.Quester;
 import fr.skytasul.quests.api.questers.QuesterData;
+import fr.skytasul.quests.api.questers.events.QuesterJoinEvent;
+import fr.skytasul.quests.api.questers.events.QuesterLeaveEvent;
 import fr.skytasul.quests.questers.QuesterManagerImplementation;
 import fr.skytasul.quests.questers.data.QuesterDataManager.QuesterFetchRequest;
 import fr.skytasul.quests.questers.data.QuesterDataManager.QuesterFetchResult;
@@ -106,7 +106,7 @@ public class PlayerManagerImplementation implements PlayersManager, Listener {
 
 					QuestUtils.runOrSync(() -> {
 						if (player.isOnline()) {
-							Bukkit.getPluginManager().callEvent(new PlayerAccountJoinEvent(quester, player, isCreation));
+							Bukkit.getPluginManager().callEvent(new QuesterJoinEvent(quester, player, isCreation));
 						} else {
 							QuestsPlugin.getPlugin().getLoggerExpanded()
 									.warningArgs("{} has left the server while loading its data.", player.getName());
@@ -126,7 +126,7 @@ public class PlayerManagerImplementation implements PlayersManager, Listener {
 		if (quester == null)
 			throw new IllegalArgumentException("Player does not have quester loaded");
 
-		Bukkit.getPluginManager().callEvent(new PlayerAccountLeaveEvent(quester, player));
+		Bukkit.getPluginManager().callEvent(new QuesterLeaveEvent(quester, player));
 		try {
 			quester.save();
 		} catch (DataSavingException ex) {

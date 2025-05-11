@@ -1,27 +1,21 @@
-package fr.skytasul.quests.api.events.accounts;
+package fr.skytasul.quests.api.questers.events;
 
 import fr.skytasul.quests.api.questers.Quester;
 import org.bukkit.entity.Player;
 import org.bukkit.event.HandlerList;
 import org.jetbrains.annotations.NotNull;
 
-public class PlayerAccountJoinEvent extends PlayerAccountEvent {
+public class QuesterLeaveEvent extends AbstractQuesterEvent {
 
-	private final Player player;
-	private final boolean firstJoin;
+	private final @NotNull Player player;
 
-	public PlayerAccountJoinEvent(@NotNull Quester account, @NotNull Player player, boolean firstJoin) {
-		super(account);
+	public QuesterLeaveEvent(@NotNull Quester quester, @NotNull Player player) {
+		super(quester);
 		this.player = player;
-		this.firstJoin = firstJoin;
 	}
 
 	public @NotNull Player getPlayer() {
 		return player;
-	}
-
-	public boolean isFirstJoin() {
-		return firstJoin;
 	}
 
 	@Override
