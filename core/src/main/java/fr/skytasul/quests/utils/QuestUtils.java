@@ -1,5 +1,6 @@
 package fr.skytasul.quests.utils;
 
+import com.cryptomorin.xseries.XSound;
 import fr.skytasul.quests.BeautyQuests;
 import fr.skytasul.quests.QuestsConfigurationImplementation;
 import fr.skytasul.quests.api.QuestsConfiguration;
@@ -8,11 +9,10 @@ import fr.skytasul.quests.api.utils.AutoRegistered;
 import fr.skytasul.quests.api.utils.MinecraftVersion;
 import fr.skytasul.quests.utils.nms.NMS;
 import net.kyori.adventure.audience.Audience;
+import net.kyori.adventure.identity.Identity;
 import net.kyori.adventure.key.Key;
-import net.kyori.adventure.sound.Sound.Source;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
-import org.bukkit.Sound;
 import org.bukkit.entity.Firework;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
@@ -27,6 +27,8 @@ import org.bukkit.scoreboard.DisplaySlot;
 import org.jetbrains.annotations.NotNull;
 import java.lang.annotation.Annotation;
 import java.lang.annotation.Inherited;
+import java.util.ArrayList;
+import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 import java.util.function.BiConsumer;
@@ -120,7 +122,27 @@ public final class QuestUtils {
 		}
 	}
 
-	// TODO use XSound
+	private static XSound.Record getSoundRecord(String sound) {
+		var xsoundOpt = XSound.of(sound);
+		if (xsoundOpt.isPresent())
+			return xsoundOpt.get().record();
+
+		QuestsPlugin.getPlugin().getLoggerExpanded().warningArgs("Cannot find sound {0}", sound);
+		return new XSound.Record().withSound(sound);
+	}
+
+	private static Optional<Key> getSoundKey(String sound) {
+		if (Key.parseable(sound))
+			return Optional.of(Key.key(sound));
+
+		var xsoundOpt = XSound.of(sound);
+		if (xsoundOpt.isPresent() && xsoundOpt.get().isSupported())
+			return Optional.of(Key.key(xsoundOpt.get().get().getKey().toString()));
+
+		QuestsPlugin.getPlugin().getLoggerExpanded().warningArgs("Cannot find sound {0}", sound);
+		return Optional.empty();
+	}
+
 	public static void playPluginSound(Audience audience, String sound, float volume) {
 		playPluginSound(audience, sound, volume, 1);
 	}
@@ -131,30 +153,27 @@ public final class QuestUtils {
 		if ("none".equals(sound))
 			return;
 
-		Key soundKey;
-		if (Key.parseable(sound)) {
-			soundKey = Key.key(sound);
-		} else {
-			try {
-				soundKey = Key.key(Sound.valueOf(sound).getKey().toString());
-			} catch (IllegalArgumentException ex) {
-				QuestsPlugin.getPlugin().getLoggerExpanded().severe("Cannot send sound {0}", ex, sound);
-				return;
-			}
-		}
+		// ugly-ass mix of Adventure and XSeries code to have both Spigot/Paper compatibility
+		// and pre/post-registry flattening
+		var players = new ArrayList<Player>();
+		audience.forEachAudience(aud -> aud.get(Identity.UUID).map(Bukkit::getPlayer).ifPresent(players::add));
 
-		audience.playSound(net.kyori.adventure.sound.Sound.sound(soundKey, Source.MASTER, volume, pitch));
+		var soundRecord = getSoundRecord(sound).withPitch(pitch).withVolume(volume);
+		for (Player p : players) {
+			// we cannot directly play it to the collection of players since we want to play it at the
+			// location of each of them independently.
+			soundRecord.soundPlayer().forPlayers(p).play();
+		}
 	}
 
 	public static void playPluginSound(Location lc, String sound, float volume) {
 		if (!QuestsConfigurationImplementation.getConfiguration().getQuestsConfig().sounds())
 			return;
-		try {
-			lc.getWorld().playSound(lc, Sound.valueOf(sound), volume, 1);
-		} catch (Exception ex) {
-			if (MinecraftVersion.MAJOR > 8)
-				lc.getWorld().playSound(lc, sound, volume, 1);
-		}
+		if ("none".equals(sound))
+			return;
+
+		var soundRecord = getSoundRecord(sound).withVolume(volume);
+		soundRecord.soundPlayer().atLocation(lc).play();
 	}
 
 	public static void spawnFirework(Location lc, FireworkMeta meta) {

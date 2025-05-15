@@ -294,7 +294,7 @@ public class BeautyQuests extends JavaPlugin implements QuestsPlugin {
 	private void initLogger() {
 		loggerHandler = null;
 		try {
-			getDataFolder().mkdir();
+			Files.createDirectories(getDataFolder().toPath());
 			loggerHandler = new BqLoggerHandler(this);
 			getLogger().addHandler(loggerHandler);
 			getLogger().setLevel(LoggerExpanded.DEBUG_LEVEL);

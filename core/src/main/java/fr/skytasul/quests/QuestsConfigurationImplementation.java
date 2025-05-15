@@ -1,6 +1,7 @@
 package fr.skytasul.quests;
 
 import com.cryptomorin.xseries.XMaterial;
+import com.cryptomorin.xseries.XSound;
 import fr.skytasul.quests.api.QuestsConfiguration;
 import fr.skytasul.quests.api.QuestsPlugin;
 import fr.skytasul.quests.api.gui.ItemUtils;
@@ -194,12 +195,8 @@ public class QuestsConfigurationImplementation implements QuestsConfiguration {
 
 	private String loadSound(String key) {
 		String sound = config.getString(key);
-		try {
-			Sound.valueOf(sound.toUpperCase());
-			sound = sound.toUpperCase();
-		}catch (IllegalArgumentException ex) {
+		if (XSound.of(sound).isEmpty())
 			QuestsPlugin.getPlugin().getLoggerExpanded().warning("Sound " + sound + " is not a valid Bukkit sound.");
-		}
 		return sound;
 	}
 

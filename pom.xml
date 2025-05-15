@@ -44,7 +44,7 @@
 		<build.number>unknown</build.number>
 		<revision.raw>2.0.0</revision.raw>		
 		
-		<minecraft.version>1.20.6-R0.1-SNAPSHOT</minecraft.version>
+		<minecraft.version>1.21.5-R0.1-SNAPSHOT</minecraft.version>
 		<!-- Going for 1.21 breaks backward compatibility at compile time thanks to a change in InventoryView -->
 		
 		<lamp.version>4.0.0-rc.9</lamp.version>

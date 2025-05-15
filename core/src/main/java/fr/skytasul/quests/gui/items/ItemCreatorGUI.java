@@ -134,7 +134,7 @@ public class ItemCreatorGUI extends AbstractGui {
 
 			case 13: // GIVE
 				if (type != null)
-					event.getPlayer().getOpenInventory().setCursor(build());
+					event.getPlayer().setItemOnCursor(build());
 				break;
 
 		}
