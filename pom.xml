@@ -47,6 +47,8 @@
 		<minecraft.version>1.21.5-R0.1-SNAPSHOT</minecraft.version>
 		<!-- Going for 1.21 breaks backward compatibility at compile time thanks to a change in InventoryView -->
 		
+		<junit.version>5.12.2</junit.version>
+		
 		<lamp.version>4.0.0-rc.9</lamp.version>
 		<xseries.version>13.2.0</xseries.version>
 		<hikaricp.version>6.0.0</hikaricp.version>
