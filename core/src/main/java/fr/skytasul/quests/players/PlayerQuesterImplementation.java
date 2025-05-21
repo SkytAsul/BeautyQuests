@@ -43,6 +43,8 @@ public class PlayerQuesterImplementation extends AbstractPlayerQuesterImplementa
 			player = Bukkit.getPlayer(uuid);
 			if (player != null)
 				offPlayer = player;
+		} else if (!player.isOnline()) {
+			player = null;
 		}
 		return Optional.ofNullable(player);
 	}
