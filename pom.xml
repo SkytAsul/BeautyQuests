@@ -45,16 +45,17 @@
 		<revision.raw>2.0.0</revision.raw>		
 		
 		<minecraft.version>1.21.5-R0.1-SNAPSHOT</minecraft.version>
-		<!-- Going for 1.21 breaks backward compatibility at compile time thanks to a change in InventoryView -->
 		
 		<junit.version>5.12.2</junit.version>
+		<mockbukkit.version.minecraft>1.21</mockbukkit.version.minecraft>
+		<mockbukkit.version>4.49.0</mockbukkit.version>
 		
 		<lamp.version>4.0.0-rc.9</lamp.version>
 		<xseries.version>13.2.0</xseries.version>
 		<hikaricp.version>6.0.0</hikaricp.version>
 		<fastboard.version>2.1.4</fastboard.version>
-		<adventure.version>4.17.0</adventure.version>
-		<adventure.bukkit.version>4.3.4</adventure.bukkit.version>
+		<adventure.version>4.21.0</adventure.version>
+		<adventure.bukkit.version>4.4.0</adventure.bukkit.version>
 	</properties>
 	
 	<profiles>

@@ -77,34 +77,50 @@ public abstract class NMS{
 	static {
 		String versionNms;
 
-		if (!BeautyQuests.getInstance().isRunningPaper() || !MinecraftVersion.isHigherThan(20, 5)) {
-			versionNms = Bukkit.getServer().getClass().getPackage().getName().split("\\.")[3];
+		if (BeautyQuests.getInstance().isUnitTesting()) {
+			versionNms = null;
 		} else {
 			try {
-				Class<?> paperMapping = Class.forName("io.papermc.paper.util.MappingEnvironment");
-				versionNms = (String) paperMapping.getDeclaredField("LEGACY_CB_VERSION").get(null);
-			} catch (ReflectiveOperationException ex) {
-				throw new RuntimeException("Impossible to get server internals version", ex);
+				versionNms = getNmsVersion().substring(1);
+			} catch (Exception ex) {
+				BeautyQuests.getInstance().getLoggerExpanded().severe("Cannot get server internals version", ex);
+				versionNms = null;
 			}
 		}
-		versionNms = versionNms.substring(1);
 
-		try {
-			nms = (NMS) Class.forName("fr.skytasul.quests.utils.nms.v" + versionNms).newInstance();
+		if (versionNms != null)
+			nms = loadNms(versionNms);
+
+		if (nms != null) {
 			versionValid = true;
-			QuestsPlugin.getPlugin().getLoggerExpanded()
-					.info("Loaded valid Minecraft version " + versionNms + ".");
-		}catch (ClassNotFoundException ex) {
-			QuestsPlugin.getPlugin().getLoggerExpanded()
-					.warning("The Minecraft version " + versionNms + " is not supported by BeautyQuests.");
-		}catch (Exception ex) {
-			QuestsPlugin.getPlugin().getLoggerExpanded().warning("An error ocurred when loading Minecraft Server version "
-					+ versionNms + " compatibilities.", ex);
-		}
-		if (!versionValid) {
+			QuestsPlugin.getPlugin().getLoggerExpanded().info("Loaded valid Minecraft version {0}.", versionNms);
+		} else {
 			nms = new NullNMS();
 			QuestsPlugin.getPlugin().getLoggerExpanded().warning("Some functionnalities of the plugin have not been enabled.");
 		}
+	}
+
+	private static String getNmsVersion() throws ReflectiveOperationException {
+		if (BeautyQuests.getInstance().isRunningPaper() && MinecraftVersion.isHigherThan(20, 5)) {
+			Class<?> paperMapping = Class.forName("io.papermc.paper.util.MappingEnvironment");
+			return (String) paperMapping.getDeclaredField("LEGACY_CB_VERSION").get(null);
+		}
+
+		// Spigot / legacy Paper
+		return Bukkit.getServer().getClass().getPackage().getName().split("\\.")[3];
+	}
+
+	private static NMS loadNms(String version) {
+		try {
+			return (NMS) Class.forName("fr.skytasul.quests.utils.nms.v" + version).getDeclaredConstructor().newInstance();
+		} catch (ClassNotFoundException __) {
+			QuestsPlugin.getPlugin().getLoggerExpanded()
+					.warningArgs("The Minecraft version {0} is not supported by BeautyQuests.", version);
+		} catch (Exception ex) {
+			QuestsPlugin.getPlugin().getLoggerExpanded()
+					.severe("An error ocurred when loading Minecraft Server version {0} compatibilities.", ex, version);
+		}
+		return null;
 	}
 
 }

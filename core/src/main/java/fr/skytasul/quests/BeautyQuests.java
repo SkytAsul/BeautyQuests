@@ -7,6 +7,7 @@ import fr.skytasul.quests.api.QuestsAPI;
 import fr.skytasul.quests.api.QuestsAPIProvider;
 import fr.skytasul.quests.api.QuestsPlugin;
 import fr.skytasul.quests.api.editors.EditorManager;
+import fr.skytasul.quests.api.events.internal.BeautyQuestsLoadedEvent;
 import fr.skytasul.quests.api.gui.GuiManager;
 import fr.skytasul.quests.api.localization.Lang;
 import fr.skytasul.quests.api.localization.Locale;
@@ -85,6 +86,7 @@ public class BeautyQuests extends JavaPlugin implements QuestsPlugin {
 	private File saveFolder;
 
 	private boolean doneBackup = false;
+	private final boolean unitTesting;
 
 	/* --------- Datas --------- */
 
@@ -111,6 +113,14 @@ public class BeautyQuests extends JavaPlugin implements QuestsPlugin {
 	private @Nullable BukkitAudiences audiences;
 
 	/* ---------------------------------------------- */
+
+	public BeautyQuests() {
+		this(false);
+	}
+
+	public BeautyQuests(Boolean unitTesting) {
+		this.unitTesting = unitTesting;
+	}
 
 	@Override
 	public void onLoad(){
@@ -182,7 +192,8 @@ public class BeautyQuests extends JavaPlugin implements QuestsPlugin {
 						if (MinecraftVersion.MAJOR >= 16)
 							getServer().getPluginManager().registerEvents(new Post1_16(), BeautyQuests.this);
 
-						launchSaveCycle();
+						if (!unitTesting)
+							launchSaveCycle();
 
 						if (!lastVersion.equals(pluginVersion)) { // maybe change in data structure : update of all quest files
 							logger.debug("Migrating from " + lastVersion + " to " + pluginVersion);
@@ -198,11 +209,13 @@ public class BeautyQuests extends JavaPlugin implements QuestsPlugin {
 			}.runTaskLater(this, npcManager.getTimeToWaitForNPCs());
 
 			// Start of non-essential systems
-			launchMetrics(pluginVersion);
-			try {
-				launchUpdateChecker(pluginVersion);
-			}catch (Exception e) {
-				logger.severe("An error occurred while checking updates.", e);
+			if (!unitTesting) {
+				launchMetrics(pluginVersion);
+				try {
+					launchUpdateChecker(pluginVersion);
+				} catch (Exception e) {
+					logger.severe("An error occurred while checking updates.", e);
+				}
 			}
 		}catch (LoadingException ex) {
 			if (ex.getCause() != null) logger.severe("A fatal error occurred while loading plugin.", ex.getCause());
@@ -603,6 +616,8 @@ public class BeautyQuests extends JavaPlugin implements QuestsPlugin {
 		Bukkit.getScheduler().runTaskLater(BeautyQuests.getInstance(), () -> {
 			players.loadOnlinePlayers();
 			loaded = true;
+
+			Bukkit.getPluginManager().callEvent(new BeautyQuestsLoadedEvent());
 		}, 1L);
 	}
 
@@ -862,6 +877,10 @@ public class BeautyQuests extends JavaPlugin implements QuestsPlugin {
 
 	public boolean isCompletelyLoaded() {
 		return loaded;
+	}
+
+	public boolean isUnitTesting() {
+		return unitTesting;
 	}
 
 
