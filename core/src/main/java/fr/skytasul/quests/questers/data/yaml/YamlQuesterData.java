@@ -36,7 +36,7 @@ public class YamlQuesterData extends AbstractQuesterDataImplementation {
 	public YamlQuesterData(int id, @NotNull YamlDataManager dataManager) {
 		this.id = id;
 		this.dataManager = dataManager;
-		this.path = dataManager.dataPath.resolve(id + ".yml");
+		this.path = dataManager.getDataPath().resolve(id + ".yml");
 
 		if (Files.exists(path))
 			load();

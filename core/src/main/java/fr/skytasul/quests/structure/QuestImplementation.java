@@ -626,7 +626,7 @@ public class QuestImplementation implements Quest, QuestDescriptionProvider {
 		if (qu.manager == null) return null;
 
 		for (String key : map.getKeys(false)) {
-			for (QuestOptionCreator<?, ?> creator : QuestOptionCreator.creators.values()) {
+			for (QuestOptionCreator<?, ?> creator : QuestsAPI.getAPI().getQuestOptions()) {
 				if (creator.applies(key)) {
 					try {
 						QuestOption<?> option = creator.optionSupplier.get();

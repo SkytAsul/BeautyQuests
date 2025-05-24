@@ -1,8 +1,9 @@
-package fr.skytasul.quests.api;
+package fr.skytasul.quests;
 
-import java.util.Objects;
+import fr.skytasul.quests.api.QuestsAPI;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import java.util.Objects;
 
 public final class QuestsAPIProvider {
 
@@ -16,10 +17,14 @@ public final class QuestsAPIProvider {
 		return instance;
 	}
 
-	static void setAPI(@NotNull QuestsAPI api) {
+	static void initializeAPI(@NotNull QuestsAPI api) {
 		if (instance != null)
 			throw new IllegalStateException("BeautyQuests API has already been set");
 		instance = Objects.requireNonNull(api);
+	}
+
+	static void removeAPI() {
+		instance = null;
 	}
 
 }

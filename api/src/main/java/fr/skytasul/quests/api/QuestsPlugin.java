@@ -1,5 +1,6 @@
 package fr.skytasul.quests.api;
 
+import fr.skytasul.quests.QuestsAPIProvider;
 import fr.skytasul.quests.api.commands.CommandsManager;
 import fr.skytasul.quests.api.editors.EditorManager;
 import fr.skytasul.quests.api.gui.GuiManager;

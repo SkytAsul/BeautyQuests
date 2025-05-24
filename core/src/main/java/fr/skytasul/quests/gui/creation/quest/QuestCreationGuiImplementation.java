@@ -41,27 +41,62 @@ import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
+import java.util.*;
 
 public class QuestCreationGuiImplementation extends LayoutedGUI implements QuestCreationGui {
 
 	private final QuestCreationSession session;
 	private final UpdatableOptionSet options;
 
-	private final int doneButtonSlot;
+	private final int doneButtonSlot = 5;
+	private final Map<QuestOptionCreator, LayoutedButton> optionButtons = new HashMap<>();
 
 	private boolean keepPlayerDatas = true;
 
 	public QuestCreationGuiImplementation(QuestCreationSession session) {
-		super(null, new HashMap<>(), StandardCloseBehavior.CONFIRM);
-		// null name because it is computed in #instanciate
+		super(new HashMap<>(), StandardCloseBehavior.CONFIRM);
+		// name will be computed in #instanciate
 		this.session = session;
 		this.options = new UpdatableOptionSet();
 
-		for (QuestOptionCreator<?, ?> creator : QuestOptionCreator.creators.values()) {
+		buttons.put(3,
+				LayoutedButton.create(QuestsPlugin.getPlugin().getGuiManager().getItemFactory().getPreviousPage(),
+						event -> session.openStagesGUI(event.getPlayer())));
+
+		buttons.put(doneButtonSlot, LayoutedButton.create(() -> {
+			boolean finishable = isFinishable();
+			XMaterial type = finishable ? XMaterial.GOLD_INGOT : XMaterial.NETHER_BRICK;
+			String itemName = (finishable ? ChatColor.GOLD : ChatColor.DARK_PURPLE).toString()
+					+ (session.isEdition() ? Lang.edit : Lang.create).toString();
+			List<String> lore = new ArrayList<>(3);
+			lore.add(QuestOption.formatDescription(Lang.createLore.toString()) + (finishable ? " §a✔" : " §c✖"));
+			if (Boolean.FALSE.equals(keepPlayerDatas)) {
+				lore.add("");
+				lore.add(Lang.resetLore.toString());
+			}
+			return ItemUtils.item(type, itemName, lore);
+		}, event -> {
+			if (isFinishable())
+				finish();
+		}));
+		options.getWrapper(OptionName.class).dependent.add(() -> super.refresh(doneButtonSlot));
+
+		if (session.isEdition()) {
+			keepPlayerDatas = true;
+			buttons.put(6, LayoutedButton.createSwitch(() -> keepPlayerDatas, Lang.keepDatas.toString(),
+					Arrays.asList(QuestOption.formatDescription(Lang.keepDatasLore.toString())),
+					event -> {
+						keepPlayerDatas = ItemUtils.toggleSwitch(event.getClicked());
+						refresh(doneButtonSlot);
+					}));
+		}
+
+		addOptionsButtons();
+	}
+
+	private void addOptionsButtons() {
+		int availableSlot = QuestsAPI.getAPI().getQuestOptions().stream().mapToInt(x -> x.preferedSlot).max().orElse(0) + 1;
+		for (QuestOptionCreator<?, ?> creator : QuestsAPI.getAPI().getQuestOptions()) {
 			QuestOption<?> option;
 			if (session.isEdition() && session.getQuestEdited().hasOption(creator.optionClass)) {
 				option = session.getQuestEdited().getOption(creator.optionClass).clone();
@@ -88,7 +123,13 @@ public class QuestCreationGuiImplementation extends LayoutedGUI implements Quest
 				}
 
 			};
-			buttons.put(creator.slot, optionButton);
+
+			int slot = creator.preferedSlot;
+			if (buttons.containsKey(slot))
+				slot = availableSlot++;
+			buttons.put(slot, optionButton);
+			optionButtons.put(creator, optionButton);
+
 			options.addOption(option, () -> {
 				option.onDependenciesUpdated(options);
 				refresh(optionButton);
@@ -96,48 +137,18 @@ public class QuestCreationGuiImplementation extends LayoutedGUI implements Quest
 		}
 
 		options.calculateDependencies();
-
-		buttons.put(QuestOptionCreator.calculateSlot(3),
-				LayoutedButton.create(QuestsPlugin.getPlugin().getGuiManager().getItemFactory().getPreviousPage(), event -> session.openStagesGUI(event.getPlayer())));
-
-		doneButtonSlot = QuestOptionCreator.calculateSlot(5);
-		buttons.put(doneButtonSlot, LayoutedButton.create(() -> {
-			boolean finishable = isFinishable();
-			XMaterial type = finishable ? XMaterial.GOLD_INGOT : XMaterial.NETHER_BRICK;
-			String itemName = (finishable ? ChatColor.GOLD : ChatColor.DARK_PURPLE).toString()
-					+ (session.isEdition() ? Lang.edit : Lang.create).toString();
-			List<String> lore = new ArrayList<>(3);
-			lore.add(QuestOption.formatDescription(Lang.createLore.toString()) + (finishable ? " §a✔" : " §c✖"));
-			if (Boolean.FALSE.equals(keepPlayerDatas)) {
-				lore.add("");
-				lore.add(Lang.resetLore.toString());
-			}
-			return ItemUtils.item(type, itemName, lore);
-		}, event -> {
-			if (isFinishable())
-				finish();
-		}));
-		options.getWrapper(OptionName.class).dependent.add(() -> super.refresh(doneButtonSlot));
-
-		if (session.isEdition()) {
-			keepPlayerDatas = true;
-			int resetSlot = QuestOptionCreator.calculateSlot(6);
-			buttons.put(resetSlot, LayoutedButton.createSwitch(() -> keepPlayerDatas, Lang.keepDatas.toString(),
-					Arrays.asList(QuestOption.formatDescription(Lang.keepDatasLore.toString())),
-					event -> {
-						keepPlayerDatas = ItemUtils.toggleSwitch(event.getClicked());
-						refresh(doneButtonSlot);
-					}));
-		}
 	}
 
 	@Override
 	protected Inventory instanciate(@NotNull Player player) {
 		String invName = Lang.INVENTORY_DETAILS.toString();
 		if (session.isEdition())
-			invName = invName + " #" + session.getQuestEdited().getId();
+			invName += " #" + session.getQuestEdited().getId();
 
-		return Bukkit.createInventory(null, (int) Math.ceil((QuestOptionCreator.getLastSlot() + 1) / 9D) * 9, invName);
+		int maxSlot = buttons.keySet().stream().mapToInt(Integer::intValue).max().orElse(0);
+		int rows = (int) (Math.floor(maxSlot / 9D) + 1);
+
+		return Bukkit.createInventory(null, rows * 9, invName);
 	}
 
 	private boolean isFinishable() {
@@ -151,7 +162,7 @@ public class QuestCreationGuiImplementation extends LayoutedGUI implements Quest
 
 	@Override
 	public void updateOptionItem(@NotNull QuestOption<?> option) {
-		refresh(option.getOptionCreator().slot);
+		refresh(optionButtons.get(option.getOptionCreator()));
 	}
 
 	private void finish() {

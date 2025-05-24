@@ -31,7 +31,15 @@ public class YamlDataManager implements QuesterDataManager {
 	 */
 	private final Map<Integer, YamlQuesterData> cachedData = new HashMap<>();
 
-	protected final Path dataPath = QuestsPlugin.getPlugin().getDataFolder().toPath().resolve("players");
+	private final Path dataPath;
+
+	public YamlDataManager(@NotNull Path dataPath) {
+		this.dataPath = dataPath;
+	}
+
+	public @NotNull Path getDataPath() {
+		return dataPath;
+	}
 
 	@Override
 	public void load() throws DataLoadingException {

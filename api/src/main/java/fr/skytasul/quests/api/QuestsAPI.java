@@ -1,5 +1,6 @@
 package fr.skytasul.quests.api;
 
+import fr.skytasul.quests.QuestsAPIProvider;
 import fr.skytasul.quests.api.blocks.BQBlocksManager;
 import fr.skytasul.quests.api.comparison.ItemComparison;
 import fr.skytasul.quests.api.mobs.MobFactory;
@@ -8,6 +9,7 @@ import fr.skytasul.quests.api.npcs.BqInternalNpcFactory;
 import fr.skytasul.quests.api.npcs.BqNpcManager;
 import fr.skytasul.quests.api.npcs.dialogs.MessageSender;
 import fr.skytasul.quests.api.objects.QuestObjectsRegistry;
+import fr.skytasul.quests.api.options.QuestOption;
 import fr.skytasul.quests.api.options.QuestOptionCreator;
 import fr.skytasul.quests.api.pools.QuestPoolsManager;
 import fr.skytasul.quests.api.questers.QuesterManager;
@@ -22,6 +24,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import java.util.Collection;
 import java.util.List;
+import java.util.Optional;
 import java.util.function.Consumer;
 
 /**
@@ -69,6 +72,24 @@ public interface QuestsAPI {
 	 * @param factory a MobFactory instance that has not yet been registered
 	 */
 	void registerMobFactory(@NotNull MobFactory<?> factory);
+
+	/**
+	 * Gets all register quest options.
+	 *
+	 * @return immutable collection of registered options
+	 */
+	@NotNull
+	Collection<QuestOptionCreator<?, ?>> getQuestOptions();
+
+	/**
+	 * Gets an option creator from the quest option class.
+	 *
+	 * @param <D>
+	 * @param <T>
+	 * @param optionClass class of the quest option
+	 * @return the option if it has been registered, an empty Optional otherwise
+	 */
+	<D, T extends QuestOption<D>> Optional<QuestOptionCreator<D, T>> getQuestOption(Class<T> optionClass);
 
 	/**
 	 * Registers a new quest option creator.

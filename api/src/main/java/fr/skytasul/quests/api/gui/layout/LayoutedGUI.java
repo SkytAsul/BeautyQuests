@@ -1,8 +1,9 @@
 package fr.skytasul.quests.api.gui.layout;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Objects;
+import fr.skytasul.quests.api.gui.AbstractGui;
+import fr.skytasul.quests.api.gui.GuiClickEvent;
+import fr.skytasul.quests.api.gui.close.CloseBehavior;
+import fr.skytasul.quests.api.gui.close.StandardCloseBehavior;
 import org.apache.commons.lang.Validate;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
@@ -10,20 +11,17 @@ import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.inventory.Inventory;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import fr.skytasul.quests.api.gui.AbstractGui;
-import fr.skytasul.quests.api.gui.GuiClickEvent;
-import fr.skytasul.quests.api.gui.close.CloseBehavior;
-import fr.skytasul.quests.api.gui.close.StandardCloseBehavior;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Objects;
 
 public abstract class LayoutedGUI extends AbstractGui {
 
-	protected final @Nullable String name;
 	protected final @NotNull Map<Integer, LayoutedButton> buttons;
 	protected final @NotNull CloseBehavior closeBehavior;
 
-	protected LayoutedGUI(@Nullable String name, @NotNull Map<Integer, LayoutedButton> buttons,
+	protected LayoutedGUI(@NotNull Map<Integer, LayoutedButton> buttons,
 			@NotNull CloseBehavior closeBehavior) {
-		this.name = name;
 		this.buttons = buttons;
 		this.closeBehavior = closeBehavior;
 	}
@@ -81,11 +79,13 @@ public abstract class LayoutedGUI extends AbstractGui {
 
 	public static class LayoutedRowsGUI extends LayoutedGUI {
 
+		private final @NotNull String name;
 		private final int rows;
 
-		protected LayoutedRowsGUI(@Nullable String name, @NotNull Map<Integer, LayoutedButton> buttons,
+		protected LayoutedRowsGUI(@NotNull String name, @NotNull Map<Integer, LayoutedButton> buttons,
 				@NotNull CloseBehavior closeBehavior, int rows) {
-			super(name, buttons, closeBehavior);
+			super(buttons, closeBehavior);
+			this.name = name;
 			Validate.isTrue(rows >= 1);
 			this.rows = rows;
 		}
@@ -99,11 +99,13 @@ public abstract class LayoutedGUI extends AbstractGui {
 
 	public static class LayoutedTypeGUI extends LayoutedGUI {
 
-		private @NotNull InventoryType type;
+		private final @NotNull String name;
+		private final @NotNull InventoryType type;
 
 		protected LayoutedTypeGUI(@Nullable String name, @NotNull Map<Integer, LayoutedButton> buttons,
 				@NotNull CloseBehavior closeBehavior, @NotNull InventoryType type) {
-			super(name, buttons, closeBehavior);
+			super(buttons, closeBehavior);
+			this.name = name;
 			this.type = Objects.requireNonNull(type);
 		}
 
@@ -132,14 +134,18 @@ public abstract class LayoutedGUI extends AbstractGui {
 
 		public @NotNull Builder setRowNumber(int rows) {
 			Validate.isTrue(rows >= 1);
+			if (type != null)
+				throw new IllegalStateException("Cannot set both row number and inventory type");
+
 			this.rows = rows;
-			this.type = null;
 			return this;
 		}
 
 		public @NotNull Builder setInventoryType(@Nullable InventoryType type) {
 			this.type = type;
-			this.rows = null;
+			if (rows != null)
+				throw new IllegalStateException("Cannot set both row number and inventory type");
+
 			return this;
 		}
 
@@ -154,14 +160,11 @@ public abstract class LayoutedGUI extends AbstractGui {
 		}
 
 		public @NotNull LayoutedGUI build() {
-			if (buttons.isEmpty())
-				throw new IllegalArgumentException("Cannot build a layouted GUI with no buttons");
-
 			if (type != null)
 				return new LayoutedTypeGUI(name, buttons, closeBehavior, type);
 
 			if (rows == null) {
-				int maxSlot = buttons.keySet().stream().mapToInt(Integer::intValue).max().getAsInt();
+				int maxSlot = buttons.keySet().stream().mapToInt(Integer::intValue).max().orElse(0);
 				rows = (int) Math.floor(maxSlot / 9D) + 1;
 			}
 

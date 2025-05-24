@@ -3,8 +3,6 @@ package fr.skytasul.quests;
 import com.jeff_media.updatechecker.UpdateCheckSource;
 import com.jeff_media.updatechecker.UpdateChecker;
 import com.tchristofferson.configupdater.ConfigUpdater;
-import fr.skytasul.quests.api.QuestsAPI;
-import fr.skytasul.quests.api.QuestsAPIProvider;
 import fr.skytasul.quests.api.QuestsPlugin;
 import fr.skytasul.quests.api.editors.EditorManager;
 import fr.skytasul.quests.api.events.internal.BeautyQuestsLoadedEvent;
@@ -52,7 +50,6 @@ import org.jetbrains.annotations.Nullable;
 import java.io.File;
 import java.io.IOException;
 import java.io.UncheckedIOException;
-import java.lang.reflect.Method;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -71,6 +68,7 @@ public class BeautyQuests extends JavaPlugin implements QuestsPlugin {
 	private static BeautyQuests instance;
 	private BukkitRunnable saveTask;
 	private @Nullable Paper paperCompat;
+	private QuestsAPIImplementation api;
 
 	/* --------- Storage --------- */
 
@@ -259,6 +257,12 @@ public class BeautyQuests extends JavaPlugin implements QuestsPlugin {
 				logger.severe("An error occurred while disabling plugin integrations.", e);
 			}
 
+			try {
+				QuestsAPIProvider.removeAPI();
+			} catch (Exception ex) {
+				logger.severe("Failed to disable the API", ex);
+			}
+
 			getServer().getScheduler().cancelTasks(this);
 		}finally {
 			if (loggerHandler != null) loggerHandler.close();
@@ -319,9 +323,8 @@ public class BeautyQuests extends JavaPlugin implements QuestsPlugin {
 	}
 
 	private void initApi() throws ReflectiveOperationException {
-		Method setMethod = QuestsAPIProvider.class.getDeclaredMethod("setAPI", QuestsAPI.class);
-		setMethod.setAccessible(true); // NOSONAR
-		setMethod.invoke(null, QuestsAPIImplementation.INSTANCE);
+		api = new QuestsAPIImplementation(this);
+		QuestsAPIProvider.initializeAPI(api);
 	}
 
 	private void registerCommands(){
@@ -452,7 +455,9 @@ public class BeautyQuests extends JavaPlugin implements QuestsPlugin {
 				}
 			}
 
-			QuesterDataManager questerDataManager = db == null ? new YamlDataManager() : new SqlDataManager(db);
+			QuesterDataManager questerDataManager = db == null
+					? new YamlDataManager(getDataFolder().toPath().resolve("players"))
+					: new SqlDataManager(db);
 			questerManager = new QuesterManagerImplementation(questerDataManager);
 			if (config.hookAccounts()) {
 				QuestsPlugin.getPlugin().getLoggerExpanded().info("AccountsHook is now managing quester datas!");
@@ -849,7 +854,7 @@ public class BeautyQuests extends JavaPlugin implements QuestsPlugin {
 
 	@Override
 	public @NotNull QuestsAPIImplementation getAPI() {
-		return QuestsAPIImplementation.INSTANCE;
+		return api;
 	}
 
 	@Override

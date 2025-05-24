@@ -8,6 +8,7 @@ import fr.skytasul.quests.api.mobs.MobStacker;
 import fr.skytasul.quests.api.npcs.BqInternalNpcFactory;
 import fr.skytasul.quests.api.npcs.dialogs.MessageSender;
 import fr.skytasul.quests.api.objects.QuestObjectsRegistry;
+import fr.skytasul.quests.api.options.QuestOption;
 import fr.skytasul.quests.api.options.QuestOptionCreator;
 import fr.skytasul.quests.api.pools.QuestPoolsManager;
 import fr.skytasul.quests.api.questers.QuesterManager;
@@ -31,13 +32,11 @@ import java.util.stream.Collectors;
 
 public class QuestsAPIImplementation implements QuestsAPI {
 
-	static final QuestsAPIImplementation INSTANCE = new QuestsAPIImplementation();
-
 	private final StageTypeRegistry stages = new StageTypeRegistry();
 	private final List<ItemComparison> itemComparisons = new LinkedList<>();
 	private final List<MobStacker> mobStackers = new ArrayList<>();
 
-	private QuesterManager questerManager;
+	public Map<Class<? extends QuestOption<?>>, QuestOptionCreator<?, ?>> questOptions = new HashMap<>();
 
 	private QuestObjectsRegistry<AbstractRequirement, RequirementCreator> requirements;
 	private QuestObjectsRegistry<AbstractReward, RewardCreator> rewards;
@@ -50,7 +49,11 @@ public class QuestsAPIImplementation implements QuestsAPI {
 
 	private final Set<MessageProcessorInfo> processors = new TreeSet<>();
 
-	private QuestsAPIImplementation() {}
+	private final BeautyQuests plugin;
+
+	protected QuestsAPIImplementation(BeautyQuests plugin) {
+		this.plugin = plugin;
+	}
 
 	void setup() {
 		requirements = new QuestObjectsRegistry<>("requirements", Lang.INVENTORY_REQUIREMENTS.toString());
@@ -60,6 +63,8 @@ public class QuestsAPIImplementation implements QuestsAPI {
 				? new ActionBarMessageSender()
 				: new ChatMessageSender());
 	}
+
+
 
 	@Override
 	public @NotNull StageTypeRegistry getStages() {
@@ -75,16 +80,26 @@ public class QuestsAPIImplementation implements QuestsAPI {
 	public void registerMobFactory(@NotNull MobFactory<?> factory) {
 		MobFactory.factories.add(factory);
 		QuestUtils.autoRegister(factory);
-		QuestsPlugin.getPlugin().getLoggerExpanded().debug("Mob factory registered (id: " + factory.getID() + ")");
+		plugin.getLoggerExpanded().debug("Mob factory registered (id: " + factory.getID() + ")");
 	}
 
 	@Override
 	public void registerQuestOption(@NotNull QuestOptionCreator<?, ?> creator) {
 		Validate.notNull(creator);
-		Validate.isTrue(!QuestOptionCreator.creators.containsKey(creator.optionClass),
+		Validate.isTrue(!questOptions.containsKey(creator.optionClass),
 				"This quest option was already registered");
-		QuestOptionCreator.creators.put(creator.optionClass, creator);
-		QuestsPlugin.getPlugin().getLoggerExpanded().debug("Quest option registered (id: " + creator.id + ")");
+		questOptions.put(creator.optionClass, creator);
+		plugin.getLoggerExpanded().debug("Quest option registered (id: " + creator.id + ")");
+	}
+
+	@Override
+	public <D, T extends QuestOption<D>> Optional<QuestOptionCreator<D, T>> getQuestOption(Class<T> optionClass) {
+		return (Optional) Optional.ofNullable(questOptions.get(optionClass));
+	}
+
+	@Override
+	public @NotNull Collection<QuestOptionCreator<?, ?>> getQuestOptions() {
+		return questOptions.values();
 	}
 
 	@Override
@@ -97,13 +112,13 @@ public class QuestsAPIImplementation implements QuestsAPI {
 		Validate.isTrue(itemComparisons.stream().noneMatch(x -> x.getID().equals(comparison.getID())),
 				"This item comparison was already registered");
 		itemComparisons.add(comparison);
-		QuestsPlugin.getPlugin().getLoggerExpanded().debug("Item comparison registered (id: " + comparison.getID() + ")");
+		plugin.getLoggerExpanded().debug("Item comparison registered (id: " + comparison.getID() + ")");
 	}
 
 	@Override
 	public void unregisterItemComparison(@NotNull ItemComparison comparison) {
 		Validate.isTrue(itemComparisons.remove(comparison), "This item comparison was not registered");
-		QuestsPlugin.getPlugin().getLoggerExpanded().debug("Item comparison unregistered (id: " + comparison.getID() + ")");
+		plugin.getLoggerExpanded().debug("Item comparison unregistered (id: " + comparison.getID() + ")");
 	}
 
 	@Override
@@ -114,7 +129,7 @@ public class QuestsAPIImplementation implements QuestsAPI {
 	@Override
 	public void registerMobStacker(@NotNull MobStacker stacker) {
 		mobStackers.add(stacker);
-		QuestsPlugin.getPlugin().getLoggerExpanded().debug("Added " + stacker.toString() + " mob stacker");
+		plugin.getLoggerExpanded().debug("Added " + stacker.toString() + " mob stacker");
 	}
 
 	@Override
@@ -129,7 +144,7 @@ public class QuestsAPIImplementation implements QuestsAPI {
 
 	@Override
 	public void addNpcFactory(@NotNull String key, @NotNull BqInternalNpcFactory factory) {
-		QuestsPlugin.getPlugin().getNpcManager().addInternalFactory(key, factory);
+		plugin.getNpcManager().addInternalFactory(key, factory);
 	}
 
 	@Override
@@ -141,10 +156,10 @@ public class QuestsAPIImplementation implements QuestsAPI {
 	public void setHologramsManager(@NotNull AbstractHolograms<?> newHologramsManager) {
 		Validate.notNull(newHologramsManager);
 		if (hologramsManager != null)
-			QuestsPlugin.getPlugin().getLoggerExpanded().warning(newHologramsManager.getClass().getSimpleName()
+			plugin.getLoggerExpanded().warning(newHologramsManager.getClass().getSimpleName()
 					+ " will replace " + hologramsManager.getClass().getSimpleName() + " as the new holograms manager.");
 		hologramsManager = newHologramsManager;
-		QuestsPlugin.getPlugin().getLoggerExpanded()
+		plugin.getLoggerExpanded()
 				.debug("Holograms manager has been registered: " + newHologramsManager.getClass().getName());
 	}
 
@@ -156,7 +171,7 @@ public class QuestsAPIImplementation implements QuestsAPI {
 	@Override
 	public void registerQuestsHandler(@NotNull QuestsHandler handler) {
 		Validate.notNull(handler);
-		if (handlers.add(handler) && BeautyQuests.getInstance().loaded)
+		if (handlers.add(handler) && plugin.loaded)
 			handler.load(); // if BeautyQuests not loaded so far, it will automatically call the load method
 	}
 
@@ -177,7 +192,7 @@ public class QuestsAPIImplementation implements QuestsAPI {
 			try {
 				consumer.accept(handler);
 			} catch (Exception ex) {
-				QuestsPlugin.getPlugin().getLoggerExpanded().severe("An error occurred while updating quests handler.", ex);
+				plugin.getLoggerExpanded().severe("An error occurred while updating quests handler.", ex);
 			}
 		});
 	}
@@ -193,7 +208,7 @@ public class QuestsAPIImplementation implements QuestsAPI {
 				processors.stream().filter(x -> x.key.equals(key) && x.priority == priotity).findAny();
 		if (existing.isPresent()) {
 			processors.remove(existing.get());
-			BeautyQuests.getInstance().getLogger().warning("Replacing message processor " + key);
+			plugin.getLogger().warning("Replacing message processor " + key);
 		}
 
 		processors.add(new MessageProcessorInfo(key, priotity, processor));
@@ -207,28 +222,28 @@ public class QuestsAPIImplementation implements QuestsAPI {
 	@Override
 	public void setMessageSender(@NotNull MessageSender sender) {
 		this.messageSender = sender;
-		QuestsPlugin.getPlugin().getLoggerExpanded()
+		plugin.getLoggerExpanded()
 				.debug("Message sender has been registered: " + sender.getClass().getName());
 	}
 
 	@Override
 	public @NotNull QuestsManager getQuestsManager() {
-		return BeautyQuests.getInstance().getQuestsManager();
+		return plugin.getQuestsManager();
 	}
 
 	@Override
 	public @NotNull QuestPoolsManager getPoolsManager() {
-		return BeautyQuests.getInstance().getPoolsManager();
+		return plugin.getPoolsManager();
 	}
 
 	@Override
 	public @NotNull QuesterManager getQuesterManager() {
-		return BeautyQuests.getInstance().getQuesterManager();
+		return plugin.getQuesterManager();
 	}
 
 	@Override
 	public @NotNull QuestsPlugin getPlugin() {
-		return BeautyQuests.getInstance();
+		return plugin;
 	}
 
 	private class MessageProcessorInfo implements Comparable<MessageProcessorInfo> {
