@@ -12,6 +12,7 @@ public class TestUtils {
 	}
 
 	public static BeautyQuests loadPlugin() {
+		MockBukkit.getOrCreateMock();
 		var loadedWaiter = new EventWaiter<>(BeautyQuestsLoadedEvent.class);
 		var plugin = MockBukkit.load(BeautyQuests.class, Boolean.TRUE);
 		loadedWaiter.assertFired(10);
