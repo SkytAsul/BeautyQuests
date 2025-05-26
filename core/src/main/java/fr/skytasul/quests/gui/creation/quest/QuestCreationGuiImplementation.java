@@ -79,7 +79,6 @@ public class QuestCreationGuiImplementation extends LayoutedGUI implements Quest
 			if (isFinishable())
 				finish();
 		}));
-		options.getWrapper(OptionName.class).dependent.add(() -> super.refresh(doneButtonSlot));
 
 		if (session.isEdition()) {
 			keepPlayerDatas = true;
@@ -92,6 +91,7 @@ public class QuestCreationGuiImplementation extends LayoutedGUI implements Quest
 		}
 
 		addOptionsButtons();
+		options.getWrapper(OptionName.class).dependent.add(() -> super.refresh(doneButtonSlot));
 	}
 
 	private void addOptionsButtons() {

@@ -8,6 +8,7 @@ import fr.skytasul.quests.api.pools.QuestPool;
 import fr.skytasul.quests.api.questers.QuesterQuestData;
 import fr.skytasul.quests.api.quests.Quest;
 import fr.skytasul.quests.api.stages.StageController;
+import fr.skytasul.quests.api.utils.Utils;
 import fr.skytasul.quests.questers.AbstractQuesterDataImplementation;
 import fr.skytasul.quests.questers.AbstractQuesterQuestDataImplementation;
 import fr.skytasul.quests.questers.QuesterPoolDataImplementation;
@@ -177,12 +178,13 @@ public class YamlQuesterData extends AbstractQuesterDataImplementation {
 			}
 
 			if (questConfig.contains("additionalData"))
-				super.additionalData = questConfig.getConfigurationSection("additionalData").getValues(false);
+				super.additionalData =
+						Utils.mapFromConfigurationSection(questConfig.getConfigurationSection("additionalData"));
 
 			if (questConfig.contains("stageData"))
 				for (String dataKey : questConfig.getConfigurationSection("stageData").getKeys(false))
 					super.stageData.put(Integer.parseInt(dataKey),
-							questConfig.getConfigurationSection("stageData." + dataKey).getValues(false));
+							Utils.mapFromConfigurationSection(questConfig.getConfigurationSection("stageData." + dataKey)));
 		}
 
 		@Override

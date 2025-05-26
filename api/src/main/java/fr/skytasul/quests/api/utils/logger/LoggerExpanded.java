@@ -72,6 +72,7 @@ public class LoggerExpanded {
 		var log = new LogRecord(Level.SEVERE, msg);
 		log.setParameters(args);
 		log.setThrown(cause);
+		log.setLoggerName(logger.getName());
 		logger.log(log);
 	}
 
@@ -87,11 +88,12 @@ public class LoggerExpanded {
 		var log = new LogRecord(DEBUG_LEVEL, msg);
 		log.setParameters(args);
 		log.setThrown(cause);
+		log.setLoggerName(logger.getName());
 		logger.log(log);
 	}
 
 	public <T> BiConsumer<T, Throwable> logError(@Nullable Consumer<T> consumer, @Nullable String friendlyErrorMessage,
-			@Nullable Audience sender) {
+			@Nullable Audience sender, Object... parameters) {
 		return (object, ex) -> {
 			if (ex == null) {
 				if (consumer != null)
@@ -105,21 +107,21 @@ public class LoggerExpanded {
 
 				if (sender != null)
 					DefaultErrors.sendGeneric(sender, friendlyErrorMessage);
-				severe(friendlyErrorMessage, ex);
+				severe(friendlyErrorMessage, ex, parameters);
 			}
 		};
 	}
 
 	public <T> BiConsumer<T, Throwable> logError(@Nullable String friendlyErrorMessage, @Nullable Audience sender) {
-		return logError(null, friendlyErrorMessage, sender);
+		return logError(null, friendlyErrorMessage, sender, new Object[0]);
 	}
 
-	public <T> BiConsumer<T, Throwable> logError(@Nullable String friendlyErrorMessage) {
-		return logError(null, friendlyErrorMessage, null);
+	public <T> BiConsumer<T, Throwable> logError(@Nullable String friendlyErrorMessage, Object... parameters) {
+		return logError(null, friendlyErrorMessage, null, parameters);
 	}
 
 	public <T> BiConsumer<T, Throwable> logError() {
-		return logError(null, null, null);
+		return logError(null, null, null, new Object[0]);
 	}
 
 }

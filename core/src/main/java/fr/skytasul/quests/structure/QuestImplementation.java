@@ -244,9 +244,8 @@ public class QuestImplementation implements Quest, QuestDescriptionProvider {
 		Bukkit.getPluginManager().callEvent(new QuesterQuestResetEvent(quester, this));
 
 		getOptionValueOrDef(OptionCancelRewards.class).giveRewards(quester)
-				.whenComplete((__, ex) -> QuestsPlugin.getPlugin().getLoggerExpanded().severe(
-						"Failed to execute cancel rewards for quester {} in quest {}", ex, quester.getDetailedName(),
-						getId()));
+				.whenComplete(QuestsPlugin.getPlugin().getLoggerExpanded().logError(
+						"Failed to execute cancel rewards for quester {} in quest {}", quester.getDetailedName(), getId()));
 	}
 
 	@Override

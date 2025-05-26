@@ -155,8 +155,8 @@ public class Utils{
 	}
 
 	public static Map<String, Object> mapFromConfigurationSection(ConfigurationSection section){
-		Map<String, Object> map = section.getValues(true);
-		for (Entry<String, Object> entry : section.getValues(true).entrySet()) {
+		Map<String, Object> map = new LinkedHashMap<>();
+		for (Entry<String, Object> entry : section.getValues(false).entrySet()) {
 			if (entry.getValue() instanceof ConfigurationSection) {
 				map.put(entry.getKey(), mapFromConfigurationSection((ConfigurationSection) entry.getValue()));
 			}else map.put(entry.getKey(), entry.getValue());

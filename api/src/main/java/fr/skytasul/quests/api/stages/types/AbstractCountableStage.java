@@ -54,7 +54,7 @@ public abstract class AbstractCountableStage<T> extends AbstractStage implements
 
 	protected @NotNull Map<@NotNull UUID, @NotNull Integer> getRawRemainingAmounts(@NotNull Quester quester,
 			boolean warnNull) {
-		Map<?, Integer> remaining = getData(quester, "remaining");
+		Map<?, Integer> remaining = getData(quester, "remaining", Map.class);
 		if (warnNull && remaining == null) {
 			QuestsPlugin.getPlugin().getLoggerExpanded().namedWarning("Cannot retrieve remaining amounts for {} on {}",
 					"data" + quester.getIdentifier() + controller.toString(), 10, quester.getDetailedName(), controller);

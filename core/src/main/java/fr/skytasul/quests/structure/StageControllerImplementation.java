@@ -224,7 +224,8 @@ public class StageControllerImplementation<T extends AbstractStage> implements S
 		String flow = getBranch().getId() + ":";
 		if (branch.isEndingStage(this))
 			flow += "E" + branch.getEndingStageId(this);
-		flow += branch.getRegularStageId(this);
+		else
+			flow += branch.getRegularStageId(this);
 		return flow;
 	}
 
