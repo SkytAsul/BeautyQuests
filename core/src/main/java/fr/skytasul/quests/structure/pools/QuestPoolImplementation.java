@@ -194,6 +194,9 @@ public class QuestPoolImplementation implements Comparable<QuestPoolImplementati
 	@Override
 	public boolean canGive(Player p) {
 		Quester quester = PlayersManager.getPlayerAccount(p);
+
+		if (!quester.getDataHolder().hasPoolData(this))
+			return false;
 		QuesterPoolData data = quester.getDataHolder().getPoolData(this);
 
 		if (data.getLastGive() + timeDiff > System.currentTimeMillis())

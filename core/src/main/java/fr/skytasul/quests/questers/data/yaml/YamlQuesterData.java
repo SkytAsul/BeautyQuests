@@ -132,18 +132,21 @@ public class YamlQuesterData extends AbstractQuesterDataImplementation {
 		private void load() {
 			if (questConfig.contains("datas")) {
 				// TODO delete, migration 2.0
+
+				if (questConfig.contains("datas.starting_time")) {
+					questConfig.set("startingTime", questConfig.getLong("datas.starting_time"));
+					questConfig.set("datas.starting_time", null);
+				}
+
 				var stageDataPattern = Pattern.compile("stage(\\d+)");
 				for (String dataKey : questConfig.getConfigurationSection("datas").getKeys(false)) {
 					var stageDataMatcher = stageDataPattern.matcher(dataKey);
 					String newPath = stageDataMatcher.matches()
 							? "stageData." + stageDataMatcher.group(1)
 							: "additionalData." + dataKey;
-					questConfig.createSection(newPath,
-							questConfig.getConfigurationSection("datas." + dataKey).getValues(false));
-				}
 
-				if (questConfig.contains("datas.starting_time"))
-					questConfig.set("startingTime", questConfig.getLong("datas.starting_time"));
+					Utils.copyConfigValue(questConfig, "datas." + dataKey, questConfig, newPath);
+				}
 
 				questConfig.set("datas", null);
 			}

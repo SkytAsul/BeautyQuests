@@ -180,6 +180,13 @@ public class Utils{
 		});
 	}
 
+	public static void copyConfigValue(ConfigurationSection from, String fromKey, ConfigurationSection to, String toKey) {
+		if (from.isConfigurationSection(fromKey))
+			to.createSection(toKey, mapFromConfigurationSection(from.getConfigurationSection(fromKey)));
+		else
+			to.set(toKey, from.get(fromKey));
+	}
+
 	public static List<ItemStack> combineItems(List<ItemStack> items) {
 		ArrayList<ItemStack> newItems = new ArrayList<>(items.size());
 		items: for (ItemStack original : items) {

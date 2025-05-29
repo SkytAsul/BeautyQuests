@@ -88,7 +88,7 @@ public class StageControllerImplementation<T extends AbstractStage> implements S
 		QuesterQuestData questData = quester.getDataHolder().getQuestData(branch.getQuest());
 		Map<String, Object> datas = questData.getStageDatas(getStorageId());
 		if (datas == null) {
-			QuestsPlugin.getPlugin().getLoggerExpanded().severe("Account {} did not have data for {}. Creating some.",
+			QuestsPlugin.getPlugin().getLoggerExpanded().severe("Quester {} did not have data for {}. Creating some.",
 					quester.getDetailedName(), toString());
 			datas = new HashMap<>();
 			stage.initPlayerDatas(quester, datas);
@@ -110,7 +110,7 @@ public class StageControllerImplementation<T extends AbstractStage> implements S
 			if (!hasStarted(acc))
 				throw new IllegalStateException("Trying to fetch data of not launched stage");
 
-			QuestsPlugin.getPlugin().getLoggerExpanded().severe("Q uester {} did not have data for {}. Creating some.",
+			QuestsPlugin.getPlugin().getLoggerExpanded().severe("Quester {} did not have data for {}. Creating some.",
 					acc.getDetailedName(), this);
 			datas = new HashMap<>();
 			stage.initPlayerDatas(acc, datas);
