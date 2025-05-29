@@ -9,9 +9,6 @@ import java.util.concurrent.CompletableFuture;
 
 public interface QuesterPoolData {
 
-	@NotNull
-	Quester getQuester();
-
 	int getPoolID();
 
 	@Nullable

@@ -5,13 +5,14 @@ import fr.skytasul.quests.api.QuestsPlugin;
 import fr.skytasul.quests.api.data.DataSavingException;
 import fr.skytasul.quests.api.data.SavableData;
 import fr.skytasul.quests.api.pools.QuestPool;
+import fr.skytasul.quests.api.questers.QuesterPoolData;
 import fr.skytasul.quests.api.questers.QuesterQuestData;
 import fr.skytasul.quests.api.quests.Quest;
 import fr.skytasul.quests.api.stages.StageController;
 import fr.skytasul.quests.api.utils.Utils;
 import fr.skytasul.quests.questers.AbstractQuesterDataImplementation;
+import fr.skytasul.quests.questers.AbstractQuesterPoolDataImplementation;
 import fr.skytasul.quests.questers.AbstractQuesterQuestDataImplementation;
-import fr.skytasul.quests.questers.QuesterPoolDataImplementation;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.jetbrains.annotations.NotNull;
@@ -22,6 +23,7 @@ import java.nio.file.Path;
 import java.util.Map;
 import java.util.OptionalInt;
 import java.util.OptionalLong;
+import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -57,17 +59,31 @@ public class YamlQuesterData extends AbstractQuesterDataImplementation {
 			var questsMapList = yaml.getMapList("quests");
 			yaml.createSection("quests"); // to remove old list
 			for (var questMap : questsMapList) {
-				var questId = questMap.get("questID");
+				var questId = questMap.remove("questID");
 				yaml.createSection("quests." + questId, questMap);
 			}
 		}
-		for (String questIdRaw : yaml.getConfigurationSection("quests").getKeys(false)) {
-			int questId = Integer.parseInt(questIdRaw);
-			super.questData.put(questId, new QuestData(questId));
+		if (yaml.contains("quests")) {
+			for (String questIdRaw : yaml.getConfigurationSection("quests").getKeys(false)) {
+				int questId = Integer.parseInt(questIdRaw);
+				super.questData.put(questId, new QuestData(questId));
+			}
 		}
 
-		for (Map<?, ?> poolConfig : yaml.getMapList("pools")) {
-			// TODO
+		if (yaml.isList("pools")) {
+			// TODO remove, migration to 2.0
+			var poolsMapList = yaml.getMapList("pools");
+			yaml.createSection("pools"); // to remove old list
+			for (var poolMap : poolsMapList) {
+				var poolId = poolMap.remove("poolID");
+				yaml.createSection("pools." + poolId, poolMap);
+			}
+		}
+		if (yaml.contains("pools")) {
+			for (String poolIdRaw : yaml.getConfigurationSection("pools").getKeys(false)) {
+				int poolId = Integer.parseInt(poolIdRaw);
+				super.poolData.put(poolId, new PoolData(poolId));
+			}
 		}
 
 		for (SavableData<?> data : QuestsAPI.getAPI().getQuesterManager().getSavableData()) {
@@ -88,9 +104,8 @@ public class YamlQuesterData extends AbstractQuesterDataImplementation {
 	}
 
 	@Override
-	protected QuesterPoolDataImplementation createPoolData(@NotNull QuestPool pool) {
-		// TODO
-		return null;
+	protected QuesterPoolData createPoolData(@NotNull QuestPool pool) {
+		return new PoolData(pool.getId());
 	}
 
 	protected QuesterQuestData removeQuestDataSilently(int questId) {
@@ -255,6 +270,46 @@ public class YamlQuesterData extends AbstractQuesterDataImplementation {
 		@Override
 		public CompletableFuture<Void> remove() {
 			yaml.set("quests." + super.getQuestID(), null);
+			return CompletableFuture.completedFuture(null);
+		}
+
+	}
+
+	public class PoolData extends AbstractQuesterPoolDataImplementation {
+
+		private final ConfigurationSection poolConfig;
+
+		public PoolData(int poolId) {
+			super(poolId);
+
+			if (yaml.isConfigurationSection("pools." + poolId)) {
+				poolConfig = yaml.getConfigurationSection("pools." + poolId);
+				load();
+			} else {
+				poolConfig = yaml.createSection("pools." + poolId);
+			}
+		}
+
+		private void load() {
+			super.lastGive = poolConfig.getLong("lastGive");
+			super.completedQuests = (Set<Integer>) poolConfig.get("completedQuests", Set.class);
+		}
+
+		@Override
+		public void setLastGive(long lastGive) {
+			super.setLastGive(lastGive);
+			poolConfig.set("lastGive", lastGive);
+		}
+
+		@Override
+		public void setCompletedQuests(Set<Integer> completedQuests) {
+			super.setCompletedQuests(completedQuests);
+			poolConfig.set("completedQuests", completedQuests);
+		}
+
+		@Override
+		public @NotNull CompletableFuture<Void> remove() {
+			yaml.set("pools." + poolId, null);
 			return CompletableFuture.completedFuture(null);
 		}
 

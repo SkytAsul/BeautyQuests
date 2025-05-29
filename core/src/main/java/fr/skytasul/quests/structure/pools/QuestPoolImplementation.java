@@ -263,7 +263,7 @@ public class QuestPoolImplementation implements Comparable<QuestPoolImplementati
 				.filter(quest -> !datas.getCompletedQuests().contains(quest.getId())).collect(Collectors.toList()) : quests;
 		if (notCompleted.isEmpty()) {
 			// all quests completed: we check if the player can redo some of them
-			notCompleted = replenishQuests(datas);
+			notCompleted = replenishQuests(acc, datas);
 			if (notCompleted.isEmpty())
 				return CompletableFuture.completedFuture(new PoolGiveResult(Lang.POOL_ALL_COMPLETED.toString()));
 		} else if (acc.getDataHolder().getAllQuestsData().stream()
@@ -277,7 +277,7 @@ public class QuestPoolImplementation implements Comparable<QuestPoolImplementati
 		if (notStarted.isEmpty()) {
 			// means all quests that are not yet completed are already started.
 			// we should then check if the player can redo some of the quests it has completed
-			notStarted = replenishQuests(datas);
+			notStarted = replenishQuests(acc, datas);
 		}
 
 		List<Quest> available = notStarted.stream().filter(quest -> quest.canStart(p, false)).collect(Collectors.toList());
@@ -302,11 +302,11 @@ public class QuestPoolImplementation implements Comparable<QuestPoolImplementati
 		}
 	}
 
-	private List<Quest> replenishQuests(QuesterPoolData datas) {
+	private List<Quest> replenishQuests(@NotNull Quester quester, @NotNull QuesterPoolData datas) {
 		if (!redoAllowed) return Collections.emptyList();
 		List<Quest> notDoneQuests = quests.stream()
 				.filter(Quest::isRepeatable)
-				.filter(quest -> !quest.hasStarted(datas.getQuester()))
+				.filter(quest -> !quest.hasStarted(quester))
 				.collect(Collectors.toList());
 		if (!notDoneQuests.isEmpty()) {
 			datas.setCompletedQuests(quests
@@ -316,7 +316,7 @@ public class QuestPoolImplementation implements Comparable<QuestPoolImplementati
 					.collect(Collectors.toSet()));
 		}
 		QuestsPlugin.getPlugin().getLoggerExpanded().debug("Replenished available quests of {} for pool {}",
-				datas.getQuester().getDetailedName(), id);
+				quester.getDetailedName(), id);
 		return notDoneQuests;
 	}
 

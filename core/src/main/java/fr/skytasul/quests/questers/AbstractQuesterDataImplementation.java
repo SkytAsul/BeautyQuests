@@ -19,7 +19,7 @@ import java.util.concurrent.CompletableFuture;
 public abstract class AbstractQuesterDataImplementation implements QuesterData {
 
 	protected final Map<Integer, QuesterQuestData> questData = new HashMap<>();
-	protected final Map<Integer, QuesterPoolDataImplementation> poolData = new HashMap<>();
+	protected final Map<Integer, QuesterPoolData> poolData = new HashMap<>();
 	protected final Map<SavableData<?>, Object> additionalData = new HashMap<>();
 
 	@Override
@@ -42,7 +42,7 @@ public abstract class AbstractQuesterDataImplementation implements QuesterData {
 		return data;
 	}
 
-	protected abstract QuesterQuestData createQuestData(@NotNull Quest quest);
+	protected abstract @NotNull QuesterQuestData createQuestData(@NotNull Quest quest);
 
 	@Override
 	public @NotNull CompletableFuture<QuesterQuestData> removeQuestData(@NotNull Quest quest) {
@@ -69,8 +69,8 @@ public abstract class AbstractQuesterDataImplementation implements QuesterData {
 	}
 
 	@Override
-	public @NotNull QuesterPoolDataImplementation getPoolData(@NotNull QuestPool pool) {
-		QuesterPoolDataImplementation datas = poolData.get(pool.getId());
+	public @NotNull QuesterPoolData getPoolData(@NotNull QuestPool pool) {
+		QuesterPoolData datas = poolData.get(pool.getId());
 		if (datas == null) {
 			datas = createPoolData(pool);
 			poolData.put(pool.getId(), datas);
@@ -83,7 +83,7 @@ public abstract class AbstractQuesterDataImplementation implements QuesterData {
 		return Optional.ofNullable(poolData.get(pool.getId()));
 	}
 
-	protected abstract QuesterPoolDataImplementation createPoolData(@NotNull QuestPool pool);
+	protected abstract @NotNull QuesterPoolData createPoolData(@NotNull QuestPool pool);
 
 	@Override
 	public @NotNull CompletableFuture<QuesterPoolData> removePoolData(@NotNull QuestPool pool) {

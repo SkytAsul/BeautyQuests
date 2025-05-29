@@ -7,13 +7,13 @@ import fr.skytasul.quests.api.data.DataSavingException;
 import fr.skytasul.quests.api.data.SQLDataSaver;
 import fr.skytasul.quests.api.data.SavableData;
 import fr.skytasul.quests.api.pools.QuestPool;
+import fr.skytasul.quests.api.questers.QuesterPoolData;
 import fr.skytasul.quests.api.questers.QuesterQuestData;
 import fr.skytasul.quests.api.quests.Quest;
 import fr.skytasul.quests.api.stages.StageController;
 import fr.skytasul.quests.api.utils.CustomizedObjectTypeAdapter;
 import fr.skytasul.quests.questers.AbstractQuesterDataImplementation;
 import fr.skytasul.quests.questers.AbstractQuesterQuestDataImplementation;
-import fr.skytasul.quests.questers.QuesterPoolDataImplementation;
 import net.kyori.adventure.key.Key;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -90,7 +90,7 @@ public class SqlQuesterData extends AbstractQuesterDataImplementation {
 	}
 
 	@Override
-	protected QuesterPoolDataImplementation createPoolData(@NotNull QuestPool pool) {
+	protected QuesterPoolData createPoolData(@NotNull QuestPool pool) {
 		return null;
 	}
 

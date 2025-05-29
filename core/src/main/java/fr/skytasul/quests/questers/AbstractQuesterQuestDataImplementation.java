@@ -149,10 +149,18 @@ public abstract class AbstractQuesterQuestDataImplementation implements QuesterQ
 					newState = State.IN_ENDING_STAGES;
 				else if (this.stage.isPresent() && this.stage.getAsInt() >= 0)
 					newState = State.IN_REGULAR_STAGE;
-	
-		if (newState != State.IN_REGULAR_STAGE) {
-			setStage(OptionalInt.empty()); // must be AFTER loading of current stage and branch!
-			setBranch(OptionalInt.empty());
+
+		switch (newState) {
+			case IN_END:
+			case NOT_STARTED:
+				setStage(OptionalInt.empty());
+				setBranch(OptionalInt.empty());
+				break;
+			case IN_ENDING_STAGES:
+				setStage(OptionalInt.empty());
+				break;
+			case IN_REGULAR_STAGE:
+				break;
 		}
 		setState(newState);
 	}
