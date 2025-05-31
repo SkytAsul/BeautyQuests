@@ -4,6 +4,7 @@ import fr.skytasul.quests.BeautyQuests;
 import fr.skytasul.quests.api.QuestsPlugin;
 import fr.skytasul.quests.api.data.DataLoadingException;
 import fr.skytasul.quests.api.data.DataSavingException;
+import fr.skytasul.quests.players.PlayerManagerImplementation;
 import fr.skytasul.quests.questers.data.QuesterDataManager;
 import fr.skytasul.quests.questers.data.QuesterDataManager.QuesterFetchResult.Type;
 import net.kyori.adventure.key.Key;
@@ -52,7 +53,7 @@ public class YamlDataManager implements QuesterDataManager {
 				for (String key : config.getConfigurationSection("players").getKeys(false)) {
 					String identifier = config.getString("players." + key);
 					var section = config.createSection("identifiers." + key);
-					section.set("provider", QuestsPlugin.getPlugin().getPlayersManager().key().asString());
+					section.set("provider", PlayerManagerImplementation.KEY.asString());
 					section.set("identifier", identifier);
 				}
 				config.set("players", null);

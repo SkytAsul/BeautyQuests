@@ -15,7 +15,7 @@ public class SqlDataManager implements QuesterDataManager {
 
 	private final SqlHandler sqlHandler;
 
-	private final ExecutorService dataExecutor = Executors.newCachedThreadPool(new ThreadFactory() {
+	private final ExecutorService dataExecutor = Executors.newSingleThreadExecutor(new ThreadFactory() {
 		int i = 0;
 
 		@Override

@@ -486,9 +486,9 @@ public class QuestsConfigurationImplementation implements QuestsConfiguration {
 
 		private boolean update() {
 			boolean result = false;
-			result |= migrateEntry(config, "playerAccounts", config, "questers");
-			result |= migrateEntry(config, "playerQuests", config, "questers quests");
-			result |= migrateEntry(config, "playerPools", config, "questers pools");
+			result |= migrateEntry(config, "tables.playerAccounts", config, "tables.questers");
+			result |= migrateEntry(config, "tables.playerQuests", config, "tables.questers quests");
+			result |= migrateEntry(config, "tables.playerPools", config, "tables.questers pools");
 			return result;
 		}
 

@@ -182,7 +182,7 @@ public class YamlQuesterData extends AbstractQuesterDataImplementation {
 			else
 				super.migrateState();
 
-			if (questConfig.contains("questFlow") && getQuest() != null) {
+			if (!questConfig.getString("questFlow", "").isEmpty() && getQuest() != null) {
 				for (String flowPart : questConfig.getString("questFlow").split(";")) {
 					try {
 						StageController stageFlow = getQuest().getBranchesManager().getStageFromFlow(flowPart);

@@ -4,6 +4,7 @@ import fr.skytasul.quests.api.QuestsPlugin;
 import fr.skytasul.quests.api.data.SQLDataSaver;
 import fr.skytasul.quests.api.data.SavableData;
 import fr.skytasul.quests.api.questers.QuesterManager;
+import fr.skytasul.quests.players.PlayerManagerImplementation;
 import fr.skytasul.quests.utils.Database;
 import fr.skytasul.quests.utils.ThrowingConsumer;
 import org.jetbrains.annotations.NotNull;
@@ -73,15 +74,15 @@ public class SqlHandler {
 		try (Connection connection = db.getConnection(); Statement statement = connection.createStatement()) {
 			statement.execute("CREATE TABLE IF NOT EXISTS " + ACCOUNTS_TABLE + " ("
 					+ " provider VARCHAR(255) NOT NULL ,"
-					+ " identifier TEXT NOT NULL ,"
+					+ " identifier VARCHAR(255) NOT NULL ,"
 					+ questerManager.getSavableData().stream()
 							.map(SQLDataSaver::getColumnDefinition)
 							.collect(Collectors.joining(" , ", " ", " ,"))
 					+ " PRIMARY KEY (provider, identifier)"
 					+ " )");
 			statement.execute("CREATE TABLE IF NOT EXISTS " + QUESTS_DATAS_TABLE + " (" +
-					" quester_provider INT NOT NULL," +
-					" quester_identifier INT NOT NULL," +
+					" quester_provider VARCHAR(255) NOT NULL," +
+					" quester_identifier VARCHAR(255) NOT NULL," +
 					" quest_id INT NOT NULL," +
 					" finished INT NOT NULL DEFAULT 0," +
 					" timer BIGINT DEFAULT NULL," +
@@ -114,19 +115,22 @@ public class SqlHandler {
 					}
 				}
 
-				if (columns.contains("id")) {
+				if (!columns.contains("provider")) {
 					// 2.0
 					statement.execute("""
-							ALTER TABLE %1$s DROP COLUMN player_uuid;
+							ALTER TABLE %1$s
+								DROP COLUMN player_uuid,
 
-							ALTER TABLE %1$s DROP PRIMARY KEY;
-							ALTER TABLE %1$s DROP COLUMN id;
-							ALTER TABLE %1$s ADD COLUMN provider VARCHAR(255) NOT NULL DEFAULT 'BeautyQuests:player';
-							ALTER TABLE %1$s ADD PRIMARY KEY (provider, identifier);
+								-- delete the auto_increment
+								MODIFY COLUMN id int(11) NOT NULL,
+								DROP PRIMARY KEY,
+
+								ADD COLUMN provider VARCHAR(255) NOT NULL,
+								MODIFY COLUMN identifier VARCHAR(255) NOT NULL,
+								ADD PRIMARY KEY (provider, identifier)
 							""".formatted(ACCOUNTS_TABLE));
-
-					// TODO data migration with provider/identifier, even in quests data table
-
+					statement.execute("UPDATE %s SET provider = '%s'".formatted(ACCOUNTS_TABLE,
+							PlayerManagerImplementation.KEY.asString()));
 
 					QuestsPlugin.getPlugin().getLoggerExpanded()
 							.info("Updated database by changing layout of the questers table.");
@@ -138,25 +142,43 @@ public class SqlHandler {
 				if (columns.contains("account_id")) {
 					// 2.0
 					statement.execute("""
-							-- TODO manage account_id column to delete it and add quester_provider, quester_identifier
+							ALTER TABLE %1$s
+								ADD COLUMN starting_time BIGINT DEFAULT NULL,
+								ADD COLUMN stage_data %2$s DEFAULT NULL,
+								ADD COLUMN state VARCHAR(60) DEFAULT 'NOT_STARTED',
 
-							ALTER TABLE %1$s DROP PRIMARY KEY;
-							ALTER TABLE %1$s DROP COLUMN id;
-							ALTER TABLE %1$s ADD PRIMARY KEY (quester_provider, quester_identifier, quest_id);
-
-							ALTER TABLE %1$s ADD COLUMN starting_time BIGINT DEFAULT NULL;
-							ALTER TABLE %1$s ADD COLUMN stage_data %2$s DEFAULT NULL;
-
-							-- we do it in 2 parts since we want the existing columns to hold null and not "not_started"
-							ALTER TABLE %1$s ADD COLUMN state VARCHAR(60) DEFAULT NULL;
-							ALTER TABLE %1$s ALTER COLUMN state SET DEFAULT 'NOT_STARTED';
+								ADD COLUMN quester_provider VARCHAR(225) NOT NULL,
+								ADD COLUMN quester_identifier VARCHAR(255) NOT NULL
 							""".formatted(QUESTS_DATAS_TABLE, db.getType().getLongTextType()));
+					statement.execute("UPDATE %s SET state = NULL".formatted(QUESTS_DATAS_TABLE));
+					statement.execute("UPDATE %s SET quester_identifier = 'migration'".formatted(QUESTS_DATAS_TABLE));
+					statement.execute("UPDATE %s SET quester_provider = '%s'".formatted(QUESTS_DATAS_TABLE,
+							PlayerManagerImplementation.KEY.asString()));
+					statement.execute("""
+							UPDATE %1$s AS quests
+								INNER JOIN %2$s AS questers ON quests.account_id = questers.id
+							SET quests.quester_identifier = questers.identifier
+							""".formatted(QUESTS_DATAS_TABLE, ACCOUNTS_TABLE));
+					statement.execute("""
+							ALTER TABLE %1$s
+								MODIFY COLUMN id int(11) NOT NULL,
+								DROP PRIMARY KEY,
+								ADD PRIMARY KEY (quester_provider, quester_identifier, quest_id)
+							""".formatted(QUESTS_DATAS_TABLE));
+					// we cannot modify a column and drop it in the same alter statement
+					statement.execute("""
+							ALTER TABLE %1$s
+								DROP COLUMN id,
+								DROP COLUMN account_id
+							""".formatted(QUESTS_DATAS_TABLE));
 					QuestsPlugin.getPlugin().getLoggerExpanded()
 							.info("Updated database by changing layout of the quests data table.");
 				}
 			});
 
 			// TODO upgrade pools
+
+			// TODO delete id column of questers once everything is migrated
 		}
 	}
 

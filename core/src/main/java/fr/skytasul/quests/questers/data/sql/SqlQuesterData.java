@@ -21,6 +21,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Types;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.OptionalInt;
 import java.util.OptionalLong;
@@ -53,9 +54,14 @@ public class SqlQuesterData extends AbstractQuesterDataImplementation {
 
 			while (result.next()) {
 				int questId = result.getInt("quest_id");
-				var questData = new QuestData(questId);
-				questData.load(result);
-				super.questData.put(questId, questData);
+				try {
+					var questData = new QuestData(questId);
+					questData.load(result);
+					super.questData.put(questId, questData);
+				} catch (Exception ex) {
+					QuestsPlugin.getPlugin().getLoggerExpanded().severe("Failed to load quester {} data for quest {}", ex,
+							identifier, questId);
+				}
 			}
 		}
 
@@ -159,9 +165,17 @@ public class SqlQuesterData extends AbstractQuesterDataImplementation {
 			super.startingTime = readOptionalLong(result, "starting_time");
 
 			String flow = result.getString("quest_flow");
-			if (flow != null)
-				for (String flowPart : flow.split(";"))
-					super.questFlow.add(getQuest().getBranchesManager().getStageFromFlow(flowPart));
+			if (flow != null && !flow.isEmpty() && getQuest() != null)
+				for (String flowPart : flow.split(";")) {
+					try {
+						StageController stageFlow = getQuest().getBranchesManager().getStageFromFlow(flowPart);
+						super.questFlow.add(stageFlow);
+					} catch (IllegalArgumentException ex) {
+						QuestsPlugin.getPlugin().getLoggerExpanded().severe(
+								"Cannot find a part of the quest flow for quester {}, quest {}: {}", ex, identifier, questID,
+								flowPart);
+					}
+				}
 
 			String state = result.getString("state");
 			if (state == null)
@@ -186,12 +200,12 @@ public class SqlQuesterData extends AbstractQuesterDataImplementation {
 				// TODO remove migration 2.0
 
 				var stageDataPattern = Pattern.compile("stage(\\d+)");
-				for (var entry : super.additionalData.entrySet()) {
+				for (var entry : new HashMap<>(super.additionalData).entrySet()) {
 					var matcher = stageDataPattern.matcher(entry.getKey());
 					if (matcher.matches()) {
 						if (entry.getValue() instanceof Map data) {
-							super.setAdditionalData(entry.getKey(), null);
-							super.setStageDatas(Integer.parseInt(matcher.group(1)), data);
+							this.setAdditionalData(entry.getKey(), null);
+							this.setStageDatas(Integer.parseInt(matcher.group(1)), data);
 						} else {
 							throw new DataLoadingException("Data in wrong format");
 						}
@@ -284,7 +298,8 @@ public class SqlQuesterData extends AbstractQuesterDataImplementation {
 		}
 
 		protected void setDataInStatement(StatementSetter setter, String column) {
-			// TODO rework: data can be set out of order, and thus consistency is dead
+			// This relies on the fact that [dataManager.getDataExecutor] works as a FIFO.
+			// Otherwise, data can be set out of order, and thus consistency is dead
 			// (e.g. data is modified back to back and the old data is set last)
 			dataManager.getDataExecutor().execute(() -> {
 				try (var connection = dataManager.getDbConnection();
