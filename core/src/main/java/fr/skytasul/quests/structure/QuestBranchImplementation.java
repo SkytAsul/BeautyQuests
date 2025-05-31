@@ -196,7 +196,7 @@ public class QuestBranchImplementation implements QuestBranch {
 		if (datas.getBranch().orElse(-1) != getId()
 				|| (isInStageEnd(datas) && !isEndingStage(stage))
 				|| (!isInStageEnd(datas) && datas.getStage().orElse(-1) != getRegularStageId(stage))) {
-			QuestsPlugin.getPlugin().getLoggerExpanded().warningArgs(
+			QuestsPlugin.getPlugin().getLoggerExpanded().warning(
 					"Trying to finish stage {} for {} but was not in progress.", stage, quester.getDetailedName());
 			return;
 		}

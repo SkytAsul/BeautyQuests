@@ -115,7 +115,7 @@ public abstract class NMS{
 			return (NMS) Class.forName("fr.skytasul.quests.utils.nms.v" + version).getDeclaredConstructor().newInstance();
 		} catch (ClassNotFoundException __) {
 			QuestsPlugin.getPlugin().getLoggerExpanded()
-					.warningArgs("The Minecraft version {0} is not supported by BeautyQuests.", version);
+					.warning("The Minecraft version {0} is not supported by BeautyQuests.", version);
 		} catch (Exception ex) {
 			QuestsPlugin.getPlugin().getLoggerExpanded()
 					.severe("An error ocurred when loading Minecraft Server version {0} compatibilities.", ex, version);

@@ -72,7 +72,7 @@ public abstract class AbstractCountableStage<T> extends AbstractStage implements
 			remaining.forEach((key, amount) -> {
 				UUID uuid = uuidFromLegacyIndex((Integer) key);
 				if (!getObject(uuid).isPresent()) {
-					QuestsPlugin.getPlugin().getLoggerExpanded().warningArgs(
+					QuestsPlugin.getPlugin().getLoggerExpanded().warning(
 							"Cannot migrate {} data for stage {} as there is no migrated data for object {}",
 									quester.getDetailedName(), toString(), key);
 				}

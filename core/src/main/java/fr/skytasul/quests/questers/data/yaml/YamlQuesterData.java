@@ -115,6 +115,13 @@ public class YamlQuesterData extends AbstractQuesterDataImplementation {
 		return data;
 	}
 
+	protected QuesterPoolData removePoolDataSilently(int poolId) {
+		QuesterPoolData data = super.poolData.remove(poolId);
+		if (data != null)
+			data.remove();
+		return data;
+	}
+
 	@Override
 	public void save() throws DataSavingException {
 		try {

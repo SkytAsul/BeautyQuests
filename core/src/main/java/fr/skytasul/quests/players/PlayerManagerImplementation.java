@@ -109,7 +109,7 @@ public class PlayerManagerImplementation implements PlayersManager, Listener {
 							Bukkit.getPluginManager().callEvent(new QuesterJoinEvent(quester, player, isCreation));
 						} else {
 							QuestsPlugin.getPlugin().getLoggerExpanded()
-									.warningArgs("{} has left the server while loading its data.", player.getName());
+									.warning("{} has left the server while loading its data.", player.getName());
 
 							if (isCreation) {
 								// TODO remove quester

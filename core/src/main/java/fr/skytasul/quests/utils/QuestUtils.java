@@ -127,7 +127,7 @@ public final class QuestUtils {
 		if (xsoundOpt.isPresent())
 			return xsoundOpt.get().record();
 
-		QuestsPlugin.getPlugin().getLoggerExpanded().warningArgs("Cannot find sound {0}", sound);
+		QuestsPlugin.getPlugin().getLoggerExpanded().warning("Cannot find sound {0}", sound);
 		return new XSound.Record().withSound(sound);
 	}
 
@@ -139,7 +139,7 @@ public final class QuestUtils {
 		if (xsoundOpt.isPresent() && xsoundOpt.get().isSupported())
 			return Optional.of(Key.key(xsoundOpt.get().get().getKey().toString()));
 
-		QuestsPlugin.getPlugin().getLoggerExpanded().warningArgs("Cannot find sound {0}", sound);
+		QuestsPlugin.getPlugin().getLoggerExpanded().warning("Cannot find sound {0}", sound);
 		return Optional.empty();
 	}
 

@@ -51,8 +51,7 @@ public class LoggerExpanded {
 		}
 	}
 
-	// TODO rename following method to "warning" after fixing above calls
-	public void warningArgs(@Nullable String msg, Object... args) {
+	public void warning(@Nullable String msg, Object... args) {
 		logger.log(Level.WARNING, msg, args);
 	}
 

@@ -70,7 +70,7 @@ public class YamlDataManager implements QuesterDataManager {
 			QuestsPlugin.getPlugin().getLoggerExpanded().debug("{} quester identifiers loaded", integerIndex.size());
 
 			if (integerIndex.size() >= ACCOUNTS_THRESHOLD)
-				QuestsPlugin.getPlugin().getLoggerExpanded().warningArgs(
+				QuestsPlugin.getPlugin().getLoggerExpanded().warning(
 						"""
 								⚠ WARNING - {} players are registered on this server.
 								It is recommended to switch to an SQL database setup in order to keep proper performances and scalability.
@@ -130,7 +130,7 @@ public class YamlDataManager implements QuesterDataManager {
 						if (cachedData.get(dataId).removeQuestDataSilently(questId) != null)
 							amount++;
 					} else {
-						var data = new YamlQuesterData(questId, this);
+						var data = new YamlQuesterData(dataId, this);
 						if (data.removeQuestDataSilently(questId) != null) {
 							amount++;
 							data.save();
@@ -147,8 +147,28 @@ public class YamlDataManager implements QuesterDataManager {
 
 	@Override
 	public CompletableFuture<Integer> resetPoolData(int poolId) {
-		// TODO
-		return null;
+		return CompletableFuture.supplyAsync(() -> {
+			int amount = 0;
+			for (FullIdentifier identifier : integerIndex.keySet()) {
+				int dataId = integerIndex.get(identifier);
+				try {
+					if (cachedData.containsKey(dataId)) {
+						if (cachedData.get(dataId).removePoolDataSilently(poolId) != null)
+							amount++;
+					} else {
+						var data = new YamlQuesterData(dataId, this);
+						if (data.removePoolDataSilently(poolId) != null) {
+							amount++;
+							data.save();
+						}
+					}
+				} catch (DataSavingException ex) {
+					QuestsPlugin.getPlugin().getLoggerExpanded().severe("Failed to reset pool {} data for {}", ex, poolId,
+							identifier);
+				}
+			}
+			return amount;
+		});
 	}
 
 	@Override

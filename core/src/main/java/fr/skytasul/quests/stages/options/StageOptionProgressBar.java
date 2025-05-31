@@ -156,7 +156,7 @@ public class StageOptionProgressBar<T extends AbstractStage & HasProgress> exten
 				float progress = (totalAmount - playerRemaining) * 1F / totalAmount;
 				bar.progress(progress);
 			} else
-				QuestsPlugin.getPlugin().getLoggerExpanded().warningArgs(
+				QuestsPlugin.getPlugin().getLoggerExpanded().warning(
 						"Amount of objects invalid in {} for player {}: {}/{}",
 						progress.getController(), quester.getFriendlyName(), playerRemaining, totalAmount);
 
