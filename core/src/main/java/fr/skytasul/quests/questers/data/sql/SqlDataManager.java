@@ -109,8 +109,18 @@ public class SqlDataManager implements QuesterDataManager {
 
 	@Override
 	public CompletableFuture<Integer> resetPoolData(int poolId) {
-		// TODO
-		return null;
+		return CompletableFuture.supplyAsync(() -> {
+			try (var connection = getDbConnection();
+					var statement = connection.prepareStatement(sqlHandler.removeExistingPoolDatas)) {
+				statement.setInt(1, poolId);
+				int amount = statement.executeUpdate();
+				QuestsPlugin.getPlugin().getLoggerExpanded().debug("Removed {} in-database data for pool {}.",
+						amount, poolId);
+				return amount;
+			} catch (SQLException ex) {
+				throw new CompletionException(ex);
+			}
+		}, dataExecutor);
 	}
 
 	@Override

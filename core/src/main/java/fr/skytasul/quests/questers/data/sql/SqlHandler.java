@@ -14,17 +14,14 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.Collectors;
 
-// TODO rename class, rename tables, rename fields
 public class SqlHandler {
 
-	public final String ACCOUNTS_TABLE;
+	public final String QUESTERS_TABLE;
 	public final String QUESTS_DATAS_TABLE;
 	public final String POOLS_DATAS_TABLE;
-
-	String getAccountDatas;
-	String resetAccountDatas;
 
 	/* Accounts statements */
 	String getQuesterData;
@@ -36,32 +33,20 @@ public class SqlHandler {
 	String insertQuestData;
 	String removeQuestData;
 	String getQuestsData;
-
 	String removeExistingQuestDatas;
-	String removeExistingPoolDatas;
-
-	String updateFinished;
-	String updateTimer;
-	String updateBranch;
-	String updateStage;
-	String updateDatas;
-	String updateFlow;
 
 	/* Pool datas statements */
 	String insertPoolData;
 	String removePoolData;
-	String getPoolData;
-	String getPoolAccountData;
-
-	String updatePoolLastGive;
-	String updatePoolCompletedQuests;
+	String getPoolsData;
+	String removeExistingPoolDatas;
 
 	private final Database db;
 
 	public SqlHandler(@NotNull Database db) {
 		this.db = db;
 
-		ACCOUNTS_TABLE = db.getConfig().getTables().getString("questers");
+		QUESTERS_TABLE = db.getConfig().getTables().getString("questers");
 		QUESTS_DATAS_TABLE = db.getConfig().getTables().getString("questers quests");
 		POOLS_DATAS_TABLE = db.getConfig().getTables().getString("questers pools");
 	}
@@ -72,7 +57,7 @@ public class SqlHandler {
 
 	public void createTables(@NotNull QuesterManager questerManager) throws SQLException {
 		try (Connection connection = db.getConnection(); Statement statement = connection.createStatement()) {
-			statement.execute("CREATE TABLE IF NOT EXISTS " + ACCOUNTS_TABLE + " ("
+			statement.execute("CREATE TABLE IF NOT EXISTS " + QUESTERS_TABLE + " ("
 					+ " provider VARCHAR(255) NOT NULL ,"
 					+ " identifier VARCHAR(255) NOT NULL ,"
 					+ questerManager.getSavableData().stream()
@@ -80,34 +65,42 @@ public class SqlHandler {
 							.collect(Collectors.joining(" , ", " ", " ,"))
 					+ " PRIMARY KEY (provider, identifier)"
 					+ " )");
-			statement.execute("CREATE TABLE IF NOT EXISTS " + QUESTS_DATAS_TABLE + " (" +
-					" quester_provider VARCHAR(255) NOT NULL," +
-					" quester_identifier VARCHAR(255) NOT NULL," +
-					" quest_id INT NOT NULL," +
-					" finished INT NOT NULL DEFAULT 0," +
-					" timer BIGINT DEFAULT NULL," +
-					" current_branch SMALLINT DEFAULT NULL," +
-					" current_stage SMALLINT DEFAULT NULL," +
-					" starting_time BIGINT DEFAULT NULL," +
-					" stage_data " + db.getType().getLongTextType() + " DEFAULT NULL," +
-					" additional_datas " + db.getType().getLongTextType() + " DEFAULT NULL," +
-					" state VARCHAR(60) DEFAULT 'NOT_STARTED'," +
-					" quest_flow VARCHAR(8000) DEFAULT NULL," +
-					" PRIMARY KEY (quester_provider, quester_identifier, quest_id)" +
-					")");
-			statement.execute("CREATE TABLE IF NOT EXISTS " + POOLS_DATAS_TABLE + " ("
-					+ " id " + db.getType().getSerialType() + " ,"
-					+ "account_id INT NOT NULL, "
-					+ "pool_id INT NOT NULL, "
-					+ "last_give BIGINT DEFAULT NULL, "
-					+ "completed_quests VARCHAR(1000) DEFAULT NULL, "
-					+ "PRIMARY KEY (id)"
-					+ ")");
+			statement.execute("""
+					CREATE TABLE IF NOT EXISTS %s (
+						quester_provider VARCHAR(255) NOT NULL,
+						quester_identifier VARCHAR(255) NOT NULL,
+						quest_id INT NOT NULL,
+						finished INT NOT NULL DEFAULT 0,
+						timer BIGINT DEFAULT NULL,
+						current_branch SMALLINT DEFAULT NULL,
+						current_stage SMALLINT DEFAULT NULL,
+						starting_time BIGINT DEFAULT NULL,
+						stage_data %2$s DEFAULT NULL,
+						additional_datas %2$s DEFAULT NULL,
+						state VARCHAR(60) DEFAULT 'NOT_STARTED',
+						quest_flow VARCHAR(8000) DEFAULT NULL,
+						PRIMARY KEY (quester_provider, quester_identifier, quest_id)
+					)
+					""".formatted(QUESTS_DATAS_TABLE, db.getType().getLongTextType()));
+			statement.execute("""
+					CREATE TABLE IF NOT EXISTS %s (
+						quester_provider VARCHAR(255) NOT NULL,
+						quester_identifier VARCHAR(255) NOT NULL,
+						pool_id INT NOT NULL,
+						last_give BIGINT DEFAULT NULL,
+						completed_quests VARCHAR(1000) DEFAULT NULL,
+						PRIMARY KEY (quester_provider, quester_identifier, pool_id)
+					)
+					""".formatted(POOLS_DATAS_TABLE));
 
-			upgradeTable(connection, ACCOUNTS_TABLE, columns -> {
+			var questersHasId = new AtomicBoolean(false);
+			var questsHasId = new AtomicBoolean(false);
+			var poolsHasId = new AtomicBoolean(false);
+
+			upgradeTable(connection, QUESTERS_TABLE, columns -> {
 				for (SavableData<?> data : questerManager.getSavableData()) {
 					if (!columns.contains(data.getColumnName().toLowerCase())) {
-						statement.execute("ALTER TABLE %s ADD COLUMN %s".formatted(ACCOUNTS_TABLE,
+						statement.execute("ALTER TABLE %s ADD COLUMN %s".formatted(QUESTERS_TABLE,
 								SQLDataSaver.getColumnDefinition(data)));
 						QuestsPlugin.getPlugin().getLoggerExpanded().info(
 								"Updated database by adding the missing {} column in the player accounts table.",
@@ -128,14 +121,16 @@ public class SqlHandler {
 								ADD COLUMN provider VARCHAR(255) NOT NULL,
 								MODIFY COLUMN identifier VARCHAR(255) NOT NULL,
 								ADD PRIMARY KEY (provider, identifier)
-							""".formatted(ACCOUNTS_TABLE));
-					statement.execute("UPDATE %s SET provider = '%s'".formatted(ACCOUNTS_TABLE,
+							""".formatted(QUESTERS_TABLE));
+					statement.execute("UPDATE %s SET provider = '%s'".formatted(QUESTERS_TABLE,
 							PlayerManagerImplementation.KEY.asString()));
 
 					QuestsPlugin.getPlugin().getLoggerExpanded()
 							.info("Updated database by changing layout of the questers table.");
 				}
 
+				if (columns.contains("id"))
+					questersHasId.set(true);
 			});
 
 			upgradeTable(connection, QUESTS_DATAS_TABLE, columns -> {
@@ -158,7 +153,7 @@ public class SqlHandler {
 							UPDATE %1$s AS quests
 								INNER JOIN %2$s AS questers ON quests.account_id = questers.id
 							SET quests.quester_identifier = questers.identifier
-							""".formatted(QUESTS_DATAS_TABLE, ACCOUNTS_TABLE));
+							""".formatted(QUESTS_DATAS_TABLE, QUESTERS_TABLE));
 					statement.execute("""
 							ALTER TABLE %1$s
 								MODIFY COLUMN id int(11) NOT NULL,
@@ -174,11 +169,54 @@ public class SqlHandler {
 					QuestsPlugin.getPlugin().getLoggerExpanded()
 							.info("Updated database by changing layout of the quests data table.");
 				}
+
+				if (columns.contains("account_id"))
+					questsHasId.set(true);
 			});
 
-			// TODO upgrade pools
+			upgradeTable(connection, POOLS_DATAS_TABLE, columns -> {
+				if (columns.contains("account_id")) {
+					// 2.0
+					statement.execute("""
+							ALTER TABLE %1$s
+								ADD COLUMN quester_provider VARCHAR(225) NOT NULL,
+								ADD COLUMN quester_identifier VARCHAR(255) NOT NULL
+							""".formatted(POOLS_DATAS_TABLE));
+					statement.execute("UPDATE %s SET quester_identifier = 'migration', quester_provider = '%s'"
+							.formatted(QUESTS_DATAS_TABLE, PlayerManagerImplementation.KEY.asString()));
+					statement.execute("""
+							UPDATE %1$s AS pools
+								INNER JOIN %2$s AS questers ON pools.account_id = questers.id
+							SET pools.quester_identifier = questers.identifier
+							""".formatted(POOLS_DATAS_TABLE, QUESTERS_TABLE));
+					statement.execute("""
+							ALTER TABLE %1$s
+								MODIFY COLUMN id int(11) NOT NULL,
+								DROP PRIMARY KEY,
+								ADD PRIMARY KEY (quester_provider, quester_identifier, pool_id)
+							""".formatted(POOLS_DATAS_TABLE));
+					// we cannot modify a column and drop it in the same alter statement
+					statement.execute("""
+							ALTER TABLE %1$s
+								DROP COLUMN id,
+								DROP COLUMN account_id
+							""".formatted(POOLS_DATAS_TABLE));
+					QuestsPlugin.getPlugin().getLoggerExpanded()
+							.info("Updated database by changing layout of the pools data table.");
+				}
 
-			// TODO delete id column of questers once everything is migrated
+				if (columns.contains("account_id"))
+					poolsHasId.set(true);
+			});
+
+			if (questersHasId.get()) {
+				if (questsHasId.get() || poolsHasId.get()) {
+					QuestsPlugin.getPlugin().getLoggerExpanded().warning(
+							"Cannot remove unnecessary column 'id' in questers DB table. This is a bug and should be reported.");
+				} else {
+					statement.execute("ALTER TABLE %s DROP COLUMN id".formatted(QUESTERS_TABLE));
+				}
+			}
 		}
 	}
 
@@ -198,33 +236,34 @@ public class SqlHandler {
 	}
 
 	protected void initializeStatements() {
-		getQuesterData = "SELECT * FROM " + ACCOUNTS_TABLE + " WHERE provider = ? AND identifier = ?";
-		setQuesterAdditionalData = "UPDATE " + ACCOUNTS_TABLE + " SET %s = ? WHERE provider = ? AND identifier = ?";
-		insertAccount = "INSERT INTO " + ACCOUNTS_TABLE + " (provider, identifier) VALUES (?, ?)";
-		deleteAccount = "DELETE FROM " + ACCOUNTS_TABLE + " WHERE provider = ? AND identifier = ?";
+		getQuesterData = "SELECT * FROM " + QUESTERS_TABLE + " WHERE provider = ? AND identifier = ?";
+		setQuesterAdditionalData = "UPDATE " + QUESTERS_TABLE + " SET %s = ? WHERE provider = ? AND identifier = ?";
+		insertAccount = "INSERT INTO " + QUESTERS_TABLE + " (provider, identifier) VALUES (?, ?)";
+		deleteAccount = "DELETE FROM " + QUESTERS_TABLE + " WHERE provider = ? AND identifier = ?";
 
 		insertQuestData =
 				"INSERT INTO " + QUESTS_DATAS_TABLE + " (quester_provider, quester_identifier, quest_id) VALUES (?, ?, ?)";
 		removeQuestData = "DELETE FROM " + QUESTS_DATAS_TABLE
 				+ " WHERE quester_provider = ? AND quester_identifier = ? AND quest_id = ?";
 		getQuestsData = "SELECT * FROM " + QUESTS_DATAS_TABLE + " WHERE quester_provider = ? AND quester_identifier = ?";
-
 		removeExistingQuestDatas = "DELETE FROM " + QUESTS_DATAS_TABLE + " WHERE quest_id = ?";
+
+		insertPoolData =
+				"INSERT INTO " + POOLS_DATAS_TABLE + " (quester_provider, quester_identifier, pool_id) VALUES (?, ?, ?)";
+		removePoolData = "DELETE FROM " + POOLS_DATAS_TABLE
+				+ " WHERE quester_provider = ? AND quester_identifier = ? AND pool_id = ?";
+		getPoolsData = "SELECT * FROM " + POOLS_DATAS_TABLE + " WHERE quester_provider = ? AND quester_identifier = ?";
 		removeExistingPoolDatas = "DELETE FROM " + POOLS_DATAS_TABLE + " WHERE pool_id = ?";
-
-		insertPoolData = "INSERT INTO " + POOLS_DATAS_TABLE + " (account_id, pool_id) VALUES (?, ?)";
-		removePoolData = "DELETE FROM " + POOLS_DATAS_TABLE + " WHERE account_id = ? AND pool_id = ?";
-		getPoolData = "SELECT * FROM " + POOLS_DATAS_TABLE + " WHERE account_id = ?";
-		getPoolAccountData = "SELECT 1 FROM " + POOLS_DATAS_TABLE + " WHERE account_id = ? AND pool_id = ?";
-
-		updatePoolLastGive = "UPDATE " + POOLS_DATAS_TABLE + " SET last_give = ? WHERE account_id = ? AND pool_id = ?";
-		updatePoolCompletedQuests =
-				"UPDATE " + POOLS_DATAS_TABLE + " SET completed_quests = ? WHERE account_id = ? AND pool_id = ?";
 	}
 
 	public String getQuestDataStatement(String column) {
 		return "UPDATE %s SET %s = ? WHERE quester_provider = ? AND quester_identifier = ? AND quest_id = ?"
 				.formatted(QUESTS_DATAS_TABLE, column);
+	}
+
+	public String getPoolDataStatement(String column) {
+		return "UPDATE %s SET %s = ? WHERE quester_provider = ? AND quester_identifier = ? AND pool_id = ?"
+				.formatted(POOLS_DATAS_TABLE, column);
 	}
 
 }

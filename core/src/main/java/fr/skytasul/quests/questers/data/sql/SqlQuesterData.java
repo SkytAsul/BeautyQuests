@@ -13,6 +13,7 @@ import fr.skytasul.quests.api.quests.Quest;
 import fr.skytasul.quests.api.stages.StageController;
 import fr.skytasul.quests.api.utils.CustomizedObjectTypeAdapter;
 import fr.skytasul.quests.questers.AbstractQuesterDataImplementation;
+import fr.skytasul.quests.questers.AbstractQuesterPoolDataImplementation;
 import fr.skytasul.quests.questers.AbstractQuesterQuestDataImplementation;
 import net.kyori.adventure.key.Key;
 import org.jetbrains.annotations.NotNull;
@@ -21,10 +22,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Types;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.OptionalInt;
-import java.util.OptionalLong;
+import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionException;
 import java.util.regex.Pattern;
@@ -64,8 +62,23 @@ public class SqlQuesterData extends AbstractQuesterDataImplementation {
 				}
 			}
 		}
+		try (var connection = dataManager.getDbConnection();
+				var statement = connection.prepareStatement(dataManager.getSqlHandler().getPoolsData)) {
+			fillInIdentifier(statement, 1);
+			result = statement.executeQuery();
 
-		// TODO pools
+			while (result.next()) {
+				int poolId = result.getInt("pool_id");
+				try {
+					var poolData = new PoolData(poolId);
+					poolData.load(result);
+					super.poolData.put(poolId, poolData);
+				} catch (Exception ex) {
+					QuestsPlugin.getPlugin().getLoggerExpanded().severe("Failed to load quester {} data for pool {}", ex,
+							identifier, poolId);
+				}
+			}
+		}
 	}
 
 	@Override
@@ -97,7 +110,19 @@ public class SqlQuesterData extends AbstractQuesterDataImplementation {
 
 	@Override
 	protected QuesterPoolData createPoolData(@NotNull QuestPool pool) {
-		return null;
+		dataManager.getDataExecutor().execute(() -> {
+			try (var connection = dataManager.getDbConnection();
+					var statement = connection.prepareStatement(dataManager.getSqlHandler().insertPoolData)) {
+				int i = 1;
+				i = fillInIdentifier(statement, i);
+				statement.setInt(i++, pool.getId());
+				statement.executeUpdate();
+			} catch (SQLException ex) {
+				QuestsPlugin.getPlugin().getLoggerExpanded().severe(
+						"An error occurred while creating pool {} data for {}", ex, pool.getId(), identifier);
+			}
+		});
+		return new PoolData(pool.getId());
 	}
 
 	@Override
@@ -313,6 +338,68 @@ public class SqlQuesterData extends AbstractQuesterDataImplementation {
 				} catch (SQLException ex) {
 					QuestsPlugin.getPlugin().getLoggerExpanded().severe(
 							"An error occurred while updating {} for {} in quest {}", ex, column, identifier, questID);
+				}
+			});
+		}
+
+	}
+
+	class PoolData extends AbstractQuesterPoolDataImplementation {
+
+		public PoolData(int poolId) {
+			super(poolId);
+		}
+
+		protected void load(ResultSet result) throws SQLException, DataLoadingException {
+			super.lastGive = result.getLong("last_give");
+
+			String completed = result.getString("completed_quests");
+			if (completed != null && !completed.isEmpty())
+				this.completedQuests =
+						Arrays.stream(completed.split(";")).map(Integer::parseInt).collect(Collectors.toSet());
+		}
+
+		@Override
+		public @NotNull CompletableFuture<Void> remove() {
+			return CompletableFuture.runAsync(() -> {
+				try (var connection = dataManager.getDbConnection();
+						var statement = connection.prepareStatement(dataManager.getSqlHandler().removePoolData)) {
+					int i = 1;
+					i = fillInIdentifier(statement, i);
+					statement.setInt(i++, poolId);
+					statement.executeUpdate();
+				} catch (SQLException ex) {
+					throw new CompletionException(ex);
+				}
+			}, dataManager.getDataExecutor());
+		}
+
+		@Override
+		public void setLastGive(long lastGive) {
+			super.setLastGive(lastGive);
+			setDataInStatement((statement, i) -> statement.setLong(i, lastGive), "last_give");
+		}
+
+		@Override
+		public void setCompletedQuests(Set<Integer> completedQuests) {
+			super.setCompletedQuests(completedQuests);
+			var completedQuestsStr = completedQuests.stream().map(String::valueOf).collect(Collectors.joining(";"));
+			setDataInStatement((statement, i) -> statement.setString(i, completedQuestsStr), "completed_quests");
+		}
+
+		protected void setDataInStatement(StatementSetter setter, String column) {
+			dataManager.getDataExecutor().execute(() -> {
+				try (var connection = dataManager.getDbConnection();
+						var statement =
+								connection.prepareStatement(dataManager.getSqlHandler().getPoolDataStatement(column))) {
+					int i = 1;
+					setter.accept(statement, i++);
+					i = fillInIdentifier(statement, i);
+					statement.setInt(i++, poolId);
+					statement.executeUpdate();
+				} catch (SQLException ex) {
+					QuestsPlugin.getPlugin().getLoggerExpanded().severe(
+							"An error occurred while updating {} for {} in pool {}", ex, column, identifier, poolId);
 				}
 			});
 		}
