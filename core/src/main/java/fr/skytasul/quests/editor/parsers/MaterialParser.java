@@ -4,7 +4,6 @@ import com.cryptomorin.xseries.XMaterial;
 import fr.skytasul.quests.api.editors.parsers.AbstractParser;
 import fr.skytasul.quests.api.localization.Lang;
 import fr.skytasul.quests.api.utils.MinecraftVersion;
-import fr.skytasul.quests.utils.compatibility.Post1_13;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 
@@ -31,12 +30,12 @@ public class MaterialParser implements AbstractParser<XMaterial> {
 			}
 		}
 		if (item) {
-			if (MinecraftVersion.MAJOR >= 13 && !Post1_13.isItem(tmp.parseMaterial())) {
+			if (MinecraftVersion.MAJOR >= 13 && !tmp.parseMaterial().isItem()) {
 				Lang.INVALID_ITEM_TYPE.send(p);
 				return null;
 			}
 		}else if (block) {
-			if (MinecraftVersion.MAJOR >= 13 && !Post1_13.isBlock(tmp.parseMaterial())) {
+			if (MinecraftVersion.MAJOR >= 13 && !tmp.parseMaterial().isBlock()) {
 				Lang.INVALID_BLOCK_TYPE.send(p);
 				return null;
 			}

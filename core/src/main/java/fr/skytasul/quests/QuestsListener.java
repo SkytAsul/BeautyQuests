@@ -30,6 +30,7 @@ import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.inventory.CraftItemEvent;
+import org.bukkit.event.inventory.SmithItemEvent;
 import org.bukkit.event.player.PlayerDropItemEvent;
 import org.bukkit.event.player.PlayerItemConsumeEvent;
 import org.bukkit.inventory.ComplexRecipe;
@@ -210,6 +211,12 @@ public class QuestsListener implements Listener{
 		}
 
 		Bukkit.getPluginManager().callEvent(new BQCraftEvent(e, item, maxCraftAmount));
+	}
+
+	@EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
+	public void onSmith(SmithItemEvent event) {
+		Bukkit.getPluginManager()
+				.callEvent(new BQCraftEvent(event, event.getCurrentItem(), event.getCurrentItem().getAmount()));
 	}
 
 }

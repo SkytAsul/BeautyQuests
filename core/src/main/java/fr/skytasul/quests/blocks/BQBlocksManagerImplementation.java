@@ -11,8 +11,6 @@ import fr.skytasul.quests.api.stages.types.Locatable;
 import fr.skytasul.quests.api.stages.types.Locatable.Located;
 import fr.skytasul.quests.api.stages.types.Locatable.Located.LocatedBlock;
 import fr.skytasul.quests.api.stages.types.Locatable.LocatedType;
-import fr.skytasul.quests.api.utils.MinecraftVersion;
-import fr.skytasul.quests.utils.compatibility.Post1_13;
 import org.bukkit.Bukkit;
 import org.bukkit.block.Block;
 import org.bukkit.block.data.BlockData;
@@ -36,13 +34,11 @@ public class BQBlocksManagerImplementation implements BQBlocksManager {
 		materialType = (string, options) -> new BQBlockMaterial(options, XMaterial.valueOf(string));
 		registerBlockType("", materialType);
 
-		if (MinecraftVersion.MAJOR >= 13) {
-			blockdataType = (string, options) -> new Post1_13.BQBlockData(options, Bukkit.createBlockData(string));
-			registerBlockType("blockdata", blockdataType);
+		blockdataType = (string, options) -> new BQBlockData(options, Bukkit.createBlockData(string));
+		registerBlockType("blockdata", blockdataType);
 
-			tagType = (string, options) -> new Post1_13.BQBlockTag(options, string);
-			registerBlockType("tag", tagType);
-		}
+		tagType = (string, options) -> new BQBlockTag(options, string);
+		registerBlockType("tag", tagType);
 	}
 
 	@Override
@@ -158,11 +154,11 @@ public class BQBlocksManagerImplementation implements BQBlocksManager {
 	}
 
 	public @NotNull BQBlock createBlockdata(@NotNull BlockData blockData, @Nullable String customName) {
-		return new Post1_13.BQBlockData(new BQBlockOptions(blockdataType, customName), blockData);
+		return new BQBlockData(new BQBlockOptions(blockdataType, customName), blockData);
 	}
 
 	public @NotNull BQBlock createTag(@NotNull String tag, @Nullable String customName) {
-		return new Post1_13.BQBlockTag(new BQBlockOptions(tagType, customName), tag);
+		return new BQBlockTag(new BQBlockOptions(tagType, customName), tag);
 	}
 
 }

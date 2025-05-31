@@ -10,7 +10,6 @@ import fr.skytasul.quests.api.gui.GuiManager;
 import fr.skytasul.quests.api.localization.Lang;
 import fr.skytasul.quests.api.localization.Locale;
 import fr.skytasul.quests.api.utils.IntegrationManager;
-import fr.skytasul.quests.api.utils.MinecraftVersion;
 import fr.skytasul.quests.api.utils.logger.LoggerExpanded;
 import fr.skytasul.quests.commands.CommandsManagerImplementation;
 import fr.skytasul.quests.editor.EditorManagerImplementation;
@@ -30,7 +29,6 @@ import fr.skytasul.quests.structure.pools.QuestPoolsManagerImplementation;
 import fr.skytasul.quests.utils.Database;
 import fr.skytasul.quests.utils.compatibility.InternalIntegrations;
 import fr.skytasul.quests.utils.compatibility.Paper;
-import fr.skytasul.quests.utils.compatibility.Post1_16;
 import fr.skytasul.quests.utils.logger.BqLoggerHandler;
 import fr.skytasul.quests.utils.nms.NMS;
 import net.kyori.adventure.platform.bukkit.BukkitAudiences;
@@ -187,8 +185,6 @@ public class BeautyQuests extends JavaPlugin implements QuestsPlugin {
 								+ (((double) System.currentTimeMillis() - lastMillis) / 1000D) + "s)!");
 
 						getServer().getPluginManager().registerEvents(new QuestsListener(), BeautyQuests.this);
-						if (MinecraftVersion.MAJOR >= 16)
-							getServer().getPluginManager().registerEvents(new Post1_16(), BeautyQuests.this);
 
 						if (!unitTesting)
 							launchSaveCycle();

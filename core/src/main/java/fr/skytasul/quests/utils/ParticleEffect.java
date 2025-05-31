@@ -1,7 +1,6 @@
 package fr.skytasul.quests.utils;
 
 import fr.skytasul.quests.api.utils.MinecraftVersion;
-import fr.skytasul.quests.utils.compatibility.Post1_13;
 import fr.skytasul.quests.utils.nms.NMS;
 import org.apache.commons.lang.Validate;
 import org.bukkit.Color;
@@ -34,7 +33,7 @@ public class ParticleEffect {
 		this.color = color;
 
 		if (type.dustColored) {
-			dustColor = Post1_13.getDustColor(color, 1);
+			dustColor = new Particle.DustOptions(color, 1);
 			colors = null;
 		}else if (type.colored && bukkitType != Particle.NOTE) {
 			dustColor = null;
@@ -132,7 +131,7 @@ public class ParticleEffect {
 	}
 
 	public static boolean canHaveColor(Particle particle) {
-		if (MinecraftVersion.MAJOR >= 13) return particle.getDataType() == Post1_13.getDustOptionClass();
+		if (MinecraftVersion.MAJOR >= 13) return particle.getDataType() == Particle.DustOptions.class;
 		return Arrays.asList("REDSTONE", "SPELL_MOB", "SPELL_MOB_AMBIENT").contains(particle.name());
 	}
 
@@ -153,7 +152,7 @@ public class ParticleEffect {
 				colored = true;
 				dustColored = false;
 			}else if (MinecraftVersion.MAJOR >= 13) {
-				if (particle.getDataType() == Post1_13.getDustOptionClass()) {
+				if (particle.getDataType() == Particle.DustOptions.class) {
 					colored = true;
 					dustColored = true;
 				}else {

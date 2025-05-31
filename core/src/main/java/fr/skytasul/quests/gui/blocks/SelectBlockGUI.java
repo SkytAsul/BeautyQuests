@@ -15,7 +15,6 @@ import fr.skytasul.quests.api.localization.Lang;
 import fr.skytasul.quests.api.options.QuestOption;
 import fr.skytasul.quests.api.utils.MinecraftVersion;
 import fr.skytasul.quests.api.utils.messaging.PlaceholderRegistry;
-import fr.skytasul.quests.utils.compatibility.Post1_13;
 import fr.skytasul.quests.utils.nms.NMS;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
@@ -59,7 +58,7 @@ public class SelectBlockGUI extends LayoutedGUI.LayoutedRowsGUI {
 			@Override
 			public void place(@NotNull Inventory inventory, int slot) {
 				XMaterial mat = type;
-				if (MinecraftVersion.MAJOR >= 13 && !Post1_13.isItem(type.parseMaterial()))
+				if (MinecraftVersion.MAJOR >= 13 && !type.parseMaterial().isItem())
 					mat = XMaterial.STONE;
 				placeInternal(inventory, slot, mat);
 
