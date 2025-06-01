@@ -347,25 +347,7 @@ public class QuestBranchImplementation implements QuestBranch {
 	}
 
 	public boolean load(@NotNull ConfigurationSection section) {
-		ConfigurationSection stagesSection;
-		if (section.isList("stages")) { // TODO migration 0.19.3
-			List<Map<?, ?>> stages = section.getMapList("stages");
-			section.set("stages", null);
-			stagesSection = section.createSection("stages");
-			stages.stream()
-					.sorted((x, y) -> {
-						int xid = (Integer) x.get("order");
-						int yid = (Integer) y.get("order");
-						if (xid < yid) return -1;
-						if (xid > yid) return 1;
-						throw new IllegalArgumentException("Two stages with same order " + xid);
-					}).forEach(branch -> {
-						int order = (Integer) branch.remove("order");
-						stagesSection.createSection(Integer.toString(order), branch);
-					});
-		}else {
-			stagesSection = section.getConfigurationSection("stages");
-		}
+		ConfigurationSection stagesSection = section.getConfigurationSection("stages");
 
 		for (int id : stagesSection.getKeys(false).stream().map(Integer::parseInt).sorted().collect(Collectors.toSet())) {
 			try{
@@ -379,18 +361,7 @@ public class QuestBranchImplementation implements QuestBranch {
 			}
 		}
 
-		ConfigurationSection endingStagesSection = null;
-		if (section.isList("endingStages")) { // TODO migration 0.19.3
-			List<Map<?, ?>> endingStages = section.getMapList("endingStages");
-			section.set("endingStages", null);
-			endingStagesSection = section.createSection("endingStages");
-			int i = 0;
-			for (Map<?, ?> stage : endingStages) {
-				endingStagesSection.createSection(Integer.toString(i++), stage);
-			}
-		}else if (section.contains("endingStages")) {
-			endingStagesSection = section.getConfigurationSection("endingStages");
-		}
+		ConfigurationSection endingStagesSection = section.getConfigurationSection("endingStages");
 
 		if (endingStagesSection != null) {
 			for (String key : endingStagesSection.getKeys(false)) {

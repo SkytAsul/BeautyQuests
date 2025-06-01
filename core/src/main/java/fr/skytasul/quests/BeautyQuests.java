@@ -15,7 +15,6 @@ import fr.skytasul.quests.commands.CommandsManagerImplementation;
 import fr.skytasul.quests.editor.EditorManagerImplementation;
 import fr.skytasul.quests.gui.GuiManagerImplementation;
 import fr.skytasul.quests.npcs.BqNpcManagerImplementation;
-import fr.skytasul.quests.options.OptionAutoQuest;
 import fr.skytasul.quests.players.PlayerManagerImplementation;
 import fr.skytasul.quests.players.accounts.PlayerManagerAccountsHookImplementation;
 import fr.skytasul.quests.questers.QuesterManagerImplementation;
@@ -23,7 +22,6 @@ import fr.skytasul.quests.questers.data.QuesterDataManager;
 import fr.skytasul.quests.questers.data.sql.SqlDataManager;
 import fr.skytasul.quests.questers.data.yaml.YamlDataManager;
 import fr.skytasul.quests.scoreboards.ScoreboardManager;
-import fr.skytasul.quests.structure.QuestImplementation;
 import fr.skytasul.quests.structure.QuestsManagerImplementation;
 import fr.skytasul.quests.structure.pools.QuestPoolsManagerImplementation;
 import fr.skytasul.quests.utils.Database;
@@ -71,6 +69,7 @@ public class BeautyQuests extends JavaPlugin implements QuestsPlugin {
 	/* --------- Storage --------- */
 
 	private String lastVersion;
+	private boolean dontUpdateLastVersion = false;
 	private QuestsConfigurationImplementation config;
 
 	private String loadedLanguage;
@@ -539,13 +538,26 @@ public class BeautyQuests extends JavaPlugin implements QuestsPlugin {
 		data.options().copyHeader(true);
 	}
 
-	private void checkLastVersion() {
+	private void checkLastVersion() throws LoadingException {
 		if (data.contains("version")){
 			lastVersion = data.getString("version");
 			if (!lastVersion.equals(getDescription().getVersion())){
 				logger.info("You are using a new version for the first time. (last version: " + lastVersion + ")");
 
-				// TODO manage incompatible upgrade (e.g. pre-1.0)
+				var matcher = Pattern.compile("^(\\d+)\\.(\\d+)\\.(\\d+)").matcher(lastVersion);
+				if (matcher.find()) {
+					int major = Integer.parseInt(matcher.group(1));
+					int minor = Integer.parseInt(matcher.group(2));
+					// int patch = Integer.parseInt(matcher.group(3));
+					if (major == 0 && minor < 20) {
+						dontUpdateLastVersion = true;
+						throw new LoadingException(
+								"Data migration between %s and %s cannot happen. Please start from a fresh BeautyQuests install."
+										.formatted(lastVersion, getDescription().getVersion()));
+					}
+				} else {
+					logger.warning("Cannot parse last version to ensure data migration is possible.");
+				}
 
 				try {
 					performBackup();
@@ -595,25 +607,6 @@ public class BeautyQuests extends JavaPlugin implements QuestsPlugin {
 			}
 		});
 
-		if (config.firstQuestID != -1) {
-			logger.warning("The config option \"firstQuest\" is present in your config.yml but is now unsupported. Please remove it.");
-			QuestImplementation quest = quests.getQuest(config.firstQuestID);
-			if (quest != null) {
-				if (quest.hasOption(OptionAutoQuest.class)) {
-					OptionAutoQuest option = quest.getOption(OptionAutoQuest.class);
-					if (!option.getValue()) {
-						option.setValue(true);
-						quest.saveToFile();
-					}
-				}else {
-					OptionAutoQuest option = new OptionAutoQuest();
-					option.setValue(true);
-					quest.addOption(option);
-					quest.saveToFile();
-				}
-			}
-		}
-
 		Bukkit.getScheduler().runTaskLater(BeautyQuests.getInstance(), () -> {
 			players.loadOnlinePlayers();
 			loaded = true;
@@ -638,7 +631,8 @@ public class BeautyQuests extends JavaPlugin implements QuestsPlugin {
 		if (loaded) {
 			long time = System.currentTimeMillis();
 			data.set("lastID", quests.getLastID());
-			data.set("version", getDescription().getVersion());
+			if (!dontUpdateLastVersion)
+				data.set("version", getDescription().getVersion());
 
 			try {
 				questerManager.saveAll();

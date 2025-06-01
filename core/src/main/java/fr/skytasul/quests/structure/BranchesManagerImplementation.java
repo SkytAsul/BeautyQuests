@@ -148,25 +148,7 @@ public class BranchesManagerImplementation implements QuestBranchesManager {
 	public static @NotNull BranchesManagerImplementation deserialize(@NotNull ConfigurationSection section, @NotNull QuestImplementation qu) {
 		BranchesManagerImplementation bm = new BranchesManagerImplementation(qu);
 
-		ConfigurationSection branchesSection;
-		if (section.isList("branches")) { // TODO migration 0.19.3
-			List<Map<?, ?>> branches = section.getMapList("branches");
-			section.set("branches", null);
-			branchesSection = section.createSection("branches");
-			branches.stream()
-					.sorted((x, y) -> {
-						int xid = (Integer) x.get("order");
-						int yid = (Integer) y.get("order");
-						if (xid < yid) return -1;
-						if (xid > yid) return 1;
-						throw new IllegalArgumentException("Two branches with same order " + xid);
-					}).forEach(branch -> {
-						int order = (Integer) branch.remove("order");
-						branchesSection.createSection(Integer.toString(order), branch);
-					});
-		}else {
-			branchesSection = section.getConfigurationSection("branches");
-		}
+		ConfigurationSection branchesSection = section.getConfigurationSection("branches");
 
 		// it is needed to first add all branches to branches manager
 		// in order for branching stages to be able to access all branches

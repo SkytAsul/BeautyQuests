@@ -23,7 +23,6 @@ public class QuestDescriptionContext {
 
 	private @Nullable Optional<QuesterQuestData> cachedDatas;
 
-	// TODO integrate Player here because it might be useful for some description providers
 	public QuestDescriptionContext(@NotNull QuestDescription descriptionOptions, @NotNull Quest quest,
 			@Nullable Player player, @NotNull Quester quester, @NotNull PlayerListCategory category,
 			@NotNull DescriptionSource source) {

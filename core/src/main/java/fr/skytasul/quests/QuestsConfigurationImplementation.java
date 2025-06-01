@@ -52,7 +52,6 @@ public class QuestsConfigurationImplementation implements QuestsConfiguration {
 
 	boolean saveCycleMessage = true;
 	int saveCycle = 15;
-	int firstQuestID = -1; // TODO migration 0.19
 
 	private final FileConfiguration config;
 	private QuestsConfig quests;
@@ -106,7 +105,6 @@ public class QuestsConfigurationImplementation implements QuestsConfiguration {
 
 		saveCycle = config.getInt("saveCycle");
 		saveCycleMessage = config.getBoolean("saveCycleMessage");
-		firstQuestID = config.getInt("firstQuest", -1);
 		enablePrefix = config.getBoolean("enablePrefix");
 		disableTextHologram = config.getBoolean("disableTextHologram");
 		showCustomHologramName = config.getBoolean("showCustomHologramName");

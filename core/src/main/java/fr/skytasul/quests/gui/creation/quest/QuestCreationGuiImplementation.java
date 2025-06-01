@@ -246,7 +246,6 @@ public class QuestCreationGuiImplementation extends LayoutedGUI implements Quest
 	}
 
 	private void keepDatas(QuestImplementation qu) {
-		// TODO rework this for questers
 		for (Quester quester : QuestsAPI.getAPI().getQuesterManager().getLoadedQuesters()) {
 			quester.getDataHolder().getQuestDataIfPresent(qu).filter(QuesterQuestData::hasStarted).ifPresent(data -> {
 				var branch = qu.getBranchesManager().getBranch(data.getBranch().getAsInt());
