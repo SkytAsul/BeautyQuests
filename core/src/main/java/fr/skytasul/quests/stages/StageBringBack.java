@@ -13,7 +13,7 @@ import fr.skytasul.quests.api.npcs.dialogs.Message;
 import fr.skytasul.quests.api.npcs.dialogs.Message.Sender;
 import fr.skytasul.quests.api.options.QuestOption;
 import fr.skytasul.quests.api.options.description.DescriptionSource;
-import fr.skytasul.quests.api.players.PlayersManager;
+import fr.skytasul.quests.api.players.PlayerManager;
 import fr.skytasul.quests.api.questers.Quester;
 import fr.skytasul.quests.api.stages.StageController;
 import fr.skytasul.quests.api.stages.StageDescriptionPlaceholdersContext;
@@ -74,7 +74,7 @@ public class StageBringBack extends StageNPC{
 			return;
 
 		Message msg = new Message(MessageUtils.format(text, getPlaceholdersRegistry(), StageDescriptionPlaceholdersContext
-				.of(true, PlayersManager.getPlayerAccount(p), DescriptionSource.FORCELINE, null)), Sender.NPC);
+				.of(true, PlayerManager.getPlayerAccount(p), DescriptionSource.FORCELINE, null)), Sender.NPC);
 		Dialog fakeDialog = new Dialog(Arrays.asList(msg));
 		DialogRunner fakeDialogRunner = new DialogRunnerImplementation(fakeDialog, getNPC());
 		fakeDialogRunner.handleNext(p, DialogNextReason.PLUGIN);

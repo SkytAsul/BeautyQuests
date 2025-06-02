@@ -6,7 +6,7 @@ import fr.skytasul.quests.api.QuestsPlugin;
 import fr.skytasul.quests.api.gui.ItemUtils;
 import fr.skytasul.quests.api.localization.Lang;
 import fr.skytasul.quests.api.options.QuestOption;
-import fr.skytasul.quests.api.players.PlayersManager;
+import fr.skytasul.quests.api.players.PlayerManager;
 import fr.skytasul.quests.api.pools.QuestPool;
 import fr.skytasul.quests.api.questers.Quester;
 import fr.skytasul.quests.api.questers.QuesterPoolData;
@@ -193,7 +193,7 @@ public class QuestPoolImplementation implements Comparable<QuestPoolImplementati
 
 	@Override
 	public boolean canGive(Player p) {
-		Quester quester = PlayersManager.getPlayerAccount(p);
+		Quester quester = PlayerManager.getPlayerAccount(p);
 
 		if (!quester.getDataHolder().hasPoolData(this))
 			return false;
@@ -220,7 +220,7 @@ public class QuestPoolImplementation implements Comparable<QuestPoolImplementati
 
 	@Override
 	public CompletableFuture<String> give(Player p) {
-		Quester quester = PlayersManager.getPlayerAccount(p);
+		Quester quester = PlayerManager.getPlayerAccount(p);
 		QuesterPoolData data = quester.getDataHolder().getPoolData(this);
 
 		long time = (data.getLastGive() + timeDiff) - System.currentTimeMillis();

@@ -123,4 +123,8 @@ public class LoggerExpanded {
 		return logError(null, null, null, new Object[0]);
 	}
 
+	public static @NotNull LoggerExpanded get(@NotNull String name) {
+		return new LoggerExpanded(Logger.getLogger(name));
+	}
+
 }

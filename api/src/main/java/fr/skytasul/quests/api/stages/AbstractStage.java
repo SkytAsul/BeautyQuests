@@ -1,7 +1,7 @@
 package fr.skytasul.quests.api.stages;
 
 import fr.skytasul.quests.api.QuestsConfiguration;
-import fr.skytasul.quests.api.players.PlayersManager;
+import fr.skytasul.quests.api.players.PlayerManager;
 import fr.skytasul.quests.api.questers.Quester;
 import fr.skytasul.quests.api.quests.Quest;
 import fr.skytasul.quests.api.quests.branches.QuestBranch;
@@ -135,7 +135,7 @@ public abstract class AbstractStage implements HasPlaceholders {
 	 * @see QuestBranch#hasStageLaunched(Quester, AbstractStage)
 	 */
 	protected final boolean hasStarted(@NotNull Player player) {
-		return controller.hasStarted(PlayersManager.getPlayerAccount(player));
+		return controller.hasStarted(PlayerManager.getPlayerAccount(player));
 	}
 
 	/**
@@ -178,7 +178,7 @@ public abstract class AbstractStage implements HasPlaceholders {
 
 	@Deprecated
 	protected final <T> @Nullable T getData(@NotNull Player p, @NotNull String dataKey) {
-		return getData(PlayersManager.getPlayerAccount(p), dataKey);
+		return getData(PlayerManager.getPlayerAccount(p), dataKey);
 	}
 
 	@Deprecated
@@ -187,7 +187,7 @@ public abstract class AbstractStage implements HasPlaceholders {
 	}
 
 	protected final <T> @Nullable T getData(@NotNull Player p, @NotNull String dataKey, @NotNull Class<T> dataType) {
-		return getData(PlayersManager.getPlayerAccount(p), dataKey, dataType);
+		return getData(PlayerManager.getPlayerAccount(p), dataKey, dataType);
 	}
 
 	protected final <T> @Nullable T getData(@NotNull Quester acc, @NotNull String dataKey,

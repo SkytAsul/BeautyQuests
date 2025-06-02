@@ -2,7 +2,7 @@ package fr.skytasul.quests.players.accounts;
 
 import fr.skytasul.accounts.Account;
 import fr.skytasul.quests.api.QuestsPlugin;
-import fr.skytasul.quests.api.players.PlayersManager;
+import fr.skytasul.quests.api.players.PlayerManager;
 import fr.skytasul.quests.api.questers.QuesterData;
 import fr.skytasul.quests.players.AbstractPlayerQuesterImplementation;
 import net.kyori.adventure.audience.Audience;
@@ -22,7 +22,7 @@ public class PlayerQuesterAccountsHookImplementation extends AbstractPlayerQuest
 	public final @NotNull Account acc;
 
 	protected PlayerQuesterAccountsHookImplementation(
-			@NotNull PlayersManager playersManager, @NotNull QuesterData dataHandler,
+			@NotNull PlayerManager playersManager, @NotNull QuesterData dataHandler,
 			@NotNull Account account) {
 		super(playersManager, dataHandler);
 		this.acc = account;

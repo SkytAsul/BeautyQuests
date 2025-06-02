@@ -453,7 +453,7 @@ public class BeautyQuests extends JavaPlugin implements QuestsPlugin {
 			QuesterDataManager questerDataManager = db == null
 					? new YamlDataManager(getDataFolder().toPath().resolve("players"))
 					: new SqlDataManager(db);
-			questerManager = new QuesterManagerImplementation(questerDataManager);
+			questerManager = new QuesterManagerImplementation(this, questerDataManager);
 			if (config.hookAccounts()) {
 				QuestsPlugin.getPlugin().getLoggerExpanded().info("AccountsHook is now managing quester datas!");
 				players = new PlayerManagerAccountsHookImplementation(questerManager);
@@ -577,7 +577,7 @@ public class BeautyQuests extends JavaPlugin implements QuestsPlugin {
 		if (scoreboards == null && config.getQuestsConfig().scoreboards()) {
 			File scFile = new File(getDataFolder(), "scoreboard.yml");
 			if (!scFile.exists()) saveResource("scoreboard.yml", true);
-			scoreboards = new ScoreboardManager(scFile);
+			scoreboards = new ScoreboardManager(this, scFile);
 			getAPI().registerQuestsHandler(scoreboards);
 		}
 
@@ -596,7 +596,7 @@ public class BeautyQuests extends JavaPlugin implements QuestsPlugin {
 			}
 		}
 
-		pools = new QuestPoolsManagerImplementation(new File(getDataFolder(), "questPools.yml"));
+		pools = new QuestPoolsManagerImplementation(this, new File(getDataFolder(), "questPools.yml"));
 		quests = new QuestsManagerImplementation(this, data.getInt("lastID"), saveFolder);
 
 		getAPI().getQuestsHandlers().forEach(handler -> {

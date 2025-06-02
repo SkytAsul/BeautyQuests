@@ -18,7 +18,7 @@ public abstract class AbstractQuesterPoolDataImplementation implements QuesterPo
 	}
 
 	@Override
-	public int getPoolID() {
+	public int getPoolId() {
 		return poolId;
 	}
 

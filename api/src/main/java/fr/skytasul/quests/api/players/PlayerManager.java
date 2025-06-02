@@ -9,7 +9,7 @@ import org.jetbrains.annotations.UnmodifiableView;
 import java.util.Collection;
 import java.util.List;
 
-public interface PlayersManager extends QuesterProvider {
+public interface PlayerManager extends QuesterProvider {
 
 	@Override
 	@NotNull
@@ -24,6 +24,7 @@ public interface PlayersManager extends QuesterProvider {
 
 	public @UnknownNullability PlayerQuester getQuester(@NotNull Player p);
 
+	@Deprecated
 	public static @UnknownNullability PlayerQuester getPlayerAccount(@NotNull Player p) {
 		return QuestsPlugin.getPlugin().getPlayersManager().getQuester(p);
 	}

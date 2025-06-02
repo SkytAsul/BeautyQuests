@@ -196,7 +196,7 @@ public class YamlQuesterData extends AbstractQuesterDataImplementation {
 						super.questFlow.add(stageFlow);
 					} catch (IllegalArgumentException ex) {
 						QuestsPlugin.getPlugin().getLoggerExpanded().severe(
-								"Cannot find a part of the quest flow for quester {}, quest {}: {}", ex, id, questID,
+								"Cannot find a part of the quest flow for quester {}, quest {}: {}", ex, id, questId,
 								flowPart);
 					}
 				}
@@ -238,8 +238,8 @@ public class YamlQuesterData extends AbstractQuesterDataImplementation {
 		}
 
 		@Override
-		public void setStageDatas(int stage, Map<String, Object> datas) {
-			super.setStageDatas(stage, datas);
+		public void setStageData(int stage, Map<String, Object> datas) {
+			super.setStageData(stage, datas);
 			questConfig.set("stageData." + stage, datas);
 		}
 
@@ -276,7 +276,7 @@ public class YamlQuesterData extends AbstractQuesterDataImplementation {
 
 		@Override
 		public CompletableFuture<Void> remove() {
-			yaml.set("quests." + super.getQuestID(), null);
+			yaml.set("quests." + super.getQuestId(), null);
 			return CompletableFuture.completedFuture(null);
 		}
 

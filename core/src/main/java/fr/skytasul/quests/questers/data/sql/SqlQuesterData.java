@@ -197,7 +197,7 @@ public class SqlQuesterData extends AbstractQuesterDataImplementation {
 						super.questFlow.add(stageFlow);
 					} catch (IllegalArgumentException ex) {
 						QuestsPlugin.getPlugin().getLoggerExpanded().severe(
-								"Cannot find a part of the quest flow for quester {}, quest {}: {}", ex, identifier, questID,
+								"Cannot find a part of the quest flow for quester {}, quest {}: {}", ex, identifier, questId,
 								flowPart);
 					}
 				}
@@ -230,7 +230,7 @@ public class SqlQuesterData extends AbstractQuesterDataImplementation {
 					if (matcher.matches()) {
 						if (entry.getValue() instanceof Map data) {
 							this.setAdditionalData(entry.getKey(), null);
-							this.setStageDatas(Integer.parseInt(matcher.group(1)), data);
+							this.setStageData(Integer.parseInt(matcher.group(1)), data);
 						} else {
 							throw new DataLoadingException("Data in wrong format");
 						}
@@ -248,7 +248,7 @@ public class SqlQuesterData extends AbstractQuesterDataImplementation {
 						var statement = connection.prepareStatement(dataManager.getSqlHandler().removeQuestData)) {
 					int i = 1;
 					i = fillInIdentifier(statement, i);
-					statement.setInt(i++, questID);
+					statement.setInt(i++, questId);
 					statement.executeUpdate();
 				} catch (SQLException ex) {
 					throw new CompletionException(ex);
@@ -317,8 +317,8 @@ public class SqlQuesterData extends AbstractQuesterDataImplementation {
 		}
 
 		@Override
-		public void setStageDatas(int stage, Map<String, Object> datas) {
-			super.setStageDatas(stage, datas);
+		public void setStageData(int stage, Map<String, Object> datas) {
+			super.setStageData(stage, datas);
 			setDataInStatement((statement, i) -> fillInSerializable(statement, i, super.stageData), "stage_data");
 		}
 
@@ -333,11 +333,11 @@ public class SqlQuesterData extends AbstractQuesterDataImplementation {
 					int i = 1;
 					setter.accept(statement, i++);
 					i = fillInIdentifier(statement, i);
-					statement.setInt(i++, questID);
+					statement.setInt(i++, questId);
 					statement.executeUpdate();
 				} catch (SQLException ex) {
 					QuestsPlugin.getPlugin().getLoggerExpanded().severe(
-							"An error occurred while updating {} for {} in quest {}", ex, column, identifier, questID);
+							"An error occurred while updating {} for {} in quest {}", ex, column, identifier, questId);
 				}
 			});
 		}

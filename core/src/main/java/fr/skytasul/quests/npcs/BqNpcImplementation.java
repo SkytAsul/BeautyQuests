@@ -9,7 +9,7 @@ import fr.skytasul.quests.api.QuestsPlugin;
 import fr.skytasul.quests.api.localization.Lang;
 import fr.skytasul.quests.api.npcs.BqInternalNpc;
 import fr.skytasul.quests.api.npcs.BqNpc;
-import fr.skytasul.quests.api.players.PlayersManager;
+import fr.skytasul.quests.api.players.PlayerManager;
 import fr.skytasul.quests.api.pools.QuestPool;
 import fr.skytasul.quests.api.questers.Quester;
 import fr.skytasul.quests.api.quests.Quest;
@@ -137,7 +137,7 @@ public class BqNpcImplementation implements Located.LocatedEntity, BqNpc {
 				Set<Player> playersInRadius = new HashSet<>();
 				Location lc = en.getLocation();
 				for (Player p : lc.getWorld().getPlayers()) {
-					Quester acc = PlayersManager.getPlayerAccount(p);
+					Quester acc = PlayerManager.getPlayerAccount(p);
 					if (acc == null) continue;
 					if (lc.distanceSquared(p.getLocation()) > Math
 							.pow(QuestsConfiguration.getConfig().getQuestsConfig().startParticleDistance(), 2))
@@ -177,7 +177,7 @@ public class BqNpcImplementation implements Located.LocatedEntity, BqNpc {
 							iterator.remove();
 							continue;
 						}
-						Quester acc = PlayersManager.getPlayerAccount(player);
+						Quester acc = PlayerManager.getPlayerAccount(player);
 						boolean launchYes = false;
 						boolean launchNo = false;
 						for (Entry<Quest, List<Player>> qu : quests.entrySet()) {
@@ -276,7 +276,7 @@ public class BqNpcImplementation implements Located.LocatedEntity, BqNpc {
 
 	@Override
 	public boolean hasQuestStarted(Player p) {
-		Quester acc = PlayersManager.getPlayerAccount(p);
+		Quester acc = PlayerManager.getPlayerAccount(p);
 		return quests.keySet().stream().anyMatch(quest -> quest.hasStarted(acc));
 	}
 

@@ -9,7 +9,7 @@ import java.util.*;
 
 public abstract class AbstractQuesterQuestDataImplementation implements QuesterQuestData {
 
-	protected final int questID;
+	protected final int questId;
 
 	protected int finished = 0;
 	protected State state = State.NOT_STARTED;
@@ -26,17 +26,17 @@ public abstract class AbstractQuesterQuestDataImplementation implements QuesterQ
 	private final List<StageController> questFlowView = Collections.unmodifiableList(questFlow);
 
 	public AbstractQuesterQuestDataImplementation(int questID) {
-		this.questID = questID;
+		this.questId = questID;
 	}
 
 	@Override
 	public Quest getQuest() {
-		return QuestsAPI.getAPI().getQuestsManager().getQuest(questID);
+		return QuestsAPI.getAPI().getQuestsManager().getQuest(questId);
 	}
 
 	@Override
-	public int getQuestID() {
-		return questID;
+	public int getQuestId() {
+		return questId;
 	}
 
 	public void setTimesFinished(int times) {
@@ -104,12 +104,12 @@ public abstract class AbstractQuesterQuestDataImplementation implements QuesterQ
 	}
 
 	@Override
-	public Map<String, Object> getStageDatas(int stage) {
+	public Map<String, Object> getStageData(int stage) {
 		return stageData.get(stage);
 	}
 
 	@Override
-	public void setStageDatas(int stage, Map<String, Object> datas) {
+	public void setStageData(int stage, Map<String, Object> datas) {
 		stageData.put(stage, datas);
 	}
 

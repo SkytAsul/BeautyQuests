@@ -8,7 +8,7 @@ import fr.skytasul.quests.api.editors.parsers.DurationParser.MinecraftTimeUnit;
 import fr.skytasul.quests.api.gui.ItemUtils;
 import fr.skytasul.quests.api.localization.Lang;
 import fr.skytasul.quests.api.options.QuestOption;
-import fr.skytasul.quests.api.players.PlayersManager;
+import fr.skytasul.quests.api.players.PlayerManager;
 import fr.skytasul.quests.api.questers.Quester;
 import fr.skytasul.quests.api.requirements.RequirementList;
 import fr.skytasul.quests.api.stages.AbstractStage;
@@ -130,7 +130,7 @@ public class StagePlayTime extends AbstractStage implements HasProgress {
 	private void cancelTask(Player p, BukkitTask task) {
 		task.cancel();
 		if (timeMode == TimeMode.ONLINE) {
-			var quester = PlayersManager.getPlayerAccount(p);
+			var quester = PlayerManager.getPlayerAccount(p);
 			updateObjective(quester, "remainingTime", getRemaining(quester));
 		}
 	}

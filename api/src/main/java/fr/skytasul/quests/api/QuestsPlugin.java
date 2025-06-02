@@ -5,7 +5,7 @@ import fr.skytasul.quests.api.commands.CommandsManager;
 import fr.skytasul.quests.api.editors.EditorManager;
 import fr.skytasul.quests.api.gui.GuiManager;
 import fr.skytasul.quests.api.npcs.BqNpcManager;
-import fr.skytasul.quests.api.players.PlayersManager;
+import fr.skytasul.quests.api.players.PlayerManager;
 import fr.skytasul.quests.api.utils.IntegrationManager;
 import fr.skytasul.quests.api.utils.logger.LoggerExpanded;
 import net.kyori.adventure.platform.bukkit.BukkitAudiences;
@@ -25,7 +25,7 @@ public interface QuestsPlugin extends Plugin {
 
 	public @NotNull QuestsConfiguration getConfiguration();
 
-	public @NotNull PlayersManager getPlayersManager();
+	public @NotNull PlayerManager getPlayersManager();
 
 	public @NotNull LoggerExpanded getLoggerExpanded();
 

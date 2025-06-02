@@ -6,7 +6,7 @@ import fr.skytasul.quests.api.gui.LoreBuilder;
 import fr.skytasul.quests.api.localization.Lang;
 import fr.skytasul.quests.api.objects.QuestObjectClickEvent;
 import fr.skytasul.quests.api.options.QuestOption;
-import fr.skytasul.quests.api.players.PlayersManager;
+import fr.skytasul.quests.api.players.PlayerManager;
 import fr.skytasul.quests.api.quests.Quest;
 import fr.skytasul.quests.api.requirements.AbstractRequirement;
 import fr.skytasul.quests.api.utils.messaging.PlaceholderRegistry;
@@ -30,7 +30,7 @@ public class QuestRequirement extends AbstractRequirement {
 
 	@Override
 	public boolean test(Player p) {
-		if (exists()) return cached.hasFinished(PlayersManager.getPlayerAccount(p));
+		if (exists()) return cached.hasFinished(PlayerManager.getPlayerAccount(p));
 		return true;
 	}
 

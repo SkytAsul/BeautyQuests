@@ -1,7 +1,6 @@
 package fr.skytasul.quests.structure;
 
 import fr.skytasul.quests.BeautyQuests;
-import fr.skytasul.quests.api.QuestsPlugin;
 import fr.skytasul.quests.api.questers.Quester;
 import fr.skytasul.quests.api.questers.QuesterQuestData;
 import fr.skytasul.quests.api.quests.Quest;
@@ -42,17 +41,18 @@ public class QuestsManagerImplementation implements QuestsManager {
 
 		try (Stream<Path> files = Files.walk(saveFolder.toPath(), Integer.MAX_VALUE, FileVisitOption.FOLLOW_LINKS)) {
 			files.filter(Files::isRegularFile).filter(path -> !path.getFileName().toString().contains("backup")).filter(path -> "yml".equalsIgnoreCase(Utils.getFilenameExtension(path.getFileName().toString()).orElse(null))).forEach(path -> {
-				BeautyQuests.getInstance().resetLoadingFailure();
+				plugin.resetLoadingFailure();
 				try {
 					File file = path.toFile();
 					QuestImplementation quest = QuestImplementation.loadFromFile(file);
 					if (quest != null) {
 						addQuest(quest);
-						if (BeautyQuests.getInstance().hasLoadingFailed())
+						if (plugin.hasLoadingFailed())
 							plugin.createQuestBackup(path, "Error when loading quest.");
 					}else plugin.getLogger().severe("Quest from file " + file.getName() + " not activated");
 				}catch (Exception ex) {
-					QuestsPlugin.getPlugin().getLoggerExpanded().severe("An error occurred while loading quest file " + path.getFileName(), ex);
+					plugin.getLoggerExpanded().severe("An error occurred while loading quest file {0}", ex,
+							path.getFileName());
 				}
 			});
 		}
@@ -63,7 +63,7 @@ public class QuestsManagerImplementation implements QuestsManager {
 
 		if (quests.stream().noneMatch(quest -> quest.getId() == id)) return id;
 
-		QuestsPlugin.getPlugin().getLoggerExpanded().warning("Quest id " + id + " already taken, this should not happen.");
+		plugin.getLoggerExpanded().warning("Quest id {0} already taken, this should not happen.", id);
 		incrementLastID();
 		return getFreeQuestID();
 	}
@@ -84,14 +84,10 @@ public class QuestsManagerImplementation implements QuestsManager {
 					updated++;
 				}
 			} catch (Exception ex) {
-				QuestsPlugin.getPlugin().getLoggerExpanded().severe("Failed to save quest {0}", ex, quest.getId());
+				plugin.getLoggerExpanded().severe("Failed to save quest {0}", ex, quest.getId());
 			}
 		}
 		return updated;
-	}
-
-	public @NotNull BeautyQuests getPlugin() {
-		return plugin;
 	}
 
 	@Override
@@ -123,7 +119,7 @@ public class QuestsManagerImplementation implements QuestsManager {
 			try {
 				quest.unload();
 			}catch (Exception ex) {
-				QuestsPlugin.getPlugin().getLoggerExpanded().severe("An error ocurred when unloading quest " + quest.getId(), ex);
+				plugin.getLoggerExpanded().severe("An error ocurred when unloading quest {}", ex, quest.getId());
 			}
 		}
 	}

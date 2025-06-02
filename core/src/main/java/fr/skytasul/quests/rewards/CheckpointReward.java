@@ -6,7 +6,7 @@ import fr.skytasul.quests.api.gui.LoreBuilder;
 import fr.skytasul.quests.api.localization.Lang;
 import fr.skytasul.quests.api.objects.QuestObjectClickEvent;
 import fr.skytasul.quests.api.objects.QuestObjectLocation;
-import fr.skytasul.quests.api.players.PlayersManager;
+import fr.skytasul.quests.api.players.PlayerManager;
 import fr.skytasul.quests.api.questers.Quester;
 import fr.skytasul.quests.api.quests.Quest;
 import fr.skytasul.quests.api.rewards.AbstractReward;
@@ -61,7 +61,7 @@ public class CheckpointReward extends AbstractReward {
 	public void apply(@NotNull Player player) {
 		// since we want to apply the checkpoint only to a player, we can safely access their account
 		// and not care if they is in a party/global quest
-		Quester quester = PlayersManager.getPlayerAccount(player);
+		Quester quester = PlayerManager.getPlayerAccount(player);
 		actions.giveRewards(quester).whenComplete((result, ex) -> {
 			if (ex != null) {
 				DefaultErrors.sendGeneric(quester, "giving checkpoint reward");

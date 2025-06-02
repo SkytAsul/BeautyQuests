@@ -9,7 +9,7 @@ import fr.skytasul.quests.api.blocks.BQBlock;
 import fr.skytasul.quests.api.events.internal.BQBlockBreakEvent;
 import fr.skytasul.quests.api.gui.ItemUtils;
 import fr.skytasul.quests.api.localization.Lang;
-import fr.skytasul.quests.api.players.PlayersManager;
+import fr.skytasul.quests.api.players.PlayerManager;
 import fr.skytasul.quests.api.stages.StageController;
 import fr.skytasul.quests.api.stages.StageDescriptionPlaceholdersContext;
 import fr.skytasul.quests.api.stages.creation.StageCreationContext;
@@ -88,7 +88,7 @@ public class StageMine extends AbstractCountableBlockStage implements Locatable.
 		if (!hasStarted(p))
 			return;
 
-		Map<UUID, Integer> playerBlocks = getRawRemainingAmounts(PlayersManager.getPlayerAccount(p), true);
+		Map<UUID, Integer> playerBlocks = getRawRemainingAmounts(PlayerManager.getPlayerAccount(p), true);
 		if (playerBlocks == null) return;
 		for (UUID id : playerBlocks.keySet()) {
 			Optional<CountableObject<BQBlock>> object = getObject(id);

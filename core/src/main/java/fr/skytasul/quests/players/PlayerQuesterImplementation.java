@@ -1,7 +1,7 @@
 package fr.skytasul.quests.players;
 
 import fr.skytasul.quests.api.QuestsPlugin;
-import fr.skytasul.quests.api.players.PlayersManager;
+import fr.skytasul.quests.api.players.PlayerManager;
 import fr.skytasul.quests.api.questers.QuesterData;
 import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.audience.ForwardingAudience;
@@ -24,7 +24,7 @@ public class PlayerQuesterImplementation extends AbstractPlayerQuesterImplementa
 	private Player player;
 
 	protected PlayerQuesterImplementation(
-			@NotNull PlayersManager playersManager, @NotNull QuesterData dataHandler,
+			@NotNull PlayerManager playersManager, @NotNull QuesterData dataHandler,
 			@NotNull UUID uuid) {
 		super(playersManager, dataHandler);
 		this.uuid = uuid;

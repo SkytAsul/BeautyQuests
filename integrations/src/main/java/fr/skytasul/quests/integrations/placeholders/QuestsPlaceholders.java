@@ -4,7 +4,7 @@ import fr.skytasul.quests.api.QuestsAPI;
 import fr.skytasul.quests.api.QuestsPlugin;
 import fr.skytasul.quests.api.localization.Lang;
 import fr.skytasul.quests.api.options.description.DescriptionSource;
-import fr.skytasul.quests.api.players.PlayersManager;
+import fr.skytasul.quests.api.players.PlayerManager;
 import fr.skytasul.quests.api.questers.Quester;
 import fr.skytasul.quests.api.questers.QuesterQuestData;
 import fr.skytasul.quests.api.quests.Quest;
@@ -108,7 +108,7 @@ public class QuestsPlaceholders extends PlaceholderExpansion implements Listener
 
 		if (!off.isOnline()) return "§cerror: offline";
 		Player p = off.getPlayer();
-		Quester quester = PlayersManager.getPlayerAccount(p);
+		Quester quester = PlayerManager.getPlayerAccount(p);
 
 		if (quester == null)
 			return "§cdatas not loaded";
@@ -123,7 +123,7 @@ public class QuestsPlaceholders extends PlaceholderExpansion implements Listener
 					quester.getDataHolder().getAllQuestsData().stream().mapToInt(QuesterQuestData::getTimesFinished).sum());
 		if (identifier.equals("started_id_list"))
 			return quester.getDataHolder().getAllQuestsData().stream().filter(QuesterQuestData::hasStarted)
-					.map(x -> Integer.toString(x.getQuestID())).collect(Collectors.joining(";"));
+					.map(x -> Integer.toString(x.getQuestId())).collect(Collectors.joining(";"));
 
 		if (identifier.equals("started")) {
 			return quester.getDataHolder().getAllQuestsData()

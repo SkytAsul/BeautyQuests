@@ -13,7 +13,7 @@ import java.util.concurrent.CompletableFuture;
 
 public interface QuesterQuestData {
 
-	int getQuestID();
+	int getQuestId();
 
 	@Nullable
 	Quest getQuest();
@@ -62,9 +62,9 @@ public interface QuesterQuestData {
 	void setStartingTime(OptionalLong time);
 
 	@Nullable
-	Map<@NotNull String, @Nullable Object> getStageDatas(int stage);
+	Map<@NotNull String, @Nullable Object> getStageData(int stage);
 
-	void setStageDatas(int stage, @Nullable Map<@NotNull String, @Nullable Object> datas);
+	void setStageData(int stage, @Nullable Map<@NotNull String, @Nullable Object> datas);
 
 	<T> @Nullable T getAdditionalData(@NotNull String key);
 

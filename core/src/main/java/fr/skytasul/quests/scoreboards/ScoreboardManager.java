@@ -4,7 +4,6 @@ import fr.mrmicky.fastboard.FastBoard;
 import fr.skytasul.quests.BeautyQuests;
 import fr.skytasul.quests.api.QuestsConfiguration;
 import fr.skytasul.quests.api.QuestsHandler;
-import fr.skytasul.quests.api.QuestsPlugin;
 import fr.skytasul.quests.api.questers.Quester;
 import fr.skytasul.quests.api.questers.events.QuesterJoinEvent;
 import fr.skytasul.quests.api.questers.events.QuesterLeaveEvent;
@@ -18,13 +17,15 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.HandlerList;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerChangedWorldEvent;
+import org.jetbrains.annotations.NotNull;
 import java.io.File;
 import java.util.*;
 import java.util.function.Consumer;
 
 public class ScoreboardManager implements Listener, QuestsHandler {
 
-	private final File file;
+	private final @NotNull BeautyQuests plugin;
+	private final @NotNull File configFile;
 	private Map<Player, Scoreboard> scoreboards;
 	private Map<UUID, Boolean> forceHiddenState;
 
@@ -39,8 +40,9 @@ public class ScoreboardManager implements Listener, QuestsHandler {
 	private List<String> worldsFilter;
 	private boolean isWorldAllowList;
 
-	public ScoreboardManager(File file) {
-		this.file = file;
+	public ScoreboardManager(@NotNull BeautyQuests plugin, @NotNull File configFile) {
+		this.plugin = plugin;
+		this.configFile = configFile;
 	}
 
 	public List<ScoreboardLine> getScoreboardLines(){
@@ -103,7 +105,7 @@ public class ScoreboardManager implements Listener, QuestsHandler {
 	public void load() {
 		if (!QuestsConfiguration.getConfig().getQuestsConfig().scoreboards())
 			return;
-		if (BeautyQuests.getInstance().isUnitTesting())
+		if (plugin.isUnitTesting())
 			return;
 
 		try {
@@ -112,7 +114,7 @@ public class ScoreboardManager implements Listener, QuestsHandler {
 			throw new IllegalStateException("The Scoreboard util cannot load, probably due to an incompatible server version.", ex);
 		}catch (NullPointerException ex) {} // as we pass a null player to initialize, it will throw NPE
 
-		YamlConfiguration config = YamlConfiguration.loadConfiguration(file);
+		YamlConfiguration config = YamlConfiguration.loadConfiguration(configFile);
 
 		ConfigurationSection questsSection = config.getConfigurationSection("quests");
 		changeTime = questsSection.getInt("changeTime", 11);
@@ -126,7 +128,8 @@ public class ScoreboardManager implements Listener, QuestsHandler {
 		lines.clear();
 		for (Map<?, ?> map : config.getMapList("lines")) {
 			if (lines.size() == 15) {
-				QuestsPlugin.getPlugin().getLoggerExpanded().warning("Limit of 15 scoreboard lines reached - please delete some in scoreboard.yml");
+				plugin.getLoggerExpanded()
+						.warning("Limit of 15 scoreboard lines reached - please delete some in scoreboard.yml");
 				break;
 			}
 			try {
@@ -135,11 +138,11 @@ public class ScoreboardManager implements Listener, QuestsHandler {
 				ex.printStackTrace();
 			}
 		}
-		QuestsPlugin.getPlugin().getLoggerExpanded().debug("Registered " + lines.size() + " lines in scoreboard");
+		plugin.getLoggerExpanded().debug("Registered {0} lines in scoreboard", lines.size());
 
 		scoreboards = new HashMap<>();
 		forceHiddenState = new HashMap<>();
-		Bukkit.getPluginManager().registerEvents(this, BeautyQuests.getInstance());
+		Bukkit.getPluginManager().registerEvents(this, plugin);
 	}
 
 	@Override
@@ -148,7 +151,8 @@ public class ScoreboardManager implements Listener, QuestsHandler {
 			return;
 		HandlerList.unregisterAll(this);
 		for (Scoreboard s : scoreboards.values()) s.cancel();
-		if (!scoreboards.isEmpty()) QuestsPlugin.getPlugin().getLoggerExpanded().info(scoreboards.size() + " scoreboards deleted.");
+		if (!scoreboards.isEmpty())
+			plugin.getLoggerExpanded().debug("{0} scoreboards deleted.", scoreboards.size());
 		scoreboards.clear();
 		scoreboards = null;
 		forceHiddenState.clear();

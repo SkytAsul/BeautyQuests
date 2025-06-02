@@ -11,7 +11,7 @@ import fr.skytasul.quests.api.options.QuestOptionCreator;
 import fr.skytasul.quests.api.options.description.DescriptionSource;
 import fr.skytasul.quests.api.options.description.QuestDescriptionContext;
 import fr.skytasul.quests.api.options.description.QuestDescriptionProvider;
-import fr.skytasul.quests.api.players.PlayersManager;
+import fr.skytasul.quests.api.players.PlayerManager;
 import fr.skytasul.quests.api.questers.Quester;
 import fr.skytasul.quests.api.questers.QuesterQuestData;
 import fr.skytasul.quests.api.quests.Quest;
@@ -274,7 +274,7 @@ public class QuestImplementation implements Quest, QuestDescriptionProvider {
 
 	@Override
 	public boolean canStart(@NotNull Player p, boolean sendMessage) {
-		Quester acc = PlayersManager.getPlayerAccount(p);
+		Quester acc = PlayerManager.getPlayerAccount(p);
 		if (hasStarted(acc)){
 			if (sendMessage) Lang.ALREADY_STARTED.send(p);
 			return false;
@@ -423,7 +423,7 @@ public class QuestImplementation implements Quest, QuestDescriptionProvider {
 
 	@Override
 	public void start(@NotNull Player p, boolean silently) {
-		Quester quester = PlayersManager.getPlayerAccount(p);
+		Quester quester = PlayerManager.getPlayerAccount(p);
 		if (hasStarted(quester)) {
 			if (!silently) Lang.ALREADY_STARTED.send(p);
 			return;

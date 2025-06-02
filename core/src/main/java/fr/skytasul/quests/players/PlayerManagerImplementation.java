@@ -1,14 +1,13 @@
 package fr.skytasul.quests.players;
 
-import fr.skytasul.quests.BeautyQuests;
-import fr.skytasul.quests.api.QuestsPlugin;
 import fr.skytasul.quests.api.data.DataSavingException;
 import fr.skytasul.quests.api.players.PlayerQuester;
-import fr.skytasul.quests.api.players.PlayersManager;
+import fr.skytasul.quests.api.players.PlayerManager;
 import fr.skytasul.quests.api.questers.Quester;
 import fr.skytasul.quests.api.questers.QuesterData;
 import fr.skytasul.quests.api.questers.events.QuesterJoinEvent;
 import fr.skytasul.quests.api.questers.events.QuesterLeaveEvent;
+import fr.skytasul.quests.api.utils.logger.LoggerExpanded;
 import fr.skytasul.quests.questers.QuesterManagerImplementation;
 import fr.skytasul.quests.questers.data.QuesterDataManager.QuesterFetchRequest;
 import fr.skytasul.quests.questers.data.QuesterDataManager.QuesterFetchResult;
@@ -28,8 +27,9 @@ import org.jetbrains.annotations.UnknownNullability;
 import org.jetbrains.annotations.UnmodifiableView;
 import java.util.*;
 
-public class PlayerManagerImplementation implements PlayersManager, Listener {
+public class PlayerManagerImplementation implements PlayerManager, Listener {
 
+	private static final LoggerExpanded LOGGER = LoggerExpanded.get("BeautyQuests.PlayerManager");
 	public static final @NotNull Key KEY = Key.key("beautyquests", "players");
 
 	private final @NotNull Map<@NotNull Player, @NotNull AbstractPlayerQuesterImplementation> cachedQuesters =
@@ -65,12 +65,12 @@ public class PlayerManagerImplementation implements PlayersManager, Listener {
 
 	@Override
 	public @UnknownNullability PlayerQuester getQuester(@NotNull Player p) {
-		if (BeautyQuests.getInstance().getNpcManager().isNPC(p))
+		if (questerManager.getPlugin().getNpcManager().isNPC(p))
 			return null;
 		if (!p.isOnline()) {
-			QuestsPlugin.getPlugin().getLoggerExpanded()
+			LOGGER
 					.severe("Trying to fetch the account of an offline player (" + p.getName() + ")");
-			QuestsPlugin.getPlugin().getLoggerExpanded().debug("(via " + DebugUtils.stackTraces(2, 5) + ")");
+			LOGGER.debug("(via " + DebugUtils.stackTraces(2, 5) + ")");
 		}
 
 		return cachedQuesters.get(p);
@@ -88,14 +88,12 @@ public class PlayerManagerImplementation implements PlayersManager, Listener {
 	protected void load(@NotNull Player player) {
 		String identifier = getIdentifier(player).orElseThrow();
 
-		BeautyQuests.getInstance().getLoggerExpanded().debug("Loading quester for {} (identifier: {})", player.getName(),
-				identifier);
+		LOGGER.debug("Loading quester for {} (identifier: {})", player.getName(), identifier);
 
 		questerManager.getDataManager().loadQuester(new QuesterFetchRequest(KEY, identifier, true, true))
-				.whenComplete(QuestsPlugin.getPlugin().getLoggerExpanded().logError(result -> {
+				.whenComplete(LOGGER.logError(result -> {
 					if (!result.type().isSuccess()) {
-						QuestsPlugin.getPlugin().getLoggerExpanded().severe("Failed to load {}'s quester instance",
-								player.getName());
+						LOGGER.severe("Failed to load {}'s quester instance", player.getName());
 						return;
 					}
 					boolean isCreation = result.type() == QuesterFetchResult.Type.SUCCESS_CREATED;
@@ -108,7 +106,7 @@ public class PlayerManagerImplementation implements PlayersManager, Listener {
 						if (player.isOnline()) {
 							Bukkit.getPluginManager().callEvent(new QuesterJoinEvent(quester, player, isCreation));
 						} else {
-							QuestsPlugin.getPlugin().getLoggerExpanded()
+							LOGGER
 									.warning("{} has left the server while loading its data.", player.getName());
 
 							if (isCreation) {
@@ -116,11 +114,11 @@ public class PlayerManagerImplementation implements PlayersManager, Listener {
 							}
 						}
 					});
-				}, "Failed to load quester data", QuestsPlugin.getPlugin().getAudiences().player(player)));
+				}, "Failed to load quester data", questerManager.getPlugin().getAudiences().player(player)));
 	}
 
 	protected void unload(@NotNull Player player) {
-		QuestsPlugin.getPlugin().getLoggerExpanded().debug("Unloading quester for {}", player.getName());
+		LOGGER.debug("Unloading quester for {}", player.getName());
 
 		var quester = cachedQuesters.get(player);
 		if (quester == null)
@@ -130,7 +128,7 @@ public class PlayerManagerImplementation implements PlayersManager, Listener {
 		try {
 			quester.save();
 		} catch (DataSavingException ex) {
-			QuestsPlugin.getPlugin().getLoggerExpanded().severe("Failed to save {}'s data", ex, quester.getDetailedName());
+			LOGGER.severe("Failed to save {}'s data", ex, quester.getDetailedName());
 		}
 		quester.unload();
 		cachedQuesters.remove(player);
@@ -143,7 +141,7 @@ public class PlayerManagerImplementation implements PlayersManager, Listener {
 		for (var player : Bukkit.getOnlinePlayers()) {
 			load(player);
 		}
-		Bukkit.getPluginManager().registerEvents(this, BeautyQuests.getInstance());
+		Bukkit.getPluginManager().registerEvents(this, questerManager.getPlugin());
 		playersLoaded = true;
 	}
 

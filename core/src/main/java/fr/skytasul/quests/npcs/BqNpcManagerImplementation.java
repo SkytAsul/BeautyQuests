@@ -4,9 +4,9 @@ import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
 import fr.skytasul.quests.DefaultQuestFeatures;
 import fr.skytasul.quests.api.QuestsConfiguration;
-import fr.skytasul.quests.api.QuestsPlugin;
 import fr.skytasul.quests.api.npcs.*;
 import fr.skytasul.quests.api.npcs.BqInternalNpcFactory.BqInternalNpcFactoryCreatable;
+import fr.skytasul.quests.api.utils.logger.LoggerExpanded;
 import fr.skytasul.quests.utils.QuestUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
@@ -24,6 +24,8 @@ import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 public class BqNpcManagerImplementation implements BqNpcManager {
+
+	private static final LoggerExpanded LOGGER = LoggerExpanded.get("BeautyQuests.NpcManager");
 
 	private static final String SEPARATOR = "#";
 	private static final Pattern FACTORY_KEY_PATTERN = Pattern.compile("[a-zA-Z0-9_-]*");
@@ -65,7 +67,7 @@ public class BqNpcManagerImplementation implements BqNpcManager {
 		if (!FACTORY_KEY_PATTERN.matcher(key).matches())
 			throw new IllegalArgumentException("Invalid factory key " + key);
 
-		QuestsPlugin.getPlugin().getLoggerExpanded().info("Adding " + key + " as an npc factory");
+		LOGGER.info("Adding {0} as an npc factory", key);
 		internalFactories.put(key, internalFactory);
 
 		last = internalFactory;
@@ -109,8 +111,7 @@ public class BqNpcManagerImplementation implements BqNpcManager {
 
 		int separatorIndex = id.indexOf(SEPARATOR);
 		if (separatorIndex == -1) { // TODO migration 1.0
-			QuestsPlugin.getPlugin().getLoggerExpanded()
-					.debug("Loading NPC with id " + id + " from a previous version of the plugin.");
+			LOGGER.debug("Loading NPC with id {0} from a previous version of the plugin.", id);
 			factory = getMigrationFactory();
 			internalId = id;
 		} else {
@@ -170,8 +171,7 @@ public class BqNpcManagerImplementation implements BqNpcManager {
 				return;
 			BqInternalNpc newInternal = npcFactory.fetchNPC(npc.getWrappedNpc().internalId);
 			if (newInternal == null) {
-				QuestsPlugin.getPlugin().getLoggerExpanded()
-						.warning("Unable to find NPC with ID " + id + " after a NPCs manager reload.");
+				LOGGER.warning("Unable to find NPC with ID {0} after a NPCs manager reload.", id);
 			} else {
 				npc.getWrappedNpc().npc = newInternal;
 			}

@@ -9,7 +9,7 @@ import fr.skytasul.quests.api.localization.Lang;
 import fr.skytasul.quests.api.options.description.DescriptionSource;
 import fr.skytasul.quests.api.options.description.QuestDescriptionContext;
 import fr.skytasul.quests.api.options.description.QuestDescriptionProvider;
-import fr.skytasul.quests.api.players.PlayersManager;
+import fr.skytasul.quests.api.players.PlayerManager;
 import fr.skytasul.quests.api.questers.Quester;
 import fr.skytasul.quests.api.quests.Quest;
 import fr.skytasul.quests.api.utils.ChatColorUtils;
@@ -48,7 +48,7 @@ public class Scoreboard extends BukkitRunnable implements Listener {
 	Scoreboard(Player player, ScoreboardManager manager) {
 		Bukkit.getPluginManager().registerEvents(this, BeautyQuests.getInstance());
 		this.p = player;
-		this.acc = PlayersManager.getPlayerAccount(p);
+		this.acc = PlayerManager.getPlayerAccount(p);
 		this.manager = manager;
 
 		for (ScoreboardLine line : manager.getScoreboardLines()) {

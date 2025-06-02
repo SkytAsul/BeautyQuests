@@ -5,7 +5,7 @@ import fr.skytasul.quests.BeautyQuests;
 import fr.skytasul.quests.api.QuestsAPI;
 import fr.skytasul.quests.api.QuestsPlugin;
 import fr.skytasul.quests.api.options.description.DescriptionSource;
-import fr.skytasul.quests.api.players.PlayersManager;
+import fr.skytasul.quests.api.players.PlayerManager;
 import fr.skytasul.quests.api.questers.Quester;
 import fr.skytasul.quests.api.questers.QuesterQuestData;
 import fr.skytasul.quests.api.questers.events.QuesterJoinEvent;
@@ -79,14 +79,14 @@ public class StageControllerImplementation<T extends AbstractStage> implements S
 
 	@Override
 	public @NotNull Collection<Quester> getApplicableQuesters(@NotNull Player player) {
-		return List.of(PlayersManager.getPlayerAccount(player));
+		return List.of(PlayerManager.getPlayerAccount(player));
 		// TODO add more possibilities!
 	}
 
 	@Override
 	public void updateObjective(@NotNull Quester quester, @NotNull String dataKey, @Nullable Object dataValue) {
 		QuesterQuestData questData = quester.getDataHolder().getQuestData(branch.getQuest());
-		Map<String, Object> datas = questData.getStageDatas(getStorageId());
+		Map<String, Object> datas = questData.getStageData(getStorageId());
 		if (datas == null) {
 			QuestsPlugin.getPlugin().getLoggerExpanded().severe("Quester {} did not have data for {}. Creating some.",
 					quester.getDetailedName(), toString());
@@ -95,7 +95,7 @@ public class StageControllerImplementation<T extends AbstractStage> implements S
 		}
 
 		datas.put(dataKey, dataValue);
-		questData.setStageDatas(getStorageId(), datas);
+		questData.setStageData(getStorageId(), datas);
 
 		propagateStageHandlers(handler -> handler.stageUpdated(quester, this));
 		branch.getManager().questUpdated(quester);
@@ -104,7 +104,7 @@ public class StageControllerImplementation<T extends AbstractStage> implements S
 	@Override
 	public <D> @Nullable D getData(@NotNull Quester acc, @NotNull String dataKey, @Nullable Class<D> dataType) {
 		QuesterQuestData playerDatas = acc.getDataHolder().getQuestData(branch.getQuest());
-		Map<String, Object> datas = playerDatas.getStageDatas(getStorageId());
+		Map<String, Object> datas = playerDatas.getStageData(getStorageId());
 
 		if (datas == null) {
 			if (!hasStarted(acc))
@@ -114,7 +114,7 @@ public class StageControllerImplementation<T extends AbstractStage> implements S
 					acc.getDetailedName(), this);
 			datas = new HashMap<>();
 			stage.initPlayerDatas(acc, datas);
-			acc.getDataHolder().getQuestData(branch.getQuest()).setStageDatas(getStorageId(), datas);
+			acc.getDataHolder().getQuestData(branch.getQuest()).setStageData(getStorageId(), datas);
 		}
 
 		Object data = datas.get(dataKey);
@@ -175,13 +175,13 @@ public class StageControllerImplementation<T extends AbstractStage> implements S
 		MessageUtils.sendMessage(acc, stage.getStartMessage(), MessageType.DefaultMessageType.OFF);
 		Map<String, Object> datas = new HashMap<>();
 		stage.initPlayerDatas(acc, datas);
-		acc.getDataHolder().getQuestData(branch.getQuest()).setStageDatas(getStorageId(), datas);
+		acc.getDataHolder().getQuestData(branch.getQuest()).setStageData(getStorageId(), datas);
 		propagateStageHandlers(handler -> handler.stageStart(acc, this));
 		stage.started(acc);
 	}
 
 	public void end(@NotNull Quester acc) {
-		acc.getDataHolder().getQuestData(branch.getQuest()).setStageDatas(getStorageId(), null);
+		acc.getDataHolder().getQuestData(branch.getQuest()).setStageData(getStorageId(), null);
 		propagateStageHandlers(handler -> handler.stageEnd(acc, this));
 		stage.ended(acc);
 	}

@@ -2,7 +2,7 @@ package fr.skytasul.quests.commands;
 
 import fr.skytasul.quests.api.QuestsPlugin;
 import fr.skytasul.quests.api.localization.Lang;
-import fr.skytasul.quests.api.players.PlayersManager;
+import fr.skytasul.quests.api.players.PlayerManager;
 import fr.skytasul.quests.api.questers.Quester;
 import fr.skytasul.quests.api.questers.QuesterQuestData;
 import fr.skytasul.quests.api.quests.Quest;
@@ -25,7 +25,7 @@ public class CommandsPlayer implements OrphanCommand {
 	public void menu(BukkitCommandActor actor, @revxrsal.commands.annotation.Optional String subcommand) {
 		if (subcommand != null)
 			throw new UnknownCommandException(subcommand);
-		Quester acc = PlayersManager.getPlayerAccount(actor.requirePlayer());
+		Quester acc = PlayerManager.getPlayerAccount(actor.requirePlayer());
 		if (acc == null) {
 			QuestsPlugin.getPlugin().getLoggerExpanded()
 					.severe("Player " + actor.name() + " has got no account. This is a CRITICAL issue.");
@@ -37,7 +37,7 @@ public class CommandsPlayer implements OrphanCommand {
 	@Subcommand ("checkpoint")
 	@CommandPermission ("beautyquests.command.checkpoint")
 	public void checkpoint(Player player, Quest quest) {
-		Quester account = PlayersManager.getPlayerAccount(player);
+		Quester account = PlayerManager.getPlayerAccount(player);
 		if (account.getDataHolder().hasQuestData(quest)) {
 			QuesterQuestData datas = account.getDataHolder().getQuestData(quest);
 

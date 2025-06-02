@@ -7,7 +7,7 @@ import fr.skytasul.quests.api.localization.Lang;
 import fr.skytasul.quests.api.npcs.dialogs.DialogRunner;
 import fr.skytasul.quests.api.npcs.dialogs.DialogRunner.DialogNextReason;
 import fr.skytasul.quests.api.players.PlayerQuester;
-import fr.skytasul.quests.api.players.PlayersManager;
+import fr.skytasul.quests.api.players.PlayerManager;
 import fr.skytasul.quests.api.pools.QuestPool;
 import fr.skytasul.quests.api.questers.Quester;
 import fr.skytasul.quests.api.questers.QuesterQuestData;
@@ -59,7 +59,7 @@ public class CommandsPlayerManagement implements OrphanCommand {
 	@CommandPermission ("beautyquests.command.finish")
 	public void finishAll(BukkitCommandActor actor, EntitySelector<Player> players) {
 		for (Player player : players) {
-			Quester acc = PlayersManager.getPlayerAccount(player);
+			Quester acc = PlayerManager.getPlayerAccount(player);
 			int success = 0;
 			int errors = 0;
 			for (Quest q : QuestsAPI.getAPI().getQuestsManager().getQuestsStarted(acc)) {
@@ -81,7 +81,7 @@ public class CommandsPlayerManagement implements OrphanCommand {
 	public void finish(BukkitCommandActor actor, EntitySelector<Player> players, Quest quest, @Switch boolean force) {
 		for (Player player : players) {
 			try {
-				Quester quester = PlayersManager.getPlayerAccount(player);
+				Quester quester = PlayerManager.getPlayerAccount(player);
 				if (force || quest.hasStarted(quester)) {
 					quest.finish(quester);
 					Lang.LEAVE_ALL_RESULT.send(actor.sender(), PlaceholderRegistry.of("success", 1, "errors", 0));
@@ -103,7 +103,7 @@ public class CommandsPlayerManagement implements OrphanCommand {
 			@Range (min = 0, max = 14) @Optional Integer branchID,
 			@Range (min = 0, max = 14) @Optional Integer stageID) {
 		// syntax: no arg: next or start | 1 arg: start branch | 2 args: set branch stage
-		Quester acc = PlayersManager.getPlayerAccount(player);
+		Quester acc = PlayerManager.getPlayerAccount(player);
 		BranchesManagerImplementation manager = (BranchesManagerImplementation) quest.getBranchesManager();
 
 		var dataOpt = acc.getDataHolder().getQuestDataIfPresent(quest);
@@ -150,7 +150,7 @@ public class CommandsPlayerManagement implements OrphanCommand {
 	@Subcommand ("startDialog")
 	@CommandPermission ("beautyquests.command.setStage")
 	public void startDialog(BukkitCommandActor actor, Player player, Quest quest) {
-		Quester acc = PlayersManager.getPlayerAccount(player);
+		Quester acc = PlayerManager.getPlayerAccount(player);
 
 		DialogRunner runner = null;
 		if (!quest.hasStarted(acc)) {
@@ -187,7 +187,7 @@ public class CommandsPlayerManagement implements OrphanCommand {
 	@CommandPermission ("beautyquests.command.resetPlayer")
 	public void resetPlayer(BukkitCommandActor actor, EntitySelector<Player> players) {
 		for (Player player : players) {
-			Quester acc = PlayersManager.getPlayerAccount(player);
+			Quester acc = PlayerManager.getPlayerAccount(player);
 
 			var futures = new ArrayList<CompletableFuture<?>>();
 
@@ -195,10 +195,10 @@ public class CommandsPlayerManagement implements OrphanCommand {
 			for (var questDatas : new ArrayList<>(acc.getDataHolder().getAllQuestsData())) {
 				Quest quest = questDatas.getQuest();
 				CompletableFuture<?> future =
-						quest == null ? acc.getDataHolder().removeQuestData(questDatas.getQuestID())
+						quest == null ? acc.getDataHolder().removeQuestData(questDatas.getQuestId())
 								: quest.resetPlayer(acc);
 				future = future.whenComplete(QuestsPlugin.getPlugin().getLoggerExpanded().logError("An error occurred while resetting quest "
-						+ questDatas.getQuestID() + " to player " + player.getName(), actor.audience().get()));
+						+ questDatas.getQuestId() + " to player " + player.getName(), actor.audience().get()));
 				futures.add(future);
 				quests++;
 			}
@@ -206,9 +206,9 @@ public class CommandsPlayerManagement implements OrphanCommand {
 				@Nullable
 				QuestPool pool = poolDatas.getPool();
 				CompletableFuture<?> future =
-						pool == null ? acc.getDataHolder().removePoolData(poolDatas.getPoolID()) : pool.resetPlayer(acc);
+						pool == null ? acc.getDataHolder().removePoolData(poolDatas.getPoolId()) : pool.resetPlayer(acc);
 				future = future.whenComplete(QuestsPlugin.getPlugin().getLoggerExpanded().logError(
-						"An error occurred while resetting pool " + poolDatas.getPoolID() + " to player " + player.getName(),
+						"An error occurred while resetting pool " + poolDatas.getPoolId() + " to player " + player.getName(),
 						actor.audience().get()));
 				futures.add(future);
 				pools++;
@@ -237,12 +237,12 @@ public class CommandsPlayerManagement implements OrphanCommand {
 		}else {
 			new QuestsListGUI(obj -> {
 				reset(actor, player, obj);
-			}, PlayersManager.getPlayerAccount(player), true, false, true).open(actor.requirePlayer());
+			}, PlayerManager.getPlayerAccount(player), true, false, true).open(actor.requirePlayer());
 		}
 	}
 
 	private void reset(BukkitCommandActor actor, Player target, Quest qu) {
-		Quester acc = PlayersManager.getPlayerAccount(target);
+		Quester acc = PlayerManager.getPlayerAccount(target);
 		qu.resetPlayer(acc).whenComplete(QuestsPlugin.getPlugin().getLoggerExpanded().logError(__ -> {
 			Lang.DATA_QUEST_REMOVED.send(target, qu.getPlaceholdersRegistry(),
 					PlaceholderRegistry.of("deleter_name", actor.name()));
@@ -256,7 +256,7 @@ public class CommandsPlayerManagement implements OrphanCommand {
 		List<CompletableFuture<Boolean>> futures = new ArrayList<>(Bukkit.getOnlinePlayers().size());
 
 		for (Player p : Bukkit.getOnlinePlayers()) {
-			futures.add(quest.resetPlayer(PlayersManager.getPlayerAccount(p))
+			futures.add(quest.resetPlayer(PlayerManager.getPlayerAccount(p))
 					.whenComplete(QuestsPlugin.getPlugin().getLoggerExpanded().logError(
 							"An error occurred while resetting quest " + quest.getId() + " to player " + p.getName(),
 							actor.audience().get())));
@@ -306,7 +306,7 @@ public class CommandsPlayerManagement implements OrphanCommand {
 			if (quest == null) {
 				new QuestsListGUI(obj -> {
 					start(actor.sender(), player, obj, overrideRequirements);
-				}, PlayersManager.getPlayerAccount(player), false, true, false).open(actor.requirePlayer());
+				}, PlayerManager.getPlayerAccount(player), false, true, false).open(actor.requirePlayer());
 			}else {
 				start(actor.sender(), player, quest, overrideRequirements);
 			}
@@ -314,7 +314,7 @@ public class CommandsPlayerManagement implements OrphanCommand {
 	}
 
 	private void start(CommandSender sender, Player player, Quest quest, boolean overrideRequirements) {
-		Quester acc = PlayersManager.getPlayerAccount(player);
+		Quester acc = PlayerManager.getPlayerAccount(player);
 		if (!overrideRequirements && !quest.canStart(player, true)) {
 			Lang.START_QUEST_NO_REQUIREMENT.send(sender, quest, acc);
 			return;
@@ -333,7 +333,7 @@ public class CommandsPlayerManagement implements OrphanCommand {
 		}
 
 		for (Player player : players) {
-			Quester acc = PlayersManager.getPlayerAccount(player);
+			Quester acc = PlayerManager.getPlayerAccount(player);
 
 			if (quest == null) {
 				new QuestsListGUI(obj -> {

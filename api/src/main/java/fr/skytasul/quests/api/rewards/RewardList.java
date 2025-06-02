@@ -2,7 +2,7 @@ package fr.skytasul.quests.api.rewards;
 
 import fr.skytasul.quests.api.QuestsPlugin;
 import fr.skytasul.quests.api.localization.Lang;
-import fr.skytasul.quests.api.players.PlayersManager;
+import fr.skytasul.quests.api.players.PlayerManager;
 import fr.skytasul.quests.api.questers.Quester;
 import fr.skytasul.quests.api.quests.Quest;
 import fr.skytasul.quests.api.serializable.SerializableObject;
@@ -71,7 +71,7 @@ public class RewardList extends AbstractList<AbstractReward> {
 		if (!context.getQuester().getOnlinePlayers().contains(player))
 			throw new IllegalArgumentException("Player is not apart of the context's quester");
 
-		Quester playerQuester = PlayersManager.getPlayerAccount(player);
+		Quester playerQuester = PlayerManager.getPlayerAccount(player);
 		try {
 			this.giveRewards(playerQuester).get().mergeInContext(context);
 		} catch (InterruptedException ex) {
