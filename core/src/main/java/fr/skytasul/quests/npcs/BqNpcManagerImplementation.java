@@ -67,7 +67,7 @@ public class BqNpcManagerImplementation implements BqNpcManager {
 		if (!FACTORY_KEY_PATTERN.matcher(key).matches())
 			throw new IllegalArgumentException("Invalid factory key " + key);
 
-		LOGGER.info("Adding {0} as an npc factory", key);
+		LOGGER.debug("Adding {0} as an npc factory", key);
 		internalFactories.put(key, internalFactory);
 
 		last = internalFactory;

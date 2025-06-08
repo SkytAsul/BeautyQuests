@@ -18,6 +18,7 @@ import fr.skytasul.quests.api.requirements.RequirementCreator;
 import fr.skytasul.quests.api.rewards.AbstractReward;
 import fr.skytasul.quests.api.rewards.RewardCreator;
 import fr.skytasul.quests.api.stages.StageTypeRegistry;
+import fr.skytasul.quests.api.utils.logger.LoggerExpanded;
 import fr.skytasul.quests.api.utils.messaging.MessageProcessor;
 import fr.skytasul.quests.blocks.BQBlocksManagerImplementation;
 import fr.skytasul.quests.npcs.dialogs.ActionBarMessageSender;
@@ -31,6 +32,8 @@ import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
 public class QuestsAPIImplementation implements QuestsAPI {
+
+	private static final LoggerExpanded LOGGER = LoggerExpanded.get("BeautyQuests.API");
 
 	private final StageTypeRegistry stages = new StageTypeRegistry();
 	private final List<ItemComparison> itemComparisons = new LinkedList<>();
@@ -80,7 +83,7 @@ public class QuestsAPIImplementation implements QuestsAPI {
 	public void registerMobFactory(@NotNull MobFactory<?> factory) {
 		MobFactory.factories.add(factory);
 		QuestUtils.autoRegister(factory);
-		plugin.getLoggerExpanded().debug("Mob factory registered (id: " + factory.getID() + ")");
+		LOGGER.debug("Mob factory registered (id: " + factory.getID() + ")");
 	}
 
 	@Override
@@ -89,7 +92,7 @@ public class QuestsAPIImplementation implements QuestsAPI {
 		Validate.isTrue(!questOptions.containsKey(creator.optionClass),
 				"This quest option was already registered");
 		questOptions.put(creator.optionClass, creator);
-		plugin.getLoggerExpanded().debug("Quest option registered (id: " + creator.id + ")");
+		LOGGER.debug("Quest option registered (id: " + creator.id + ")");
 	}
 
 	@Override
@@ -112,13 +115,13 @@ public class QuestsAPIImplementation implements QuestsAPI {
 		Validate.isTrue(itemComparisons.stream().noneMatch(x -> x.getID().equals(comparison.getID())),
 				"This item comparison was already registered");
 		itemComparisons.add(comparison);
-		plugin.getLoggerExpanded().debug("Item comparison registered (id: " + comparison.getID() + ")");
+		LOGGER.debug("Item comparison registered (id: " + comparison.getID() + ")");
 	}
 
 	@Override
 	public void unregisterItemComparison(@NotNull ItemComparison comparison) {
 		Validate.isTrue(itemComparisons.remove(comparison), "This item comparison was not registered");
-		plugin.getLoggerExpanded().debug("Item comparison unregistered (id: " + comparison.getID() + ")");
+		LOGGER.debug("Item comparison unregistered (id: " + comparison.getID() + ")");
 	}
 
 	@Override
@@ -129,7 +132,7 @@ public class QuestsAPIImplementation implements QuestsAPI {
 	@Override
 	public void registerMobStacker(@NotNull MobStacker stacker) {
 		mobStackers.add(stacker);
-		plugin.getLoggerExpanded().debug("Added " + stacker.toString() + " mob stacker");
+		LOGGER.debug("Added " + stacker.toString() + " mob stacker");
 	}
 
 	@Override
@@ -156,11 +159,10 @@ public class QuestsAPIImplementation implements QuestsAPI {
 	public void setHologramsManager(@NotNull AbstractHolograms<?> newHologramsManager) {
 		Validate.notNull(newHologramsManager);
 		if (hologramsManager != null)
-			plugin.getLoggerExpanded().warning(newHologramsManager.getClass().getSimpleName()
+			LOGGER.warning(newHologramsManager.getClass().getSimpleName()
 					+ " will replace " + hologramsManager.getClass().getSimpleName() + " as the new holograms manager.");
 		hologramsManager = newHologramsManager;
-		plugin.getLoggerExpanded()
-				.debug("Holograms manager has been registered: " + newHologramsManager.getClass().getName());
+		LOGGER.debug("Holograms manager has been registered: " + newHologramsManager.getClass().getName());
 	}
 
 	@Override
@@ -192,7 +194,7 @@ public class QuestsAPIImplementation implements QuestsAPI {
 			try {
 				consumer.accept(handler);
 			} catch (Exception ex) {
-				plugin.getLoggerExpanded().severe("An error occurred while updating quests handler.", ex);
+				LOGGER.severe("An error occurred while updating quests handler.", ex);
 			}
 		});
 	}
@@ -222,8 +224,7 @@ public class QuestsAPIImplementation implements QuestsAPI {
 	@Override
 	public void setMessageSender(@NotNull MessageSender sender) {
 		this.messageSender = sender;
-		plugin.getLoggerExpanded()
-				.debug("Message sender has been registered: " + sender.getClass().getName());
+		LOGGER.debug("Message sender has been registered: " + sender.getClass().getName());
 	}
 
 	@Override

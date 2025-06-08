@@ -48,7 +48,7 @@ public class BqLoggerHandler extends FileHandler {
 
 			if (logRecord.getLoggerName() != null)
 				stb.append(" [")
-						.append(logRecord.getLoggerName())
+						.append(logRecord.getLoggerName().replace("BeautyQuests.", ""))
 						.append(']');
 
 			stb.append(" [")

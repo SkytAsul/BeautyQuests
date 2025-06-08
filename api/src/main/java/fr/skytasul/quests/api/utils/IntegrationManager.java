@@ -1,17 +1,19 @@
 package fr.skytasul.quests.api.utils;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.function.Predicate;
+import fr.skytasul.quests.api.utils.logger.LoggerExpanded;
 import org.apache.commons.lang.Validate;
 import org.bukkit.Bukkit;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.server.PluginEnableEvent;
 import org.bukkit.plugin.Plugin;
-import fr.skytasul.quests.api.QuestsPlugin;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.function.Predicate;
 
 public class IntegrationManager implements Listener {
+
+	private static final LoggerExpanded LOGGER = LoggerExpanded.get("BeautyQuests.Integrations");
 
 	private final List<BQDependency> dependencies = new ArrayList<>();
 	private boolean dependenciesTested = false;
@@ -24,8 +26,7 @@ public class IntegrationManager implements Listener {
 
 	public void addDependency(BQDependency dependency) {
 		if (lockDependencies) {
-			QuestsPlugin.getPlugin().getLoggerExpanded()
-					.severe("Trying to add a BQ dependency for plugin " + dependency.pluginNames + " after final locking.");
+			LOGGER.severe("Trying to add a BQ dependency for plugin " + dependency.pluginNames + " after final locking.");
 			return;
 		}
 		dependencies.add(dependency);
@@ -117,8 +118,8 @@ public class IntegrationManager implements Listener {
 				return false;
 			if (isValid != null && !isValid.test(plugin))
 				return false;
-			QuestsPlugin.getPlugin().getLoggerExpanded().debug("Hooked into " + pluginNames + " v"
-					+ plugin.getDescription().getVersion() + (after ? " after primary initialization" : ""));
+			LOGGER.debug("Hooked into {0} v{1}" + (after ? " after primary initialization" : ""), pluginNames,
+					plugin.getDescription().getVersion());
 			enabled = true;
 			foundPlugin = plugin;
 			return true;
@@ -130,8 +131,7 @@ public class IntegrationManager implements Listener {
 					initialize.run();
 				initialized = true;
 			} catch (Throwable ex) {
-				QuestsPlugin.getPlugin().getLoggerExpanded()
-						.severe("An error occurred while initializing " + pluginNames.toString() + " integration", ex);
+				LOGGER.severe("An error occurred while initializing " + pluginNames.toString() + " integration", ex);
 				enabled = false;
 			}
 		}
