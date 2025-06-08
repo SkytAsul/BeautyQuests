@@ -1,8 +1,8 @@
 package fr.skytasul.quests.players;
 
 import fr.skytasul.quests.api.data.DataSavingException;
-import fr.skytasul.quests.api.players.PlayerQuester;
 import fr.skytasul.quests.api.players.PlayerManager;
+import fr.skytasul.quests.api.players.PlayerQuester;
 import fr.skytasul.quests.api.questers.Quester;
 import fr.skytasul.quests.api.questers.QuesterData;
 import fr.skytasul.quests.api.questers.events.QuesterJoinEvent;
@@ -97,6 +97,8 @@ public class PlayerManagerImplementation implements PlayerManager, Listener {
 						return;
 					}
 					boolean isCreation = result.type() == QuesterFetchResult.Type.SUCCESS_CREATED;
+					if (isCreation)
+						LOGGER.debug("Created data for quester {0}", identifier);
 
 					var quester = createQuester(identifier, result.dataHandler());
 
@@ -106,8 +108,7 @@ public class PlayerManagerImplementation implements PlayerManager, Listener {
 						if (player.isOnline()) {
 							Bukkit.getPluginManager().callEvent(new QuesterJoinEvent(quester, player, isCreation));
 						} else {
-							LOGGER
-									.warning("{} has left the server while loading its data.", player.getName());
+							LOGGER.warning("{} has left the server while loading its data.", player.getName());
 
 							if (isCreation) {
 								// TODO remove quester

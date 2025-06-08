@@ -1,14 +1,14 @@
 package fr.skytasul.quests.questers.data.yaml;
 
-import fr.skytasul.quests.BeautyQuests;
-import fr.skytasul.quests.api.QuestsPlugin;
 import fr.skytasul.quests.api.data.DataLoadingException;
 import fr.skytasul.quests.api.data.DataSavingException;
+import fr.skytasul.quests.api.utils.logger.LoggerExpanded;
 import fr.skytasul.quests.players.PlayerManagerImplementation;
 import fr.skytasul.quests.questers.data.QuesterDataManager;
 import fr.skytasul.quests.questers.data.QuesterDataManager.QuesterFetchResult.Type;
 import net.kyori.adventure.key.Key;
 import org.bukkit.configuration.file.FileConfiguration;
+import org.bukkit.configuration.file.YamlConfiguration;
 import org.jetbrains.annotations.NotNull;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -21,7 +21,10 @@ import java.util.concurrent.ConcurrentHashMap;
 
 public class YamlDataManager implements QuesterDataManager {
 
+	protected static final LoggerExpanded LOGGER = LoggerExpanded.get("BeautyQuests.YamlDataManager");
+
 	private static final int ACCOUNTS_THRESHOLD = 1000;
+	private static final String INDEX_FILENAME = "00_index.yml";
 
 	// We map each identifier to an integer because we don't know if the identifier is a valid filename
 	private final Map<FullIdentifier, Integer> integerIndex = new ConcurrentHashMap<>();
@@ -32,7 +35,9 @@ public class YamlDataManager implements QuesterDataManager {
 	 */
 	private final Map<Integer, YamlQuesterData> cachedData = new HashMap<>();
 
-	private final Path dataPath;
+	private final @NotNull Path dataPath;
+
+	private YamlConfiguration indexConfig;
 
 	public YamlDataManager(@NotNull Path dataPath) {
 		this.dataPath = dataPath;
@@ -42,35 +47,62 @@ public class YamlDataManager implements QuesterDataManager {
 		return dataPath;
 	}
 
+	private @NotNull Path getIndexFilePath() {
+		return dataPath.resolve(INDEX_FILENAME);
+	}
+
+	public boolean migrate(@NotNull Path oldDataPath, @NotNull FileConfiguration oldDataFile) throws IOException {
+		// TODO remove : migration 2.0
+		if (!oldDataFile.isConfigurationSection("players"))
+			return false;
+		LOGGER.info("Migrating old players data...");
+
+		if (Files.exists(getDataPath())) {
+			LOGGER.severe("Cannot migrate old players data because the new format already contains data.");
+			return false;
+		}
+
+		Files.move(oldDataPath, dataPath);
+
+		var newConfig = new YamlConfiguration();
+
+		for (String key : oldDataFile.getConfigurationSection("players").getKeys(false)) {
+			String identifier = oldDataFile.getString("players." + key);
+			var section = newConfig.createSection("identifiers." + key);
+			section.set("provider", PlayerManagerImplementation.KEY.asString());
+			section.set("identifier", identifier);
+		}
+		oldDataFile.set("players", null);
+
+		newConfig.save(getIndexFilePath().toFile());
+		return true;
+	}
+
 	@Override
 	public void load() throws DataLoadingException {
 		try {
 			Files.createDirectories(dataPath);
 
-			FileConfiguration config = BeautyQuests.getInstance().getDataFile();
-			if (config.isConfigurationSection("players")) {
-				// TODO remove : migration 2.0
-				for (String key : config.getConfigurationSection("players").getKeys(false)) {
-					String identifier = config.getString("players." + key);
-					var section = config.createSection("identifiers." + key);
-					section.set("provider", PlayerManagerImplementation.KEY.asString());
-					section.set("identifier", identifier);
+			if (Files.exists(getIndexFilePath())) {
+				indexConfig = YamlConfiguration.loadConfiguration(getIndexFilePath().toFile());
+
+				if (indexConfig.isConfigurationSection("identifiers")) {
+					for (String idString : indexConfig.getConfigurationSection("identifiers").getKeys(false)) {
+						int id = Integer.parseInt(idString);
+						var section = indexConfig.getConfigurationSection("identifiers." + idString);
+						integerIndex.put(
+								new FullIdentifier(Key.key(section.getString("provider")), section.getString("identifier")),
+								id);
+					}
 				}
-				config.set("players", null);
+			} else {
+				indexConfig = new YamlConfiguration();
 			}
 
-			if (config.isConfigurationSection("identifiers")) {
-				for (String idString : config.getConfigurationSection("identifiers").getKeys(false)) {
-					int id = Integer.parseInt(idString);
-					var section = config.getConfigurationSection("identifiers." + idString);
-					integerIndex.put(new FullIdentifier(Key.key(section.getString("provider")), section.getString("identifier")), id);
-				}
-			}
-
-			QuestsPlugin.getPlugin().getLoggerExpanded().debug("{} quester identifiers loaded", integerIndex.size());
+			LOGGER.debug("{} quester identifiers loaded", integerIndex.size());
 
 			if (integerIndex.size() >= ACCOUNTS_THRESHOLD)
-				QuestsPlugin.getPlugin().getLoggerExpanded().warning(
+				LOGGER.warning(
 						"""
 								⚠ WARNING - {} players are registered on this server.
 								It is recommended to switch to an SQL database setup in order to keep proper performances and scalability.
@@ -101,7 +133,12 @@ public class YamlDataManager implements QuesterDataManager {
 			} else if (request.createIfMissing()) {
 				// quester does not exist, we create it
 				id = getNextIndex();
+
 				integerIndex.put(fullIdentifier, id);
+				var dataSection = indexConfig.createSection("identifiers." + id);
+				dataSection.set("provider", fullIdentifier.provider().asString());
+				dataSection.set("identifier", fullIdentifier.identifier());
+
 				successType = Type.SUCCESS_CREATED;
 			} else
 				return new QuesterFetchResult(QuesterFetchResult.Type.FAILED_NOT_FOUND, null);
@@ -137,8 +174,7 @@ public class YamlDataManager implements QuesterDataManager {
 						}
 					}
 				} catch (DataSavingException ex) {
-					QuestsPlugin.getPlugin().getLoggerExpanded().severe("Failed to reset quest {} data for {}", ex, questId,
-							identifier);
+					LOGGER.severe("Failed to reset quest {} data for {}", ex, questId, identifier);
 				}
 			}
 			return amount;
@@ -163,8 +199,7 @@ public class YamlDataManager implements QuesterDataManager {
 						}
 					}
 				} catch (DataSavingException ex) {
-					QuestsPlugin.getPlugin().getLoggerExpanded().severe("Failed to reset pool {} data for {}", ex, poolId,
-							identifier);
+					LOGGER.severe("Failed to reset pool {} data for {}", ex, poolId, identifier);
 				}
 			}
 			return amount;
@@ -173,12 +208,11 @@ public class YamlDataManager implements QuesterDataManager {
 
 	@Override
 	public void save() throws DataSavingException {
-		var section = BeautyQuests.getInstance().getDataFile().createSection("identifiers");
-		integerIndex.forEach((fullIdentifier, id) -> {
-			var dataSection = section.createSection(id.toString());
-			dataSection.set("provider", fullIdentifier.provider().asString());
-			dataSection.set("identifier", fullIdentifier.identifier());
-		});
+		try {
+			indexConfig.save(getIndexFilePath().toFile());
+		} catch (IOException ex) {
+			throw new DataSavingException("Failed to save index file", ex);
+		}
 	}
 
 	@Override

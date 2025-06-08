@@ -299,7 +299,18 @@ public class YamlQuesterData extends AbstractQuesterDataImplementation {
 
 		private void load() {
 			super.lastGive = poolConfig.getLong("lastGive");
-			super.completedQuests = (Set<Integer>) poolConfig.get("completedQuests", Set.class);
+
+			if (poolConfig.isList("completedQuests")) {
+				super.completedQuests = poolConfig.getIntegerList("completedQuests").stream().collect(Collectors.toSet());
+			} else if (poolConfig.contains("completedQuests")) {
+				// Migration for 2.0
+				var comp = poolConfig.get("completedQuests");
+				if (comp instanceof Set compSet)
+					setCompletedQuests(compSet);
+				else
+					YamlDataManager.LOGGER.warning("Cannot load pool {0} completed quests from type {1} for quester {2}",
+							poolId, comp.getClass().getName(), id);
+			}
 		}
 
 		@Override
@@ -311,7 +322,7 @@ public class YamlQuesterData extends AbstractQuesterDataImplementation {
 		@Override
 		public void setCompletedQuests(Set<Integer> completedQuests) {
 			super.setCompletedQuests(completedQuests);
-			poolConfig.set("completedQuests", completedQuests);
+			poolConfig.set("completedQuests", completedQuests.stream().toList()); // the YAML library is struggling with sets
 		}
 
 		@Override

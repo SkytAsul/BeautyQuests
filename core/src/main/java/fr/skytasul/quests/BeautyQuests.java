@@ -305,13 +305,15 @@ public class BeautyQuests extends JavaPlugin implements QuestsPlugin {
 
 	private void initLogger() {
 		loggerHandler = null;
-		try {
-			Files.createDirectories(getDataFolder().toPath());
-			loggerHandler = new BqLoggerHandler(this);
-			getLogger().addHandler(loggerHandler);
-			getLogger().setLevel(LoggerExpanded.DEBUG_LEVEL);
-		} catch (Throwable ex) {
-			getLogger().log(Level.SEVERE, "Failed to insert logging handler.", ex);
+		if (!isUnitTesting()) {
+			try {
+				Files.createDirectories(getDataFolder().toPath());
+				loggerHandler = new BqLoggerHandler(this);
+				getLogger().addHandler(loggerHandler);
+				getLogger().setLevel(LoggerExpanded.DEBUG_LEVEL);
+			} catch (Throwable ex) {
+				getLogger().log(Level.SEVERE, "Failed to insert logging handler.", ex);
+			}
 		}
 
 		logger = new LoggerExpanded(getLogger());
@@ -450,9 +452,19 @@ public class BeautyQuests extends JavaPlugin implements QuestsPlugin {
 				}
 			}
 
-			QuesterDataManager questerDataManager = db == null
-					? new YamlDataManager(getDataFolder().toPath().resolve("players"))
-					: new SqlDataManager(db);
+			QuesterDataManager questerDataManager;
+			if (db == null) {
+				var dataManager = new YamlDataManager(getDataFolder().toPath().resolve("questers"));
+				Path oldDataPath = getDataFolder().toPath().resolve("players");
+				if (Files.exists(oldDataPath)) {
+					// TODO remove migration 2.0
+					if (dataManager.migrate(oldDataPath, data))
+						data.save(dataFile);
+				}
+				questerDataManager = dataManager;
+			} else {
+				questerDataManager = new SqlDataManager(db);
+			}
 			questerManager = new QuesterManagerImplementation(this, questerDataManager);
 			if (config.hookAccounts()) {
 				QuestsPlugin.getPlugin().getLoggerExpanded().info("AccountsHook is now managing quester datas!");
