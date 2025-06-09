@@ -2,6 +2,8 @@ package fr.skytasul.quests.structure;
 
 import fr.skytasul.quests.api.QuestsAPI;
 import fr.skytasul.quests.api.QuestsPlugin;
+import fr.skytasul.quests.api.data.DataLoadingException;
+import fr.skytasul.quests.api.data.DataSavingException;
 import fr.skytasul.quests.api.questers.Quester;
 import fr.skytasul.quests.api.questers.QuesterQuestData;
 import fr.skytasul.quests.api.quests.branches.QuestBranch;
@@ -127,17 +129,18 @@ public class BranchesManagerImplementation implements QuestBranchesManager {
 		branches.clear();
 	}
 
-	public void save(@NotNull ConfigurationSection section) {
+	public void save(@NotNull ConfigurationSection section) throws DataSavingException {
 		ConfigurationSection branchesSection = section.createSection("branches");
-		branches.forEach((id, branch) -> {
+		for (Integer id : branches.keySet()) {
+			var branch = branches.get(id);
 			try {
 				branch.save(branchesSection.createSection(Integer.toString(id)));
-			}catch (Exception ex) {
-				QuestsPlugin.getPlugin().getLoggerExpanded()
-						.severe("Error when serializing the branch " + id + " for the quest " + quest.getId(), ex);
-				QuestsPlugin.getPlugin().notifySavingFailure();
+			} catch (DataSavingException ex) {
+				throw ex;
+			} catch (Exception ex) {
+				throw new DataSavingException("Error when serializing the branch " + id, ex);
 			}
-		});
+		}
 	}
 
 	@Override
@@ -145,7 +148,8 @@ public class BranchesManagerImplementation implements QuestBranchesManager {
 		return "BranchesManager{branches=" + branches.size() + "}";
 	}
 
-	public static @NotNull BranchesManagerImplementation deserialize(@NotNull ConfigurationSection section, @NotNull QuestImplementation qu) {
+	public static @NotNull BranchesManagerImplementation deserialize(@NotNull ConfigurationSection section,
+			@NotNull QuestImplementation qu) throws DataLoadingException {
 		BranchesManagerImplementation bm = new BranchesManagerImplementation(qu);
 
 		ConfigurationSection branchesSection = section.getConfigurationSection("branches");
@@ -161,26 +165,17 @@ public class BranchesManagerImplementation implements QuestBranchesManager {
 				bm.branches.put(id, branch);
 				tmpBranches.put(branch, branchesSection.getConfigurationSection(key));
 			}catch (NumberFormatException ex) {
-				QuestsPlugin.getPlugin().getLoggerExpanded()
-						.severe("Cannot parse branch ID " + key + " for quest " + qu.getId());
-				QuestsPlugin.getPlugin().notifyLoadingFailure();
-				return null;
+				throw new DataLoadingException("Cannot parse branch ID %s for quest %d".formatted(key, qu.getId()));
 			}
 		}
 
 		for (QuestBranchImplementation branch : tmpBranches.keySet()) {
 			try {
-				if (!branch.load(tmpBranches.get(branch))) {
-					QuestsPlugin.getPlugin().getLoggerExpanded().severe("Error when deserializing the branch "
-							+ branch.getId() + " for the quest " + qu.getId() + " (false return)");
-					QuestsPlugin.getPlugin().notifyLoadingFailure();
-					return null;
-				}
-			}catch (Exception ex) {
-				QuestsPlugin.getPlugin().getLoggerExpanded().severe(
-						"Error when deserializing the branch " + branch.getId() + " for the quest " + qu.getId(), ex);
-				QuestsPlugin.getPlugin().notifyLoadingFailure();
-				return null;
+				branch.load(tmpBranches.get(branch));
+			} catch (DataLoadingException ex) {
+				throw ex;
+			} catch (Exception ex) {
+				throw new DataLoadingException("Error when deserializing the branch " + branch.getId());
 			}
 		}
 

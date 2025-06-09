@@ -95,8 +95,7 @@ public class BeautyQuests extends JavaPlugin implements QuestsPlugin {
 	/* ---------- Operations -------- */
 
 	private boolean disable = false;
-	protected boolean loadingFailure = false;
-	protected boolean savingFailure = false;
+	private boolean loadingFailure = false;
 	protected boolean loaded = false;
 
 	private @NotNull IntegrationManager integrations = new IntegrationManager();
@@ -770,19 +769,6 @@ public class BeautyQuests extends JavaPlugin implements QuestsPlugin {
 
 	public boolean hasLoadingFailed() {
 		return loadingFailure;
-	}
-
-	@Override
-	public void notifySavingFailure() {
-		savingFailure = true;
-	}
-
-	public void resetSavingFailure() {
-		savingFailure = false;
-	}
-
-	public boolean hasSavingFailed() {
-		return savingFailure;
 	}
 
 	private <T> @NotNull T ensureLoaded(@Nullable T object) {

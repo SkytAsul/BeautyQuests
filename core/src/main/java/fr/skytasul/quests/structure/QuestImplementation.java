@@ -4,6 +4,8 @@ import fr.skytasul.quests.BeautyQuests;
 import fr.skytasul.quests.api.QuestsAPI;
 import fr.skytasul.quests.api.QuestsConfiguration;
 import fr.skytasul.quests.api.QuestsPlugin;
+import fr.skytasul.quests.api.data.DataLoadingException;
+import fr.skytasul.quests.api.data.DataSavingException;
 import fr.skytasul.quests.api.localization.Lang;
 import fr.skytasul.quests.api.npcs.BqNpc;
 import fr.skytasul.quests.api.options.QuestOption;
@@ -50,6 +52,7 @@ public class QuestImplementation implements Quest, QuestDescriptionProvider {
 
 	private static final Pattern PERMISSION_PATTERN = Pattern.compile("^beautyquests\\.start\\.(\\d+)$");
 
+	private final @NotNull QuestsManagerImplementation questsManager;
 	private final int id;
 	private final File file;
 	private BranchesManagerImplementation manager;
@@ -61,11 +64,8 @@ public class QuestImplementation implements Quest, QuestDescriptionProvider {
 
 	private PlaceholderRegistry placeholders;
 
-	public QuestImplementation(int id) {
-		this(id, new File(BeautyQuests.getInstance().getQuestsManager().getSaveFolder(), id + ".yml"));
-	}
-
-	public QuestImplementation(int id, @NotNull File file) {
+	public QuestImplementation(@NotNull QuestsManagerImplementation questsManager, int id, @NotNull File file) {
+		this.questsManager = questsManager;
 		this.id = id;
 		this.file = file;
 		this.manager = new BranchesManagerImplementation(this);
@@ -311,7 +311,7 @@ public class QuestImplementation implements Quest, QuestDescriptionProvider {
 				return true;
 			playerMaxLaunchedQuest = QuestsConfiguration.getConfig().getQuestsConfig().maxLaunchedQuests();
 		}
-		if (QuestsAPI.getAPI().getQuestsManager().getStartedSize(acc) >= playerMaxLaunchedQuest) {
+		if (questsManager.getStartedSize(acc) >= playerMaxLaunchedQuest) {
 			if (sendMessage)
 				Lang.QUESTS_MAX_LAUNCHED.quickSend(p, "quests_max_amount", playerMaxLaunchedQuest);
 			return false;
@@ -532,7 +532,7 @@ public class QuestImplementation implements Quest, QuestDescriptionProvider {
 
 	@Override
 	public void delete(boolean silently, boolean keepDatas) {
-		BeautyQuests.getInstance().getQuestsManager().removeQuest(this);
+		questsManager.removeQuest(this);
 		unload();
 		if (hasOption(OptionStarterNPC.class))
 			((BqNpcImplementation) getOptionValueOrDef(OptionStarterNPC.class)).removeQuest(this);
@@ -562,15 +562,18 @@ public class QuestImplementation implements Quest, QuestDescriptionProvider {
 		return "Quest{id=" + id + ", npcID=" + ", branches=" + manager.toString() + ", name=" + getName() + "}";
 	}
 
-	public boolean saveToFile() throws IOException {
+	/**
+	 * Saves the quest to a file
+	 *
+	 * @return <code>true</code> if the file has been updated, <code>false</code> if the file was
+	 *         already up-to-date
+	 * @throws IOException
+	 * @throws DataSavingException
+	 */
+	public boolean saveToFile() throws IOException, DataSavingException {
 		YamlConfiguration fc = new YamlConfiguration();
 
-		BeautyQuests.getInstance().resetSavingFailure();
 		save(fc);
-		if (BeautyQuests.getInstance().hasSavingFailed()) {
-			QuestsPlugin.getPlugin().getLoggerExpanded().warning("An error occurred while saving quest " + id);
-			return false;
-		}
 
 		Path path = file.toPath();
 		if (!Files.exists(path))
@@ -579,21 +582,19 @@ public class QuestImplementation implements Quest, QuestDescriptionProvider {
 		String questData = fc.saveToString();
 		String oldQuestDatas = new String(Files.readAllBytes(path), StandardCharsets.UTF_8);
 		if (questData.equals(oldQuestDatas)) {
-			QuestsPlugin.getPlugin().getLoggerExpanded().debug("Quest " + id + " was up-to-date.");
 			return false;
 		}else {
-			QuestsPlugin.getPlugin().getLoggerExpanded().debug("Saving quest " + id + " into " + path.toString());
 			Files.write(path, questData.getBytes(StandardCharsets.UTF_8));
 			return true;
 		}
 	}
 
-	private void save(@NotNull ConfigurationSection section) {
+	private void save(@NotNull ConfigurationSection section) throws DataSavingException {
 		for (QuestOption<?> option : options) {
 			try {
 				if (option.hasCustomValue()) section.set(option.getOptionCreator().id, option.save());
 			}catch (Exception ex) {
-				QuestsPlugin.getPlugin().getLoggerExpanded().warning("An exception occured when saving an option for quest " + id, ex);
+				throw new DataSavingException("Failed to save option " + option.getOptionCreator().id, ex);
 			}
 		}
 
@@ -602,42 +603,47 @@ public class QuestImplementation implements Quest, QuestDescriptionProvider {
 	}
 
 
-	public static @Nullable QuestImplementation loadFromFile(@NotNull File file) {
+	public static @NotNull QuestImplementation loadFromFile(@NotNull QuestsManagerImplementation questsManager,
+			@NotNull File file) throws DataLoadingException {
+		ConfigurationSection map;
 		try {
-			YamlConfiguration config = new YamlConfiguration();
+			var config = new YamlConfiguration();
 			config.load(file);
-			return deserialize(file, config);
+			map = config;
 		}catch (Exception e) {
-			QuestsPlugin.getPlugin().getLoggerExpanded().warning("Error when loading quests from data file.", e);
-			return null;
-		}
-	}
-
-	private static @Nullable QuestImplementation deserialize(@NotNull File file, @NotNull ConfigurationSection map) {
-		if (!map.contains("id")) {
-			QuestsPlugin.getPlugin().getLoggerExpanded().severe("Quest doesn't have an id.");
-			return null;
+			throw new DataLoadingException("Error when loading quest from data file", e);
 		}
 
-		QuestImplementation qu = new QuestImplementation(map.getInt("id"), file);
+		if (!map.contains("id"))
+			throw new DataLoadingException("Quest doesn't have an id.");
 
+		QuestImplementation qu = new QuestImplementation(questsManager, map.getInt("id"), file);
 		qu.manager = BranchesManagerImplementation.deserialize(map.getConfigurationSection("manager"), qu);
-		if (qu.manager == null) return null;
 
-		for (String key : map.getKeys(false)) {
+		Set<String> keys = map.getKeys(false);
+		keys.remove("id");
+		keys.remove("manager");
+		for (Iterator<String> iterator = keys.iterator(); iterator.hasNext();) {
+			String key = iterator.next();
 			for (QuestOptionCreator<?, ?> creator : QuestsAPI.getAPI().getQuestOptions()) {
 				if (creator.applies(key)) {
 					try {
 						QuestOption<?> option = creator.optionSupplier.get();
 						option.load(map, key);
 						qu.addOption(option);
+						iterator.remove();
 					}catch (Exception ex) {
-						QuestsPlugin.getPlugin().getLoggerExpanded().warning("An exception occured when loading the option " + key + " for quest " + qu.id, ex);
-						QuestsPlugin.getPlugin().notifyLoadingFailure();
+						QuestsManagerImplementation.LOGGER.severe(
+								"An exception occured when loading the option {} for quest {}", ex, key, qu.id);
 					}
 					break;
 				}
 			}
+		}
+
+		if (!keys.isEmpty()) {
+			QuestsManagerImplementation.LOGGER.severe("Some options have not been loaded for quest {0}: {1}", qu.id, keys);
+			questsManager.getPlugin().notifyLoadingFailure();
 		}
 
 		return qu;

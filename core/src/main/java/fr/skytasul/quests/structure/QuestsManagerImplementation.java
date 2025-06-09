@@ -1,12 +1,14 @@
 package fr.skytasul.quests.structure;
 
 import fr.skytasul.quests.BeautyQuests;
+import fr.skytasul.quests.api.QuestsAPI;
 import fr.skytasul.quests.api.questers.Quester;
 import fr.skytasul.quests.api.questers.QuesterQuestData;
 import fr.skytasul.quests.api.quests.Quest;
 import fr.skytasul.quests.api.quests.QuestsManager;
 import fr.skytasul.quests.api.utils.QuestVisibilityLocation;
 import fr.skytasul.quests.api.utils.Utils;
+import fr.skytasul.quests.api.utils.logger.LoggerExpanded;
 import fr.skytasul.quests.npcs.BqNpcImplementation;
 import fr.skytasul.quests.options.OptionStartable;
 import fr.skytasul.quests.options.OptionStarterNPC;
@@ -18,15 +20,14 @@ import java.io.IOException;
 import java.nio.file.FileVisitOption;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 public class QuestsManagerImplementation implements QuestsManager {
+
+	protected static final LoggerExpanded LOGGER = LoggerExpanded.get("BeautyQuests.Quests");
 
 	private final List<QuestImplementation> quests = new ArrayList<>();
 	private final AtomicInteger lastID = new AtomicInteger();
@@ -40,22 +41,28 @@ public class QuestsManagerImplementation implements QuestsManager {
 		this.saveFolder = saveFolder;
 
 		try (Stream<Path> files = Files.walk(saveFolder.toPath(), Integer.MAX_VALUE, FileVisitOption.FOLLOW_LINKS)) {
-			files.filter(Files::isRegularFile).filter(path -> !path.getFileName().toString().contains("backup")).filter(path -> "yml".equalsIgnoreCase(Utils.getFilenameExtension(path.getFileName().toString()).orElse(null))).forEach(path -> {
-				plugin.resetLoadingFailure();
+			for (var path : (Iterable<Path>) files.filter(Files::isRegularFile)
+					.filter(path -> !path.getFileName().toString().contains("backup"))
+					.filter(path -> "yml".equalsIgnoreCase(
+							Utils.getFilenameExtension(path.getFileName().toString()).orElse(null)))
+					::iterator) {
+						plugin.resetLoadingFailure();
 				try {
 					File file = path.toFile();
-					QuestImplementation quest = QuestImplementation.loadFromFile(file);
-					if (quest != null) {
-						addQuest(quest);
-						if (plugin.hasLoadingFailed())
-							plugin.createQuestBackup(path, "Error when loading quest.");
-					}else plugin.getLogger().severe("Quest from file " + file.getName() + " not activated");
+					QuestImplementation quest = QuestImplementation.loadFromFile(this, file);
+					addQuest(quest);
+					if (plugin.hasLoadingFailed())
+						plugin.createQuestBackup(path, "Error when loading quest.");
 				}catch (Exception ex) {
-					plugin.getLoggerExpanded().severe("An error occurred while loading quest file {0}", ex,
+					LOGGER.severe("An error occurred while loading quest file {0}", ex,
 							path.getFileName());
 				}
-			});
+			}
 		}
+	}
+
+	public @NotNull BeautyQuests getPlugin() {
+		return plugin;
 	}
 
 	public int getFreeQuestID() {
@@ -63,7 +70,7 @@ public class QuestsManagerImplementation implements QuestsManager {
 
 		if (quests.stream().noneMatch(quest -> quest.getId() == id)) return id;
 
-		plugin.getLoggerExpanded().warning("Quest id {0} already taken, this should not happen.", id);
+		LOGGER.warning("Quest id {0} already taken, this should not happen.", id);
 		incrementLastID();
 		return getFreeQuestID();
 	}
@@ -82,12 +89,30 @@ public class QuestsManagerImplementation implements QuestsManager {
 			try {
 				if (quest.saveToFile()) {
 					updated++;
+					LOGGER.debug("Saving quest {0} to {1}", quest.getId(), quest.getFile());
+				} else {
+					LOGGER.debug("Quest {0} was already up-to-date", quest.getId());
 				}
 			} catch (Exception ex) {
-				plugin.getLoggerExpanded().severe("Failed to save quest {0}", ex, quest.getId());
+				LOGGER.severe("Failed to save quest {0}", ex, quest.getId());
 			}
 		}
 		return updated;
+	}
+
+	public @NotNull QuestImplementation createQuest(OptionalInt id) {
+		if (id.isPresent()) {
+			final int potentialId = id.getAsInt();
+			if (QuestsAPI.getAPI().getQuestsManager().getQuests().stream().anyMatch(x -> x.getId() == potentialId)) {
+				LOGGER.warning("Cannot create quest with custom ID {0} because another quest with this ID already exists.",
+						potentialId);
+				id = OptionalInt.empty();
+			} else {
+				LOGGER.warning("A quest will be created with custom ID {0}.", id.getAsInt());
+			}
+		}
+		int finalId = id.orElseGet(this::getFreeQuestID);
+		return new QuestImplementation(this, finalId, new File(saveFolder, finalId + ".yml"));
 	}
 
 	@Override
@@ -119,7 +144,7 @@ public class QuestsManagerImplementation implements QuestsManager {
 			try {
 				quest.unload();
 			}catch (Exception ex) {
-				plugin.getLoggerExpanded().severe("An error ocurred when unloading quest {}", ex, quest.getId());
+				LOGGER.severe("An error ocurred when unloading quest {}", ex, quest.getId());
 			}
 		}
 	}

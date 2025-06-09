@@ -39,8 +39,6 @@ public interface QuestsPlugin extends Plugin {
 
 	public void notifyLoadingFailure();
 
-	public void notifySavingFailure();
-
 	public @NotNull BukkitAudiences getAudiences();
 
 	public boolean isRunningPaper();

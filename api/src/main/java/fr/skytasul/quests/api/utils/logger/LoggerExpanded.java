@@ -43,16 +43,24 @@ public class LoggerExpanded {
 		logger.log(Level.WARNING, msg, throwable);
 	}
 
+	public void warning(@Nullable String msg, Object... args) {
+		logger.log(Level.WARNING, msg, args);
+	}
+
+	public void warning(@Nullable String msg, Throwable cause, Object... args) {
+		var log = new LogRecord(Level.WARNING, msg);
+		log.setParameters(args);
+		log.setThrown(cause);
+		log.setLoggerName(logger.getName());
+		logger.log(log);
+	}
+
 	public void namedWarning(@Nullable String msg, @NotNull Object type, int seconds, Object... args) {
 		Long time = times.get(type);
 		if (time == null || time.longValue() + seconds * 1000 < System.currentTimeMillis()) {
 			logger.log(Level.WARNING, msg, args);
 			times.put(type, System.currentTimeMillis());
 		}
-	}
-
-	public void warning(@Nullable String msg, Object... args) {
-		logger.log(Level.WARNING, msg, args);
 	}
 
 	public void severe(@Nullable String msg) {

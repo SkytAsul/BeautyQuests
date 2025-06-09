@@ -4,6 +4,8 @@ import fr.skytasul.quests.BeautyQuests;
 import fr.skytasul.quests.QuestsConfigurationImplementation;
 import fr.skytasul.quests.api.QuestsConfiguration;
 import fr.skytasul.quests.api.QuestsPlugin;
+import fr.skytasul.quests.api.data.DataLoadingException;
+import fr.skytasul.quests.api.data.DataSavingException;
 import fr.skytasul.quests.api.localization.Lang;
 import fr.skytasul.quests.api.options.description.DescriptionSource;
 import fr.skytasul.quests.api.questers.Quester;
@@ -312,15 +314,13 @@ public class QuestBranchImplementation implements QuestBranch {
 		endStages.clear();
 	}
 
-	public void save(@NotNull ConfigurationSection section) {
+	public void save(@NotNull ConfigurationSection section) throws DataSavingException {
 		ConfigurationSection stagesSection = section.createSection("stages");
 		for (int i = 0; i < regularStages.size(); i++) {
 			try {
 				regularStages.get(i).getStage().save(stagesSection.createSection(Integer.toString(i)));
 			}catch (Exception ex) {
-				QuestsPlugin.getPlugin().getLoggerExpanded()
-						.severe("Error when serializing the stage " + i + " for the quest " + getQuest().getId(), ex);
-				QuestsPlugin.getPlugin().notifySavingFailure();
+				throw new DataSavingException("Failed to serialize the stage " + i, ex);
 			}
 		}
 
@@ -334,9 +334,7 @@ public class QuestBranchImplementation implements QuestBranch {
 				if (branchLinked != null)
 					stageSection.set("branchLinked", branchLinked.getId());
 			}catch (Exception ex){
-				QuestsPlugin.getPlugin().getLoggerExpanded()
-						.severe("Error when serializing the ending stage " + i + " for the quest " + getQuest().getId(), ex);
-				QuestsPlugin.getPlugin().notifySavingFailure();
+				throw new DataSavingException("Failed to serialize the ending stage " + i, ex);
 			}
 		}
 	}
@@ -346,7 +344,7 @@ public class QuestBranchImplementation implements QuestBranch {
 		return "QuestBranch{regularStages=" + regularStages.size() + ",endingStages=" + endStages.size() + "}";
 	}
 
-	public boolean load(@NotNull ConfigurationSection section) {
+	public void load(@NotNull ConfigurationSection section) throws DataLoadingException {
 		ConfigurationSection stagesSection = section.getConfigurationSection("stages");
 
 		for (int id : stagesSection.getKeys(false).stream().map(Integer::parseInt).sorted().collect(Collectors.toSet())) {
@@ -354,10 +352,7 @@ public class QuestBranchImplementation implements QuestBranch {
 				addRegularStage(StageControllerImplementation.loadFromConfig(this,
 						stagesSection.getConfigurationSection(Integer.toString(id))));
 			}catch (Exception ex){
-				QuestsPlugin.getPlugin().getLoggerExpanded().severe(
-						"Error when deserializing the stage " + id + " for the quest " + manager.getQuest().getId(), ex);
-				QuestsPlugin.getPlugin().notifyLoadingFailure();
-				return false;
+				throw new DataLoadingException("Error when deserializing the stage " + id, ex);
 			}
 		}
 
@@ -370,15 +365,10 @@ public class QuestBranchImplementation implements QuestBranch {
 					QuestBranchImplementation branchLinked = stage.contains("branchLinked") ? manager.getBranch(stage.getInt("branchLinked")) : null;
 					addEndStage(StageControllerImplementation.loadFromConfig(this, stage), branchLinked);
 				}catch (Exception ex){
-					QuestsPlugin.getPlugin().getLoggerExpanded().severe(
-							"Error when deserializing an ending stage for the quest " + manager.getQuest().getId(), ex);
-					QuestsPlugin.getPlugin().notifyLoadingFailure();
-					return false;
+					throw new DataLoadingException("Error when deserializing the ending stage " + key, ex);
 				}
 			}
 		}
-
-		return true;
 	}
 
 }

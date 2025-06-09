@@ -4,6 +4,7 @@ import static fr.skytasul.quests.test.TestUtils.loadPlugin;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import fr.skytasul.quests.BeautyQuests;
 import fr.skytasul.quests.structure.QuestImplementation;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -17,12 +18,13 @@ class YamlQuesterDataTest {
 
 	@TempDir
 	private Path dataPath;
+	private BeautyQuests plugin;
 
 	private YamlDataManager dataManagerMock;
 
 	@BeforeEach
 	void setUp() {
-		loadPlugin();
+		plugin = loadPlugin();
 
 		dataManagerMock = Mockito.mock(YamlDataManager.class);
 		Mockito.when(dataManagerMock.getDataPath()).thenReturn(dataPath);
@@ -42,7 +44,7 @@ class YamlQuesterDataTest {
 
 	@Test
 	void testPersistence() {
-		var quest = new QuestImplementation(8, dataPath.resolve("qu.yml").toFile());
+		var quest = new QuestImplementation(plugin.getQuestsManager(), 8, dataPath.resolve("qu.yml").toFile());
 
 		var questerData = new YamlQuesterData(4, dataManagerMock);
 		var questData = questerData.getQuestData(quest);

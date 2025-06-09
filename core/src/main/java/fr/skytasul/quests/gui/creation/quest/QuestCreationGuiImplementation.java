@@ -32,6 +32,7 @@ import fr.skytasul.quests.gui.creation.stages.StagesGUI;
 import fr.skytasul.quests.options.OptionName;
 import fr.skytasul.quests.structure.QuestBranchImplementation;
 import fr.skytasul.quests.structure.QuestImplementation;
+import fr.skytasul.quests.structure.QuestsManagerImplementation;
 import fr.skytasul.quests.structure.StageControllerImplementation;
 import fr.skytasul.quests.utils.QuestUtils;
 import net.md_5.bungee.api.ChatColor;
@@ -167,25 +168,14 @@ public class QuestCreationGuiImplementation extends LayoutedGUI implements Quest
 
 	private void finish() {
 		QuestImplementation qu;
+		QuestsManagerImplementation manager = BeautyQuests.getInstance().getQuestsManager();
 		if (session.isEdition()) {
 			QuestsPlugin.getPlugin().getLoggerExpanded().debug(
 					"Editing quest " + session.getQuestEdited().getId() + " with keep datas: " + keepPlayerDatas);
 			session.getQuestEdited().delete(true, true);
-			qu = new QuestImplementation(session.getQuestEdited().getId(), session.getQuestEdited().getFile());
+			qu = new QuestImplementation(manager, session.getQuestEdited().getId(), session.getQuestEdited().getFile());
 		}else {
-			int id = -1;
-			if (session.hasCustomID()) {
-				if (QuestsAPI.getAPI().getQuestsManager().getQuests().stream()
-						.anyMatch(x -> x.getId() == session.getCustomID())) {
-					QuestsPlugin.getPlugin().getLoggerExpanded().warning("Cannot create quest with custom ID " + session.getCustomID() + " because another quest with this ID already exists.");
-				}else {
-					id = session.getCustomID();
-					QuestsPlugin.getPlugin().getLoggerExpanded().warning("A quest will be created with custom ID " + id + ".");
-				}
-			}
-			if (id == -1)
-				id = BeautyQuests.getInstance().getQuestsManager().getFreeQuestID();
-			qu = new QuestImplementation(id);
+			qu = manager.createQuest(session.hasCustomID() ? OptionalInt.of(session.getCustomID()) : OptionalInt.empty());
 		}
 
 		for (QuestOption<?> option : options) {
