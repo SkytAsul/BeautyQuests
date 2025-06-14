@@ -45,6 +45,7 @@ public class Scoreboard extends BukkitRunnable implements Listener {
 	private boolean hidForce = false;
 	private int changeTime = 1;
 
+	@SuppressWarnings("rawtypes")
 	Scoreboard(Player player, ScoreboardManager manager) {
 		Bukkit.getPluginManager().registerEvents(this, BeautyQuests.getInstance());
 		this.p = player;
@@ -55,7 +56,7 @@ public class Scoreboard extends BukkitRunnable implements Listener {
 			lines.add(new Line(line));
 		}
 
-		launched = QuestsAPI.getAPI().getQuestsManager().getQuestsStarted(acc, false, true);
+		launched = (List) QuestsAPI.getAPI().getQuestsManager().getQuestsStarted(acc, false, true);
 
 		hid = !manager.isWorldAllowed(p.getWorld().getName());
 
@@ -184,7 +185,7 @@ public class Scoreboard extends BukkitRunnable implements Listener {
 		if (!quest.isScoreboardEnabled()) return;
 		if (!launched.contains(quest)) {
 			if (errorWhenUnknown) {
-				launched = QuestsAPI.getAPI().getQuestsManager().getQuestsStarted(acc, false, true);
+				launched = (List) QuestsAPI.getAPI().getQuestsManager().getQuestsStarted(acc, false, true);
 				if (!launched.contains(quest)) throw new IllegalArgumentException("Quest is not running for player.");
 			}else return;
 		}

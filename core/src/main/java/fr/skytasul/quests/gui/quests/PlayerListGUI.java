@@ -79,7 +79,7 @@ public class PlayerListGUI extends PagedGUI<Quest> {
 
 		setSeparatorColor(cat.getColor());
 
-		List<Quest> quests;
+		List<? extends Quest> quests;
 		switch (cat) {
 			case FINISHED:
 				quests = QuestsAPI.getAPI().getQuestsManager().getQuestsFinished(acc, hide);
@@ -101,7 +101,7 @@ public class PlayerListGUI extends PagedGUI<Quest> {
 		}
 		quests.sort(null);
 
-		setObjects(quests);
+		setObjects((List) quests);
 	}
 
 	@Override

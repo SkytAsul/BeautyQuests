@@ -105,7 +105,7 @@ public class CommandsPlayerManagement implements OrphanCommand {
 
 		var dataOpt = quester.getDataHolder().getQuestDataIfPresent(quest);
 		if (branchID == null && (dataOpt.isEmpty() || !dataOpt.get().hasStarted())) { // start quest
-			quest.start(quester);
+			quest.start(quester, false);
 			Lang.START_QUEST.send(actor.sender(), quest, quester);
 			return;
 		}
@@ -312,11 +312,18 @@ public class CommandsPlayerManagement implements OrphanCommand {
 	}
 
 	private void start(CommandSender sender, Quester target, Quest quest, boolean overrideRequirements) {
-		if (!overrideRequirements && !quest.canStart(target, true)) {
-			Lang.START_QUEST_NO_REQUIREMENT.send(sender, quest, target);
-			return;
+		if (!overrideRequirements) {
+			if (!(target instanceof PlayerQuester playerQuester) || !playerQuester.isOnline()) {
+				DefaultErrors.sendGeneric(BeautyQuests.getInstance().getAudiences().sender(sender),
+						"Cannot test requirements for non-player quester");
+				return;
+			}
+			if (!quest.canStart(playerQuester.getPlayer().get(), true)) {
+				Lang.START_QUEST_NO_REQUIREMENT.send(sender, quest, target);
+				return;
+			}
 		}
-		quest.start(target);
+		quest.start(target, false);
 		Lang.START_QUEST.send(sender, quest, target);
 	}
 

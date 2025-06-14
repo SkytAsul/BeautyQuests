@@ -13,6 +13,7 @@ import fr.skytasul.quests.api.utils.messaging.PlaceholderRegistry;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
+import java.util.List;
 
 public class QuestRequirement extends AbstractRequirement {
 
@@ -62,12 +63,13 @@ public class QuestRequirement extends AbstractRequirement {
 		loreBuilder.addDescription(QuestOption.formatNullableValue(exists() ? cached.getName() : null));
 	}
 
+	@SuppressWarnings("rawtypes")
 	@Override
 	public void itemClick(QuestObjectClickEvent event) {
 		QuestsPlugin.getPlugin().getGuiManager().getFactory().createQuestSelection(quest -> {
 			this.questId = quest.getId();
 			event.reopenGUI();
-		}, event::remove, QuestsAPI.getAPI().getQuestsManager().getQuests()).open(event.getPlayer());
+		}, event::remove, (List) QuestsAPI.getAPI().getQuestsManager().getQuests()).open(event.getPlayer());
 	}
 
 	@Override

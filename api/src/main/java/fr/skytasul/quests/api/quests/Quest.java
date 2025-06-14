@@ -69,11 +69,7 @@ public interface Quest extends OptionSet, Comparable<Quest>, HasPlaceholders {
 
 	public void doNpcClick(@NotNull Player player);
 
-	public default void start(@NotNull Player player) {
-		start(player, false);
-	}
-
-	public void start(@NotNull Player player, boolean silently);
+	public void start(@NotNull Quester quester, boolean silently);
 
 	public void finish(@NotNull Quester quester);
 

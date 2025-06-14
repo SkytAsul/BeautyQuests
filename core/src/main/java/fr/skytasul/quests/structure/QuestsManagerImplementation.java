@@ -120,13 +120,8 @@ public class QuestsManagerImplementation implements QuestsManager {
 		return saveFolder;
 	}
 
-	@SuppressWarnings("rawtypes")
 	@Override
-	public @NotNull List<Quest> getQuests() {
-		return (List) quests;
-	}
-
-	public @NotNull List<QuestImplementation> getQuestsRaw() {
+	public @NotNull List<QuestImplementation> getQuests() {
 		return quests;
 	}
 
@@ -206,7 +201,7 @@ public class QuestsManagerImplementation implements QuestsManager {
 	}
 
 	@Override
-	public @NotNull @Unmodifiable List<Quest> getQuestsFinished(@NotNull Quester acc, boolean hide) {
+	public @NotNull @Unmodifiable List<QuestImplementation> getQuestsFinished(@NotNull Quester acc, boolean hide) {
 		return quests
 				.stream()
 				.filter(quest -> !(hide && quest.isHidden(QuestVisibilityLocation.TAB_FINISHED)) && quest.hasFinished(acc))
@@ -214,7 +209,7 @@ public class QuestsManagerImplementation implements QuestsManager {
 	}
 
 	@Override
-	public @NotNull @Unmodifiable List<Quest> getQuestsNotStarted(@NotNull Quester acc, boolean hide,
+	public @NotNull @Unmodifiable List<QuestImplementation> getQuestsNotStarted(@NotNull Quester acc, boolean hide,
 			boolean clickableAndRedoable) {
 		return quests
 				.stream()

@@ -128,13 +128,15 @@ public class QuestsListener implements Listener{
 	@EventHandler (priority = EventPriority.LOW)
 	public void onAccountJoin(QuesterJoinEvent e) {
 		if (e.isFirstJoin()) {
-			QuestsAPI.getAPI().getQuestsManager().getQuests().stream().filter(qu -> qu.getOptionValueOrDef(OptionAutoQuest.class)).forEach(qu -> qu.start(e.getPlayer()));
+			QuestsAPI.getAPI().getQuestsManager().getQuests().stream()
+					.filter(qu -> qu.getOptionValueOrDef(OptionAutoQuest.class))
+					.forEach(qu -> qu.start(e.getQuester(), false));
 		}
 	}
 
 	@EventHandler
 	public void onAccountLeave(QuesterLeaveEvent e) {
-		BeautyQuests.getInstance().getQuestsManager().getQuestsRaw().forEach(x -> x.leave(e.getPlayer()));
+		BeautyQuests.getInstance().getQuestsManager().getQuests().forEach(x -> x.leave(e.getPlayer()));
 	}
 
 	@EventHandler (priority = EventPriority.HIGH)

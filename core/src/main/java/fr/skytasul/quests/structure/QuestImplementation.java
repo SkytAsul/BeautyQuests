@@ -399,46 +399,44 @@ public class QuestImplementation implements Quest, QuestDescriptionProvider {
 		if (!canStart(p, true))
 			return CompletableFuture.completedFuture(false);
 
+		var quester = PlayerManager.getPlayerAccount(p);
+
 		String confirm;
 		if (QuestsConfiguration.getConfig().getQuestsConfig().questConfirmGUI()
 				&& !"none".equals(confirm = getOptionValueOrDef(OptionConfirmMessage.class))) {
 			CompletableFuture<Boolean> future = new CompletableFuture<>();
 			QuestsPlugin.getPlugin().getGuiManager().getFactory().createConfirmation(() -> {
-				start(p);
+				start(quester, false);
 				future.complete(true);
 			}, () -> {
 				future.complete(false);
 			}, Lang.INDICATION_START.format(getPlaceholdersRegistry()), confirm).open(p);
 			return future;
 		}else {
-			start(p);
+			start(quester, false);
 			return CompletableFuture.completedFuture(true);
 		}
 	}
 
 	@Override
-	public void start(@NotNull Player p) {
-		start(p, false);
-	}
-
-	@Override
-	public void start(@NotNull Player p, boolean silently) {
-		Quester quester = PlayerManager.getPlayerAccount(p);
+	public void start(@NotNull Quester quester, boolean silently) {
 		if (hasStarted(quester)) {
-			if (!silently) Lang.ALREADY_STARTED.send(p);
+			if (!silently)
+				Lang.ALREADY_STARTED.send(quester);
 			return;
 		}
 
 		QuesterQuestPreLaunchEvent event = new QuesterQuestPreLaunchEvent(quester, this);
 		Bukkit.getPluginManager().callEvent(event);
 		if (event.isCancelled()) return;
-		AdminMode.broadcast(p.getName() + " started the quest " + id);
+		AdminMode.broadcast(quester.getFriendlyName() + " started the quest " + id);
 		quester.getDataHolder().getQuestData(this).setTimer(OptionalLong.empty());
 
 		if (!silently) {
 			String startMsg = getOptionValueOrDef(OptionStartMessage.class);
 			if (!"none".equals(startMsg))
-				MessageUtils.sendRawMessage(p, startMsg, getPlaceholdersRegistry(), PlaceholdersContext.of(p, true, null));
+				MessageUtils.sendRawMessage(quester, startMsg, getPlaceholdersRegistry(),
+						PlaceholdersContext.of(quester, true, null));
 		}
 
 		getOptionValueOrDef(OptionStartRewards.class).giveRewards(quester).whenComplete((result, ex) -> {
@@ -458,7 +456,7 @@ public class QuestImplementation implements Quest, QuestDescriptionProvider {
 						MessageUtils.itemsToFormattedString(earnings.toArray(String[]::new))));
 
 			getOptionValueOrDef(OptionRequirements.class).stream().filter(Actionnable.class::isInstance)
-					.map(Actionnable.class::cast).forEach(x -> x.trigger(p));
+					.map(Actionnable.class::cast).forEach(x -> quester.getOnlinePlayers().forEach(x::trigger));
 
 			QuestUtils.runOrSync(() -> {
 				manager.startPlayer(quester);
