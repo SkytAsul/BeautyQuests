@@ -5,11 +5,17 @@ import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.UnmodifiableView;
 import java.util.Collection;
+import java.util.Optional;
 
 public interface QuesterProvider extends Keyed {
 
 	// Really useful?
 	// @NotNull Optional<Quester> getQuester(@NotNull String identifier);
+
+	@NotNull
+	default Optional<String> getQuesterName(@NotNull String identifier) {
+		return Optional.empty();
+	}
 
 	@NotNull
 	@UnmodifiableView

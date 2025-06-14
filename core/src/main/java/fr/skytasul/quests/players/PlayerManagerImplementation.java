@@ -53,6 +53,13 @@ public class PlayerManagerImplementation implements PlayerManager, Listener {
 		return cachedQuesters.values();
 	}
 
+	@Override
+	public @NotNull Optional<String> getQuesterName(@NotNull String identifier) {
+		var uuid = UUID.fromString(identifier);
+		var player = Bukkit.getOfflinePlayer(uuid);
+		return Optional.ofNullable(player.getName());
+	}
+
 	// @Override
 	public @NotNull Optional<Quester> getQuester(@NotNull String identifier) {
 		var uuid = UUID.fromString(identifier);

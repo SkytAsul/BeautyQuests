@@ -33,6 +33,12 @@ public class PlayerManagerAccountsHookImplementation extends PlayerManagerImplem
 	}
 
 	@Override
+	public @NotNull Optional<String> getQuesterName(@NotNull String identifier) {
+		return getAccountsProvider().getFromIdentifier(NamespacedKey.fromString(identifier))
+				.map(acc -> acc.getOfflinePlayer().getName());
+	}
+
+	@Override
 	protected @NotNull Optional<String> getIdentifier(@NotNull OfflinePlayer p) {
 		if (!p.isOnline()) {
 			QuestsPlugin.getPlugin().getLogger()

@@ -16,7 +16,7 @@ public interface QuesterManager {
 	Collection<QuesterProvider> getQuesterProviders();
 
 	@NotNull
-	QuesterProvider getQuesterProvide(@NotNull Key key) throws IllegalArgumentException;
+	QuesterProvider getQuesterProvider(@NotNull Key key) throws IllegalArgumentException;
 
 	void addSavableData(@NotNull SavableData<?> data);
 
