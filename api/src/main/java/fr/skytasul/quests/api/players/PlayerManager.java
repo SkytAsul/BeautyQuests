@@ -1,6 +1,7 @@
 package fr.skytasul.quests.api.players;
 
 import fr.skytasul.quests.api.QuestsPlugin;
+import fr.skytasul.quests.api.questers.QuesterManager;
 import fr.skytasul.quests.api.questers.QuesterProvider;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
@@ -24,7 +25,11 @@ public interface PlayerManager extends QuesterProvider {
 
 	public @UnknownNullability PlayerQuester getQuester(@NotNull Player p);
 
-	@Deprecated
+	/**
+	 * @deprecated use the non-static version {@link #getQuester(Player)}, or better, switch to using
+	 *             the {@link QuesterManager} directly
+	 */
+	@Deprecated(forRemoval = true)
 	public static @UnknownNullability PlayerQuester getPlayerAccount(@NotNull Player p) {
 		return QuestsPlugin.getPlugin().getPlayersManager().getQuester(p);
 	}

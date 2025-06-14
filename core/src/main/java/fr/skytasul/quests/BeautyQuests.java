@@ -324,7 +324,7 @@ public class BeautyQuests extends JavaPlugin implements QuestsPlugin {
 	}
 
 	private void registerCommands(){
-		command = new CommandsManagerImplementation();
+		command = new CommandsManagerImplementation(this);
 		command.initializeCommands();
 	}
 

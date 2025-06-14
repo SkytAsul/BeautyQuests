@@ -119,8 +119,9 @@ public class LoggerExpanded {
 		};
 	}
 
-	public <T> BiConsumer<T, Throwable> logError(@Nullable String friendlyErrorMessage, @Nullable Audience sender) {
-		return logError(null, friendlyErrorMessage, sender, new Object[0]);
+	public <T> BiConsumer<T, Throwable> logError(@Nullable String friendlyErrorMessage, @Nullable Audience sender,
+			Object... parameters) {
+		return logError(null, friendlyErrorMessage, sender, parameters);
 	}
 
 	public <T> BiConsumer<T, Throwable> logError(@Nullable String friendlyErrorMessage, Object... parameters) {

@@ -1,6 +1,7 @@
 package fr.skytasul.quests.api.questers;
 
 import fr.skytasul.quests.api.data.SavableData;
+import net.kyori.adventure.key.Key;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.UnmodifiableView;
@@ -13,6 +14,9 @@ public interface QuesterManager {
 	@NotNull
 	@UnmodifiableView
 	Collection<QuesterProvider> getQuesterProviders();
+
+	@NotNull
+	QuesterProvider getQuesterProvide(@NotNull Key key) throws IllegalArgumentException;
 
 	void addSavableData(@NotNull SavableData<?> data);
 

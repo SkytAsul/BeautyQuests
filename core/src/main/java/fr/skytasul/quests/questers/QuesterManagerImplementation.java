@@ -47,6 +47,14 @@ public class QuesterManagerImplementation implements QuesterManager {
 		return providers.values();
 	}
 
+	@Override
+	public @NotNull QuesterProvider getQuesterProvide(@NotNull Key key) throws IllegalArgumentException {
+		var provider = providers.get(key);
+		if (provider == null)
+			throw new IllegalArgumentException("Cannot find quester provider " + key);
+		return provider;
+	}
+
 	public @NotNull QuesterDataManager getDataManager() {
 		return dataManager;
 	}

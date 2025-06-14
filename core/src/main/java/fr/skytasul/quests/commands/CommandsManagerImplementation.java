@@ -4,15 +4,15 @@ import fr.skytasul.quests.BeautyQuests;
 import fr.skytasul.quests.api.QuestsPlugin;
 import fr.skytasul.quests.api.commands.CommandsManager;
 import fr.skytasul.quests.api.commands.OutsideEditor;
+import fr.skytasul.quests.api.commands.QuesterSelector;
 import fr.skytasul.quests.api.localization.Lang;
 import fr.skytasul.quests.api.npcs.BqNpc;
 import fr.skytasul.quests.api.pools.QuestPool;
+import fr.skytasul.quests.api.questers.Quester;
 import fr.skytasul.quests.api.quests.Quest;
 import fr.skytasul.quests.api.utils.messaging.MessageType;
 import fr.skytasul.quests.api.utils.messaging.MessageUtils;
-import fr.skytasul.quests.commands.parameters.BqNpcParameter;
-import fr.skytasul.quests.commands.parameters.QuestParameter;
-import fr.skytasul.quests.commands.parameters.QuestPoolParameter;
+import fr.skytasul.quests.commands.parameters.*;
 import fr.skytasul.quests.scoreboards.Scoreboard;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
@@ -30,17 +30,25 @@ public class CommandsManagerImplementation implements CommandsManager {
 
 	private Lamp<BukkitCommandActor> lamp;
 
-	public CommandsManagerImplementation() {
-		var builder = BukkitLamp.builder(BeautyQuests.getInstance());
+	public CommandsManagerImplementation(BeautyQuests plugin) {
+		var builder = BukkitLamp.builder(plugin);
 		// handler.failOnTooManyArguments();
+
+		// TODO
+		// builder.accept(BukkitVisitors.brigadier(ArgumentTypes.builder().addType(QuesterSelector.class,
+		// MinecraftArgumentType.ENTITY.create(false, true)), null));
 
 		builder.parameterTypes(parameters -> {
 			parameters.addParameterType(Quest.class, new QuestParameter());
 			parameters.addParameterType(QuestPool.class, new QuestPoolParameter());
 			parameters.addParameterType(BqNpc.class, new BqNpcParameter());
+			parameters.addParameterType(Quester.class,
+					new QuesterParameter(plugin.getQuesterManager(), plugin.getPlayersManager()));
+			parameters.addParameterType(QuesterSelector.class,
+					new QuesterSelectorParameter(plugin.getQuesterManager(), plugin.getPlayersManager()));
 
 			parameters.addContextParameter(Scoreboard.class, (parameter, context) -> {
-				return BeautyQuests.getInstance().getScoreboardManager()
+				return plugin.getScoreboardManager()
 						.getPlayerScoreboard(context.getResolvedArgument(Player.class));
 			});
 		});
