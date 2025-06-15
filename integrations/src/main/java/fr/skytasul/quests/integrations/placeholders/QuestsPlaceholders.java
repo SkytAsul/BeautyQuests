@@ -155,7 +155,7 @@ public class QuestsPlaceholders extends PlaceholderExpansion implements Listener
 				}
 
 				if (data.left.isEmpty()) {
-					data.left = QuestsAPI.getAPI().getQuestsManager().getQuestsStarted(data.acc, false, true);
+					data.left = (List) QuestsAPI.getAPI().getQuestsManager().getQuestsStarted(data.acc, false, true);
 				} else
 					QuestsAPI.getAPI().getQuestsManager().updateQuestsStarted(quester, true, data.left);
 
