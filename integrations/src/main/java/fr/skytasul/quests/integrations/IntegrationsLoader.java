@@ -238,7 +238,7 @@ public class IntegrationsLoader {
 	}
 
 	private boolean isZnpcsVersionValid(Plugin plugin) {
-		if (plugin.getClass().getName().equals("io.github.gonalez.znpcs.ServersNPC")) // NOSONAR
+		if (plugin.getClass().getName().equals("lol.pyr.znpcsplus.api.NpcApiProvider")) // NOSONAR
 			return true;
 
 		QuestsPlugin.getPlugin().getLoggerExpanded().warning("Your version of znpcs ("
@@ -247,15 +247,7 @@ public class IntegrationsLoader {
 	}
 
 	private void registerZnpcsPlus() {
-		try {
-			Class.forName("lol.pyr.znpcsplus.api.NpcApiProvider");
-			QuestsAPI.getAPI().addNpcFactory("znpcsplus", new BQZNPCsPlus());
-		} catch (ClassNotFoundException ex) {
-			QuestsAPI.getAPI().addNpcFactory("znpcsplus", new BQZNPCsPlusOld()); // TODO remove, old version of znpcs+
-
-			QuestsPlugin.getPlugin().getLoggerExpanded()
-					.warning("Your version of ZNPCsPlus will soon not be supported by BeautyQuests.");
-		}
+		QuestsAPI.getAPI().addNpcFactory("znpcsplus", new BQZNPCsPlus());
 	}
 
 	private void registerTooltips() {
