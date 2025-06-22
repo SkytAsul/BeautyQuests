@@ -118,7 +118,8 @@ public class PlayerManagerImplementation implements PlayerManager, Listener {
 							LOGGER.warning("{} has left the server while loading its data.", player.getName());
 
 							if (isCreation) {
-								// TODO remove quester
+								result.dataHandler().delete().whenComplete(
+										LOGGER.logError("Failed to delete the quester for {}", player.getName()));
 							}
 						}
 					});

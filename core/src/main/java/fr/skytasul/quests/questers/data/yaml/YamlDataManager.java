@@ -147,7 +147,7 @@ public class YamlDataManager implements QuesterDataManager {
 			if (cachedData.containsKey(id)) {
 				dataHandler = cachedData.get(id);
 			} else {
-				dataHandler = new YamlQuesterData(id, this);
+				dataHandler = new YamlQuesterData(id, fullIdentifier, this);
 				if (request.shouldCache())
 					cachedData.put(id, dataHandler);
 			}
@@ -167,7 +167,7 @@ public class YamlDataManager implements QuesterDataManager {
 						if (cachedData.get(dataId).removeQuestDataSilently(questId) != null)
 							amount++;
 					} else {
-						var data = new YamlQuesterData(dataId, this);
+						var data = new YamlQuesterData(dataId, identifier, this);
 						if (data.removeQuestDataSilently(questId) != null) {
 							amount++;
 							data.save();
@@ -192,7 +192,7 @@ public class YamlDataManager implements QuesterDataManager {
 						if (cachedData.get(dataId).removePoolDataSilently(poolId) != null)
 							amount++;
 					} else {
-						var data = new YamlQuesterData(dataId, this);
+						var data = new YamlQuesterData(dataId, identifier, this);
 						if (data.removePoolDataSilently(poolId) != null) {
 							amount++;
 							data.save();
@@ -221,8 +221,14 @@ public class YamlDataManager implements QuesterDataManager {
 		cachedData.clear();
 	}
 
-	protected void uncache(YamlQuesterData data) {
+	protected void uncache(@NotNull YamlQuesterData data) {
 		cachedData.remove(data.getId());
+	}
+
+	protected void remove(@NotNull YamlQuesterData data) {
+		cachedData.remove(data.getId());
+		integerIndex.remove(data.getFullIdentifier());
+		indexConfig.set("identifiers." + data.getId(), null);
 	}
 
 	record FullIdentifier(@NotNull Key provider, @NotNull String identifier) {

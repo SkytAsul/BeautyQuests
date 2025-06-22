@@ -142,6 +142,19 @@ public class SqlQuesterData extends AbstractQuesterDataImplementation {
 		}, dataManager.getDataExecutor());
 	}
 
+	@Override
+	public @NotNull CompletableFuture<Void> delete() {
+		return CompletableFuture.runAsync(() -> {
+			try (var connection = dataManager.getDbConnection();
+					var statement = connection.prepareStatement(dataManager.getSqlHandler().deleteAccount)) {
+				fillInIdentifier(statement, 1);
+			} catch (SQLException ex) {
+				SqlDataManager.LOGGER.severe("Failed to delete data of quester {} {}", ex, provider, identifier);
+				throw new CompletionException(ex);
+			}
+		}, dataManager.getDataExecutor());
+	}
+
 	protected int fillInIdentifier(PreparedStatement statement, int i) throws SQLException {
 		statement.setString(i++, provider.asString());
 		statement.setString(i++, identifier);

@@ -13,6 +13,7 @@ import fr.skytasul.quests.api.utils.Utils;
 import fr.skytasul.quests.questers.AbstractQuesterDataImplementation;
 import fr.skytasul.quests.questers.AbstractQuesterPoolDataImplementation;
 import fr.skytasul.quests.questers.AbstractQuesterQuestDataImplementation;
+import fr.skytasul.quests.questers.data.yaml.YamlDataManager.FullIdentifier;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.jetbrains.annotations.NotNull;
@@ -25,19 +26,22 @@ import java.util.OptionalInt;
 import java.util.OptionalLong;
 import java.util.Set;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.CompletionException;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 public class YamlQuesterData extends AbstractQuesterDataImplementation {
 
 	private final int id;
+	private final @NotNull FullIdentifier fullIdentifier;
 	private final @NotNull YamlDataManager dataManager;
 	private final @NotNull Path path;
 
 	private YamlConfiguration yaml;
 
-	public YamlQuesterData(int id, @NotNull YamlDataManager dataManager) {
+	public YamlQuesterData(int id, @NotNull FullIdentifier fullIdentifier, @NotNull YamlDataManager dataManager) {
 		this.id = id;
+		this.fullIdentifier = fullIdentifier;
 		this.dataManager = dataManager;
 		this.path = dataManager.getDataPath().resolve(id + ".yml");
 
@@ -45,14 +49,31 @@ public class YamlQuesterData extends AbstractQuesterDataImplementation {
 			load();
 		else
 			yaml = new YamlConfiguration();
+
+		yaml.set("provider", fullIdentifier.provider().asString());
+		yaml.set("identifier", fullIdentifier.identifier());
 	}
 
 	public int getId() {
 		return id;
 	}
 
+	public @NotNull FullIdentifier getFullIdentifier() {
+		return fullIdentifier;
+	}
+
 	public void load() {
 		yaml = YamlConfiguration.loadConfiguration(path.toFile());
+
+		String oldIdentifier = yaml.getString("identifier");
+		if (!fullIdentifier.identifier().equals(oldIdentifier))
+			YamlDataManager.LOGGER.warning("Quester data {} is being loaded with a different identifier ({} -> {})", id,
+					oldIdentifier, fullIdentifier.identifier());
+
+		String oldProvider = yaml.getString("provider");
+		if (oldProvider != null && !fullIdentifier.provider().asString().equals(oldProvider))
+			YamlDataManager.LOGGER.warning("Quester data {} is being loaded with a different provider ({} -> {})", id,
+					oldProvider, fullIdentifier.provider());
 
 		if (yaml.isList("quests")) {
 			// TODO remove, migration to 2.0
@@ -134,6 +155,18 @@ public class YamlQuesterData extends AbstractQuesterDataImplementation {
 	@Override
 	public void unload() {
 		dataManager.uncache(this);
+	}
+
+	@Override
+	public @NotNull CompletableFuture<Void> delete() {
+		return CompletableFuture.runAsync(() -> {
+			try {
+				dataManager.remove(this);
+				Files.deleteIfExists(path);
+			} catch (IOException ex) {
+				throw new CompletionException("Failed to delete the quester file", ex);
+			}
+		});
 	}
 
 	public class QuestData extends AbstractQuesterQuestDataImplementation {

@@ -71,8 +71,8 @@ public class CommandsManagerImplementation implements CommandsManager {
 		builder.responseHandler(String.class, (msg, context) -> context.actor().reply(msg));
 
 		builder.hooks().onCommandExecuted((command, context, cancel) -> {
-			QuestsPlugin.getPlugin().getLoggerExpanded()
-					.debug(context.actor().name() + " executed command: " + context.input().source()); // TODO test
+			QuestsPlugin.getPlugin().getLoggerExpanded().debug("{0} executed command: {1}", context.actor().name(),
+					context.input().source());
 		});
 
 		lamp = builder.build();

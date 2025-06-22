@@ -97,4 +97,16 @@ public interface QuesterData {
 
 	void unload();
 
+	/**
+	 * Removes all the data. This is typically used when the data is created for the first join of a
+	 * player but the player leaves before the quester instance if fully loaded, leaving it in a
+	 * transitory state.
+	 * <p>
+	 * This should <b>NOT</b> be used to reset a quester's data. Use {@link #resetData()} instead.
+	 *
+	 * @return a future that completes when the data is deleted
+	 */
+	@NotNull
+	CompletableFuture<Void> delete();
+
 }

@@ -1,9 +1,9 @@
 package fr.skytasul.quests.questers.data.sql;
 
 import fr.skytasul.quests.api.QuestsAPI;
-import fr.skytasul.quests.api.QuestsPlugin;
 import fr.skytasul.quests.api.data.DataLoadingException;
 import fr.skytasul.quests.api.data.DataSavingException;
+import fr.skytasul.quests.api.utils.logger.LoggerExpanded;
 import fr.skytasul.quests.questers.data.QuesterDataManager;
 import fr.skytasul.quests.utils.Database;
 import org.jetbrains.annotations.NotNull;
@@ -13,6 +13,7 @@ import java.util.concurrent.*;
 
 public class SqlDataManager implements QuesterDataManager {
 
+	protected static final LoggerExpanded LOGGER = LoggerExpanded.get("BeautyQuests.SqlDataManager");
 	private final SqlHandler sqlHandler;
 
 	private final ExecutorService dataExecutor = Executors.newSingleThreadExecutor(new ThreadFactory() {
@@ -98,8 +99,7 @@ public class SqlDataManager implements QuesterDataManager {
 					var statement = connection.prepareStatement(sqlHandler.removeExistingQuestDatas)) {
 				statement.setInt(1, questId);
 				int amount = statement.executeUpdate();
-				QuestsPlugin.getPlugin().getLoggerExpanded().debug("Removed {} in-database quest datas for quest {}.",
-						amount, questId);
+				LOGGER.debug("Removed {} in-database quest datas for quest {}.", amount, questId);
 				return amount;
 			} catch (SQLException ex) {
 				throw new CompletionException(ex);
@@ -114,8 +114,7 @@ public class SqlDataManager implements QuesterDataManager {
 					var statement = connection.prepareStatement(sqlHandler.removeExistingPoolDatas)) {
 				statement.setInt(1, poolId);
 				int amount = statement.executeUpdate();
-				QuestsPlugin.getPlugin().getLoggerExpanded().debug("Removed {} in-database data for pool {}.",
-						amount, poolId);
+				LOGGER.debug("Removed {} in-database data for pool {}.", amount, poolId);
 				return amount;
 			} catch (SQLException ex) {
 				throw new CompletionException(ex);
