@@ -40,6 +40,8 @@ import java.util.stream.Collectors;
 
 public class QuestsListener implements Listener{
 
+	private List<QuestPool> lockedPools = Collections.synchronizedList(new ArrayList<>());
+
 	@EventHandler (priority = EventPriority.HIGHEST, ignoreCancelled = true)
 	public void onNPCClick(BQNPCClickEvent e) {
 		if (e.isCancelled()) return;
@@ -83,7 +85,12 @@ public class QuestsListener implements Listener{
 
 		Set<QuestPool> startablePools = npc.getPools().stream().filter(pool -> {
 			try {
-				return pool.canGive(p);
+				if (lockedPools.contains(pool)) {
+					QuestsPlugin.getPlugin().getLoggerExpanded().warning("{} tried to start the pool {} too fast",
+							quester.getDetailedName(), pool.getId());
+					return false;
+				}
+				return pool.canGive(p).result();
 			}catch (Exception ex) {
 				QuestsPlugin.getPlugin().getLoggerExpanded().severe("An exception occured when checking requirements on the pool " + pool.getId() + " for player " + p.getName(), ex);
 				return false;
@@ -110,16 +117,30 @@ public class QuestsListener implements Listener{
 			}
 		}else if (!startablePools.isEmpty()) {
 			QuestPool pool = startablePools.iterator().next();
-			QuestsPlugin.getPlugin().getLoggerExpanded()
-					.debug("NPC " + npc.getId() + ": " + startablePools.size() + " pools, result: " + pool.give(p));
+			lockedPools.add(pool);
+			pool.give(p).whenComplete((result, ex) -> {
+				lockedPools.remove(pool);
+				if (ex != null) {
+					QuestsPlugin.getPlugin().getLoggerExpanded().severe("Failed to give pool {} to {}", ex,
+							quester.getDetailedName());
+				} else if (result != null) {
+					QuestsPlugin.getPlugin().getLoggerExpanded().debug("NPC {}: {} pools, result: {}", npc.getId(),
+							startablePools.size(), result);
+				}
+			});
 		}else {
 			if (!timer.isEmpty()) {
 				timer.get(0).testTimer(quester, true);
 			}else if (!requirements.isEmpty()) {
 				requirements.get(0).testRequirements(p, quester, true);
 			}else {
-				npc.getPools().iterator().next().give(p)
-						.thenAccept(result -> MessageUtils.sendMessage(p, result, MessageType.DefaultMessageType.PREFIXED));
+				for (var pool : npc.getPools()) {
+					var reason = pool.canGive(p).reason();
+					if (reason != null) {
+						MessageUtils.sendMessage(p, reason, MessageType.DefaultMessageType.PREFIXED);
+						break;
+					}
+				}
 			}
 			e.setCancelled(false);
 		}

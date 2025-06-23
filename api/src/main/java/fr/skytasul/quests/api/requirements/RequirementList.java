@@ -1,15 +1,18 @@
 package fr.skytasul.quests.api.requirements;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.Map;
-import org.bukkit.entity.Player;
-import org.jetbrains.annotations.NotNull;
 import fr.skytasul.quests.api.QuestsPlugin;
 import fr.skytasul.quests.api.localization.Lang;
 import fr.skytasul.quests.api.quests.Quest;
 import fr.skytasul.quests.api.serializable.SerializableObject;
+import fr.skytasul.quests.api.utils.messaging.MessageType;
+import fr.skytasul.quests.api.utils.messaging.MessageUtils;
+import org.bukkit.entity.Player;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+import java.util.Map;
 
 public class RequirementList extends ArrayList<@NotNull AbstractRequirement> {
 
@@ -21,13 +24,14 @@ public class RequirementList extends ArrayList<@NotNull AbstractRequirement> {
 		super(requirements);
 	}
 
-	public boolean allMatch(@NotNull Player p, boolean message) {
+	public @NotNull MatchResult allMatch(@NotNull Player p) {
 		boolean match = true;
 		for (AbstractRequirement requirement : this) {
 			try {
 				if (!requirement.isValid() || !requirement.test(p)) {
-					if (!message || requirement.sendReason(p))
-						return false;
+					String reason = requirement.getReason(p);
+					if (reason != null)
+						return new MatchResult(false, reason);
 
 					// if we are here, it means a reason has not yet been sent
 					// so we continue until a reason is sent OR there is no more requirement
@@ -37,10 +41,17 @@ public class RequirementList extends ArrayList<@NotNull AbstractRequirement> {
 				QuestsPlugin.getPlugin().getLoggerExpanded().severe(
 						"Cannot test requirement " + requirement.getClass().getSimpleName() + " for player " + p.getName(),
 						ex);
-				return false;
+				return new MatchResult(false, "error");
 			}
 		}
-		return match;
+		return new MatchResult(match, null);
+	}
+
+	public boolean allMatch(@NotNull Player p, boolean message) {
+		var result = allMatch(p);
+		if (message && result.reason() != null)
+			MessageUtils.sendMessage(p, result.reason(), MessageType.DefaultMessageType.PREFIXED);
+		return result.result();
 	}
 
 	public boolean anyMatch(@NotNull Player p) {
@@ -79,6 +90,9 @@ public class RequirementList extends ArrayList<@NotNull AbstractRequirement> {
 
 	public static String getSizeString(int size) {
 		return Lang.requirements.quickFormat("amount", size);
+	}
+
+	public record MatchResult(boolean result, @Nullable String reason) {
 	}
 
 }

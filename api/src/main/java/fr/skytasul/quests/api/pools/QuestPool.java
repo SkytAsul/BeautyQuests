@@ -49,9 +49,20 @@ public interface QuestPool extends HasPlaceholders {
 
 	void resetPlayerTimer(@NotNull Quester acc);
 
-	boolean canGive(@NotNull Player p);
+	@NotNull
+	CanGiveResult canGive(@NotNull Player p);
 
 	@NotNull
 	CompletableFuture<String> give(@NotNull Player p);
+
+	/**
+	 * The result of a {@link QuestPool#canGive(Player)} operation.
+	 *
+	 * @param result <code>true</code> if a quest can be given from this pool
+	 * @param reason a potential reason why the pool could not give a quest. If {@link #result} is
+	 *        <code>true</code>, then this should be <code>null</code>
+	 */
+	record CanGiveResult(boolean result, @Nullable String reason) {
+	}
 
 }

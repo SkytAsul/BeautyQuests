@@ -86,13 +86,14 @@ public class CommandsPools implements OrphanCommand {
 	public void start(BukkitCommandActor actor, EntitySelector<Player> players, QuestPool pool) {
 		for (Player player : players) {
 			Quester acc = PlayerManager.getPlayerAccount(player);
-			if (!pool.canGive(player)) {
+			if (!pool.canGive(player).result()) {
 				Lang.POOL_START_ERROR.send(player, pool, acc);
 				return;
 			}
 
-			pool.give(player).thenAccept(result -> Lang.POOL_START_SUCCESS.send(actor.sender(), pool, acc,
-							PlaceholderRegistry.of("result", result)));
+			pool.give(player).whenComplete(QuestsPlugin.getPlugin().getLoggerExpanded().logError(result -> {
+				Lang.POOL_START_SUCCESS.send(actor.sender(), pool, acc, PlaceholderRegistry.of("result", result));
+			}, "Failed to give pool {} to {}", acc, pool.getId(), acc.getDetailedName()));
 		}
 	}
 
