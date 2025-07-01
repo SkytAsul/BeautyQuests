@@ -5,6 +5,8 @@ import fr.skytasul.quests.api.questers.QuesterQuestData;
 import fr.skytasul.quests.api.quests.Quest;
 import fr.skytasul.quests.api.stages.StageController;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+import org.jetbrains.annotations.UnmodifiableView;
 import java.util.*;
 
 public abstract class AbstractQuesterQuestDataImplementation implements QuesterQuestData {
@@ -104,6 +106,11 @@ public abstract class AbstractQuesterQuestDataImplementation implements QuesterQ
 	}
 
 	@Override
+	public @NotNull @UnmodifiableView Map<@NotNull Integer, Map<@NotNull String, @Nullable Object>> getAllStagesData() {
+		return stageData;
+	}
+
+	@Override
 	public Map<String, Object> getStageData(int stage) {
 		return stageData.get(stage);
 	}
@@ -111,6 +118,11 @@ public abstract class AbstractQuesterQuestDataImplementation implements QuesterQ
 	@Override
 	public void setStageData(int stage, Map<String, Object> datas) {
 		stageData.put(stage, datas);
+	}
+
+	@Override
+	public @NotNull @UnmodifiableView Map<@NotNull String, @NotNull Object> getAllAdditionalData() {
+		return additionalData;
 	}
 
 	@Override

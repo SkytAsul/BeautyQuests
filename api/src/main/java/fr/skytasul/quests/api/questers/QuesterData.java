@@ -4,6 +4,7 @@ import fr.skytasul.quests.api.data.DataSavingException;
 import fr.skytasul.quests.api.data.SavableData;
 import fr.skytasul.quests.api.pools.QuestPool;
 import fr.skytasul.quests.api.quests.Quest;
+import net.kyori.adventure.key.Key;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.jetbrains.annotations.UnmodifiableView;
@@ -12,6 +13,12 @@ import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 
 public interface QuesterData {
+
+	@NotNull
+	Key provider();
+
+	@NotNull
+	String identifier();
 
 	/**
 	 * Checks whether the quester has data for a quest. Usually, a player has data if they:

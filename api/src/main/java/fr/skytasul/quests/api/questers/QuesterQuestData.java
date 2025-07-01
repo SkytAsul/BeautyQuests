@@ -61,10 +61,19 @@ public interface QuesterQuestData {
 
 	void setStartingTime(OptionalLong time);
 
+	@NotNull
+	@UnmodifiableView
+	Map<@NotNull Integer, Map<@NotNull String, @Nullable Object>> getAllStagesData();
+
 	@Nullable
+	@UnmodifiableView
 	Map<@NotNull String, @Nullable Object> getStageData(int stage);
 
 	void setStageData(int stage, @Nullable Map<@NotNull String, @Nullable Object> datas);
+
+	@NotNull
+	@UnmodifiableView
+	Map<@NotNull String, @NotNull Object> getAllAdditionalData();
 
 	<T> @Nullable T getAdditionalData(@NotNull String key);
 

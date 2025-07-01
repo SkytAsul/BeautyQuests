@@ -40,6 +40,16 @@ public class SqlQuesterData extends AbstractQuesterDataImplementation {
 		this.identifier = identifier;
 	}
 
+	@Override
+	public @NotNull Key provider() {
+		return provider;
+	}
+
+	@Override
+	public @NotNull String identifier() {
+		return identifier;
+	}
+
 	protected void load(@NotNull ResultSet result) throws SQLException, DataLoadingException {
 		for (SavableData<?> dataColumn : QuestsAPI.getAPI().getQuesterManager().getSavableData()) {
 			super.additionalData.put(dataColumn, SQLDataSaver.getFromResultSet(dataColumn, result));
@@ -161,21 +171,21 @@ public class SqlQuesterData extends AbstractQuesterDataImplementation {
 		return i;
 	}
 
-	protected void fillInOptionalInt(PreparedStatement statement, int i, OptionalInt value) throws SQLException {
+	protected static void fillInOptionalInt(PreparedStatement statement, int i, OptionalInt value) throws SQLException {
 		if (value.isEmpty())
 			statement.setNull(i, Types.INTEGER);
 		else
 			statement.setInt(i, value.getAsInt());
 	}
 
-	protected void fillInOptionalLong(PreparedStatement statement, int i, OptionalLong value) throws SQLException {
+	protected static void fillInOptionalLong(PreparedStatement statement, int i, OptionalLong value) throws SQLException {
 		if (value.isEmpty())
 			statement.setNull(i, Types.BIGINT);
 		else
 			statement.setLong(i, value.getAsLong());
 	}
 
-	protected void fillInSerializable(PreparedStatement statement, int i, Object object) throws SQLException {
+	protected static void fillInSerializable(PreparedStatement statement, int i, Object object) throws SQLException {
 		statement.setObject(i, CustomizedObjectTypeAdapter.serializeNullable(object));
 	}
 

@@ -14,6 +14,7 @@ import fr.skytasul.quests.questers.AbstractQuesterDataImplementation;
 import fr.skytasul.quests.questers.AbstractQuesterPoolDataImplementation;
 import fr.skytasul.quests.questers.AbstractQuesterQuestDataImplementation;
 import fr.skytasul.quests.questers.data.yaml.YamlDataManager.FullIdentifier;
+import net.kyori.adventure.key.Key;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.jetbrains.annotations.NotNull;
@@ -56,6 +57,16 @@ public class YamlQuesterData extends AbstractQuesterDataImplementation {
 
 	public int getId() {
 		return id;
+	}
+
+	@Override
+	public @NotNull Key provider() {
+		return fullIdentifier.provider();
+	}
+
+	@Override
+	public @NotNull String identifier() {
+		return fullIdentifier.identifier();
 	}
 
 	public @NotNull FullIdentifier getFullIdentifier() {

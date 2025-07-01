@@ -4,6 +4,7 @@ import fr.skytasul.quests.BeautyQuests;
 import fr.skytasul.quests.api.QuestsAPI;
 import fr.skytasul.quests.api.QuestsPlugin;
 import fr.skytasul.quests.api.commands.OutsideEditor;
+import fr.skytasul.quests.api.data.DataLoadingException;
 import fr.skytasul.quests.api.localization.Lang;
 import fr.skytasul.quests.api.npcs.BqNpc;
 import fr.skytasul.quests.api.quests.Quest;
@@ -38,6 +39,8 @@ import java.io.IOException;
 import java.net.URL;
 import java.nio.channels.Channels;
 import java.nio.channels.ReadableByteChannel;
+import java.sql.SQLException;
+import java.util.concurrent.ExecutionException;
 
 public class CommandsAdmin implements OrphanCommand {
 
@@ -220,33 +223,37 @@ public class CommandsAdmin implements OrphanCommand {
 	@CommandPermission ("beautyquests.command.manage")
 	public void migrateDatas(BukkitCommandActor actor) {
 		if (BeautyQuests.getInstance().getQuesterManager().getDataManager() instanceof SqlDataManager)
-			throw new CommandErrorException("§cYou can't migrate YAML datas to a DB system if you are already using the DB system.");
+			throw new CommandErrorException(
+					"§cYou can't migrate datas to a DB system if you are already using the DB system.");
 
 		QuestUtils.runAsync(() -> {
 			actor.reply("§aConnecting to the database.");
-			Database db = null;
-			try {
-				// no try-with-resource because the database is used in another thread
-				db = new Database(BeautyQuests.getInstance().getConfiguration().getDatabaseConfig());
+			try (Database db = new Database(BeautyQuests.getInstance().getConfiguration().getDatabaseConfig())) {
 				db.testConnection();
 				actor.reply("§aConnection to database etablished.");
-				final Database fdb = db;
-				QuestUtils.runSync(() -> {
-					actor.reply("§aStarting migration...");
-					try {
-						actor.reply("Migration is currently being re-developed.");
-						// TODO migrate
-					}catch (Exception ex) {
-						actor.error("An exception occured during migration. Process aborted. " + ex.getMessage());
-						QuestsPlugin.getPlugin().getLoggerExpanded().severe("Error during data migration", ex);
-					}
-					fdb.close();
-				});
-			} catch (Exception ex) {
+
+				var dataIterator = BeautyQuests.getInstance().getQuesterManager().getDataManager().getAll();
+				var targetDataManager = new SqlDataManager(db);
+				targetDataManager.load();
+
+				try {
+					var results = targetDataManager.importAll(dataIterator).get();
+					actor.reply("Migration done. %d questers migrated, %d failures.".formatted(results.questers(),
+							results.failures()));
+				} finally {
+					targetDataManager.unload();
+				}
+			} catch (DataLoadingException ex) {
+				actor.error("Failed to load SQL questers data manager. " + ex.getMessage());
+				QuestsPlugin.getPlugin().getLoggerExpanded().severe("Error during SQL data manager load", ex);
+			} catch (InterruptedException ex) {
+				Thread.currentThread().interrupt();
+			} catch (ExecutionException ex) {
+				actor.error("An exception occured during migration. Process aborted. " + ex.getMessage());
+				QuestsPlugin.getPlugin().getLoggerExpanded().severe("Error during data migration", ex);
+			} catch (IOException | SQLException ex) {
 				actor.error("§cConnection to database has failed. Aborting. " + ex.getMessage());
 				QuestsPlugin.getPlugin().getLoggerExpanded().severe("An error occurred while connecting to the database for datas migration.", ex);
-				if (db != null)
-					db.close();
 			}
 		});
 	}

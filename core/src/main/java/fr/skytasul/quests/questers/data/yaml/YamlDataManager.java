@@ -2,6 +2,7 @@ package fr.skytasul.quests.questers.data.yaml;
 
 import fr.skytasul.quests.api.data.DataLoadingException;
 import fr.skytasul.quests.api.data.DataSavingException;
+import fr.skytasul.quests.api.questers.QuesterData;
 import fr.skytasul.quests.api.utils.logger.LoggerExpanded;
 import fr.skytasul.quests.players.PlayerManagerImplementation;
 import fr.skytasul.quests.questers.data.QuesterDataManager;
@@ -15,6 +16,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
@@ -204,6 +206,18 @@ public class YamlDataManager implements QuesterDataManager {
 			}
 			return amount;
 		});
+	}
+
+	@Override
+	public @NotNull Iterator<? extends QuesterData> getAll() {
+		return integerIndex.entrySet().stream().map(entry -> {
+			YamlQuesterData data = cachedData.get(entry.getValue());
+			if (data == null) {
+				data = new YamlQuesterData(entry.getValue(), entry.getKey(), this);
+			}
+
+			return data;
+		}).iterator();
 	}
 
 	@Override

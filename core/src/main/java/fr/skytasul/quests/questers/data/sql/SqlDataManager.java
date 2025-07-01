@@ -1,15 +1,23 @@
 package fr.skytasul.quests.questers.data.sql;
 
+import static fr.skytasul.quests.questers.data.sql.SqlQuesterData.fillInOptionalInt;
+import static fr.skytasul.quests.questers.data.sql.SqlQuesterData.fillInOptionalLong;
+import static fr.skytasul.quests.questers.data.sql.SqlQuesterData.fillInSerializable;
 import fr.skytasul.quests.api.QuestsAPI;
 import fr.skytasul.quests.api.data.DataLoadingException;
 import fr.skytasul.quests.api.data.DataSavingException;
+import fr.skytasul.quests.api.questers.QuesterData;
+import fr.skytasul.quests.api.stages.StageController;
 import fr.skytasul.quests.api.utils.logger.LoggerExpanded;
 import fr.skytasul.quests.questers.data.QuesterDataManager;
 import fr.skytasul.quests.utils.Database;
 import org.jetbrains.annotations.NotNull;
 import java.sql.Connection;
+import java.sql.PreparedStatement;
 import java.sql.SQLException;
+import java.util.Iterator;
 import java.util.concurrent.*;
+import java.util.stream.Collectors;
 
 public class SqlDataManager implements QuesterDataManager {
 
@@ -119,6 +127,75 @@ public class SqlDataManager implements QuesterDataManager {
 			} catch (SQLException ex) {
 				throw new CompletionException(ex);
 			}
+		}, dataExecutor);
+	}
+
+	private void importQuester(@NotNull QuesterData data, @NotNull Connection connection) throws SQLException {
+		PreparedStatement statement = connection.prepareStatement(
+				"INSERT INTO %s (provider, identifier) VALUES (?, ?)".formatted(sqlHandler.QUESTERS_TABLE));
+		int i = 1;
+		statement.setString(i++, data.provider().asString());
+		statement.setString(i++, data.identifier());
+		// TODO additional data
+		statement.executeUpdate();
+
+		statement = connection.prepareStatement(
+				"INSERT INTO %s (quester_provider, quester_identifier, quest_id, finished, timer, current_branch, current_stage, starting_time, stage_data, additional_datas, state, quest_flow) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)"
+						.formatted(sqlHandler.QUESTS_DATAS_TABLE));
+		for (var quest : data.getAllQuestsData()) {
+			i = 1;
+			statement.setString(i++, data.provider().asString());
+			statement.setString(i++, data.identifier());
+			statement.setInt(i++, quest.getQuestId());
+			statement.setInt(i++, quest.getTimesFinished());
+			fillInOptionalLong(statement, i++, quest.getTimer());
+			fillInOptionalInt(statement, i++, quest.getBranch());
+			fillInOptionalInt(statement, i++, quest.getStage());
+			fillInOptionalLong(statement, i++, quest.getStartingTime());
+			fillInSerializable(statement, i++, quest.getAllStagesData());
+			fillInSerializable(statement, i++, quest.getAllAdditionalData());
+			statement.setString(i++, quest.getState().name());
+			statement.setString(i++, quest.getQuestFlowStages().stream().map(StageController::getFlowId)
+					.collect(Collectors.joining(";")));
+			statement.addBatch();
+		}
+		statement.executeBatch();
+
+		statement = connection.prepareStatement(
+				"INSERT INTO %s (quester_provider, quester_identifier, pool_id, last_give, completed_quests) VALUES (?, ?, ?, ?, ?)"
+						.formatted(sqlHandler.POOLS_DATAS_TABLE));
+		for (var pool : data.getAllPoolsData()) {
+			i = 1;
+			statement.setString(i++, data.provider().asString());
+			statement.setString(i++, data.identifier());
+			statement.setInt(i++, pool.getPoolId());
+			statement.setLong(i++, pool.getLastGive());
+			statement.setString(i++,
+					pool.getCompletedQuests().stream().map(String::valueOf).collect(Collectors.joining(";")));
+			statement.addBatch();
+		}
+		statement.executeBatch();
+	}
+
+	@Override
+	public @NotNull CompletableFuture<ImportResult> importAll(@NotNull Iterator<? extends QuesterData> iterator) {
+		return CompletableFuture.supplyAsync(() -> {
+			int successes = 0, failures = 0;
+			try (var connection = getDbConnection()) {
+				while (iterator.hasNext()) {
+					var questerData = iterator.next();
+					try {
+						importQuester(questerData, connection);
+						successes++;
+					} catch (Exception ex) {
+						LOGGER.severe("Failed to import quester %s %s", questerData.provider(), questerData.identifier());
+						failures++;
+					}
+				}
+			} catch (SQLException ex) {
+				throw new CompletionException(ex);
+			}
+			return new ImportResult(successes, failures);
 		}, dataExecutor);
 	}
 
