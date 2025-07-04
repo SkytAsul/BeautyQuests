@@ -3,6 +3,7 @@ package fr.skytasul.quests.questers.data.yaml;
 import fr.skytasul.quests.api.data.DataLoadingException;
 import fr.skytasul.quests.api.data.DataSavingException;
 import fr.skytasul.quests.api.questers.QuesterData;
+import fr.skytasul.quests.api.questers.QuesterManager;
 import fr.skytasul.quests.api.utils.logger.LoggerExpanded;
 import fr.skytasul.quests.players.PlayerManagerImplementation;
 import fr.skytasul.quests.questers.data.QuesterDataManager;
@@ -81,7 +82,7 @@ public class YamlDataManager implements QuesterDataManager {
 	}
 
 	@Override
-	public void load() throws DataLoadingException {
+	public void load(@NotNull QuesterManager questerManager) throws DataLoadingException {
 		try {
 			Files.createDirectories(dataPath);
 

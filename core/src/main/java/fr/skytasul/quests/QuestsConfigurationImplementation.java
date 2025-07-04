@@ -198,7 +198,7 @@ public class QuestsConfigurationImplementation implements QuestsConfiguration {
 		return sound;
 	}
 
-	private boolean migrateEntry(ConfigurationSection oldConfig, String oldKey, ConfigurationSection newConfig,
+	private static boolean migrateEntry(ConfigurationSection oldConfig, String oldKey, ConfigurationSection newConfig,
 			String newKey) {
 		if (oldConfig.contains(oldKey)) {
 			newConfig.set(newKey, oldConfig.get(oldKey));
@@ -466,7 +466,7 @@ public class QuestsConfigurationImplementation implements QuestsConfiguration {
 
 	}
 
-	public class DatabaseConfig {
+	public class DatabaseConfig implements QuestsConfiguration.Database {
 		private ConfigurationSection config;
 		private boolean enabled;
 		private String host;
@@ -476,7 +476,7 @@ public class QuestsConfigurationImplementation implements QuestsConfiguration {
 		private String password;
 		private boolean ssl;
 		private String connectionString;
-		private ConfigurationSection tables;
+		private Map<String, String> tables;
 
 		private DatabaseConfig(@NotNull ConfigurationSection config) {
 			this.config = config;
@@ -499,42 +499,51 @@ public class QuestsConfigurationImplementation implements QuestsConfiguration {
 			password = config.getString("password");
 			ssl = config.getBoolean("ssl");
 			connectionString = config.getString("connectionString");
-			tables = config.getConfigurationSection("tables");
+			tables = (Map) config.getConfigurationSection("tables").getValues(false);
 		}
 
-		public boolean isEnabled() {
+		@Override
+		public boolean enabled() {
 			return enabled;
 		}
 
-		public String getHost() {
+		@Override
+		public String host() {
 			return host;
 		}
 
-		public int getPort() {
+		@Override
+		public int port() {
 			return port;
 		}
 
-		public String getDatabaseName() {
+		@Override
+		public String databaseName() {
 			return database;
 		}
 
-		public String getUsername() {
+		@Override
+		public String username() {
 			return username;
 		}
 
-		public String getPassword() {
+		@Override
+		public String password() {
 			return password;
 		}
 
-		public boolean isSslEnabled() {
+		@Override
+		public boolean sslEnabled() {
 			return ssl;
 		}
 
-		public String getConnectionString() {
+		@Override
+		public String connectionString() {
 			return connectionString;
 		}
 
-		public ConfigurationSection getTables() {
+		@Override
+		public Map<String, String> tables() {
 			return tables;
 		}
 	}

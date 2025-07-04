@@ -1,6 +1,5 @@
 package fr.skytasul.quests.questers.data.sql;
 
-import fr.skytasul.quests.api.QuestsAPI;
 import fr.skytasul.quests.api.QuestsPlugin;
 import fr.skytasul.quests.api.data.DataLoadingException;
 import fr.skytasul.quests.api.data.DataSavingException;
@@ -51,7 +50,7 @@ public class SqlQuesterData extends AbstractQuesterDataImplementation {
 	}
 
 	protected void load(@NotNull ResultSet result) throws SQLException, DataLoadingException {
-		for (SavableData<?> dataColumn : QuestsAPI.getAPI().getQuesterManager().getSavableData()) {
+		for (SavableData<?> dataColumn : dataManager.questerManager.getSavableData()) {
 			super.additionalData.put(dataColumn, SQLDataSaver.getFromResultSet(dataColumn, result));
 		}
 

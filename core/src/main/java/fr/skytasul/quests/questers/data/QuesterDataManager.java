@@ -3,6 +3,7 @@ package fr.skytasul.quests.questers.data;
 import fr.skytasul.quests.api.data.DataLoadingException;
 import fr.skytasul.quests.api.data.DataSavingException;
 import fr.skytasul.quests.api.questers.QuesterData;
+import fr.skytasul.quests.api.questers.QuesterManager;
 import net.kyori.adventure.key.Key;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -35,9 +36,10 @@ public interface QuesterDataManager {
 	/**
 	 * Called when everything is setup and data are ready to be loaded.
 	 *
+	 * @param questerManager
 	 * @throws DataLoadingException when something goes wrong
 	 */
-	void load() throws DataLoadingException;
+	void load(@NotNull QuesterManager questerManager) throws DataLoadingException;
 
 	void save() throws DataSavingException;
 

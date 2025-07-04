@@ -439,7 +439,7 @@ public class BeautyQuests extends JavaPlugin implements QuestsPlugin {
 			ConfigUpdater.update(this, "config.yml", configFile);
 			config.init();
 
-			if (config.getDatabaseConfig().isEnabled()) {
+			if (config.getDatabaseConfig().enabled()) {
 				db = null;
 				try {
 					db = new Database(config.getDatabaseConfig());

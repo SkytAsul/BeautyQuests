@@ -3,10 +3,10 @@ package fr.skytasul.quests.questers.data.sql;
 import static fr.skytasul.quests.questers.data.sql.SqlQuesterData.fillInOptionalInt;
 import static fr.skytasul.quests.questers.data.sql.SqlQuesterData.fillInOptionalLong;
 import static fr.skytasul.quests.questers.data.sql.SqlQuesterData.fillInSerializable;
-import fr.skytasul.quests.api.QuestsAPI;
 import fr.skytasul.quests.api.data.DataLoadingException;
 import fr.skytasul.quests.api.data.DataSavingException;
 import fr.skytasul.quests.api.questers.QuesterData;
+import fr.skytasul.quests.api.questers.QuesterManager;
 import fr.skytasul.quests.api.stages.StageController;
 import fr.skytasul.quests.api.utils.logger.LoggerExpanded;
 import fr.skytasul.quests.questers.data.QuesterDataManager;
@@ -33,6 +33,8 @@ public class SqlDataManager implements QuesterDataManager {
 		}
 	});
 
+	protected QuesterManager questerManager;
+
 	public SqlDataManager(@NotNull Database db) {
 		this.sqlHandler = new SqlHandler(db);
 	}
@@ -56,9 +58,10 @@ public class SqlDataManager implements QuesterDataManager {
 	}
 
 	@Override
-	public void load() throws DataLoadingException {
+	public void load(@NotNull QuesterManager questerManager) throws DataLoadingException {
+		this.questerManager = questerManager;
 		try {
-			sqlHandler.createTables(QuestsAPI.getAPI().getQuesterManager());
+			sqlHandler.createTables(questerManager);
 		} catch (SQLException ex) {
 			throw new DataLoadingException("Failed to create database tables", ex);
 		}

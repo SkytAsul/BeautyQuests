@@ -2,9 +2,8 @@ package fr.skytasul.quests.utils;
 
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
-import fr.skytasul.quests.BeautyQuests;
-import fr.skytasul.quests.QuestsConfigurationImplementation.DatabaseConfig;
-import fr.skytasul.quests.api.QuestsPlugin;
+import fr.skytasul.quests.api.QuestsConfiguration;
+import fr.skytasul.quests.api.utils.logger.LoggerExpanded;
 import org.jetbrains.annotations.NotNull;
 import java.io.Closeable;
 import java.io.IOException;
@@ -17,22 +16,24 @@ import javax.sql.DataSource;
 
 public class Database implements Closeable {
 
-	private final DatabaseConfig config;
+	private static final LoggerExpanded LOGGER = LoggerExpanded.get("Database");
+
+	private final @NotNull QuestsConfiguration.Database config;
 
 	private final DbType type;
 
 	private final DataSource source;
 
-	public Database(@NotNull DatabaseConfig config) throws IOException {
+	public Database(@NotNull QuestsConfiguration.Database config) throws IOException {
 		this.config = config;
 
 		var properties = new Properties();
 		properties.load(getClass().getResourceAsStream("/hikari.properties"));
 		HikariConfig hikariConfig = new HikariConfig(properties);
 
-		String connectionString = config.getConnectionString();
+		String connectionString = config.connectionString();
 		if (connectionString == null || connectionString.isEmpty())
-			connectionString = "jdbc:mysql://" + config.getHost() + ":" + config.getPort() + "/" + config.getDatabaseName();
+			connectionString = "jdbc:mysql://" + config.host() + ":" + config.port() + "/" + config.databaseName();
 
 		Matcher matcher = Pattern.compile("^jdbc:(\\w+):\\/\\/").matcher(connectionString);
 		if (matcher.find()) {
@@ -44,27 +45,27 @@ public class Database implements Closeable {
 					type = DbType.PostgreSQL;
 					break;
 				default:
-					QuestsPlugin.getPlugin().getLogger().warning("Unsupported database provider: " + matcher.group(1));
+					LOGGER.warning("Unsupported database provider: " + matcher.group(1));
 					type = DbType.MySQL;
 					break;
 			}
 		} else {
-			QuestsPlugin.getPlugin().getLogger().warning("Malformed database connection string!");
+			LOGGER.warning("Malformed database connection string!");
 			type = DbType.MySQL;
 		}
 
 		hikariConfig.setJdbcUrl(connectionString);
-		hikariConfig.setUsername(config.getUsername());
-		hikariConfig.setPassword(config.getPassword());
+		hikariConfig.setUsername(config.username());
+		hikariConfig.setPassword(config.password());
 		hikariConfig.setPoolName("BeautyQuests-SQL-pool");
 		hikariConfig.setConnectionTimeout(20_000);
 
-		boolean ssl = config.isSslEnabled();
+		boolean ssl = config.sslEnabled();
 		hikariConfig.addDataSourceProperty("verifyServerCertificate", ssl);
 		hikariConfig.addDataSourceProperty("useSSL", ssl);
 
 		source = new HikariDataSource(hikariConfig);
-		QuestsPlugin.getPlugin().getLoggerExpanded().debug("Initialized database source. Type: " + type.name());
+		LOGGER.debug("Initialized database source. Type: " + type.name());
 	}
 
 	public void testConnection() throws SQLException {
@@ -74,7 +75,7 @@ public class Database implements Closeable {
 		}
 	}
 
-	public @NotNull DatabaseConfig getConfig() {
+	public @NotNull QuestsConfiguration.Database getConfig() {
 		return config;
 	}
 
@@ -84,20 +85,16 @@ public class Database implements Closeable {
 
 	@Override
 	public void close() {
-		QuestsPlugin.getPlugin().getLoggerExpanded().info("Closing database pool...");
+		LOGGER.info("Closing database pool...");
 		try {
 			((Closeable) source).close();
 		}catch (IOException ex) {
-			QuestsPlugin.getPlugin().getLoggerExpanded().severe("An error occurred while closing database pool.", ex);
+			LOGGER.severe("An error occurred while closing database pool.", ex);
 		}
 	}
 
 	public Connection getConnection() throws SQLException {
 		return source.getConnection();
-	}
-
-	public static Database getInstance(){
-		return BeautyQuests.getInstance().getBQDatabase();
 	}
 
 	public enum DbType {

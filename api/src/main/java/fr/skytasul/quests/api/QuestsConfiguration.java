@@ -7,7 +7,9 @@ import fr.skytasul.quests.api.utils.progress.ProgressBarConfig;
 import fr.skytasul.quests.api.utils.progress.itemdescription.ItemsDescriptionConfiguration;
 import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import java.util.Collection;
+import java.util.Map;
 import java.util.Set;
 
 public interface QuestsConfiguration {
@@ -130,6 +132,34 @@ public interface QuestsConfiguration {
 	interface StageDescription extends ItemsDescriptionConfiguration, ProgressBarConfig {
 
 		String getStageDescriptionFormat();
+
+	}
+
+	interface Database {
+
+		boolean enabled();
+
+		@Nullable
+		String host();
+
+		int port();
+
+		@NotNull
+		String databaseName();
+
+		@Nullable
+		String username();
+
+		@Nullable
+		String password();
+
+		boolean sslEnabled();
+
+		@Nullable
+		String connectionString();
+
+		@NotNull
+		Map<String, String> tables();
 
 	}
 

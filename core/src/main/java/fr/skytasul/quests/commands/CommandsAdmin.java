@@ -234,7 +234,7 @@ public class CommandsAdmin implements OrphanCommand {
 
 				var dataIterator = BeautyQuests.getInstance().getQuesterManager().getDataManager().getAll();
 				var targetDataManager = new SqlDataManager(db);
-				targetDataManager.load();
+				targetDataManager.load(BeautyQuests.getInstance().getQuesterManager());
 
 				try {
 					var results = targetDataManager.importAll(dataIterator).get();

@@ -66,7 +66,7 @@ public class QuesterManagerImplementation implements QuesterManager {
 
 	public void load() throws DataLoadingException {
 		lockData = true;
-		dataManager.load();
+		dataManager.load(this);
 	}
 
 	@Override

@@ -1,9 +1,9 @@
 package fr.skytasul.quests.questers.data.sql;
 
-import fr.skytasul.quests.api.QuestsPlugin;
 import fr.skytasul.quests.api.data.SQLDataSaver;
 import fr.skytasul.quests.api.data.SavableData;
 import fr.skytasul.quests.api.questers.QuesterManager;
+import fr.skytasul.quests.api.utils.logger.LoggerExpanded;
 import fr.skytasul.quests.players.PlayerManagerImplementation;
 import fr.skytasul.quests.utils.Database;
 import fr.skytasul.quests.utils.ThrowingConsumer;
@@ -18,6 +18,8 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.Collectors;
 
 public class SqlHandler {
+
+	private static final LoggerExpanded LOGGER = LoggerExpanded.get("SqlDataHandler");
 
 	public final String QUESTERS_TABLE;
 	public final String QUESTS_DATAS_TABLE;
@@ -46,9 +48,9 @@ public class SqlHandler {
 	public SqlHandler(@NotNull Database db) {
 		this.db = db;
 
-		QUESTERS_TABLE = db.getConfig().getTables().getString("questers");
-		QUESTS_DATAS_TABLE = db.getConfig().getTables().getString("questers quests");
-		POOLS_DATAS_TABLE = db.getConfig().getTables().getString("questers pools");
+		QUESTERS_TABLE = db.getConfig().tables().get("questers");
+		QUESTS_DATAS_TABLE = db.getConfig().tables().get("questers quests");
+		POOLS_DATAS_TABLE = db.getConfig().tables().get("questers pools");
 	}
 
 	public Database getDatabase() {
@@ -59,10 +61,10 @@ public class SqlHandler {
 		try (Connection connection = db.getConnection(); Statement statement = connection.createStatement()) {
 			statement.execute("CREATE TABLE IF NOT EXISTS " + QUESTERS_TABLE + " ("
 					+ " provider VARCHAR(255) NOT NULL ,"
-					+ " identifier VARCHAR(255) NOT NULL ,"
+					+ " identifier VARCHAR(255) NOT NULL , "
 					+ questerManager.getSavableData().stream()
-							.map(SQLDataSaver::getColumnDefinition)
-							.collect(Collectors.joining(" , ", " ", " ,"))
+							.map(t -> SQLDataSaver.getColumnDefinition(t) + ", ")
+							.collect(Collectors.joining(" "))
 					+ " PRIMARY KEY (provider, identifier)"
 					+ " )");
 			statement.execute("""
@@ -102,7 +104,7 @@ public class SqlHandler {
 					if (!columns.contains(data.getColumnName().toLowerCase())) {
 						statement.execute("ALTER TABLE %s ADD COLUMN %s".formatted(QUESTERS_TABLE,
 								SQLDataSaver.getColumnDefinition(data)));
-						QuestsPlugin.getPlugin().getLoggerExpanded().info(
+						LOGGER.info(
 								"Updated database by adding the missing {} column in the player accounts table.",
 								data.getColumnName());
 					}
@@ -125,7 +127,7 @@ public class SqlHandler {
 					statement.execute("UPDATE %s SET provider = '%s'".formatted(QUESTERS_TABLE,
 							PlayerManagerImplementation.KEY.asString()));
 
-					QuestsPlugin.getPlugin().getLoggerExpanded()
+					LOGGER
 							.info("Updated database by changing layout of the questers table.");
 				}
 
@@ -166,7 +168,7 @@ public class SqlHandler {
 								DROP COLUMN id,
 								DROP COLUMN account_id
 							""".formatted(QUESTS_DATAS_TABLE));
-					QuestsPlugin.getPlugin().getLoggerExpanded()
+					LOGGER
 							.info("Updated database by changing layout of the quests data table.");
 				}
 
@@ -201,7 +203,7 @@ public class SqlHandler {
 								DROP COLUMN id,
 								DROP COLUMN account_id
 							""".formatted(POOLS_DATAS_TABLE));
-					QuestsPlugin.getPlugin().getLoggerExpanded()
+					LOGGER
 							.info("Updated database by changing layout of the pools data table.");
 				}
 
@@ -211,7 +213,7 @@ public class SqlHandler {
 
 			if (questersHasId.get()) {
 				if (questsHasId.get() || poolsHasId.get()) {
-					QuestsPlugin.getPlugin().getLoggerExpanded().warning(
+					LOGGER.warning(
 							"Cannot remove unnecessary column 'id' in questers DB table. This is a bug and should be reported.");
 				} else {
 					statement.execute("ALTER TABLE %s DROP COLUMN id".formatted(QUESTERS_TABLE));
@@ -223,13 +225,13 @@ public class SqlHandler {
 	private void upgradeTable(Connection connection, String tableName,
 			ThrowingConsumer<List<String>, SQLException> columnsConsumer) throws SQLException {
 		List<String> columns = new ArrayList<>(14);
-		try (ResultSet set = connection.getMetaData().getColumns(db.getConfig().getDatabaseName(), null, tableName, null)) {
+		try (ResultSet set = connection.getMetaData().getColumns(db.getConfig().databaseName(), null, tableName, null)) {
 			while (set.next()) {
 				columns.add(set.getString("COLUMN_NAME").toLowerCase());
 			}
 		}
 		if (columns.isEmpty()) {
-			QuestsPlugin.getPlugin().getLoggerExpanded().severe("Cannot check integrity of SQL table " + tableName);
+			LOGGER.severe("Cannot check integrity of SQL table " + tableName);
 		} else {
 			columnsConsumer.accept(columns);
 		}
