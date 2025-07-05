@@ -12,6 +12,7 @@ import fr.skytasul.quests.api.data.DataLoadingException;
 import fr.skytasul.quests.api.data.SavableData;
 import fr.skytasul.quests.api.questers.QuesterManager;
 import fr.skytasul.quests.api.quests.Quest;
+import fr.skytasul.quests.questers.QuesterDataStub;
 import fr.skytasul.quests.questers.data.QuesterDataManager;
 import fr.skytasul.quests.questers.data.QuesterDataManager.QuesterFetchRequest;
 import fr.skytasul.quests.utils.Database;
@@ -19,6 +20,7 @@ import net.kyori.adventure.key.Key;
 import org.bukkit.configuration.InvalidConfigurationException;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
@@ -42,6 +44,11 @@ class SqlDataManagerTest {
 		db.testConnection();
 
 		instance = new SqlDataManager(db);
+	}
+
+	@AfterEach
+	void tearDown() {
+		instance.getSqlHandler().getDatabase().close();
 	}
 
 	@Test
@@ -135,6 +142,33 @@ class SqlDataManagerTest {
 
 		questerData = result.dataHandler();
 		assertEquals(newData, questerData.getData(dummySavableData));
+	}
+
+	@Test
+	void testDataImport() throws InterruptedException, ExecutionException {
+		initDataManager();
+		var providerKey = Key.key("some-provider");
+		var identifier = "some-identifier";
+
+		var quest = Mockito.mock(Quest.class);
+		Mockito.when(quest.getId()).thenReturn(1);
+
+		var data = new QuesterDataStub(providerKey, identifier);
+		data.getQuestData(quest).setStage(OptionalInt.of(1));
+		var questers = List.of(data);
+
+		// actual import
+		var importResult = instance.importAll(questers.iterator()).get();
+		assertEquals(1, importResult.questers());
+		assertEquals(0, importResult.failures());
+
+		var result = instance.loadQuester(new QuesterFetchRequest(providerKey, identifier, false, false)).join();
+		assertEquals(QuesterDataManager.QuesterFetchResult.Type.SUCCESS_LOADED, result.type());
+		assertNotNull(result.dataHandler());
+
+		var newData = result.dataHandler();
+		assertTrue(newData.hasQuestData(quest));
+		assertEquals(OptionalInt.of(1), newData.getQuestData(quest).getStage());
 	}
 
 	static class FakeDatabaseConfig implements QuestsConfiguration.Database {
