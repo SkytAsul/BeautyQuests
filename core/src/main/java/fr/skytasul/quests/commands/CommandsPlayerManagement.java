@@ -52,9 +52,6 @@ public class CommandsPlayerManagement implements OrphanCommand {
 	private BukkitCommandPermission startOtherPermission = new BukkitCommandPermission(new Permission("beautyquests.command.start.other"));
 	private BukkitCommandPermission cancelOtherPermission = new BukkitCommandPermission(new Permission("beautyquests.command.cancel.other"));
 
-	// TODO create a new argument type "Quester" that can accept multiple questers, kinda like
-	// EntitySelector
-
 	@Subcommand ("finishAll")
 	@CommandPermission ("beautyquests.command.finish")
 	public void finishAll(BukkitCommandActor actor, QuesterSelector questers) {

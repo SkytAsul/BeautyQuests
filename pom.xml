@@ -56,6 +56,7 @@
 		<fastboard.version>2.1.5</fastboard.version>
 		<adventure.version>4.21.0</adventure.version>
 		<adventure.bukkit.version>4.4.0</adventure.bukkit.version>
+		<commons-lang.version>2.6</commons-lang.version>
 	</properties>
 
 	<profiles>

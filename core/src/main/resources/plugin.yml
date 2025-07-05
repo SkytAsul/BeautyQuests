@@ -49,6 +49,7 @@ libraries:
 - fr.mrmicky:fastboard:${fastboard.version}
 - net.kyori:adventure-api:${adventure.version}
 - net.kyori:adventure-platform-bukkit:${adventure.bukkit.version}
+- commons-lang:commons-lang:${commons-lang.version}
 
 #commands:
 #  beautyquests:

@@ -37,6 +37,10 @@
 							<shadedPattern>fr.skytasul.quests.utils.updatechecker</shadedPattern>
 						</relocation>
 						<relocation>
+							<pattern>com.tchristofferson.configupdater</pattern>
+							<shadedPattern>fr.skytasul.quests.utils.configupdater</shadedPattern>
+						</relocation>
+						<relocation>
 							<pattern>org.bstats</pattern>
 							<shadedPattern>fr.skytasul.quests.utils.bstats</shadedPattern>
 						</relocation>
@@ -101,8 +105,8 @@
 		<dependency>
 			<groupId>commons-lang</groupId>
 			<artifactId>commons-lang</artifactId>
-			<version>2.6</version>
-			<scope>compile</scope> <!-- Not actually included but for transitive deps -->
+			<version>${commons-lang.version}</version>
+			<scope>provided</scope>
 		</dependency>
 		<dependency>
 			<groupId>org.spigotmc</groupId>
@@ -131,7 +135,7 @@
 			<scope>provided</scope>
 		</dependency>
 
-		<!-- To resolve dependencies at runtime and avoid weird issues 
+		<!-- To resolve dependencies at runtime and avoid weird issues
 		with package relocation when developing. -->
 		<!-- <dependency>
 		    <groupId>net.byteflux</groupId>
