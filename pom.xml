@@ -40,24 +40,24 @@
 		<maven.compiler.source>17</maven.compiler.source>
 		<maven.compiler.target>17</maven.compiler.target>
 		<maven.compiler.release>17</maven.compiler.release>
-		
+
 		<build.number>unknown</build.number>
-		<revision.raw>2.0.0</revision.raw>		
-		
-		<minecraft.version>1.21.5-R0.1-SNAPSHOT</minecraft.version>
-		
-		<junit.version>5.12.2</junit.version>
+		<revision.raw>2.0.0</revision.raw>
+
+		<minecraft.version>1.21.7-R0.1-SNAPSHOT</minecraft.version>
+
+		<junit.version>5.13.1</junit.version>
 		<mockbukkit.version.minecraft>1.21</mockbukkit.version.minecraft>
-		<mockbukkit.version>4.49.0</mockbukkit.version>
-		
+		<mockbukkit.version>4.61.0</mockbukkit.version>
+
 		<lamp.version>4.0.0-rc.9</lamp.version>
 		<xseries.version>13.2.0</xseries.version>
 		<hikaricp.version>6.0.0</hikaricp.version>
-		<fastboard.version>2.1.4</fastboard.version>
+		<fastboard.version>2.1.5</fastboard.version>
 		<adventure.version>4.21.0</adventure.version>
 		<adventure.bukkit.version>4.4.0</adventure.bukkit.version>
 	</properties>
-	
+
 	<profiles>
 		<profile>
 			<id>devbuild</id>
@@ -110,6 +110,7 @@
 		<module>v1_21_R1</module>
 		<module>v1_21_R3</module>
 		<module>v1_21_R4</module>
+		<module>v1_21_R5</module>
 		<module>dist</module>
 	</modules>
 

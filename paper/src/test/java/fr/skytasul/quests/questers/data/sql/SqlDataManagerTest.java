@@ -137,7 +137,7 @@ class SqlDataManagerTest {
 		assertEquals(newData, questerData.getData(dummySavableData));
 	}
 
-	class FakeDatabaseConfig implements QuestsConfiguration.Database {
+	static class FakeDatabaseConfig implements QuestsConfiguration.Database {
 		@Override
 		public boolean enabled() {
 			return true;
