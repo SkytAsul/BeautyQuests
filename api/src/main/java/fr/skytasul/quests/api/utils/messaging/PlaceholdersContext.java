@@ -1,8 +1,8 @@
 package fr.skytasul.quests.api.utils.messaging;
 
 import fr.skytasul.quests.api.QuestsPlugin;
-import fr.skytasul.quests.api.players.PlayerQuester;
 import fr.skytasul.quests.api.players.PlayerManager;
+import fr.skytasul.quests.api.players.PlayerQuester;
 import fr.skytasul.quests.api.questers.Quester;
 import net.kyori.adventure.audience.Audience;
 import org.bukkit.entity.Player;
@@ -24,8 +24,28 @@ public interface PlaceholdersContext {
 			@Nullable MessageType messageType) {
 		return new PlaceholdersContext() {
 			@Override
-			public @NotNull Audience getAudience() {
+			public @Nullable Audience getAudience() {
 				return audience;
+			}
+
+			@Override
+			public boolean replacePluginPlaceholders() {
+				return replacePluginPlaceholders;
+			}
+
+			@Override
+			public @Nullable MessageType getMessageType() {
+				return messageType;
+			}
+		};
+	}
+
+	static PlaceholdersContext of(@NotNull Quester quester, boolean replacePluginPlaceholders,
+			@Nullable MessageType messageType) {
+		return new QuesterPlaceholdersContext() {
+			@Override
+			public @NotNull Quester getQuester() {
+				return quester;
 			}
 
 			@Override
