@@ -1,5 +1,6 @@
 package fr.skytasul.quests.api.questers;
 
+import fr.skytasul.quests.api.questers.data.QuesterData;
 import fr.skytasul.quests.api.utils.messaging.HasPlaceholders;
 import net.kyori.adventure.audience.Audience;
 import org.bukkit.OfflinePlayer;

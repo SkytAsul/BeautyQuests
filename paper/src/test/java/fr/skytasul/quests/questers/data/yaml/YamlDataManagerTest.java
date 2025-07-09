@@ -5,8 +5,8 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import fr.skytasul.quests.BeautyQuests;
-import fr.skytasul.quests.questers.data.QuesterDataManager;
-import fr.skytasul.quests.questers.data.QuesterDataManager.QuesterFetchRequest;
+import fr.skytasul.quests.api.questers.data.QuesterDataManager;
+import fr.skytasul.quests.api.questers.data.QuesterDataManager.QuesterFetchRequest;
 import net.kyori.adventure.key.Key;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -34,7 +34,7 @@ class YamlDataManagerTest {
 		var providerKey = Key.key("some-provider");
 		var identifier = "some-identifier";
 
-		var result = instance.loadQuester(new QuesterFetchRequest(providerKey, identifier, false, false)).join();
+		var result = instance.fetchQuester(new QuesterFetchRequest(providerKey, identifier, false, false)).join();
 
 		assertEquals(QuesterDataManager.QuesterFetchResult.Type.FAILED_NOT_FOUND, result.type());
 		assertNull(result.dataHandler());
@@ -46,12 +46,12 @@ class YamlDataManagerTest {
 		var identifier = "some-identifier";
 
 		// first time: creation
-		var result = instance.loadQuester(new QuesterFetchRequest(providerKey, identifier, true, false)).join();
+		var result = instance.fetchQuester(new QuesterFetchRequest(providerKey, identifier, true, false)).join();
 		assertEquals(QuesterDataManager.QuesterFetchResult.Type.SUCCESS_CREATED, result.type());
 		assertNotNull(result.dataHandler());
 
 		// second time: loading
-		result = instance.loadQuester(new QuesterFetchRequest(providerKey, identifier, true, false)).join();
+		result = instance.fetchQuester(new QuesterFetchRequest(providerKey, identifier, true, false)).join();
 		assertEquals(QuesterDataManager.QuesterFetchResult.Type.SUCCESS_LOADED, result.type());
 		assertNotNull(result.dataHandler());
 	}

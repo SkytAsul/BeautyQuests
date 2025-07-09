@@ -7,8 +7,8 @@ import fr.skytasul.quests.api.data.SavableData;
 import fr.skytasul.quests.api.questers.Quester;
 import fr.skytasul.quests.api.questers.QuesterManager;
 import fr.skytasul.quests.api.questers.QuesterProvider;
+import fr.skytasul.quests.api.questers.data.QuesterDataManager;
 import fr.skytasul.quests.api.utils.logger.LoggerExpanded;
-import fr.skytasul.quests.questers.data.QuesterDataManager;
 import net.kyori.adventure.key.Key;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
@@ -39,6 +39,8 @@ public class QuesterManagerImplementation implements QuesterManager {
 
 	@Override
 	public void registerQuesterProvider(@NotNull QuesterProvider provider) {
+		if (lockData)
+			throw new IllegalStateException("Cannot add quester provider after manager has been loaded");
 		this.providers.put(provider.key(), provider);
 	}
 
@@ -55,6 +57,7 @@ public class QuesterManagerImplementation implements QuesterManager {
 		return provider;
 	}
 
+	@Override
 	public @NotNull QuesterDataManager getDataManager() {
 		return dataManager;
 	}
@@ -67,12 +70,13 @@ public class QuesterManagerImplementation implements QuesterManager {
 	public void load() throws DataLoadingException {
 		lockData = true;
 		dataManager.load(this);
+		providers.values().forEach(provider -> provider.load(this));
 	}
 
 	@Override
 	public void addSavableData(@NotNull SavableData<?> data) {
 		if (lockData)
-			throw new IllegalStateException("Cannot add account data after players manager has been loaded");
+			throw new IllegalStateException("Cannot add quester data after players manager has been loaded");
 		if (FORBIDDEN_DATA_ID.contains(data.getId()))
 			throw new IllegalArgumentException("Forbidden account data id " + data.getId());
 		if (savableData.stream().anyMatch(x -> x.getId().equals(data.getId())))

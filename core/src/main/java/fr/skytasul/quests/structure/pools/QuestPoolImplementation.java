@@ -9,7 +9,7 @@ import fr.skytasul.quests.api.options.QuestOption;
 import fr.skytasul.quests.api.players.PlayerManager;
 import fr.skytasul.quests.api.pools.QuestPool;
 import fr.skytasul.quests.api.questers.Quester;
-import fr.skytasul.quests.api.questers.QuesterPoolData;
+import fr.skytasul.quests.api.questers.data.QuesterPoolData;
 import fr.skytasul.quests.api.quests.Quest;
 import fr.skytasul.quests.api.requirements.RequirementList;
 import fr.skytasul.quests.api.utils.Utils;

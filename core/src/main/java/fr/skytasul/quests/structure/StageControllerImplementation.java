@@ -7,7 +7,7 @@ import fr.skytasul.quests.api.QuestsPlugin;
 import fr.skytasul.quests.api.options.description.DescriptionSource;
 import fr.skytasul.quests.api.players.PlayerManager;
 import fr.skytasul.quests.api.questers.Quester;
-import fr.skytasul.quests.api.questers.QuesterQuestData;
+import fr.skytasul.quests.api.questers.data.QuesterQuestData;
 import fr.skytasul.quests.api.questers.events.QuesterJoinEvent;
 import fr.skytasul.quests.api.questers.events.QuesterLeaveEvent;
 import fr.skytasul.quests.api.stages.*;

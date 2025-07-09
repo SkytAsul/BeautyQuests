@@ -16,7 +16,7 @@ import fr.skytasul.quests.api.options.QuestOption;
 import fr.skytasul.quests.api.options.QuestOptionCreator;
 import fr.skytasul.quests.api.options.UpdatableOptionSet;
 import fr.skytasul.quests.api.questers.Quester;
-import fr.skytasul.quests.api.questers.QuesterQuestData;
+import fr.skytasul.quests.api.questers.data.QuesterQuestData;
 import fr.skytasul.quests.api.questers.events.QuesterJoinEvent;
 import fr.skytasul.quests.api.quests.branches.EndingStage;
 import fr.skytasul.quests.api.quests.creation.QuestCreationGui;

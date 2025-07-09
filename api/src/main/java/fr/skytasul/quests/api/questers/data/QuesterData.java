@@ -1,4 +1,4 @@
-package fr.skytasul.quests.api.questers;
+package fr.skytasul.quests.api.questers.data;
 
 import fr.skytasul.quests.api.data.DataSavingException;
 import fr.skytasul.quests.api.data.SavableData;

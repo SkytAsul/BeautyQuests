@@ -9,6 +9,7 @@ import fr.skytasul.quests.api.events.internal.BeautyQuestsLoadedEvent;
 import fr.skytasul.quests.api.gui.GuiManager;
 import fr.skytasul.quests.api.localization.Lang;
 import fr.skytasul.quests.api.localization.Locale;
+import fr.skytasul.quests.api.questers.data.QuesterDataManager;
 import fr.skytasul.quests.api.utils.IntegrationManager;
 import fr.skytasul.quests.api.utils.logger.LoggerExpanded;
 import fr.skytasul.quests.commands.CommandsManagerImplementation;
@@ -18,7 +19,6 @@ import fr.skytasul.quests.npcs.BqNpcManagerImplementation;
 import fr.skytasul.quests.players.PlayerManagerImplementation;
 import fr.skytasul.quests.players.accounts.PlayerManagerAccountsHookImplementation;
 import fr.skytasul.quests.questers.QuesterManagerImplementation;
-import fr.skytasul.quests.questers.data.QuesterDataManager;
 import fr.skytasul.quests.questers.data.sql.SqlDataManager;
 import fr.skytasul.quests.questers.data.yaml.YamlDataManager;
 import fr.skytasul.quests.scoreboards.ScoreboardManager;
@@ -467,9 +467,9 @@ public class BeautyQuests extends JavaPlugin implements QuestsPlugin {
 			questerManager = new QuesterManagerImplementation(this, questerDataManager);
 			if (config.hookAccounts()) {
 				QuestsPlugin.getPlugin().getLoggerExpanded().info("AccountsHook is now managing quester datas!");
-				players = new PlayerManagerAccountsHookImplementation(questerManager);
+				players = new PlayerManagerAccountsHookImplementation(this);
 			} else
-				players = new PlayerManagerImplementation(questerManager);
+				players = new PlayerManagerImplementation(this);
 			questerManager.registerQuesterProvider(players);
 
 			/*				static initialization				*/

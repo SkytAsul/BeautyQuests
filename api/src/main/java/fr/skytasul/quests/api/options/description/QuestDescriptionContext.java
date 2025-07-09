@@ -1,7 +1,7 @@
 package fr.skytasul.quests.api.options.description;
 
 import fr.skytasul.quests.api.questers.Quester;
-import fr.skytasul.quests.api.questers.QuesterQuestData;
+import fr.skytasul.quests.api.questers.data.QuesterQuestData;
 import fr.skytasul.quests.api.quests.Quest;
 import fr.skytasul.quests.api.utils.PlayerListCategory;
 import org.bukkit.entity.Player;

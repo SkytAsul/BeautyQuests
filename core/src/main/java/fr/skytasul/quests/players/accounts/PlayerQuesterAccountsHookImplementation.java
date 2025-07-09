@@ -3,7 +3,7 @@ package fr.skytasul.quests.players.accounts;
 import fr.skytasul.accounts.Account;
 import fr.skytasul.quests.api.QuestsPlugin;
 import fr.skytasul.quests.api.players.PlayerManager;
-import fr.skytasul.quests.api.questers.QuesterData;
+import fr.skytasul.quests.api.questers.data.QuesterData;
 import fr.skytasul.quests.players.AbstractPlayerQuesterImplementation;
 import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.audience.ForwardingAudience;

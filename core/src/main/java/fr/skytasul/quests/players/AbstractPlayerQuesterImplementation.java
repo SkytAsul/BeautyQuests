@@ -1,8 +1,8 @@
 package fr.skytasul.quests.players;
 
 import fr.skytasul.quests.api.players.PlayerQuester;
+import fr.skytasul.quests.api.questers.data.QuesterData;
 import fr.skytasul.quests.api.players.PlayerManager;
-import fr.skytasul.quests.api.questers.QuesterData;
 import fr.skytasul.quests.questers.AbstractQuesterImplementation;
 import org.jetbrains.annotations.NotNull;
 

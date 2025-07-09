@@ -1,7 +1,7 @@
 package fr.skytasul.quests.questers;
 
 import fr.skytasul.quests.BeautyQuests;
-import fr.skytasul.quests.api.questers.QuesterPoolData;
+import fr.skytasul.quests.api.questers.data.QuesterPoolData;
 import fr.skytasul.quests.structure.pools.QuestPoolImplementation;
 import java.util.HashSet;
 import java.util.Set;

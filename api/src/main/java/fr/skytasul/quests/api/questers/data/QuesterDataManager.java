@@ -1,8 +1,7 @@
-package fr.skytasul.quests.questers.data;
+package fr.skytasul.quests.api.questers.data;
 
 import fr.skytasul.quests.api.data.DataLoadingException;
 import fr.skytasul.quests.api.data.DataSavingException;
-import fr.skytasul.quests.api.questers.QuesterData;
 import fr.skytasul.quests.api.questers.QuesterManager;
 import net.kyori.adventure.key.Key;
 import org.jetbrains.annotations.NotNull;
@@ -13,7 +12,7 @@ import java.util.concurrent.CompletableFuture;
 public interface QuesterDataManager {
 
 	@NotNull
-	CompletableFuture<QuesterFetchResult> loadQuester(@NotNull QuesterFetchRequest request);
+	CompletableFuture<QuesterFetchResult> fetchQuester(@NotNull QuesterFetchRequest request);
 
 	/**
 	 * Resets the data associated with this quest for all questers, online AND offline. This method is

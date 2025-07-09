@@ -1,4 +1,4 @@
-package fr.skytasul.quests.api.questers;
+package fr.skytasul.quests.api.questers.data;
 
 import fr.skytasul.quests.api.pools.QuestPool;
 import org.jetbrains.annotations.NotNull;

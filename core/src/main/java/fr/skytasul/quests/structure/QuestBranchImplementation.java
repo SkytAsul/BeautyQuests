@@ -9,7 +9,7 @@ import fr.skytasul.quests.api.data.DataSavingException;
 import fr.skytasul.quests.api.localization.Lang;
 import fr.skytasul.quests.api.options.description.DescriptionSource;
 import fr.skytasul.quests.api.questers.Quester;
-import fr.skytasul.quests.api.questers.QuesterQuestData;
+import fr.skytasul.quests.api.questers.data.QuesterQuestData;
 import fr.skytasul.quests.api.quests.branches.EndingStage;
 import fr.skytasul.quests.api.quests.branches.QuestBranch;
 import fr.skytasul.quests.api.quests.events.questers.QuesterSetStageEvent;

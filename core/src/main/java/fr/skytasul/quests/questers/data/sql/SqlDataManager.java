@@ -5,11 +5,11 @@ import static fr.skytasul.quests.questers.data.sql.SqlQuesterData.fillInOptional
 import static fr.skytasul.quests.questers.data.sql.SqlQuesterData.fillInSerializable;
 import fr.skytasul.quests.api.data.DataLoadingException;
 import fr.skytasul.quests.api.data.DataSavingException;
-import fr.skytasul.quests.api.questers.QuesterData;
 import fr.skytasul.quests.api.questers.QuesterManager;
+import fr.skytasul.quests.api.questers.data.QuesterData;
+import fr.skytasul.quests.api.questers.data.QuesterDataManager;
 import fr.skytasul.quests.api.stages.StageController;
 import fr.skytasul.quests.api.utils.logger.LoggerExpanded;
-import fr.skytasul.quests.questers.data.QuesterDataManager;
 import fr.skytasul.quests.utils.Database;
 import org.jetbrains.annotations.NotNull;
 import java.sql.Connection;
@@ -69,7 +69,7 @@ public class SqlDataManager implements QuesterDataManager {
 	}
 
 	@Override
-	public @NotNull CompletableFuture<QuesterFetchResult> loadQuester(@NotNull QuesterFetchRequest request) {
+	public @NotNull CompletableFuture<QuesterFetchResult> fetchQuester(@NotNull QuesterFetchRequest request) {
 		return CompletableFuture.supplyAsync(() -> {
 			try (var connection = getDbConnection();
 					var getStatement = connection.prepareStatement(sqlHandler.getQuesterData)) {

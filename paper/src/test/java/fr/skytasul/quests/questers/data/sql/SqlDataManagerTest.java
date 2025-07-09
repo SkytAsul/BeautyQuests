@@ -11,10 +11,10 @@ import fr.skytasul.quests.api.QuestsConfiguration;
 import fr.skytasul.quests.api.data.DataLoadingException;
 import fr.skytasul.quests.api.data.SavableData;
 import fr.skytasul.quests.api.questers.QuesterManager;
+import fr.skytasul.quests.api.questers.data.QuesterDataManager;
+import fr.skytasul.quests.api.questers.data.QuesterDataManager.QuesterFetchRequest;
 import fr.skytasul.quests.api.quests.Quest;
 import fr.skytasul.quests.questers.QuesterDataStub;
-import fr.skytasul.quests.questers.data.QuesterDataManager;
-import fr.skytasul.quests.questers.data.QuesterDataManager.QuesterFetchRequest;
 import fr.skytasul.quests.utils.Database;
 import net.kyori.adventure.key.Key;
 import org.bukkit.configuration.InvalidConfigurationException;
@@ -76,7 +76,7 @@ class SqlDataManagerTest {
 		var providerKey = Key.key("some-provider");
 		var identifier = "some-identifier";
 
-		var result = instance.loadQuester(new QuesterFetchRequest(providerKey, identifier, false, false)).join();
+		var result = instance.fetchQuester(new QuesterFetchRequest(providerKey, identifier, false, false)).join();
 
 		assertEquals(QuesterDataManager.QuesterFetchResult.Type.FAILED_NOT_FOUND, result.type());
 		assertNull(result.dataHandler());
@@ -89,7 +89,7 @@ class SqlDataManagerTest {
 		var identifier = "some-identifier";
 
 		// first time: creation
-		var result = instance.loadQuester(new QuesterFetchRequest(providerKey, identifier, true, true)).join();
+		var result = instance.fetchQuester(new QuesterFetchRequest(providerKey, identifier, true, true)).join();
 		assertEquals(QuesterDataManager.QuesterFetchResult.Type.SUCCESS_CREATED, result.type());
 		assertNotNull(result.dataHandler());
 
@@ -103,7 +103,7 @@ class SqlDataManagerTest {
 		Thread.sleep(100); // wait db flush
 
 		// second time: loading
-		result = instance.loadQuester(new QuesterFetchRequest(providerKey, identifier, true, false)).join();
+		result = instance.fetchQuester(new QuesterFetchRequest(providerKey, identifier, true, false)).join();
 		assertEquals(QuesterDataManager.QuesterFetchResult.Type.SUCCESS_LOADED, result.type());
 		assertNotNull(result.dataHandler());
 
@@ -122,7 +122,7 @@ class SqlDataManagerTest {
 		var identifier = "some-identifier";
 
 		// first time: creation
-		var result = instance.loadQuester(new QuesterFetchRequest(providerKey, identifier, true, true)).join();
+		var result = instance.fetchQuester(new QuesterFetchRequest(providerKey, identifier, true, true)).join();
 		assertEquals(QuesterDataManager.QuesterFetchResult.Type.SUCCESS_CREATED, result.type());
 		assertNotNull(result.dataHandler());
 
@@ -136,7 +136,7 @@ class SqlDataManagerTest {
 		questerData.unload();
 
 		// second time: loading
-		result = instance.loadQuester(new QuesterFetchRequest(providerKey, identifier, true, false)).join();
+		result = instance.fetchQuester(new QuesterFetchRequest(providerKey, identifier, true, false)).join();
 		assertEquals(QuesterDataManager.QuesterFetchResult.Type.SUCCESS_LOADED, result.type());
 		assertNotNull(result.dataHandler());
 
@@ -162,7 +162,7 @@ class SqlDataManagerTest {
 		assertEquals(1, importResult.questers());
 		assertEquals(0, importResult.failures());
 
-		var result = instance.loadQuester(new QuesterFetchRequest(providerKey, identifier, false, false)).join();
+		var result = instance.fetchQuester(new QuesterFetchRequest(providerKey, identifier, false, false)).join();
 		assertEquals(QuesterDataManager.QuesterFetchResult.Type.SUCCESS_LOADED, result.type());
 		assertNotNull(result.dataHandler());
 

@@ -3,7 +3,7 @@ package fr.skytasul.quests.structure;
 import fr.skytasul.quests.BeautyQuests;
 import fr.skytasul.quests.api.QuestsAPI;
 import fr.skytasul.quests.api.questers.Quester;
-import fr.skytasul.quests.api.questers.QuesterQuestData;
+import fr.skytasul.quests.api.questers.data.QuesterQuestData;
 import fr.skytasul.quests.api.quests.Quest;
 import fr.skytasul.quests.api.quests.QuestsManager;
 import fr.skytasul.quests.api.utils.QuestVisibilityLocation;

@@ -16,7 +16,7 @@ import javax.sql.DataSource;
 
 public class Database implements Closeable {
 
-	private static final LoggerExpanded LOGGER = LoggerExpanded.get("Database");
+	private static final LoggerExpanded LOGGER = LoggerExpanded.get("BeautyQuests.Database");
 
 	private final @NotNull QuestsConfiguration.Database config;
 

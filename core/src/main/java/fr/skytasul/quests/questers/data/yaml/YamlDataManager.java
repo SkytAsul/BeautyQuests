@@ -2,12 +2,12 @@ package fr.skytasul.quests.questers.data.yaml;
 
 import fr.skytasul.quests.api.data.DataLoadingException;
 import fr.skytasul.quests.api.data.DataSavingException;
-import fr.skytasul.quests.api.questers.QuesterData;
 import fr.skytasul.quests.api.questers.QuesterManager;
+import fr.skytasul.quests.api.questers.data.QuesterData;
+import fr.skytasul.quests.api.questers.data.QuesterDataManager;
+import fr.skytasul.quests.api.questers.data.QuesterDataManager.QuesterFetchResult.Type;
 import fr.skytasul.quests.api.utils.logger.LoggerExpanded;
 import fr.skytasul.quests.players.PlayerManagerImplementation;
-import fr.skytasul.quests.questers.data.QuesterDataManager;
-import fr.skytasul.quests.questers.data.QuesterDataManager.QuesterFetchResult.Type;
 import net.kyori.adventure.key.Key;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
@@ -123,7 +123,7 @@ public class YamlDataManager implements QuesterDataManager {
 	}
 
 	@Override
-	public @NotNull CompletableFuture<QuesterFetchResult> loadQuester(@NotNull QuesterFetchRequest request) {
+	public @NotNull CompletableFuture<QuesterFetchResult> fetchQuester(@NotNull QuesterFetchRequest request) {
 		return CompletableFuture.supplyAsync(() -> {
 			var fullIdentifier = new FullIdentifier(request.providerKey(), request.identifier());
 

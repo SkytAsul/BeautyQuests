@@ -19,7 +19,7 @@ import java.util.stream.Collectors;
 
 public class SqlHandler {
 
-	private static final LoggerExpanded LOGGER = LoggerExpanded.get("SqlDataHandler");
+	private static final LoggerExpanded LOGGER = LoggerExpanded.get("BeautyQuests.SqlDataHandler");
 
 	public final String QUESTERS_TABLE;
 	public final String QUESTS_DATAS_TABLE;

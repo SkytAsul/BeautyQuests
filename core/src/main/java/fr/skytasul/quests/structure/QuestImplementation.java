@@ -15,7 +15,7 @@ import fr.skytasul.quests.api.options.description.QuestDescriptionContext;
 import fr.skytasul.quests.api.options.description.QuestDescriptionProvider;
 import fr.skytasul.quests.api.players.PlayerManager;
 import fr.skytasul.quests.api.questers.Quester;
-import fr.skytasul.quests.api.questers.QuesterQuestData;
+import fr.skytasul.quests.api.questers.data.QuesterQuestData;
 import fr.skytasul.quests.api.quests.Quest;
 import fr.skytasul.quests.api.quests.events.QuestRemoveEvent;
 import fr.skytasul.quests.api.quests.events.questers.QuesterQuestFinishEvent;

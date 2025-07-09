@@ -4,10 +4,9 @@ import fr.skytasul.accounts.AccountsProvider;
 import fr.skytasul.accounts.events.AccountJoinEvent;
 import fr.skytasul.accounts.events.AccountLeaveEvent;
 import fr.skytasul.quests.api.QuestsPlugin;
-import fr.skytasul.quests.api.questers.QuesterData;
+import fr.skytasul.quests.api.questers.data.QuesterData;
 import fr.skytasul.quests.players.AbstractPlayerQuesterImplementation;
 import fr.skytasul.quests.players.PlayerManagerImplementation;
-import fr.skytasul.quests.questers.QuesterManagerImplementation;
 import net.kyori.adventure.key.Key;
 import org.bukkit.Bukkit;
 import org.bukkit.NamespacedKey;
@@ -23,8 +22,8 @@ public class PlayerManagerAccountsHookImplementation extends PlayerManagerImplem
 
 	private static final @NotNull Key KEY = Key.key("BeautyQuests", "players-accounts-hook");
 
-	public PlayerManagerAccountsHookImplementation(@NotNull QuesterManagerImplementation questerManager) {
-		super(questerManager);
+	public PlayerManagerAccountsHookImplementation(@NotNull QuestsPlugin plugin) {
+		super(plugin);
 	}
 
 	@Override

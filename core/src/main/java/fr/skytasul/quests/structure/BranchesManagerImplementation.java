@@ -5,7 +5,7 @@ import fr.skytasul.quests.api.QuestsPlugin;
 import fr.skytasul.quests.api.data.DataLoadingException;
 import fr.skytasul.quests.api.data.DataSavingException;
 import fr.skytasul.quests.api.questers.Quester;
-import fr.skytasul.quests.api.questers.QuesterQuestData;
+import fr.skytasul.quests.api.questers.data.QuesterQuestData;
 import fr.skytasul.quests.api.quests.branches.QuestBranch;
 import fr.skytasul.quests.api.quests.branches.QuestBranchesManager;
 import fr.skytasul.quests.api.stages.StageController;

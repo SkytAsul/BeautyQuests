@@ -1,16 +1,17 @@
 package fr.skytasul.quests.players;
 
+import fr.skytasul.quests.api.QuestsPlugin;
 import fr.skytasul.quests.api.data.DataSavingException;
 import fr.skytasul.quests.api.players.PlayerManager;
 import fr.skytasul.quests.api.players.PlayerQuester;
 import fr.skytasul.quests.api.questers.Quester;
-import fr.skytasul.quests.api.questers.QuesterData;
+import fr.skytasul.quests.api.questers.QuesterManager;
+import fr.skytasul.quests.api.questers.data.QuesterData;
+import fr.skytasul.quests.api.questers.data.QuesterDataManager.QuesterFetchRequest;
+import fr.skytasul.quests.api.questers.data.QuesterDataManager.QuesterFetchResult;
 import fr.skytasul.quests.api.questers.events.QuesterJoinEvent;
 import fr.skytasul.quests.api.questers.events.QuesterLeaveEvent;
 import fr.skytasul.quests.api.utils.logger.LoggerExpanded;
-import fr.skytasul.quests.questers.QuesterManagerImplementation;
-import fr.skytasul.quests.questers.data.QuesterDataManager.QuesterFetchRequest;
-import fr.skytasul.quests.questers.data.QuesterDataManager.QuesterFetchResult;
 import fr.skytasul.quests.utils.DebugUtils;
 import fr.skytasul.quests.utils.QuestUtils;
 import net.kyori.adventure.key.Key;
@@ -35,12 +36,13 @@ public class PlayerManagerImplementation implements PlayerManager, Listener {
 	private final @NotNull Map<@NotNull Player, @NotNull AbstractPlayerQuesterImplementation> cachedQuesters =
 			new HashMap<>();
 
-	private @NotNull QuesterManagerImplementation questerManager;
+	private final QuestsPlugin plugin;
 
+	private QuesterManager questerManager;
 	private boolean playersLoaded = false;
 
-	public PlayerManagerImplementation(@NotNull QuesterManagerImplementation questerManager) {
-		this.questerManager = questerManager;
+	public PlayerManagerImplementation(@NotNull QuestsPlugin plugin) {
+		this.plugin = plugin;
 	}
 
 	@Override
@@ -72,15 +74,19 @@ public class PlayerManagerImplementation implements PlayerManager, Listener {
 
 	@Override
 	public @UnknownNullability PlayerQuester getQuester(@NotNull Player p) {
-		if (questerManager.getPlugin().getNpcManager().isNPC(p))
+		if (plugin.getNpcManager().isNPC(p))
 			return null;
 		if (!p.isOnline()) {
-			LOGGER
-					.severe("Trying to fetch the account of an offline player (" + p.getName() + ")");
+			LOGGER.severe("Trying to fetch the account of an offline player (" + p.getName() + ")");
 			LOGGER.debug("(via " + DebugUtils.stackTraces(2, 5) + ")");
 		}
 
 		return cachedQuesters.get(p);
+	}
+
+	@Override
+	public void load(@NotNull QuesterManager questerManager) {
+		this.questerManager = questerManager;
 	}
 
 	protected @NotNull Optional<String> getIdentifier(@NotNull OfflinePlayer p) {
@@ -97,7 +103,7 @@ public class PlayerManagerImplementation implements PlayerManager, Listener {
 
 		LOGGER.debug("Loading quester for {} (identifier: {})", player.getName(), identifier);
 
-		questerManager.getDataManager().loadQuester(new QuesterFetchRequest(KEY, identifier, true, true))
+		questerManager.getDataManager().fetchQuester(new QuesterFetchRequest(KEY, identifier, true, true))
 				.whenComplete(LOGGER.logError(result -> {
 					if (!result.type().isSuccess()) {
 						LOGGER.severe("Failed to load {}'s quester instance", player.getName());
@@ -123,7 +129,7 @@ public class PlayerManagerImplementation implements PlayerManager, Listener {
 							}
 						}
 					});
-				}, "Failed to load quester data", questerManager.getPlugin().getAudiences().player(player)));
+				}, "Failed to load quester data", plugin.getAudiences().player(player)));
 	}
 
 	protected void unload(@NotNull Player player) {
@@ -150,7 +156,7 @@ public class PlayerManagerImplementation implements PlayerManager, Listener {
 		for (var player : Bukkit.getOnlinePlayers()) {
 			load(player);
 		}
-		Bukkit.getPluginManager().registerEvents(this, questerManager.getPlugin());
+		Bukkit.getPluginManager().registerEvents(this, plugin);
 		playersLoaded = true;
 	}
 

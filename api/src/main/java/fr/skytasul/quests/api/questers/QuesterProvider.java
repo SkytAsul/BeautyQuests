@@ -25,4 +25,11 @@ public interface QuesterProvider extends Keyed {
 	@UnmodifiableView
 	Collection<? extends Quester> getLoadedQuesters();
 
+	/**
+	 * Called when everything is setup.
+	 *
+	 * @param questerManager
+	 */
+	default void load(@NotNull QuesterManager questerManager) {}
+
 }
