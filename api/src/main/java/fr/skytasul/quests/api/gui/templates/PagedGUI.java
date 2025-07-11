@@ -1,10 +1,14 @@
 package fr.skytasul.quests.api.gui.templates;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.function.Consumer;
-import java.util.function.Function;
+import com.cryptomorin.xseries.XMaterial;
+import fr.skytasul.quests.api.QuestsConfiguration;
+import fr.skytasul.quests.api.QuestsPlugin;
+import fr.skytasul.quests.api.editors.TextEditor;
+import fr.skytasul.quests.api.gui.AbstractGui;
+import fr.skytasul.quests.api.gui.GuiClickEvent;
+import fr.skytasul.quests.api.gui.ItemUtils;
+import fr.skytasul.quests.api.localization.Lang;
+import fr.skytasul.quests.api.utils.LevenshteinComparator;
 import org.apache.commons.lang.Validate;
 import org.bukkit.Bukkit;
 import org.bukkit.DyeColor;
@@ -15,15 +19,11 @@ import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import com.cryptomorin.xseries.XMaterial;
-import fr.skytasul.quests.api.QuestsConfiguration;
-import fr.skytasul.quests.api.QuestsPlugin;
-import fr.skytasul.quests.api.editors.TextEditor;
-import fr.skytasul.quests.api.gui.AbstractGui;
-import fr.skytasul.quests.api.gui.GuiClickEvent;
-import fr.skytasul.quests.api.gui.ItemUtils;
-import fr.skytasul.quests.api.localization.Lang;
-import fr.skytasul.quests.api.utils.LevenshteinComparator;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+import java.util.function.Consumer;
+import java.util.function.Function;
 
 /**
  * An inventory with an infinite amount of pages of 35 items (integer limit).
@@ -35,6 +35,10 @@ public abstract class PagedGUI<T> extends AbstractGui {
 
 	private static ItemStack itemSearch = ItemUtils.item(XMaterial.COMPASS, Lang.search.toString());
 
+	/**
+	 * @deprecated use {@link #getViewer()}
+	 */
+	@Deprecated
 	protected Player player;
 	protected int page = 0;
 	protected int maxPage;
@@ -90,6 +94,10 @@ public abstract class PagedGUI<T> extends AbstractGui {
 			for (int i = 0; i < 5; i++)
 				getInventory().setItem(i * 9 + columns, ItemUtils.itemSeparator(color));
 		}
+	}
+
+	protected Player getViewer() {
+		return player;
 	}
 
 	public PagedGUI<T> setValidate(Consumer<List<T>> validate, ItemStack validationItem) {

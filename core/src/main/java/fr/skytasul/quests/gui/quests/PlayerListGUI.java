@@ -12,7 +12,8 @@ import fr.skytasul.quests.api.gui.templates.PagedGUI;
 import fr.skytasul.quests.api.localization.Lang;
 import fr.skytasul.quests.api.options.description.DescriptionSource;
 import fr.skytasul.quests.api.options.description.QuestDescriptionContext;
-import fr.skytasul.quests.api.players.PlayerQuester;
+import fr.skytasul.quests.api.questers.Quester;
+import fr.skytasul.quests.api.questers.QuesterManager;
 import fr.skytasul.quests.api.quests.Quest;
 import fr.skytasul.quests.api.utils.PlayerListCategory;
 import fr.skytasul.quests.options.OptionStartDialog;
@@ -25,10 +26,7 @@ import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 
 public class PlayerListGUI extends PagedGUI<Quest> {
@@ -36,19 +34,20 @@ public class PlayerListGUI extends PagedGUI<Quest> {
 	static final String UNSELECTED_PREFIX = "§7○ ";
 	private static final String SELECTED_PREFIX = "§b§l● ";
 
-	private PlayerQuester acc;
-	private boolean hide;
+	private final @NotNull Player player;
+	private final boolean showHidden;
+	private final @NotNull Collection<? extends Quester> questers;
 
+	private @Nullable Map<Quest, Quester> quests;
 	private @Nullable PlayerListCategory cat = null;
 
-	public PlayerListGUI(PlayerQuester acc) {
-		this(acc, true);
-	}
+	public PlayerListGUI(@NotNull QuesterManager questerManager, @NotNull Player player, boolean showHidden) {
+		super(Lang.INVENTORY_PLAYER_LIST.quickFormat("player_name", player.getName()), DyeColor.GRAY,
+				Collections.emptyList());
 
-	public PlayerListGUI(PlayerQuester acc, boolean hide) {
-		super(Lang.INVENTORY_PLAYER_LIST.format(acc), DyeColor.GRAY, Collections.emptyList());
-		this.acc = acc;
-		this.hide = hide;
+		this.player = player;
+		this.showHidden = showHidden;
+		this.questers = questerManager.getPlayerQuesters(player);
 	}
 
 	@Override
@@ -79,41 +78,35 @@ public class PlayerListGUI extends PagedGUI<Quest> {
 
 		setSeparatorColor(cat.getColor());
 
-		List<? extends Quest> quests;
-		switch (cat) {
-			case FINISHED:
-				quests = QuestsAPI.getAPI().getQuestsManager().getQuestsFinished(acc, hide);
-				break;
-
-			case IN_PROGRESS:
-				quests = QuestsAPI.getAPI().getQuestsManager().getQuestsStarted(acc, true, false);
-				break;
-
-			case NOT_STARTED:
-				quests = QuestsAPI.getAPI().getQuestsManager().getQuestsNotStarted(acc, hide, true).stream()
-						.filter(quest -> !quest.isHiddenWhenRequirementsNotMet()
-								|| quest.canStart(acc.getPlayer().orElse(null), false))
+		quests = new HashMap<>();
+		for (var quester : questers) {
+			List<? extends Quest> questerQuests = switch (cat) {
+				case FINISHED -> QuestsAPI.getAPI().getQuestsManager().getQuestsFinished(quester, !showHidden);
+				case IN_PROGRESS -> QuestsAPI.getAPI().getQuestsManager().getQuestsStarted(quester, true, false);
+				case NOT_STARTED -> QuestsAPI.getAPI().getQuestsManager().getQuestsNotStarted(quester, !showHidden, true)
+						.stream()
+						.filter(quest -> !quest.isHiddenWhenRequirementsNotMet() || quest.canStart(player, false))
 						.collect(Collectors.toList());
-				break;
-
-			default:
-				throw new UnsupportedOperationException();
+				default -> throw new UnsupportedOperationException();
+			};
+			for (var quest : questerQuests)
+				quests.put(quest, quester);
 		}
-		quests.sort(null);
 
-		setObjects((List) quests);
+		setObjects(quests.keySet().stream().sorted().toList());
 	}
 
 	@Override
 	public @NotNull ItemStack getItemStack(@NotNull Quest qu) {
+		var quester = quests.get(qu);
+
 		ItemStack item;
 		try {
-			List<String> lore;
+			List<String> lore = new QuestDescriptionContext(QuestsConfiguration.getConfig().getQuestDescriptionConfig(),
+					qu, player, quester, cat, DescriptionSource.MENU).formatDescription();
 			switch (cat) {
 				case FINISHED:
-					lore = new QuestDescriptionContext(QuestsConfiguration.getConfig().getQuestDescriptionConfig(),
-							qu, acc.getPlayer().orElse(null), acc, cat, DescriptionSource.MENU).formatDescription();
-					if (QuestsConfiguration.getConfig().getDialogsConfig().isHistoryEnabled() && hadDialog(qu)) {
+					if (QuestsConfiguration.getConfig().getDialogsConfig().isHistoryEnabled() && hadDialog(qu, quester)) {
 						if (!lore.isEmpty())
 							lore.add(null);
 						lore.add("§8" + Lang.ClickRight + " §8> " + Lang.dialogsHistoryLore);
@@ -121,11 +114,8 @@ public class PlayerListGUI extends PagedGUI<Quest> {
 					break;
 
 				case IN_PROGRESS:
-					lore = new QuestDescriptionContext(QuestsConfiguration.getConfig().getQuestDescriptionConfig(),
-							qu, acc.getPlayer().orElse(null), acc, cat, DescriptionSource.MENU).formatDescription();
-
 					boolean hasDialogs =
-							QuestsConfiguration.getConfig().getDialogsConfig().isHistoryEnabled() && hadDialog(qu);
+							QuestsConfiguration.getConfig().getDialogsConfig().isHistoryEnabled() && hadDialog(qu, quester);
 					boolean cancellable =
 							QuestsConfiguration.getConfig().getQuestsMenuConfig().allowPlayerCancelQuest()
 									&& qu.isCancellable();
@@ -140,8 +130,6 @@ public class PlayerListGUI extends PagedGUI<Quest> {
 					break;
 
 				case NOT_STARTED:
-					lore = new QuestDescriptionContext(QuestsConfiguration.getConfig().getQuestDescriptionConfig(), qu,
-							acc.getPlayer().orElse(null), acc, cat, DescriptionSource.MENU).formatDescription();
 					break;
 
 				default:
@@ -154,7 +142,7 @@ public class PlayerListGUI extends PagedGUI<Quest> {
 		} catch (Exception ex) {
 			item = ItemUtils.item(XMaterial.BARRIER, "§cError - Quest #" + qu.getId());
 			QuestsPlugin.getPlugin().getLoggerExpanded().severe("An error ocurred when creating item of quest {} for {}", ex,
-					qu.getId(), acc.getDetailedName());
+					qu.getId(), quester.getDetailedName());
 		}
 		return item;
 	}
@@ -172,34 +160,36 @@ public class PlayerListGUI extends PagedGUI<Quest> {
 
 	@Override
 	public void click(@NotNull Quest qu, @NotNull ItemStack item, @NotNull ClickType clickType) {
+		var quester = quests.get(qu);
+
 		if (cat == PlayerListCategory.NOT_STARTED) {
 			if (!qu.getOptionValueOrDef(OptionStartable.class))
 				return;
-			if (!acc.isOnline())
+			if (!quester.isActive())
 				return;
-			if (acc.isOnline() && qu.canStart(acc.getPlayer().get(), true)) {
+			if (qu.canStart(player, true)) {
 				close();
-				qu.attemptStart(acc.getPlayer().get());
+				qu.attemptStart(player);
 			}
 		} else {
 			if (clickType.isRightClick()) {
-				if (QuestsConfiguration.getConfig().getDialogsConfig().isHistoryEnabled() && hadDialog(qu)) {
-					QuestUtils.playPluginSound(acc, "ITEM_BOOK_PAGE_TURN", 0.5f, 1.4f);
-					new DialogHistoryGUI(acc, qu, this::reopen).open(player);
+				if (QuestsConfiguration.getConfig().getDialogsConfig().isHistoryEnabled() && hadDialog(qu, quester)) {
+					QuestUtils.playPluginSound(QuestsPlugin.getPlugin().getAudiences().player(getViewer()),
+							"ITEM_BOOK_PAGE_TURN", 0.5f, 1.4f);
+					new DialogHistoryGUI(quester, qu, this::reopen).open(getViewer());
 				}
 			} else if (clickType.isLeftClick()) {
 				if (QuestsConfiguration.getConfig().getQuestsMenuConfig().allowPlayerCancelQuest()
 						&& cat == PlayerListCategory.IN_PROGRESS && qu.isCancellable()) {
-					QuestsPlugin.getPlugin().getGuiManager().getFactory()
-							.createConfirmation(() -> qu.cancelPlayer(acc), this::reopen, Lang.INDICATION_CANCEL.format(qu))
-							.open(player);
+					QuestsPlugin.getPlugin().getGuiManager().getFactory().createConfirmation(() -> qu.cancelQuester(quester),
+							this::reopen, Lang.INDICATION_CANCEL.format(qu)).open(player);
 				}
 			}
 		}
 	}
 
-	private boolean hadDialog(Quest quest) {
-		var data = acc.getDataHolder().getQuestDataIfPresent(quest);
+	private static boolean hadDialog(Quest quest, Quester quester) {
+		var data = quester.getDataHolder().getQuestDataIfPresent(quest);
 		if (data.isEmpty())
 			return false;
 

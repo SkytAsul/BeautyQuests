@@ -25,7 +25,7 @@ public class OptionFailOnDeath extends QuestOptionBoolean implements Listener {
 		Quester acc = PlayerManager.getPlayerAccount(e.getEntity());
 		if (acc == null) return;
 		if (getAttachedQuest().hasStarted(acc)) {
-			getAttachedQuest().cancelPlayer(acc);
+			getAttachedQuest().cancelQuester(acc);
 			Lang.QUEST_FAILED.send(e.getEntity(), getAttachedQuest());
 		}
 	}

@@ -21,7 +21,7 @@ public class QuestStopReward extends AbstractReward {
 		if (getAttachedQuest() == null) {
 			QuestsPlugin.getPlugin().getLoggerExpanded().debug("No attached quest for " + debugName());
 		} else {
-			getAttachedQuest().cancelPlayer(context.getQuester());
+			getAttachedQuest().cancelQuester(context.getQuester());
 			context.interruptBranch();
 		}
 	}

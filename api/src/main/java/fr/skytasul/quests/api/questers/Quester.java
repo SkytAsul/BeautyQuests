@@ -11,40 +11,59 @@ import java.util.Collection;
 public interface Quester extends HasPlaceholders, Audience {
 
 	/**
+	 * Gets whether the quester is active or not.
+	 * <p>
+	 * A quester is "active" if it has online players AND if those players' actions are to be considered
+	 * in relation with the quester (e.g. the party a player is actively in for a Party quester).
+	 * <p>
+	 * Only one quester should be active at a time for a given player in a {@link QuesterProvider}.
+	 *
+	 * @return <code>true</code> if this quester is active
+	 */
+	boolean isActive();
+
+	/**
 	 * @return the provider of this quester.
 	 */
-	public @NotNull QuesterProvider getProvider();
+	@NotNull
+	QuesterProvider getProvider();
 
 	/**
 	 * @return the object that holds this quester's data.
 	 */
-	public @NotNull QuesterData getDataHolder();
+	@NotNull
+	QuesterData getDataHolder();
 
 	/**
 	 * @return an identifier that uniquely describe this quester for the provider.
 	 */
-	public @NotNull String getIdentifier();
+	@NotNull
+	String getIdentifier();
 
 	/**
 	 * @return a friendly name describing this quester. This name cannot be used to uniquely describe
 	 *         the quester.
 	 */
-	public @NotNull String getFriendlyName();
+	@NotNull
+	String getFriendlyName();
 
 	/**
 	 * @return a detailed name describing this quester. This name should only be used for logging
 	 *         purpose.
 	 */
-	public @NotNull String getDetailedName();
+	@NotNull
+	String getDetailedName();
 
 	/**
 	 * @return the OfflinePlayer instances associated with this quester.
 	 */
-	public @NotNull Collection<OfflinePlayer> getOfflinePlayers();
+	@NotNull
+	Collection<OfflinePlayer> getOfflinePlayers();
 
 	/**
 	 * @return the Player instances associated with this quester, only for online players.
 	 */
-	public @NotNull Collection<Player> getOnlinePlayers();
+	@NotNull
+	Collection<Player> getOnlinePlayers();
 
 }

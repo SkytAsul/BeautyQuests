@@ -1,6 +1,7 @@
 package fr.skytasul.quests.gui.quests;
 
 import com.cryptomorin.xseries.XMaterial;
+import fr.skytasul.quests.api.QuestsAPI;
 import fr.skytasul.quests.api.QuestsConfiguration;
 import fr.skytasul.quests.api.gui.ItemUtils;
 import fr.skytasul.quests.api.gui.close.CloseBehavior;
@@ -14,7 +15,6 @@ import fr.skytasul.quests.api.players.PlayerManager;
 import fr.skytasul.quests.api.questers.Quester;
 import fr.skytasul.quests.api.quests.Quest;
 import fr.skytasul.quests.api.utils.PlayerListCategory;
-import fr.skytasul.quests.players.PlayerQuesterImplementation;
 import org.bukkit.DyeColor;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.ClickType;
@@ -38,7 +38,7 @@ public class ChoosePlayerQuestGUI extends PagedGUI<Quest> {
 		Collections.sort(super.objects);
 
 		setValidate(__ -> {
-			new PlayerListGUI((PlayerQuesterImplementation) acc).open(player);
+			new PlayerListGUI(QuestsAPI.getAPI().getQuesterManager(), player, false).open(player);
 		}, ItemUtils.item(XMaterial.BOOKSHELF, Lang.questMenu.toString(),
 				QuestOption.formatDescription(Lang.questMenuLore.toString())));
 	}

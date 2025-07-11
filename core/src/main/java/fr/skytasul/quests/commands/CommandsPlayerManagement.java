@@ -189,7 +189,7 @@ public class CommandsPlayerManagement implements OrphanCommand {
 				Quest quest = questDatas.getQuest();
 				CompletableFuture<?> future =
 						quest == null ? quester.getDataHolder().removeQuestData(questDatas.getQuestId())
-								: quest.resetPlayer(quester);
+								: quest.resetQuester(quester);
 				future = future.whenComplete(QuestsPlugin.getPlugin().getLoggerExpanded().logError(
 						"An error occurred while resetting quest {} to {}", actor.audience().get(), questDatas.getQuestId(),
 						quester.getDetailedName()));
@@ -237,7 +237,7 @@ public class CommandsPlayerManagement implements OrphanCommand {
 	}
 
 	private void reset(BukkitCommandActor actor, Quester target, Quest qu) {
-		qu.resetPlayer(target).whenComplete(QuestsPlugin.getPlugin().getLoggerExpanded().logError(__ -> {
+		qu.resetQuester(target).whenComplete(QuestsPlugin.getPlugin().getLoggerExpanded().logError(__ -> {
 			Lang.DATA_QUEST_REMOVED.send(target, qu.getPlaceholdersRegistry(),
 					PlaceholderRegistry.of("deleter_name", actor.name()));
 			Lang.DATA_QUEST_REMOVED_INFO.send(actor.audience().get(), target, qu);
@@ -250,7 +250,7 @@ public class CommandsPlayerManagement implements OrphanCommand {
 		List<CompletableFuture<Boolean>> futures = new ArrayList<>(Bukkit.getOnlinePlayers().size());
 
 		for (var quester : QuestsAPI.getAPI().getQuesterManager().getLoadedQuesters()) {
-			futures.add(quest.resetPlayer(quester)
+			futures.add(quest.resetQuester(quester)
 					.whenComplete(QuestsPlugin.getPlugin().getLoggerExpanded().logError(
 							"An error occurred while resetting quest {} to {}", actor.audience().get(), quest.getId(),
 							quester.getDetailedName())));
@@ -283,7 +283,7 @@ public class CommandsPlayerManagement implements OrphanCommand {
 	@Subcommand ("seePlayer")
 	@CommandPermission ("beautyquests.command.seePlayer")
 	public void seePlayer(Player actor, Player player) {
-		new PlayerListGUI(BeautyQuests.getInstance().getPlayersManager().getQuester(player), false).open(actor);
+		new PlayerListGUI(QuestsAPI.getAPI().getQuesterManager(), player, true).open(actor);
 	}
 
 	@Subcommand ("start")
@@ -310,7 +310,7 @@ public class CommandsPlayerManagement implements OrphanCommand {
 
 	private void start(CommandSender sender, Quester target, Quest quest, boolean overrideRequirements) {
 		if (!overrideRequirements) {
-			if (!(target instanceof PlayerQuester playerQuester) || !playerQuester.isOnline()) {
+			if (!(target instanceof PlayerQuester playerQuester) || !playerQuester.isActive()) {
 				DefaultErrors.sendGeneric(BeautyQuests.getInstance().getAudiences().sender(sender),
 						"Cannot test requirements for non-player quester");
 				return;
@@ -351,7 +351,7 @@ public class CommandsPlayerManagement implements OrphanCommand {
 			return;
 		}
 
-		if (quest.cancelPlayer(target)) {
+		if (quest.cancelQuester(target)) {
 			Lang.CANCEL_QUEST.send(actor.audience().get(), quest);
 		} else {
 			if (actor.isPlayer() && target instanceof PlayerQuester playerQuester

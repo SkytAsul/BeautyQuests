@@ -13,10 +13,11 @@ import fr.skytasul.quests.api.options.QuestOptionCreator;
 import fr.skytasul.quests.api.options.description.DescriptionSource;
 import fr.skytasul.quests.api.options.description.QuestDescriptionContext;
 import fr.skytasul.quests.api.options.description.QuestDescriptionProvider;
-import fr.skytasul.quests.api.players.PlayerManager;
 import fr.skytasul.quests.api.questers.Quester;
+import fr.skytasul.quests.api.questers.QuesterProvider;
 import fr.skytasul.quests.api.questers.data.QuesterQuestData;
 import fr.skytasul.quests.api.quests.Quest;
+import fr.skytasul.quests.api.quests.QuestQuesterStrategy;
 import fr.skytasul.quests.api.quests.events.QuestRemoveEvent;
 import fr.skytasul.quests.api.quests.events.questers.QuesterQuestFinishEvent;
 import fr.skytasul.quests.api.quests.events.questers.QuesterQuestLaunchEvent;
@@ -52,10 +53,23 @@ public class QuestImplementation implements Quest, QuestDescriptionProvider {
 
 	private static final Pattern PERMISSION_PATTERN = Pattern.compile("^beautyquests\\.start\\.(\\d+)$");
 
+	private static final QuestQuesterStrategy DEFAULT_QUESTER_STRATEGY = new QuestQuesterStrategy() {
+		@Override
+		public boolean shouldAllPlayersMatchRequirements() {
+			return true;
+		}
+
+		@Override
+		public @NotNull QuesterProvider questerProvider() {
+			return BeautyQuests.getInstance().getPlayersManager();
+		}
+	};
+
 	private final @NotNull QuestsManagerImplementation questsManager;
 	private final int id;
 	private final File file;
 	private BranchesManagerImplementation manager;
+	private QuestQuesterStrategy questerStrategy = DEFAULT_QUESTER_STRATEGY;
 
 	private List<QuestOption<?>> options = new ArrayList<>();
 	private List<QuestDescriptionProvider> descriptions = new ArrayList<>();
@@ -205,7 +219,28 @@ public class QuestImplementation implements Quest, QuestDescriptionProvider {
 		return manager;
 	}
 
+	@Override
+	public @NotNull QuestQuesterStrategy getQuesterStrategy() {
+		return questerStrategy;
+	}
+
+	public @NotNull Optional<? extends Quester> getPlayerQuester(@NotNull Player player) {
+		return questerStrategy.questerProvider().getPlayerQuesters(player).stream().filter(Quester::isActive).findFirst();
+	}
+
+	private boolean isApplicableQuester(@NotNull Quester quester) {
+		return quester.getProvider().equals(questerStrategy.questerProvider());
+	}
+
+	private void ensureApplicableQuester(@NotNull Quester quester) {
+		if (!isApplicableQuester(quester))
+			throw new IllegalArgumentException(
+					"The quester %s is not applicable in quest %d".formatted(quester.getDetailedName(), id));
+	}
+
 	public @NotNull String getTimeLeft(@NotNull Quester quester) {
+		if (!quester.getDataHolder().hasQuestData(this))
+			return "x";
 		var timer = quester.getDataHolder().getQuestData(this).getTimer();
 		if (timer.isEmpty())
 			return "x";
@@ -229,7 +264,7 @@ public class QuestImplementation implements Quest, QuestDescriptionProvider {
 	}
 
 	@Override
-	public boolean cancelPlayer(@NotNull Quester quester) {
+	public boolean cancelQuester(@NotNull Quester quester) {
 		if (!quester.getDataHolder().getQuestDataIfPresent(this).map(x -> x.hasStarted()).orElse(false))
 			return false;
 
@@ -249,7 +284,9 @@ public class QuestImplementation implements Quest, QuestDescriptionProvider {
 	}
 
 	@Override
-	public @NotNull CompletableFuture<Boolean> resetPlayer(@NotNull Quester quester) {
+	public @NotNull CompletableFuture<Boolean> resetQuester(@NotNull Quester quester) {
+		ensureApplicableQuester(quester);
+
 		boolean hadDatas = false;
 		CompletableFuture<?> future = null;
 
@@ -274,14 +311,25 @@ public class QuestImplementation implements Quest, QuestDescriptionProvider {
 
 	@Override
 	public boolean canStart(@NotNull Player p, boolean sendMessage) {
-		Quester acc = PlayerManager.getPlayerAccount(p);
-		if (hasStarted(acc)){
+		var questerOpt = getPlayerQuester(p);
+		if (questerOpt.isEmpty()) {
+			if (sendMessage)
+				MessageUtils.sendMessage(p, "Incompatible quester type", MessageType.DefaultMessageType.PREFIXED);
+			return false;
+		}
+
+		Quester quester = questerOpt.get();
+
+		if (hasStarted(quester)) {
 			if (sendMessage) Lang.ALREADY_STARTED.send(p);
 			return false;
 		}
-		if (!getOptionValueOrDef(OptionRepeatable.class) && hasFinished(acc)) return false;
-		if (!testTimer(acc, sendMessage)) return false;
-		if (!testRequirements(p, acc, sendMessage)) return false;
+		if (!getOptionValueOrDef(OptionRepeatable.class) && hasFinished(quester))
+			return false;
+		if (!testTimer(quester, sendMessage))
+			return false;
+		if (!testRequirements(p, quester, sendMessage))
+			return false;
 		return true;
 	}
 
@@ -399,7 +447,7 @@ public class QuestImplementation implements Quest, QuestDescriptionProvider {
 		if (!canStart(p, true))
 			return CompletableFuture.completedFuture(false);
 
-		var quester = PlayerManager.getPlayerAccount(p);
+		var quester = getPlayerQuester(p).orElseThrow();
 
 		String confirm;
 		if (QuestsConfiguration.getConfig().getQuestsConfig().questConfirmGUI()
@@ -420,6 +468,8 @@ public class QuestImplementation implements Quest, QuestDescriptionProvider {
 
 	@Override
 	public void start(@NotNull Quester quester, boolean silently) {
+		ensureApplicableQuester(quester);
+
 		if (hasStarted(quester)) {
 			if (!silently)
 				Lang.ALREADY_STARTED.send(quester);
@@ -468,6 +518,9 @@ public class QuestImplementation implements Quest, QuestDescriptionProvider {
 
 	@Override
 	public void finish(@NotNull Quester quester) {
+		if (!quester.getDataHolder().hasQuestData(this))
+			throw new IllegalStateException("Quester did not have data for this quest");
+
 		AdminMode.broadcast(quester.getFriendlyName() + " is completing the quest " + id);
 		QuesterQuestData questDatas = quester.getDataHolder().getQuestData(this);
 

@@ -12,7 +12,6 @@ import revxrsal.commands.annotation.CommandPlaceholder;
 import revxrsal.commands.annotation.Subcommand;
 import revxrsal.commands.bukkit.actor.BukkitCommandActor;
 import revxrsal.commands.bukkit.annotation.CommandPermission;
-import revxrsal.commands.exception.CommandErrorException;
 import revxrsal.commands.exception.UnknownCommandException;
 import revxrsal.commands.orphan.OrphanCommand;
 import java.util.Objects;
@@ -25,13 +24,8 @@ public class CommandsPlayer implements OrphanCommand {
 	public void menu(BukkitCommandActor actor, @revxrsal.commands.annotation.Optional String subcommand) {
 		if (subcommand != null)
 			throw new UnknownCommandException(subcommand);
-		Quester acc = PlayerManager.getPlayerAccount(actor.requirePlayer());
-		if (acc == null) {
-			QuestsPlugin.getPlugin().getLoggerExpanded()
-					.severe("Player " + actor.name() + " has got no account. This is a CRITICAL issue.");
-			throw new CommandErrorException("no player datas");
-		} else
-			QuestsPlugin.getPlugin().getGuiManager().getFactory().createPlayerQuestsMenu(acc).open(actor.asPlayer());
+		Player player = actor.requirePlayer();
+		QuestsPlugin.getPlugin().getGuiManager().getFactory().createPlayerQuestsMenu(player).open(player);
 	}
 
 	@Subcommand ("checkpoint")

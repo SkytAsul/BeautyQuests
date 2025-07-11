@@ -39,7 +39,7 @@ public class PlayerQuesterAccountsHookImplementation extends AbstractPlayerQuest
 	}
 
 	@Override
-	public boolean isOnline() {
+	public boolean isActive() {
 		return acc.isCurrent();
 	}
 

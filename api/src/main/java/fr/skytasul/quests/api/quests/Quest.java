@@ -53,17 +53,17 @@ public interface Quest extends OptionSet, Comparable<Quest>, HasPlaceholders {
 
 	public boolean canBypassLimit();
 
-	public boolean hasStarted(@NotNull Quester acc);
+	public boolean hasStarted(@NotNull Quester quester);
 
-	public boolean hasFinished(@NotNull Quester acc);
+	public boolean hasFinished(@NotNull Quester quester);
 
-	public @NotNull String getDescriptionLine(@NotNull Quester acc, @NotNull DescriptionSource source);
+	public @NotNull String getDescriptionLine(@NotNull Quester quester, @NotNull DescriptionSource source);
 
 	public boolean canStart(@NotNull Player player, boolean sendMessage);
 
-	public boolean cancelPlayer(@NotNull Quester acc);
+	public boolean cancelQuester(@NotNull Quester quester);
 
-	public @NotNull CompletableFuture<Boolean> resetPlayer(@NotNull Quester acc);
+	public @NotNull CompletableFuture<Boolean> resetQuester(@NotNull Quester quester);
 
 	public @NotNull CompletableFuture<Boolean> attemptStart(@NotNull Player player);
 
@@ -72,6 +72,9 @@ public interface Quest extends OptionSet, Comparable<Quest>, HasPlaceholders {
 	public void start(@NotNull Quester quester, boolean silently);
 
 	public void finish(@NotNull Quester quester);
+
+	@NotNull
+	QuestQuesterStrategy getQuesterStrategy();
 
 	@Override
 	default int compareTo(Quest o) {

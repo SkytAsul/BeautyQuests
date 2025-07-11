@@ -50,7 +50,7 @@ public class PlayerQuesterImplementation extends AbstractPlayerQuesterImplementa
 	}
 
 	@Override
-	public boolean isOnline() {
+	public boolean isActive() {
 		return getOfflinePlayer().isOnline();
 	}
 

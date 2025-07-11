@@ -8,8 +8,6 @@ import java.util.Optional;
 
 public interface PlayerQuester extends Quester {
 
-	public boolean isOnline();
-
 	public @NotNull Optional<Player> getPlayer();
 
 	public @NotNull OfflinePlayer getOfflinePlayer();

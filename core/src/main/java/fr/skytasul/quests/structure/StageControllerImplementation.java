@@ -5,7 +5,6 @@ import fr.skytasul.quests.BeautyQuests;
 import fr.skytasul.quests.api.QuestsAPI;
 import fr.skytasul.quests.api.QuestsPlugin;
 import fr.skytasul.quests.api.options.description.DescriptionSource;
-import fr.skytasul.quests.api.players.PlayerManager;
 import fr.skytasul.quests.api.questers.Quester;
 import fr.skytasul.quests.api.questers.data.QuesterQuestData;
 import fr.skytasul.quests.api.questers.events.QuesterJoinEvent;
@@ -79,7 +78,10 @@ public class StageControllerImplementation<T extends AbstractStage> implements S
 
 	@Override
 	public @NotNull Collection<Quester> getApplicableQuesters(@NotNull Player player) {
-		return List.of(PlayerManager.getPlayerAccount(player));
+		var optQuester = branch.getQuest().getPlayerQuester(player);
+		if (optQuester.isEmpty())
+			return List.of();
+		return List.of(optQuester.get());
 		// TODO add more possibilities!
 	}
 
