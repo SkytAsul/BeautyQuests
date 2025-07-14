@@ -14,10 +14,13 @@ import fr.skytasul.quests.api.options.QuestOptionCreator;
 import fr.skytasul.quests.api.pools.QuestPoolsManager;
 import fr.skytasul.quests.api.questers.QuesterManager;
 import fr.skytasul.quests.api.quests.QuestsManager;
+import fr.skytasul.quests.api.quests.quester.QuestQuesterStrategy;
+import fr.skytasul.quests.api.quests.quester.QuestQuesterStrategyCreator;
 import fr.skytasul.quests.api.requirements.AbstractRequirement;
 import fr.skytasul.quests.api.requirements.RequirementCreator;
 import fr.skytasul.quests.api.rewards.AbstractReward;
 import fr.skytasul.quests.api.rewards.RewardCreator;
+import fr.skytasul.quests.api.serializable.SerializableRegistry;
 import fr.skytasul.quests.api.stages.StageTypeRegistry;
 import fr.skytasul.quests.api.utils.messaging.MessageProcessor;
 import org.jetbrains.annotations.NotNull;
@@ -65,6 +68,14 @@ public interface QuestsAPI {
 	 */
 	@NotNull
 	QuesterManager getQuesterManager();
+
+	/**
+	 * Gets the questers strategy for quests registry.
+	 *
+	 * @return the registry
+	 */
+	@NotNull
+	SerializableRegistry<QuestQuesterStrategy, QuestQuesterStrategyCreator> getQuestQuesterStrategyRegistry();
 
 	/**
 	 * Registers a new mob factory.

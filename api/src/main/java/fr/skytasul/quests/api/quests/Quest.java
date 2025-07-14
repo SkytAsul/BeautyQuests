@@ -7,6 +7,7 @@ import fr.skytasul.quests.api.options.description.DescriptionSource;
 import fr.skytasul.quests.api.options.description.QuestDescriptionProvider;
 import fr.skytasul.quests.api.questers.Quester;
 import fr.skytasul.quests.api.quests.branches.QuestBranchesManager;
+import fr.skytasul.quests.api.quests.quester.QuestQuesterStrategy;
 import fr.skytasul.quests.api.utils.QuestVisibilityLocation;
 import fr.skytasul.quests.api.utils.messaging.HasPlaceholders;
 import org.bukkit.entity.Player;

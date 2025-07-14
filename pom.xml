@@ -46,15 +46,15 @@
 
 		<minecraft.version>1.21.7-R0.1-SNAPSHOT</minecraft.version>
 
-		<junit.version>5.13.1</junit.version>
+		<junit.version>5.13.3</junit.version>
 		<mockbukkit.version.minecraft>1.21</mockbukkit.version.minecraft>
-		<mockbukkit.version>4.61.0</mockbukkit.version>
+		<mockbukkit.version>4.68.0</mockbukkit.version>
 
 		<lamp.version>4.0.0-rc.9</lamp.version>
 		<xseries.version>13.2.0</xseries.version>
 		<hikaricp.version>6.0.0</hikaricp.version>
 		<fastboard.version>2.1.5</fastboard.version>
-		<adventure.version>4.21.0</adventure.version>
+		<adventure.version>4.23.0</adventure.version>
 		<adventure.bukkit.version>4.4.0</adventure.bukkit.version>
 		<commons-lang.version>2.6</commons-lang.version>
 	</properties>

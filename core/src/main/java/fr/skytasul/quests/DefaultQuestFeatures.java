@@ -4,10 +4,13 @@ import static fr.skytasul.quests.api.gui.ItemUtils.item;
 import com.cryptomorin.xseries.XMaterial;
 import fr.skytasul.quests.api.QuestsAPI;
 import fr.skytasul.quests.api.QuestsConfiguration;
+import fr.skytasul.quests.api.QuestsPlugin;
 import fr.skytasul.quests.api.comparison.ItemComparison;
+import fr.skytasul.quests.api.gui.ItemUtils;
 import fr.skytasul.quests.api.localization.Lang;
 import fr.skytasul.quests.api.objects.QuestObjectLocation;
 import fr.skytasul.quests.api.options.QuestOptionCreator;
+import fr.skytasul.quests.api.quests.quester.QuestQuesterStrategyCreator;
 import fr.skytasul.quests.api.requirements.RequirementCreator;
 import fr.skytasul.quests.api.requirements.RequirementList;
 import fr.skytasul.quests.api.rewards.RewardCreator;
@@ -26,6 +29,7 @@ import fr.skytasul.quests.api.utils.messaging.PlaceholdersContext;
 import fr.skytasul.quests.api.utils.progress.HasProgress;
 import fr.skytasul.quests.mobs.BukkitEntityFactory;
 import fr.skytasul.quests.options.*;
+import fr.skytasul.quests.quests.questers.PlayerQuesterStrategy;
 import fr.skytasul.quests.requirements.*;
 import fr.skytasul.quests.requirements.logical.LogicalOrRequirement;
 import fr.skytasul.quests.rewards.*;
@@ -284,6 +288,15 @@ public final class DefaultQuestFeatures {
 
 	public static void registerMisc() {
 		QuestsAPI.getAPI().registerMobFactory(new BukkitEntityFactory());
+
+		QuestQuesterStrategyCreator playerStrategyCreator = new QuestQuesterStrategyCreator("player",
+				PlayerQuesterStrategy.class, () -> new PlayerQuesterStrategy(QuestsPlugin.getPlugin().getPlayersManager()),
+				ItemUtils.item(XMaterial.PLAYER_HEAD, "Player"));
+		QuestsAPI.getAPI().getQuestQuesterStrategyRegistry().register(playerStrategyCreator);
+
+		QuestsAPI.getAPI().registerQuestOption(new QuestOptionCreator<>("questerStrategy", 37, OptionQuesterStrategy.class,
+				OptionQuesterStrategy::new, playerStrategyCreator.newObject()));
+
 	}
 
 	public static void registerMessageProcessors() {

@@ -47,7 +47,7 @@ class PlayerManagerTest implements Listener {
 		assertInstanceOf(PlayerQuester.class, questerJoinEvent.getQuester());
 
 		var quester = (PlayerQuester) questerJoinEvent.getQuester();
-		assertTrue(quester.isOnline());
+		assertTrue(quester.isActive());
 		assertSame(player, quester.getPlayer().get());
 		assertSame(player, quester.getOfflinePlayer());
 
@@ -60,7 +60,7 @@ class PlayerManagerTest implements Listener {
 		var questerLeaveEvent = questerLeaveEventWaiter.assertFired(1000);
 
 		assertSame(quester, questerLeaveEvent.getQuester());
-		assertFalse(quester.isOnline());
+		assertFalse(quester.isActive());
 		assertFalse(quester.getPlayer().isPresent());
 	}
 

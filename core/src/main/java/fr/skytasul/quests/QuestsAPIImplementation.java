@@ -13,10 +13,13 @@ import fr.skytasul.quests.api.options.QuestOptionCreator;
 import fr.skytasul.quests.api.pools.QuestPoolsManager;
 import fr.skytasul.quests.api.questers.QuesterManager;
 import fr.skytasul.quests.api.quests.QuestsManager;
+import fr.skytasul.quests.api.quests.quester.QuestQuesterStrategy;
+import fr.skytasul.quests.api.quests.quester.QuestQuesterStrategyCreator;
 import fr.skytasul.quests.api.requirements.AbstractRequirement;
 import fr.skytasul.quests.api.requirements.RequirementCreator;
 import fr.skytasul.quests.api.rewards.AbstractReward;
 import fr.skytasul.quests.api.rewards.RewardCreator;
+import fr.skytasul.quests.api.serializable.SerializableRegistry;
 import fr.skytasul.quests.api.stages.StageTypeRegistry;
 import fr.skytasul.quests.api.utils.logger.LoggerExpanded;
 import fr.skytasul.quests.api.utils.messaging.MessageProcessor;
@@ -43,6 +46,7 @@ public class QuestsAPIImplementation implements QuestsAPI {
 
 	private QuestObjectsRegistry<AbstractRequirement, RequirementCreator> requirements;
 	private QuestObjectsRegistry<AbstractReward, RewardCreator> rewards;
+	private SerializableRegistry<QuestQuesterStrategy, QuestQuesterStrategyCreator> questerStrategies;
 
 	private AbstractHolograms<?> hologramsManager = null;
 	private BQBlocksManagerImplementation blocksManager = new BQBlocksManagerImplementation();
@@ -61,6 +65,8 @@ public class QuestsAPIImplementation implements QuestsAPI {
 	void setup() {
 		requirements = new QuestObjectsRegistry<>("requirements", Lang.INVENTORY_REQUIREMENTS.toString());
 		rewards = new QuestObjectsRegistry<>("rewards", Lang.INVENTORY_REWARDS.toString());
+
+		questerStrategies = new SerializableRegistry<>("quester-strategies");
 
 		setMessageSender(QuestsConfiguration.getConfig().getDialogsConfig().sendInActionBar()
 				? new ActionBarMessageSender()
@@ -143,6 +149,11 @@ public class QuestsAPIImplementation implements QuestsAPI {
 	@Override
 	public @NotNull QuestObjectsRegistry<AbstractReward, RewardCreator> getRewards() {
 		return rewards;
+	}
+
+	@Override
+	public @NotNull SerializableRegistry<QuestQuesterStrategy, QuestQuesterStrategyCreator> getQuestQuesterStrategyRegistry() {
+		return questerStrategies;
 	}
 
 	@Override

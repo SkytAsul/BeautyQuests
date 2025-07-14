@@ -14,15 +14,14 @@ import fr.skytasul.quests.api.options.description.DescriptionSource;
 import fr.skytasul.quests.api.options.description.QuestDescriptionContext;
 import fr.skytasul.quests.api.options.description.QuestDescriptionProvider;
 import fr.skytasul.quests.api.questers.Quester;
-import fr.skytasul.quests.api.questers.QuesterProvider;
 import fr.skytasul.quests.api.questers.data.QuesterQuestData;
 import fr.skytasul.quests.api.quests.Quest;
-import fr.skytasul.quests.api.quests.QuestQuesterStrategy;
 import fr.skytasul.quests.api.quests.events.QuestRemoveEvent;
 import fr.skytasul.quests.api.quests.events.questers.QuesterQuestFinishEvent;
 import fr.skytasul.quests.api.quests.events.questers.QuesterQuestLaunchEvent;
 import fr.skytasul.quests.api.quests.events.questers.QuesterQuestPreLaunchEvent;
 import fr.skytasul.quests.api.quests.events.questers.QuesterQuestResetEvent;
+import fr.skytasul.quests.api.quests.quester.QuestQuesterStrategy;
 import fr.skytasul.quests.api.requirements.Actionnable;
 import fr.skytasul.quests.api.utils.PlayerListCategory;
 import fr.skytasul.quests.api.utils.QuestVisibilityLocation;
@@ -53,23 +52,10 @@ public class QuestImplementation implements Quest, QuestDescriptionProvider {
 
 	private static final Pattern PERMISSION_PATTERN = Pattern.compile("^beautyquests\\.start\\.(\\d+)$");
 
-	private static final QuestQuesterStrategy DEFAULT_QUESTER_STRATEGY = new QuestQuesterStrategy() {
-		@Override
-		public boolean shouldAllPlayersMatchRequirements() {
-			return true;
-		}
-
-		@Override
-		public @NotNull QuesterProvider questerProvider() {
-			return BeautyQuests.getInstance().getPlayersManager();
-		}
-	};
-
 	private final @NotNull QuestsManagerImplementation questsManager;
 	private final int id;
 	private final File file;
 	private BranchesManagerImplementation manager;
-	private QuestQuesterStrategy questerStrategy = DEFAULT_QUESTER_STRATEGY;
 
 	private List<QuestOption<?>> options = new ArrayList<>();
 	private List<QuestDescriptionProvider> descriptions = new ArrayList<>();
@@ -221,19 +207,11 @@ public class QuestImplementation implements Quest, QuestDescriptionProvider {
 
 	@Override
 	public @NotNull QuestQuesterStrategy getQuesterStrategy() {
-		return questerStrategy;
-	}
-
-	public @NotNull Optional<? extends Quester> getPlayerQuester(@NotNull Player player) {
-		return questerStrategy.questerProvider().getPlayerQuesters(player).stream().filter(Quester::isActive).findFirst();
-	}
-
-	private boolean isApplicableQuester(@NotNull Quester quester) {
-		return quester.getProvider().equals(questerStrategy.questerProvider());
+		return getOptionValueOrDef(OptionQuesterStrategy.class);
 	}
 
 	private void ensureApplicableQuester(@NotNull Quester quester) {
-		if (!isApplicableQuester(quester))
+		if (!getQuesterStrategy().isQuesterApplicable(quester))
 			throw new IllegalArgumentException(
 					"The quester %s is not applicable in quest %d".formatted(quester.getDetailedName(), id));
 	}
@@ -311,7 +289,7 @@ public class QuestImplementation implements Quest, QuestDescriptionProvider {
 
 	@Override
 	public boolean canStart(@NotNull Player p, boolean sendMessage) {
-		var questerOpt = getPlayerQuester(p);
+		var questerOpt = getQuesterStrategy().getPlayerQuester(p);
 		if (questerOpt.isEmpty()) {
 			if (sendMessage)
 				MessageUtils.sendMessage(p, "Incompatible quester type", MessageType.DefaultMessageType.PREFIXED);
@@ -328,8 +306,17 @@ public class QuestImplementation implements Quest, QuestDescriptionProvider {
 			return false;
 		if (!testTimer(quester, sendMessage))
 			return false;
-		if (!testRequirements(p, quester, sendMessage))
-			return false;
+
+		if (getQuesterStrategy().shouldAllPlayersMatchRequirements()) {
+			for (var innerPlayer : quester.getOnlinePlayers()) {
+				if (!testRequirements(innerPlayer, quester, sendMessage))
+					return false;
+			}
+		} else {
+			if (!testRequirements(p, quester, sendMessage))
+				return false;
+		}
+
 		return true;
 	}
 
@@ -447,7 +434,7 @@ public class QuestImplementation implements Quest, QuestDescriptionProvider {
 		if (!canStart(p, true))
 			return CompletableFuture.completedFuture(false);
 
-		var quester = getPlayerQuester(p).orElseThrow();
+		var quester = getQuesterStrategy().getPlayerQuester(p).orElseThrow();
 
 		String confirm;
 		if (QuestsConfiguration.getConfig().getQuestsConfig().questConfirmGUI()
