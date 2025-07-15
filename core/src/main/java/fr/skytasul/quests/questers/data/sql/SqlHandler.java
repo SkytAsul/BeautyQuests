@@ -148,7 +148,7 @@ public class SqlHandler {
 								ADD COLUMN quester_identifier VARCHAR(255) NOT NULL
 							""".formatted(QUESTS_DATAS_TABLE, db.getType().getLongTextType()));
 					statement.execute("UPDATE %s SET state = NULL".formatted(QUESTS_DATAS_TABLE));
-					statement.execute("UPDATE %s SET quester_identifier = 'migration'".formatted(QUESTS_DATAS_TABLE));
+					statement.execute("UPDATE %s SET quester_identifier = '_migration'".formatted(QUESTS_DATAS_TABLE));
 					statement.execute("UPDATE %s SET quester_provider = '%s'".formatted(QUESTS_DATAS_TABLE,
 							PlayerManagerImplementation.KEY.asString()));
 					statement.execute("""
@@ -156,6 +156,10 @@ public class SqlHandler {
 								INNER JOIN %2$s AS questers ON quests.account_id = questers.id
 							SET quests.quester_identifier = questers.identifier
 							""".formatted(QUESTS_DATAS_TABLE, QUESTERS_TABLE));
+					int missingQuesters = statement.executeUpdate(
+							"DELETE FROM %s WHERE quester_identifier = '_migration'".formatted(QUESTS_DATAS_TABLE));
+					if (missingQuesters > 0)
+						LOGGER.warning("%d quest data have no associated questers. Deleting them.", missingQuesters);
 					statement.execute("""
 							ALTER TABLE %1$s
 								MODIFY COLUMN id int(11) NOT NULL,
@@ -168,8 +172,7 @@ public class SqlHandler {
 								DROP COLUMN id,
 								DROP COLUMN account_id
 							""".formatted(QUESTS_DATAS_TABLE));
-					LOGGER
-							.info("Updated database by changing layout of the quests data table.");
+					LOGGER.info("Updated database by changing layout of the quests data table.");
 				}
 
 				if (columns.contains("account_id"))
@@ -184,13 +187,17 @@ public class SqlHandler {
 								ADD COLUMN quester_provider VARCHAR(225) NOT NULL,
 								ADD COLUMN quester_identifier VARCHAR(255) NOT NULL
 							""".formatted(POOLS_DATAS_TABLE));
-					statement.execute("UPDATE %s SET quester_identifier = 'migration', quester_provider = '%s'"
+					statement.execute("UPDATE %s SET quester_identifier = '_migration', quester_provider = '%s'"
 							.formatted(QUESTS_DATAS_TABLE, PlayerManagerImplementation.KEY.asString()));
 					statement.execute("""
 							UPDATE %1$s AS pools
 								INNER JOIN %2$s AS questers ON pools.account_id = questers.id
 							SET pools.quester_identifier = questers.identifier
 							""".formatted(POOLS_DATAS_TABLE, QUESTERS_TABLE));
+					int missingQuesters = statement.executeUpdate(
+							"DELETE FROM %s WHERE quester_identifier = '_migration'".formatted(POOLS_DATAS_TABLE));
+					if (missingQuesters > 0)
+						LOGGER.warning("%d pool data have no associated questers. Deleting them.", missingQuesters);
 					statement.execute("""
 							ALTER TABLE %1$s
 								MODIFY COLUMN id int(11) NOT NULL,
