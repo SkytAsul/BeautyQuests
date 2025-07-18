@@ -39,7 +39,10 @@ softdepend:
 - ItemsAdder
 - StackMob
 - Tooltips
- 
+
+# The default maven central repository of Paper does not contain some of the libraries below 
+paper-plugin-loader: fr.skytasul.quests.BeautyQuestsLoader
+paper-skip-libraries: true
 
 libraries:
 - io.github.revxrsal:lamp.bukkit:${lamp.version}
