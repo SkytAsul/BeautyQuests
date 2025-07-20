@@ -11,6 +11,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.List;
 import java.util.jar.JarFile;
+import java.util.logging.Logger;
 
 public class BeautyQuestsLoader implements PluginLoader {
 
@@ -27,8 +28,17 @@ public class BeautyQuestsLoader implements PluginLoader {
 		}
 
 		var resolver = new MavenLibraryResolver();
-		resolver.addRepository(
-				new RemoteRepository.Builder("central", "default", "https://repo1.maven.org/maven2/").build());
+
+		var repository = MavenLibraryResolver.MAVEN_CENTRAL_DEFAULT_MIRROR;
+		if (repository.equals("https://maven-central.storage-download.googleapis.com/maven2")) {
+			Logger.getGlobal().info("""
+					Paper is using the Google mirror for Maven central repository, which lacks some artifacts.
+					BeautyQuests will use the default Maven central CDN until a better mirror has been found.
+					""");
+			repository = "https://repo1.maven.org/maven2/";
+		}
+		resolver.addRepository(new RemoteRepository.Builder("central", "default", repository).build());
+
 		for (String library : librariesList) {
 			resolver.addDependency(new Dependency(new DefaultArtifact(library), null));
 		}
