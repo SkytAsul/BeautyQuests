@@ -98,7 +98,12 @@ public class YamlQuesterData extends AbstractQuesterDataImplementation {
 		if (yaml.contains("quests")) {
 			for (String questIdRaw : yaml.getConfigurationSection("quests").getKeys(false)) {
 				int questId = Integer.parseInt(questIdRaw);
-				super.questData.put(questId, new QuestData(questId));
+				try {
+					super.questData.put(questId, new QuestData(questId));
+				} catch (Exception ex) {
+					YamlDataManager.LOGGER.warning("Failed to load data of quest {0} for quester {1}", ex, questId,
+							fullIdentifier);
+				}
 			}
 		}
 
@@ -114,7 +119,12 @@ public class YamlQuesterData extends AbstractQuesterDataImplementation {
 		if (yaml.contains("pools")) {
 			for (String poolIdRaw : yaml.getConfigurationSection("pools").getKeys(false)) {
 				int poolId = Integer.parseInt(poolIdRaw);
-				super.poolData.put(poolId, new PoolData(poolId));
+				try {
+					super.poolData.put(poolId, new PoolData(poolId));
+				} catch (Exception ex) {
+					YamlDataManager.LOGGER.warning("Failed to load data of pool {0} for quester {1}", ex, poolId,
+							fullIdentifier);
+				}
 			}
 		}
 
@@ -238,7 +248,7 @@ public class YamlQuesterData extends AbstractQuesterDataImplementation {
 					try {
 						StageController stageFlow = getQuest().getBranchesManager().getStageFromFlow(flowPart);
 						super.questFlow.add(stageFlow);
-					} catch (IllegalArgumentException ex) {
+					} catch (Exception ex) {
 						QuestsPlugin.getPlugin().getLoggerExpanded().severe(
 								"Cannot find a part of the quest flow for quester {}, quest {}: {}", ex, id, questId,
 								flowPart);
