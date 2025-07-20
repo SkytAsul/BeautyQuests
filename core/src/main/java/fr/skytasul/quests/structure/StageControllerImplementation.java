@@ -237,7 +237,13 @@ public class StageControllerImplementation<T extends AbstractStage> implements S
 
 	@Override
 	public String toString() {
-		return "stage " + getFlowId() + " (" + type.getID() + ") of quest " + branch.getQuest().getId() + ", branch "
+		String flowId;
+		try {
+			flowId = getFlowId();
+		} catch (Exception ex) {
+			flowId = "unknown";
+		}
+		return "stage " + flowId + " (" + type.getID() + ") of quest " + branch.getQuest().getId() + ", branch "
 				+ branch.getId();
 	}
 
