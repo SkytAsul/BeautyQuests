@@ -170,6 +170,10 @@ dynmap:
   markerIcon: "bookshelf"
   # Minimum zoom level for markers to be displayed
   minZoom: 0
+# MythicMobs integration options
+mythicmobs:
+  # If true, an entity killed by a MythicMob that has an owner will be counted for quests of the owner
+  count kill for pet owner: true
 
 # - Stage descriptions -
 # Describes the way stage with multiple objects are described

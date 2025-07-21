@@ -2,6 +2,7 @@ package fr.skytasul.quests.integrations.mobs;
 
 import com.cryptomorin.xseries.XMaterial;
 import fr.skytasul.quests.api.QuestsPlugin;
+import fr.skytasul.quests.api.events.internal.BQMobDeathEvent;
 import fr.skytasul.quests.api.gui.ItemUtils;
 import fr.skytasul.quests.api.gui.templates.PagedGUI;
 import fr.skytasul.quests.api.localization.Lang;
@@ -9,11 +10,13 @@ import fr.skytasul.quests.api.mobs.LeveledMobFactory;
 import fr.skytasul.quests.api.options.QuestOption;
 import fr.skytasul.quests.api.utils.MinecraftVersion;
 import fr.skytasul.quests.api.utils.Utils;
+import fr.skytasul.quests.integrations.IntegrationsConfiguration;
 import io.lumine.mythic.api.mobs.MythicMob;
 import io.lumine.mythic.api.skills.placeholders.PlaceholderString;
 import io.lumine.mythic.bukkit.MythicBukkit;
 import io.lumine.mythic.bukkit.events.MythicMobDeathEvent;
 import io.lumine.mythic.bukkit.utils.text.Text;
+import org.bukkit.Bukkit;
 import org.bukkit.DyeColor;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
@@ -136,6 +139,24 @@ public class MythicMobs5 implements LeveledMobFactory<MythicMob>, Listener {
 	public void onMythicDeath(MythicMobDeathEvent e) {
 		if (e.getKiller() == null) return;
 		callEvent(e, e.getMob().getType(), e.getEntity(), e.getKiller());
+	}
+
+	@EventHandler
+	public void onBqMobDeath(BQMobDeathEvent event) {
+		if (!IntegrationsConfiguration.getConfiguration().mythicMobsPetKillToOwner())
+			return;
+
+		var mobOpt = MythicBukkit.inst().getMobManager().getActiveMob(event.getKiller().getUniqueId());
+		if (mobOpt.isEmpty())
+			return;
+		if (!mobOpt.get().getOwner().isPresent())
+			return;
+
+		Player owner = Bukkit.getPlayer(mobOpt.get().getOwner().get());
+		if (owner == null)
+			return;
+
+		event.setKiller(owner);
 	}
 
 }

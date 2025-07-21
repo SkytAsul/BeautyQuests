@@ -10,9 +10,9 @@ public class BQMobDeathEvent extends Event {
 	private static final HandlerList handlers = new HandlerList();
 
 	private final Object pluginEntity;
-	private final Entity killer;
 	private final Entity bukkitEntity;
 	private final int amount;
+	private Entity killer;
 
 	public BQMobDeathEvent(@NotNull Object pluginEntity, @NotNull Entity killer, @Nullable Entity bukkitEntity, int amount) {
 		this.pluginEntity = pluginEntity;
@@ -27,6 +27,10 @@ public class BQMobDeathEvent extends Event {
 
 	public @NotNull Entity getKiller() {
 		return killer;
+	}
+
+	public void setKiller(@NotNull Entity killer) {
+		this.killer = killer;
 	}
 
 	public @Nullable Entity getBukkitEntity() {
