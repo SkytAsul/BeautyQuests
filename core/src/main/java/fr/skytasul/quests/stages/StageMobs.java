@@ -58,9 +58,12 @@ public class StageMobs extends AbstractCountableStage<Mob<?>> implements Locatab
 				&& e.getBukkitEntity().getLastDamageCause().getCause() != DamageCause.PROJECTILE)
 			return;
 
-		Player p = e.getKiller();
-		if (p == e.getBukkitEntity()) return; // player suicidal
-		event(p, new KilledMob(e.getPluginMob(), e.getBukkitEntity()), e.getAmount());
+		if (!(e.getKiller() instanceof Player killer))
+			return;
+		if (killer == e.getBukkitEntity())
+			return; // player suicidal
+
+		event(killer, new KilledMob(e.getPluginMob(), e.getBukkitEntity()), e.getAmount());
 	}
 
 	@Override

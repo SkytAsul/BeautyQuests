@@ -8,12 +8,16 @@ import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.MemoryConfiguration;
+import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
+import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
+import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.inventory.ClickType;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -321,6 +325,12 @@ public class Utils{
 			default:
 				return click.name().toLowerCase();
 		}
+	}
+
+	public static @Nullable Entity getEntityKiller(@NotNull LivingEntity entity) {
+		if (entity.getLastDamageCause() instanceof EntityDamageByEntityEvent event)
+			return event.getDamager();
+		return entity.getKiller();
 	}
 
 }

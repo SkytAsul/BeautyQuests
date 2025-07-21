@@ -135,8 +135,7 @@ public class MythicMobs5 implements LeveledMobFactory<MythicMob>, Listener {
 	@EventHandler
 	public void onMythicDeath(MythicMobDeathEvent e) {
 		if (e.getKiller() == null) return;
-		if (!(e.getKiller() instanceof Player)) return;
-		callEvent(e, e.getMob().getType(), e.getEntity(), (Player) e.getKiller());
+		callEvent(e, e.getMob().getType(), e.getEntity(), e.getKiller());
 	}
 
 }

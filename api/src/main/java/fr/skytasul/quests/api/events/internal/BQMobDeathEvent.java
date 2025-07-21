@@ -1,34 +1,35 @@
 package fr.skytasul.quests.api.events.internal;
 
 import org.bukkit.entity.Entity;
-import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
 import org.bukkit.event.HandlerList;
+import org.jetbrains.annotations.NotNull;
+import javax.annotation.Nullable;
 
 public class BQMobDeathEvent extends Event {
 	private static final HandlerList handlers = new HandlerList();
-	
+
 	private final Object pluginEntity;
-	private final Player killer;
+	private final Entity killer;
 	private final Entity bukkitEntity;
 	private final int amount;
 
-	public BQMobDeathEvent(Object pluginEntity, Player killer, Entity bukkitEntity, int amount) {
+	public BQMobDeathEvent(@NotNull Object pluginEntity, @NotNull Entity killer, @Nullable Entity bukkitEntity, int amount) {
 		this.pluginEntity = pluginEntity;
 		this.killer = killer;
 		this.bukkitEntity = bukkitEntity;
 		this.amount = amount;
 	}
-	
-	public Object getPluginMob() {
+
+	public @NotNull Object getPluginMob() {
 		return pluginEntity;
 	}
 
-	public Player getKiller() {
+	public @NotNull Entity getKiller() {
 		return killer;
 	}
 
-	public Entity getBukkitEntity() {
+	public @Nullable Entity getBukkitEntity() {
 		return bukkitEntity;
 	}
 

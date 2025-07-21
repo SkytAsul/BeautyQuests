@@ -1,8 +1,11 @@
 package fr.skytasul.quests.api.mobs;
 
-import java.util.*;
-import java.util.concurrent.TimeUnit;
-import java.util.function.Consumer;
+import com.google.common.cache.Cache;
+import com.google.common.cache.CacheBuilder;
+import fr.skytasul.quests.api.QuestsAPI;
+import fr.skytasul.quests.api.QuestsPlugin;
+import fr.skytasul.quests.api.events.internal.BQMobDeathEvent;
+import fr.skytasul.quests.api.utils.AutoRegistered;
 import org.apache.commons.lang.Validate;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Entity;
@@ -14,17 +17,14 @@ import org.bukkit.event.Listener;
 import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import com.google.common.cache.Cache;
-import com.google.common.cache.CacheBuilder;
-import fr.skytasul.quests.api.QuestsAPI;
-import fr.skytasul.quests.api.QuestsPlugin;
-import fr.skytasul.quests.api.events.internal.BQMobDeathEvent;
-import fr.skytasul.quests.api.utils.AutoRegistered;
+import java.util.*;
+import java.util.concurrent.TimeUnit;
+import java.util.function.Consumer;
 
 /**
  * This class should implement {@link Listener} to have at least one {@link EventHandler}. This
  * event method will be used to fire the {@link #callEvent(Event, Object, Entity, Player)}.
- * 
+ *
  * @param <T> object which should represents a mob type from whatever plugin
  */
 @AutoRegistered
@@ -82,21 +82,21 @@ public abstract interface MobFactory<T> {
 	public default boolean mobApplies(@Nullable T first, @Nullable Object other) {
 		return Objects.equals(first, other);
 	}
-	
+
 	public boolean bukkitMobApplies(@NotNull T first, @NotNull Entity entity);
 
 	/**
 	 * Has to be called when a mob corresponding to this factory has been killed
-	 * 
+	 *
 	 * @param originalEvent original event
 	 * @param pluginMob mob killed
 	 * @param entity bukkit entity killed
 	 * @param player killer
 	 */
-	public default void callEvent(@Nullable Event originalEvent, @NotNull T pluginMob, @NotNull Entity entity,
-			@NotNull Player player) {
+	public default void callEvent(@Nullable Event originalEvent, @NotNull T pluginMob, @Nullable Entity entity,
+			@NotNull Entity killer) {
 		Validate.notNull(pluginMob, "Plugin mob object cannot be null");
-		Validate.notNull(player, "Player cannot be null");
+		Validate.notNull(killer, "Killer cannot be null");
 		if (originalEvent != null) {
 			BQMobDeathEvent existingCompat = eventsCache.getIfPresent(originalEvent);
 			if (existingCompat != null && mobApplies(pluginMob, existingCompat.getPluginMob())) {
@@ -108,7 +108,7 @@ public abstract interface MobFactory<T> {
 		OptionalInt optionalStackSize = QuestsAPI.getAPI().getMobStackers().stream()
 				.mapToInt(stacker -> stacker.getEntityStackSize(entity)).filter(size -> size > 1).max();
 
-		BQMobDeathEvent compatEvent = new BQMobDeathEvent(pluginMob, player, entity, optionalStackSize.orElse(1));
+		BQMobDeathEvent compatEvent = new BQMobDeathEvent(pluginMob, killer, entity, optionalStackSize.orElse(1));
 		if (originalEvent != null) eventsCache.put(originalEvent, compatEvent);
 		Bukkit.getPluginManager().callEvent(compatEvent);
 	}

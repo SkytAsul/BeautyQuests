@@ -5,6 +5,7 @@ import fr.skytasul.quests.api.editors.InventoryClear;
 import fr.skytasul.quests.api.gui.ItemUtils;
 import fr.skytasul.quests.api.localization.Lang;
 import fr.skytasul.quests.api.mobs.MobFactory;
+import fr.skytasul.quests.api.utils.Utils;
 import net.citizensnpcs.api.CitizensAPI;
 import net.citizensnpcs.api.event.NPCDeathEvent;
 import net.citizensnpcs.api.event.NPCRightClickEvent;
@@ -77,8 +78,10 @@ public class CitizensFactory implements MobFactory<NPC>, Listener {
 	@EventHandler
 	public void onNPCKilled(NPCDeathEvent e) {
 		LivingEntity en = (LivingEntity) e.getNPC().getEntity();
-		if (en.getKiller() == null) return;
-		callEvent(e, e.getNPC(), en, en.getKiller());
+		var killer = Utils.getEntityKiller(en);
+		if (killer == null)
+			return;
+		callEvent(e, e.getNPC(), en, killer);
 	}
 
 	private class CitizensNpcClickEditor extends InventoryClear implements Listener {

@@ -64,7 +64,7 @@ public class MythicMobs implements LeveledMobFactory<MythicMob>, Listener {
 	public MythicMob fromValue(String value) {
 		return io.lumine.xikage.mythicmobs.MythicMobs.inst().getMobManager().getMythicMob(value);
 	}
-	
+
 	@Override
 	public boolean bukkitMobApplies(MythicMob first, Entity entity) {
 		return io.lumine.xikage.mythicmobs.MythicMobs.inst().getMobManager().getActiveMob(entity.getUniqueId())
@@ -127,8 +127,7 @@ public class MythicMobs implements LeveledMobFactory<MythicMob>, Listener {
 	@EventHandler
 	public void onMythicDeath(MythicMobDeathEvent e) {
 		if (e.getKiller() == null) return;
-		if (!(e.getKiller() instanceof Player)) return;
-		callEvent(e, e.getMob().getType(), e.getEntity(), (Player) e.getKiller());
+		callEvent(e, e.getMob().getType(), e.getEntity(), e.getKiller());
 	}
-	
+
 }
