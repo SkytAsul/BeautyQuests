@@ -27,6 +27,7 @@ import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
 import org.jetbrains.annotations.NotNull;
@@ -52,7 +53,7 @@ public class StageMobs extends AbstractCountableStage<Mob<?>> implements Locatab
 		this.shoot = shoot;
 	}
 
-	@EventHandler
+	@EventHandler(priority = EventPriority.MONITOR)
 	public void onMobKilled(BQMobDeathEvent e){
 		if (shoot && e.getBukkitEntity() != null && e.getBukkitEntity().getLastDamageCause() != null
 				&& e.getBukkitEntity().getLastDamageCause().getCause() != DamageCause.PROJECTILE)

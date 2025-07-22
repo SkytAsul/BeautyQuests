@@ -22,6 +22,7 @@ import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.ClickType;
 import org.bukkit.inventory.ItemStack;
@@ -141,7 +142,7 @@ public class MythicMobs5 implements LeveledMobFactory<MythicMob>, Listener {
 		callEvent(e, e.getMob().getType(), e.getEntity(), e.getKiller());
 	}
 
-	@EventHandler
+	@EventHandler(priority = EventPriority.LOW)
 	public void onBqMobDeath(BQMobDeathEvent event) {
 		if (!IntegrationsConfiguration.getConfiguration().mythicMobsPetKillToOwner())
 			return;
@@ -149,10 +150,16 @@ public class MythicMobs5 implements LeveledMobFactory<MythicMob>, Listener {
 		var mobOpt = MythicBukkit.inst().getMobManager().getActiveMob(event.getKiller().getUniqueId());
 		if (mobOpt.isEmpty())
 			return;
-		if (!mobOpt.get().getOwner().isPresent())
+		try {
+			if (!mobOpt.get().getOwnerUUID().isPresent())
+				return;
+		} catch (NoSuchMethodError ex) {
+			QuestsPlugin.getPlugin().getLoggerExpanded().warning(
+					"The 'mythicmobs.count kill for pet owner' option is not compatible with your MythicMobs version. Please disable it or update MythicMobs.");
 			return;
+		}
 
-		Player owner = Bukkit.getPlayer(mobOpt.get().getOwner().get());
+		Player owner = Bukkit.getPlayer(mobOpt.get().getOwnerUUID().get());
 		if (owner == null)
 			return;
 
