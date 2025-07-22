@@ -15,6 +15,8 @@ import java.util.logging.Logger;
 
 public class BeautyQuestsLoader implements PluginLoader {
 
+	private static final String MAVEN_CENTRAL = "https://repo1.maven.org/maven2/";
+
 	@Override
 	public void classloader(PluginClasspathBuilder classpathBuilder) {
 		List<String> librariesList;
@@ -29,13 +31,18 @@ public class BeautyQuestsLoader implements PluginLoader {
 
 		var resolver = new MavenLibraryResolver();
 
-		var repository = MavenLibraryResolver.MAVEN_CENTRAL_DEFAULT_MIRROR;
-		if (repository.equals("https://maven-central.storage-download.googleapis.com/maven2")) {
-			Logger.getGlobal().info("""
+		String repository;
+		try {
+			repository = MavenLibraryResolver.MAVEN_CENTRAL_DEFAULT_MIRROR;
+			if (repository.equals("https://maven-central.storage-download.googleapis.com/maven2")) {
+				Logger.getGlobal().info("""
 					Paper is using the Google mirror for Maven central repository, which lacks some artifacts.
 					BeautyQuests will use the default Maven central CDN until a better mirror has been found.
 					""");
-			repository = "https://repo1.maven.org/maven2/";
+				repository = MAVEN_CENTRAL;
+			}
+		} catch (NoSuchFieldError ex) {
+			repository = MAVEN_CENTRAL;
 		}
 		resolver.addRepository(new RemoteRepository.Builder("central", "default", repository).build());
 
