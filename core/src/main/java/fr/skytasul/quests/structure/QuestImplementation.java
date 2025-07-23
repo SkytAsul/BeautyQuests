@@ -243,11 +243,13 @@ public class QuestImplementation implements Quest, QuestDescriptionProvider {
 
 	@Override
 	public boolean cancelQuester(@NotNull Quester quester) {
-		if (!quester.getDataHolder().getQuestDataIfPresent(this).map(x -> x.hasStarted()).orElse(false))
+		var dataOpt = quester.getDataHolder().getQuestDataIfPresent(this);
+		if (!dataOpt.map(x -> x.hasStarted()).orElse(false))
 			return false;
 
 		QuestsPlugin.getPlugin().getLoggerExpanded().debug("Cancelling quest {} for {}", id, quester.getDetailedName());
 		cancelInternal(quester);
+		dataOpt.get().setState(QuesterQuestData.State.NOT_STARTED);
 		return true;
 	}
 

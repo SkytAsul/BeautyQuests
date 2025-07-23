@@ -28,7 +28,8 @@ public class OptionQuesterStrategy extends QuestOption<QuestQuesterStrategy> {
 
 	@Override
 	public void load(@NotNull ConfigurationSection config, @NotNull String key) {
-		setValue(QuestQuesterStrategy.deserialize(config, QuestsAPI.getAPI().getQuestQuesterStrategyRegistry()));
+		setValue(QuestQuesterStrategy.deserialize(config.getConfigurationSection(key),
+				QuestsAPI.getAPI().getQuestQuesterStrategyRegistry()));
 	}
 
 	@Override
@@ -63,7 +64,7 @@ public class OptionQuesterStrategy extends QuestOption<QuestQuesterStrategy> {
 				event.getGui().updateOptionItem(OptionQuesterStrategy.this);
 				event.reopen();
 			}
-		};
+		}.open(event.getPlayer());
 	}
 
 }

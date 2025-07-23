@@ -95,7 +95,7 @@ public class BqLoggerHandler extends FileHandler {
 			var stb = new StringBuilder();
 			int i = 0;
 			while (matcher.find()) {
-				matcher.appendReplacement(stb, Integer.toString(i));
+				matcher.appendReplacement(stb, "{%d}".formatted(i));
 				i++;
 			}
 			matcher.appendTail(stb);

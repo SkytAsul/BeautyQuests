@@ -214,6 +214,8 @@ public class QuestsManagerImplementation implements QuestsManager {
 		return quests
 				.stream()
 				.filter(quest -> {
+					if (!quest.getQuesterStrategy().isQuesterApplicable(acc))
+						return false;
 					if (hide && quest.isHidden(QuestVisibilityLocation.TAB_NOT_STARTED)) return false;
 					if (quest.hasStarted(acc)) return false;
 					if (!quest.hasFinished(acc)) return true;

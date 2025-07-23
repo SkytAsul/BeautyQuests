@@ -1,15 +1,15 @@
 package fr.skytasul.quests.api.serializable;
 
+import fr.skytasul.quests.api.QuestsPlugin;
+import fr.skytasul.quests.api.utils.Utils;
+import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.configuration.MemoryConfiguration;
+import org.jetbrains.annotations.NotNull;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Collectors;
-import org.bukkit.configuration.ConfigurationSection;
-import org.bukkit.configuration.MemoryConfiguration;
-import org.jetbrains.annotations.NotNull;
-import fr.skytasul.quests.api.QuestsPlugin;
-import fr.skytasul.quests.api.utils.Utils;
 
 public abstract class SerializableObject {
 
@@ -69,7 +69,8 @@ public abstract class SerializableObject {
 			}
 		}
 		if (creator == null) {
-			QuestsPlugin.getPlugin().getLoggerExpanded().severe("Cannot find object creator with id: " + id);
+			QuestsPlugin.getPlugin().getLoggerExpanded().severe("Cannot find object creator with id {} in registry {}", id,
+					registry.getID());
 			return null;
 		}
 		T reward = creator.newObject();
