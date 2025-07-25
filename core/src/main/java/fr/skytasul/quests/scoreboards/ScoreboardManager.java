@@ -8,6 +8,7 @@ import fr.skytasul.quests.api.questers.Quester;
 import fr.skytasul.quests.api.questers.events.QuesterJoinEvent;
 import fr.skytasul.quests.api.questers.events.QuesterLeaveEvent;
 import fr.skytasul.quests.api.quests.Quest;
+import fr.skytasul.quests.api.utils.logger.LoggerExpanded;
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
@@ -23,6 +24,8 @@ import java.util.*;
 import java.util.function.Consumer;
 
 public class ScoreboardManager implements Listener, QuestsHandler {
+
+	static final LoggerExpanded LOGGER = LoggerExpanded.get("BeautyQuests.ScoreboardManager");
 
 	private final @NotNull BeautyQuests plugin;
 	private final @NotNull File configFile;
@@ -128,8 +131,7 @@ public class ScoreboardManager implements Listener, QuestsHandler {
 		lines.clear();
 		for (Map<?, ?> map : config.getMapList("lines")) {
 			if (lines.size() == 15) {
-				plugin.getLoggerExpanded()
-						.warning("Limit of 15 scoreboard lines reached - please delete some in scoreboard.yml");
+				LOGGER.warning("Limit of 15 scoreboard lines reached - please delete some in scoreboard.yml");
 				break;
 			}
 			try {
@@ -138,7 +140,7 @@ public class ScoreboardManager implements Listener, QuestsHandler {
 				ex.printStackTrace();
 			}
 		}
-		plugin.getLoggerExpanded().debug("Registered {0} lines in scoreboard", lines.size());
+		LOGGER.debug("Registered {0} lines in scoreboard", lines.size());
 
 		scoreboards = new HashMap<>();
 		forceHiddenState = new HashMap<>();
@@ -152,7 +154,7 @@ public class ScoreboardManager implements Listener, QuestsHandler {
 		HandlerList.unregisterAll(this);
 		for (Scoreboard s : scoreboards.values()) s.cancel();
 		if (!scoreboards.isEmpty())
-			plugin.getLoggerExpanded().debug("{0} scoreboards deleted.", scoreboards.size());
+			LOGGER.debug("{0} scoreboards deleted.", scoreboards.size());
 		scoreboards.clear();
 		scoreboards = null;
 		forceHiddenState.clear();

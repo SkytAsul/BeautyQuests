@@ -295,24 +295,31 @@ public class Scoreboard extends BukkitRunnable implements Listener {
 			if (timeLeft == 0 || willRefresh) {
 				willRefresh = false;
 				timeLeft = param.getRefreshTime();
+
 				String text = getValue();
-				if (hasQuestPlaceholders)
-					text = formatQuestPlaceholders(text);
+				try {
+					if (hasQuestPlaceholders)
+						text = formatQuestPlaceholders(text);
 
-				if (text == null) {
-					// in this case, the line must not be displayed
+					if (text == null) {
+						// in this case, the line must not be displayed
+						if (lastValue == null)
+							return false;
 
-					lines = Collections.emptyList();
-					lastValue = null;
-				} else {
-					text = MessageUtils.finalFormat(text, null, PlaceholdersContext.of(p, true, null));
-					if (text.equals(lastValue))
-						return false;
+						lines = Collections.emptyList();
+					} else {
+						text = MessageUtils.finalFormat(text, null, PlaceholdersContext.of(p, true, null));
+						if (text.equals(lastValue))
+							return false;
 
-					lines = ChatColorUtils.wordWrap(text, param.getMaxLength() == 0 ? 30 : param.getMaxLength(), maxLength);
-
-					lastValue = text;
+						lines = ChatColorUtils.wordWrap(text, param.getMaxLength() == 0 ? 30 : param.getMaxLength(),
+								maxLength);
+					}
+				} catch (Exception ex) {
+					ScoreboardManager.LOGGER.warning("Failed to refresh line {0} for player {1}", ex, text, p.getName());
+					lines = List.of("§cerror");
 				}
+				lastValue = text;
 				return true;
 			}
 			if (time) timeLeft--;
