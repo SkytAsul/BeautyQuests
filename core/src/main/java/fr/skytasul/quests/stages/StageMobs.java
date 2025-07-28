@@ -26,6 +26,7 @@ import fr.skytasul.quests.mobs.Mob;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
+import org.bukkit.entity.Projectile;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
@@ -59,7 +60,10 @@ public class StageMobs extends AbstractCountableStage<Mob<?>> implements Locatab
 				&& e.getBukkitEntity().getLastDamageCause().getCause() != DamageCause.PROJECTILE)
 			return;
 
-		if (!(e.getKiller() instanceof Player killer))
+		Entity killerEntity = e.getKiller();
+		if (killerEntity instanceof Projectile projectile && projectile.getShooter() instanceof Entity shooter)
+			killerEntity = shooter;
+		if (!(killerEntity instanceof Player killer))
 			return;
 		if (killer == e.getBukkitEntity())
 			return; // player suicidal
