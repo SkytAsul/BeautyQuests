@@ -6,6 +6,8 @@ import fr.skytasul.quests.api.gui.ItemUtils;
 import fr.skytasul.quests.api.gui.templates.PagedGUI;
 import fr.skytasul.quests.api.options.OptionSet;
 import fr.skytasul.quests.api.options.QuestOption;
+import fr.skytasul.quests.api.options.description.QuestDescriptionContext;
+import fr.skytasul.quests.api.options.description.QuestDescriptionProvider;
 import fr.skytasul.quests.api.quests.creation.QuestCreationGuiClickEvent;
 import fr.skytasul.quests.api.quests.quester.QuestQuesterStrategy;
 import fr.skytasul.quests.api.quests.quester.QuestQuesterStrategyCreator;
@@ -16,8 +18,9 @@ import org.bukkit.event.inventory.ClickType;
 import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import java.util.List;
 
-public class OptionQuesterStrategy extends QuestOption<QuestQuesterStrategy> {
+public class OptionQuesterStrategy extends QuestOption<QuestQuesterStrategy> implements QuestDescriptionProvider {
 
 	@Override
 	public @Nullable Object save() {
@@ -65,6 +68,24 @@ public class OptionQuesterStrategy extends QuestOption<QuestQuesterStrategy> {
 				event.reopen();
 			}
 		}.open(event.getPlayer());
+	}
+
+	@Override
+	public @Nullable List<@Nullable String> provideDescription(@NotNull QuestDescriptionContext context) {
+		String description = getValue().getDescription();
+		if (description == null)
+			return null;
+		return List.of(description);
+	}
+
+	@Override
+	public @NotNull String getDescriptionId() {
+		return "quester_strategy";
+	}
+
+	@Override
+	public double getDescriptionPriority() {
+		return 30;
 	}
 
 }

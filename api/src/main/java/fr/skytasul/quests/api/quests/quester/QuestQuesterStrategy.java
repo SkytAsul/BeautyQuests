@@ -5,6 +5,7 @@ import fr.skytasul.quests.api.serializable.SerializableObject;
 import fr.skytasul.quests.api.serializable.SerializableRegistry;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import java.util.Optional;
 
 public abstract class QuestQuesterStrategy extends SerializableObject {
@@ -36,5 +37,11 @@ public abstract class QuestQuesterStrategy extends SerializableObject {
 	 *         in order for the quest to be able to start
 	 */
 	public abstract boolean shouldAllPlayersMatchRequirements();
+
+	/**
+	 * @return the description that should be shown in the quest menu for any quest associated with this
+	 *         quester strategy, or <code>null</code> if nothing should be shown.
+	 */
+	public abstract @Nullable String getDescription();
 
 }

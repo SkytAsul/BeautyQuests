@@ -8,6 +8,7 @@ import fr.skytasul.quests.api.serializable.SerializableObject;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import java.util.Optional;
 
 public class PlayerQuesterStrategy extends QuestQuesterStrategy {
@@ -32,6 +33,11 @@ public class PlayerQuesterStrategy extends QuestQuesterStrategy {
 	@Override
 	public boolean shouldAllPlayersMatchRequirements() {
 		return false;
+	}
+
+	@Override
+	public @Nullable String getDescription() {
+		return null; // default strategy: nothing should be shown, it's intuitive
 	}
 
 	@Override

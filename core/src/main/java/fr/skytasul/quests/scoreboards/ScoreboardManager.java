@@ -97,7 +97,7 @@ public class ScoreboardManager implements Listener, QuestsHandler {
 			return;
 		removePlayerScoreboard(p);
 
-		Scoreboard scoreboard = new Scoreboard(p, this);
+		Scoreboard scoreboard = new Scoreboard(p, this, plugin.getQuesterManager(), plugin.getQuestsManager());
 		scoreboards.put(p, scoreboard);
 
 		Boolean forceHidden = forceHiddenState.remove(p.getUniqueId());
@@ -198,27 +198,27 @@ public class ScoreboardManager implements Listener, QuestsHandler {
 	}
 
 	@Override
-	public void questFinish(Quester acc, Quest quest) {
+	public void questFinish(Quester quester, Quest quest) {
 		if (!quest.isScoreboardEnabled()) return;
-		questEvent(acc, x -> x.questRemove(quest));
+		questEvent(quester, x -> x.questRemove(quest, quester));
 	}
 
 	@Override
-	public void questReset(Quester acc, Quest quest) {
+	public void questReset(Quester quester, Quest quest) {
 		if (!quest.isScoreboardEnabled()) return;
-		questEvent(acc, x -> x.questRemove(quest));
+		questEvent(quester, x -> x.questRemove(quest, quester));
 	}
 
 	@Override
-	public void questUpdated(Quester acc, Quest quest) {
+	public void questUpdated(Quester quester, Quest quest) {
 		if (!quest.isScoreboardEnabled()) return;
-		questEvent(acc, x -> x.setShownQuest(quest, true));
+		questEvent(quester, x -> x.setShownQuest(quest, quester, true));
 	}
 
 	@Override
-	public void questStart(Quester acc, Quest quest) {
+	public void questStart(Quester quester, Quest quest) {
 		if (!quest.isScoreboardEnabled()) return;
-		questEvent(acc, x -> x.questAdd(quest));
+		questEvent(quester, x -> x.questAdd(quest, quester));
 	}
 
 	private void questEvent(Quester quester, Consumer<Scoreboard> consumer) {
