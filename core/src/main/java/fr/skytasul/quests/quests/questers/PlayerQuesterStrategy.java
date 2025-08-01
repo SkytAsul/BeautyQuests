@@ -1,6 +1,7 @@
 package fr.skytasul.quests.quests.questers;
 
 import fr.skytasul.quests.api.QuestsAPI;
+import fr.skytasul.quests.api.options.description.QuestDescriptionContext;
 import fr.skytasul.quests.api.players.PlayerManager;
 import fr.skytasul.quests.api.questers.Quester;
 import fr.skytasul.quests.api.quests.quester.QuestQuesterStrategy;
@@ -36,7 +37,7 @@ public class PlayerQuesterStrategy extends QuestQuesterStrategy {
 	}
 
 	@Override
-	public @Nullable String getDescription() {
+	public @Nullable String getTooltip(@NotNull QuestDescriptionContext context) {
 		return null; // default strategy: nothing should be shown, it's intuitive
 	}
 

@@ -71,7 +71,7 @@ public class StageDealDamage extends AbstractStage implements HasProgress, Liste
 		if (targetMobs != null && !targetMobs.isEmpty()
 				&& targetMobs.stream().noneMatch(mob -> mob.appliesEntity(event.getEntity()))) return;
 
-		if (!hasStarted(player) || !canUpdate(player))
+		if (!matchesRequirements(player))
 			return;
 
 		for (Quester quester : controller.getApplicableQuesters(player)) {

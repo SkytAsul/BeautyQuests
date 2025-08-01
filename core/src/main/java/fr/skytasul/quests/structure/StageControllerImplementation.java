@@ -79,7 +79,7 @@ public class StageControllerImplementation<T extends AbstractStage> implements S
 	@Override
 	public @NotNull Collection<Quester> getApplicableQuesters(@NotNull Player player) {
 		var optQuester = branch.getQuest().getQuesterStrategy().getPlayerQuester(player);
-		if (optQuester.isEmpty())
+		if (optQuester.isEmpty() || !hasStarted(optQuester.get()))
 			return List.of();
 		return List.of(optQuester.get());
 		// TODO add more possibilities!

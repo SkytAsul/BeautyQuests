@@ -19,6 +19,9 @@ public interface StageController {
 	/**
 	 * Constructs a collection of questers that should get advancement applied when the player does
 	 * something for the stage.
+	 * <p>
+	 * All of the questers returned will return <code>true</code> if passed to
+	 * {@link #hasStarted(Quester)}.
 	 *
 	 * @param player Player that did an action regarding the stage
 	 * @return a collection of questers that should be updated
@@ -27,13 +30,13 @@ public interface StageController {
 
 	public void finishStage(@NotNull Quester quester);
 
-	public boolean hasStarted(@NotNull Quester acc);
+	public boolean hasStarted(@NotNull Quester quester);
 
 	public void updateObjective(@NotNull Quester quester, @NotNull String dataKey, @Nullable Object dataValue);
 
-	public @Nullable String getDescriptionLine(@NotNull Quester acc, @NotNull DescriptionSource source);
+	public @Nullable String getDescriptionLine(@NotNull Quester quester, @NotNull DescriptionSource source);
 
-	public <T> @Nullable T getData(@NotNull Quester acc, @NotNull String dataKey, @Nullable Class<T> dataType);
+	public <T> @Nullable T getData(@NotNull Quester quester, @NotNull String dataKey, @Nullable Class<T> dataType);
 
 	public @NotNull String getFlowId();
 

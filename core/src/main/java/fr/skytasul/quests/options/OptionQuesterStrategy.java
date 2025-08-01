@@ -4,6 +4,7 @@ import com.cryptomorin.xseries.XMaterial;
 import fr.skytasul.quests.api.QuestsAPI;
 import fr.skytasul.quests.api.gui.ItemUtils;
 import fr.skytasul.quests.api.gui.templates.PagedGUI;
+import fr.skytasul.quests.api.localization.Lang;
 import fr.skytasul.quests.api.options.OptionSet;
 import fr.skytasul.quests.api.options.QuestOption;
 import fr.skytasul.quests.api.options.description.QuestDescriptionContext;
@@ -42,8 +43,11 @@ public class OptionQuesterStrategy extends QuestOption<QuestQuesterStrategy> imp
 
 	@Override
 	public @NotNull ItemStack getItemStack(@NotNull OptionSet options) {
-		return ItemUtils.item(XMaterial.PLAYER_HEAD, "Change quester strategy",
-				QuestOption.formatNullableValue(getValue().getName(), !hasCustomValue()));
+		var strategyCreator = (QuestQuesterStrategyCreator) getValue().getCreator();
+		return ItemUtils.item(XMaterial.PLAYER_HEAD, "§b" + Lang.optionQuesterStrategy, "",
+				QuestOption.formatNullableValue(strategyCreator.getName(), !hasCustomValue()), "",
+				QuestOption.formatDescription(strategyCreator.getDescription()), "",
+				"§8" + Lang.ClickLeft + " > §7" + Lang.pickAnother);
 	}
 
 	@Override
@@ -57,7 +61,8 @@ public class OptionQuesterStrategy extends QuestOption<QuestQuesterStrategy> imp
 				QuestsAPI.getAPI().getQuestQuesterStrategyRegistry().getCreators()) {
 			@Override
 			public @NotNull ItemStack getItemStack(@NotNull QuestQuesterStrategyCreator object) {
-				return object.getItem();
+				return ItemUtils.item(XMaterial.PLAYER_HEAD, object.getName(),
+						QuestOption.formatDescription(object.getDescription()));
 			}
 
 			@Override
@@ -72,7 +77,7 @@ public class OptionQuesterStrategy extends QuestOption<QuestQuesterStrategy> imp
 
 	@Override
 	public @Nullable List<@Nullable String> provideDescription(@NotNull QuestDescriptionContext context) {
-		String description = getValue().getDescription();
+		String description = getValue().getTooltip(context);
 		if (description == null)
 			return null;
 		return List.of(description);

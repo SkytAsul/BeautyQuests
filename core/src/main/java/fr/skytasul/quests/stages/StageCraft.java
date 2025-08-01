@@ -53,7 +53,8 @@ public class StageCraft extends AbstractStage implements HasSingleObject, Listen
 	@EventHandler (priority = EventPriority.MONITOR, ignoreCancelled = true)
 	public void onFurnaceExtract(FurnaceExtractEvent event) {
 		Player p = event.getPlayer();
-		if (comparisons.isSimilar(result, new ItemStack(event.getItemType())) && hasStarted(p) && canUpdate(p, true)) {
+		if (comparisons.isSimilar(result, new ItemStack(event.getItemType())) && hasApplicableQuester(p)
+				&& matchesRequirements(p, true)) {
 			for (Quester quester : controller.getApplicableQuesters(p)) {
 				long amount = getRemainingAmount(quester) - event.getItemAmount();
 				if (amount <= 0) {
@@ -68,7 +69,7 @@ public class StageCraft extends AbstractStage implements HasSingleObject, Listen
 	@EventHandler
 	public void onCraft(BQCraftEvent event) {
 		Player p = event.getPlayer();
-		if (hasStarted(p) && canUpdate(p)) {
+		if (hasApplicableQuester(p) && matchesRequirements(p)) {
 			ItemStack item = event.getResult();
 			if (comparisons.isSimilar(result, item)) {
 

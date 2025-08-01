@@ -325,6 +325,7 @@ public enum Lang implements Locale {
 	cancel("inv.cancel"),
 	search("inv.search"),
 	addObject("inv.addObject"),
+	pickAnother("inv.pickAnother"),
 
 	INVENTORY_CONFIRM("inv.confirm.name"),
 	confirmYes("inv.confirm.yes"),
@@ -494,6 +495,7 @@ public enum Lang implements Locale {
 	optionFireworkDrop("inv.details.fireworkLoreDrop"),
 	optionVisibility("inv.details.visibility"),
 	optionVisibilityLore("inv.details.visibilityLore"),
+	optionQuesterStrategy("inv.details.questerStrategy"),
 	keepDatas("inv.details.keepDatas"),
 	keepDatasLore("inv.details.keepDatasLore"),
 	resetLore("inv.details.loreReset"),
@@ -763,6 +765,9 @@ public enum Lang implements Locale {
 	TimeHours("misc.time.hours"),
 	TimeMinutes("misc.time.minutes"),
 	TimeLessMinute("misc.time.lessThanAMinute"),
+
+	PlayerQuesterName("misc.playerQuester.name"),
+	PlayerQuesterDescription("misc.playerQuester.description"),
 
 	Find("misc.stageType.region"),
 	Talk("misc.stageType.npc"),

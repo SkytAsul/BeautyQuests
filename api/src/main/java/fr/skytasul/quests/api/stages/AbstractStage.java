@@ -4,7 +4,6 @@ import fr.skytasul.quests.api.QuestsConfiguration;
 import fr.skytasul.quests.api.players.PlayerManager;
 import fr.skytasul.quests.api.questers.Quester;
 import fr.skytasul.quests.api.quests.Quest;
-import fr.skytasul.quests.api.quests.branches.QuestBranch;
 import fr.skytasul.quests.api.requirements.RequirementList;
 import fr.skytasul.quests.api.rewards.RewardList;
 import fr.skytasul.quests.api.serializable.SerializableCreator;
@@ -111,12 +110,21 @@ public abstract class AbstractStage implements HasPlaceholders {
 		placeholders.register("stage_requirements", validationRequirements.getSizeString());
 	}
 
-	protected final boolean canUpdate(@NotNull Player player) {
-		return canUpdate(player, false);
+	protected final boolean matchesRequirements(@NotNull Player player) {
+		return matchesRequirements(player, false);
 	}
 
-	protected final boolean canUpdate(@NotNull Player player, boolean msg) {
+	protected final boolean matchesRequirements(@NotNull Player player, boolean msg) {
 		return validationRequirements.allMatch(player, msg);
+	}
+
+	/**
+	 * Called internally to test if a player has any quester associated that can advance the quest.
+	 *
+	 * @param player Player to test
+	 */
+	protected final boolean hasApplicableQuester(@NotNull Player player) {
+		return !controller.getApplicableQuesters(player).isEmpty();
 	}
 
 	/**
@@ -126,16 +134,6 @@ public abstract class AbstractStage implements HasPlaceholders {
 	 */
 	protected final void finishStage(@NotNull Quester quester) {
 		controller.finishStage(quester);
-	}
-
-	/**
-	 * Called internally to test if a player has the stage started
-	 *
-	 * @param player Player to test
-	 * @see QuestBranch#hasStageLaunched(Quester, AbstractStage)
-	 */
-	protected final boolean hasStarted(@NotNull Player player) {
-		return controller.hasStarted(PlayerManager.getPlayerAccount(player));
 	}
 
 	/**

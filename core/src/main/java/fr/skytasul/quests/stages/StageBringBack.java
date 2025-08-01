@@ -147,7 +147,7 @@ public class StageBringBack extends StageNPC{
 		super.initDialogRunner();
 
 		getNPC().addStartablePredicate(p -> {
-			return canUpdate(p, false) && checkItems(p, false);
+			return matchesRequirements(p, false) && checkItems(p, false);
 		}, this);
 
 		dialogRunner.addTest(p -> {
@@ -157,7 +157,7 @@ public class StageBringBack extends StageNPC{
 				// the click will not be handled by this stage
 				// to let the plugin handle the NPC event (and give
 				// another quest/complete something else to the player).
-				if (!canUpdate(p, true) || !checkItems(p, false)) return false;
+				if (!matchesRequirements(p, true) || !checkItems(p, false)) return false;
 			}
 			return true;
 		});

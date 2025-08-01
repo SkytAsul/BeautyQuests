@@ -6,7 +6,6 @@ import fr.skytasul.quests.api.QuestsAPI;
 import fr.skytasul.quests.api.QuestsConfiguration;
 import fr.skytasul.quests.api.QuestsPlugin;
 import fr.skytasul.quests.api.comparison.ItemComparison;
-import fr.skytasul.quests.api.gui.ItemUtils;
 import fr.skytasul.quests.api.localization.Lang;
 import fr.skytasul.quests.api.objects.QuestObjectLocation;
 import fr.skytasul.quests.api.options.QuestOptionCreator;
@@ -291,7 +290,7 @@ public final class DefaultQuestFeatures {
 
 		QuestQuesterStrategyCreator playerStrategyCreator = new QuestQuesterStrategyCreator("player",
 				PlayerQuesterStrategy.class, () -> new PlayerQuesterStrategy(QuestsPlugin.getPlugin().getPlayersManager()),
-				ItemUtils.item(XMaterial.PLAYER_HEAD, "Player"));
+				Lang.PlayerQuesterName.toString(), Lang.PlayerQuesterDescription.toString());
 		QuestsAPI.getAPI().getQuestQuesterStrategyRegistry().register(playerStrategyCreator);
 
 		QuestsAPI.getAPI().registerQuestOption(new QuestOptionCreator<>("questerStrategy", 37, OptionQuesterStrategy.class,

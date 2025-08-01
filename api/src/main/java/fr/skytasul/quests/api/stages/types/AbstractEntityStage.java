@@ -39,7 +39,7 @@ public abstract class AbstractEntityStage extends AbstractStage implements Locat
 	}
 
 	protected void event(@NotNull Player p, @NotNull EntityType type) {
-		if (hasStarted(p) && canUpdate(p)) {
+		if (matchesRequirements(p)) {
 			if (entity == null || type.equals(entity)) {
 				for (Quester quester : controller.getApplicableQuesters(p)) {
 					OptionalInt playerAmount = getRemainingAmountOptional(quester);

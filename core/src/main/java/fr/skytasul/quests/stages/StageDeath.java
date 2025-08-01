@@ -34,7 +34,6 @@ public class StageDeath extends AbstractStage implements Listener {
 	@EventHandler
 	public void onPlayerDeath(PlayerDeathEvent event) {
 		Player p = event.getEntity();
-		if (!hasStarted(p)) return;
 
 		if (!causes.isEmpty()) {
 			EntityDamageEvent lastDamage = p.getLastDamageCause();
@@ -42,7 +41,7 @@ public class StageDeath extends AbstractStage implements Listener {
 			if (!causes.contains(lastDamage.getCause())) return;
 		}
 
-		if (canUpdate(p, true))
+		if (matchesRequirements(p, true))
 			controller.getApplicableQuesters(p).forEach(this::finishStage);
 	}
 

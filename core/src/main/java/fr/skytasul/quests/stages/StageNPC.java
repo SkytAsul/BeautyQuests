@@ -191,8 +191,8 @@ public class StageNPC extends AbstractStage implements Locatable.PreciseLocatabl
 			throw new IllegalStateException("Dialog runner already initialized");
 
 		dialogRunner = new DialogRunnerImplementation(dialog, npc);
-		dialogRunner.addTest(super::hasStarted);
-		dialogRunner.addTestCancelling(p -> canUpdate(p, true));
+		dialogRunner.addTest(super::hasApplicableQuester);
+		dialogRunner.addTestCancelling(p -> matchesRequirements(p, true));
 
 		dialogRunner.addEndAction(p -> controller.getApplicableQuesters(p).forEach(this::finishStage));
 	}

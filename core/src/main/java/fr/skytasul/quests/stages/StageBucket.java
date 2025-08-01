@@ -67,8 +67,8 @@ public class StageBucket extends AbstractStage implements HasSingleObject, Liste
 	@EventHandler (priority = EventPriority.MONITOR)
 	public void onBucketFill(PlayerBucketFillEvent e) {
 		Player p = e.getPlayer();
-		if (hasStarted(p) && canUpdate(p)) {
-			if (BucketType.fromMaterial(XMaterial.matchXMaterial(e.getItemStack())) == bucket) {
+		if (BucketType.fromMaterial(XMaterial.matchXMaterial(e.getItemStack())) == bucket) {
+			if (matchesRequirements(p)) {
 				for (Quester quester : controller.getApplicableQuesters(p)) {
 					long amount = getRemainingAmount(quester);
 					if (amount <= 1) {

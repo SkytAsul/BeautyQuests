@@ -337,6 +337,7 @@ inv:
   cancel: §c§lCancel
   search: §e§lSearch
   addObject: §aAdd an object
+  pickAnother: Pick another
   confirm:
     name: Are you sure?
     'yes': §aConfirm
@@ -510,6 +511,7 @@ inv:
     visibility: §bQuest visibility
     visibilityLore: Choose in which tabs of the menu will the quest be shown, and if
       the quest is visible on dynamic maps.
+    questerStrategy: Quester strategy
     keepDatas: Preserve players datas
     keepDatasLore: |-
       Force the plugin to preserve players datas, even though stages have been edited.
@@ -797,6 +799,9 @@ misc:
     hours: '{hours_amount} hours'
     minutes: '{minutes_amount} minutes'
     lessThanAMinute: 'a few seconds'
+  playerQuester:
+    name: Player quester
+    description: Per-player quests data
   stageType:
     region: Find region
     npc: Find NPC

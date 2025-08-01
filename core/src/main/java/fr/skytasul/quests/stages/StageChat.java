@@ -83,11 +83,15 @@ public class StageChat extends AbstractStage implements Listener {
 			message = MessageUtils.finalFormat(message, null, PlaceholdersContext.of(p, true, null));
 		if (!(ignoreCase ? message.equalsIgnoreCase(text) : message.equals(text)))
 			return false;
-		if (!hasStarted(p))
+		if (!matchesRequirements(p))
 			return false;
-		if (canUpdate(p))
-			controller.getApplicableQuesters(p).forEach(this::finishStage);
-		return true;
+
+		boolean hasQuester = false;
+		for (var quester : controller.getApplicableQuesters(p)) {
+			hasQuester = true;
+			finishStage(quester);
+		}
+		return hasQuester;
 	}
 
 

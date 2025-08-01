@@ -164,7 +164,7 @@ public abstract class AbstractCountableStage<T> extends AbstractStage implements
 	 */
 	public boolean event(@NotNull Player p, @UnknownNullability Object object, int amount) {
 		if (amount < 0) throw new IllegalArgumentException("Event amount must be positive (" + amount + ")");
-		if (!canUpdate(p) || !hasStarted(p))
+		if (!matchesRequirements(p) || !hasApplicableQuester(p))
 			return true;
 
 		for (Quester quester : controller.getApplicableQuesters(p)) {

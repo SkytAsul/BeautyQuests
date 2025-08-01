@@ -69,7 +69,7 @@ public class StageInteractBlock extends AbstractStage implements Locatable.Multi
 			return;
 
 		Player p = e.getPlayer();
-		if (hasStarted(p) && canUpdate(p)) {
+		if (hasApplicableQuester(p) && matchesRequirements(p)) {
 			e.setCancelled(true);
 			controller.getApplicableQuesters(p).forEach(this::finishStage);
 		}

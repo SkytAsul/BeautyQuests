@@ -1,5 +1,6 @@
 package fr.skytasul.quests.api.quests.quester;
 
+import fr.skytasul.quests.api.options.description.QuestDescriptionContext;
 import fr.skytasul.quests.api.questers.Quester;
 import fr.skytasul.quests.api.serializable.SerializableObject;
 import fr.skytasul.quests.api.serializable.SerializableRegistry;
@@ -39,9 +40,12 @@ public abstract class QuestQuesterStrategy extends SerializableObject {
 	public abstract boolean shouldAllPlayersMatchRequirements();
 
 	/**
+	 * Gets an appropriate tooltip for the quester strategy.
+	 *
+	 * @param context context of the tooltip fetch
 	 * @return the description that should be shown in the quest menu for any quest associated with this
 	 *         quester strategy, or <code>null</code> if nothing should be shown.
 	 */
-	public abstract @Nullable String getDescription();
+	public abstract @Nullable String getTooltip(@NotNull QuestDescriptionContext context);
 
 }

@@ -57,7 +57,7 @@ public class StageMine extends AbstractCountableBlockStage implements Locatable.
 	@EventHandler (priority = EventPriority.MONITOR)
 	public void onMine(BQBlockBreakEvent e) {
 		Player p = e.getPlayer();
-		if (!hasStarted(p))
+		if (!hasApplicableQuester(p) || !matchesRequirements(p))
 			return;
 
 		for (Block block : e.getBlocks()) {
@@ -85,7 +85,7 @@ public class StageMine extends AbstractCountableBlockStage implements Locatable.
 			return;
 
 		Player p = e.getPlayer();
-		if (!hasStarted(p))
+		if (!hasApplicableQuester(p))
 			return;
 
 		Map<UUID, Integer> playerBlocks = getRawRemainingAmounts(PlayerManager.getPlayerAccount(p), true);

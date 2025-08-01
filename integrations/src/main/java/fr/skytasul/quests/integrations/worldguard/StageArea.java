@@ -69,7 +69,7 @@ public class StageArea extends AbstractStage implements Locatable.PreciseLocatab
 				&& e.getFrom().getBlockZ() == e.getTo().getBlockZ())
 			return;
 
-		if (hasStarted(e.getPlayer()) && canUpdate(e.getPlayer())) {
+		if (hasApplicableQuester(e.getPlayer()) && matchesRequirements(e.getPlayer())) {
 			if (world.equals(e.getTo().getWorld())
 					&& BQWorldGuard.getInstance().isInRegion(region, e.getTo(), false) == !exit) {
 				for (Quester quester : controller.getApplicableQuesters(e.getPlayer()))
@@ -88,7 +88,7 @@ public class StageArea extends AbstractStage implements Locatable.PreciseLocatab
 		}
 
 		if (e.getPlayer().getWorld().equals(world) && e.getRegionsEntered().contains(region)) {
-			if (hasStarted(e.getPlayer()) && canUpdate(e.getPlayer()))
+			if (matchesRequirements(e.getPlayer()))
 				for (Quester quester : controller.getApplicableQuesters(e.getPlayer()))
 					testFinition(quester, e.getPlayer());
 		}
@@ -103,7 +103,7 @@ public class StageArea extends AbstractStage implements Locatable.PreciseLocatab
 			return;
 		}
 		if (e.getPlayer().getWorld().equals(world) && e.getRegionsExited().contains(region)) {
-			if (hasStarted(e.getPlayer()) && canUpdate(e.getPlayer()))
+			if (matchesRequirements(e.getPlayer()))
 				for (Quester quester : controller.getApplicableQuesters(e.getPlayer()))
 					testFinition(quester, e.getPlayer());
 		}
