@@ -42,6 +42,7 @@ public class Scoreboard extends BukkitRunnable implements Listener {
 	private LinkedList<Line> lines = new LinkedList<>();
 
 	private List<QuestEntry> launched;
+	private List<QuestEntry> shown;
 	private OptionalInt shownIndex = OptionalInt.empty();
 
 	private boolean hid = false;
@@ -62,6 +63,7 @@ public class Scoreboard extends BukkitRunnable implements Listener {
 			return questsManager.getQuestsStarted(quester, false, true).stream()
 					.map(quest -> new QuestEntry(quest, quester));
 		}).collect(Collectors.toList());
+		shown = new ArrayList<>(launched); // at the beginning, all quests are shown
 
 		hid = !manager.isWorldAllowed(p.getWorld().getName());
 
@@ -76,21 +78,21 @@ public class Scoreboard extends BukkitRunnable implements Listener {
 		if (changeTime == 0) {
 			changeTime = manager.getQuestChangeTime();
 
-			if (launched.isEmpty()) {
+			if (shown.isEmpty()) {
 				shownIndex = OptionalInt.empty();
-				if (manager.hideEmtptyScoreboard()) {
+				if (manager.hideEmptyScoreboard()) {
 					if (board != null) deleteBoard();
 					return;
 				}
 			}
 			if (board == null) initScoreboard();
 
-			if (!launched.isEmpty()) {
+			if (!shown.isEmpty()) {
 				int newId;
 				if (shownIndex.isEmpty()) {
 					newId = 0;
 				} else {
-					newId = (shownIndex.getAsInt() + 1) % launched.size();
+					newId = (shownIndex.getAsInt() + 1) % shown.size();
 				}
 				if (shownIndex.isEmpty() || newId != shownIndex.getAsInt()) {
 					shownIndex = OptionalInt.of(newId);
@@ -106,16 +108,60 @@ public class Scoreboard extends BukkitRunnable implements Listener {
 	protected Optional<QuestEntry> getShown() {
 		if (shownIndex.isEmpty())
 			return Optional.empty();
-		return Optional.of(launched.get(shownIndex.getAsInt()));
+		return Optional.of(shown.get(shownIndex.getAsInt()));
 	}
 
-	protected Optional<QuestEntry> getEntry(@NotNull Quest quest, @NotNull Quester quester) {
+	public Optional<QuestEntry> getEntry(@NotNull Quest quest, @NotNull Quester quester) {
 		return launched.stream().filter(entry -> entry.applies(quest, quester)).findAny();
 	}
 
+	private boolean hasPinnedEntry() {
+		return launched.stream().anyMatch(entry -> entry.pinned);
+	}
+
+	private void handleEmptyShown() {
+		if (!launched.isEmpty()) {
+			shown.addAll(launched);
+			shownIndex = OptionalInt.of(0);
+		} else {
+			shownIndex = OptionalInt.empty();
+			refreshQuestsLines(true); // to hide the scoreboard
+		}
+	}
+
+	private void removeShown(QuestEntry entry) {
+		if (!shown.contains(entry))
+			return;
+
+		int index = shown.indexOf(entry);
+		shown.remove(index);
+
+		if (shownIndex.isEmpty())
+			return;
+
+		if (shown.isEmpty()) {
+			handleEmptyShown();
+			return;
+		}
+
+		if (index == shownIndex.getAsInt()) {
+			// removing the shown quest
+			shownIndex = OptionalInt.of(index % shown.size());
+			refreshQuestsLines(true);
+		} else if (index < shownIndex.getAsInt()) {
+			// removing a quest before the shown quest
+			shownIndex = OptionalInt.of(shownIndex.getAsInt() - 1);
+		}
+	}
+
 	protected void questAdd(@NotNull Quest quest, @NotNull Quester quester) {
+		var entry = new QuestEntry(quest, quester);
+		launched.add(entry);
+
+		if (hasPinnedEntry())
+			return;
 		int index = shownIndex.orElse(-1) + 1;
-		launched.add(index, new QuestEntry(quest, quester));
+		shown.add(index, entry);
 		shownIndex = OptionalInt.of(index);
 		refreshQuestsLines(true);
 	}
@@ -125,8 +171,11 @@ public class Scoreboard extends BukkitRunnable implements Listener {
 			QuestEntry entry = iterator.next();
 			if (entry.quest.equals(quest)) {
 				iterator.remove();
+				shown.remove(entry);
 			}
 		}
+		if (shown.isEmpty())
+			handleEmptyShown();
 	}
 
 	protected void questRemove(@NotNull Quest quest, @NotNull Quester quester) {
@@ -134,26 +183,8 @@ public class Scoreboard extends BukkitRunnable implements Listener {
 		if (entryOpt.isEmpty())
 			return;
 
-		int index = launched.indexOf(entryOpt.get());
-		launched.remove(index);
-
-		if (shownIndex.isEmpty())
-			return;
-
-		if (launched.isEmpty()) {
-			shownIndex = OptionalInt.empty();
-			refreshQuestsLines(true); // to hide the scoreboard
-			return;
-		}
-
-		if (index == shownIndex.getAsInt()) {
-			// removing the shown quest
-			shownIndex = OptionalInt.of(index % launched.size());
-			refreshQuestsLines(true);
-		} else if (index < shownIndex.getAsInt()) {
-			// removing a quest before the shown quest
-			shownIndex = OptionalInt.of(shownIndex.getAsInt() - 1);
-		}
+		launched.remove(entryOpt.get());
+		removeShown(entryOpt.get());
 	}
 
 	protected void questEdited(Quest newQuest, Quest oldQuest) {
@@ -165,8 +196,12 @@ public class Scoreboard extends BukkitRunnable implements Listener {
 			if (entryOpt.isEmpty()) {
 				// if scoreboard has been enabled during quest edition,
 				// we add the quest to the player list
-				if (newQuest.isScoreboardEnabled() && newQuest.hasStarted(quester))
-					launched.add(new QuestEntry(newQuest, quester));
+				if (newQuest.isScoreboardEnabled() && newQuest.hasStarted(quester)) {
+					var entry = new QuestEntry(newQuest, quester);
+					launched.add(entry);
+					if (!hasPinnedEntry())
+						shown.add(entry);
+				}
 				continue;
 			}
 
@@ -178,7 +213,7 @@ public class Scoreboard extends BukkitRunnable implements Listener {
 			}
 
 			entryOpt.get().quest = newQuest;
-			if (shownIndex.orElse(-1) == launched.indexOf(entryOpt.get()))
+			if (shownIndex.orElse(-2) == shown.indexOf(entryOpt.get()))
 				refreshQuestsLines(true);
 		}
 	}
@@ -211,7 +246,7 @@ public class Scoreboard extends BukkitRunnable implements Listener {
 		if (hidForce && !force) return;
 		hid = false;
 		hidForce = false;
-		if (board == null && !(launched.isEmpty() && manager.hideEmtptyScoreboard())) {
+		if (board == null && !(shown.isEmpty() && manager.hideEmptyScoreboard())) {
 			initScoreboard();
 			updateBoard(true, false);
 		}
@@ -230,8 +265,8 @@ public class Scoreboard extends BukkitRunnable implements Listener {
 		if (entryOpt.isEmpty()) {
 			if (errorWhenUnknown)
 				throw new IllegalArgumentException("Quest is not running for player.");
-		} else {
-			shownIndex = OptionalInt.of(launched.indexOf(entryOpt.get()));
+		} else if (!hasPinnedEntry() || entryOpt.get().isPinned()) {
+			shownIndex = OptionalInt.of(shown.indexOf(entryOpt.get()));
 			refreshQuestsLines(true);
 		}
 	}
@@ -239,7 +274,7 @@ public class Scoreboard extends BukkitRunnable implements Listener {
 	public void refreshQuestsLines(boolean updateBoard) {
 		if (!manager.refreshLines()) return;
 		lines.stream().filter(line -> line.hasQuestPlaceholders).forEach(line -> line.willRefresh = true);
-		if (board == null || launched.isEmpty()) {
+		if (board == null || shown.isEmpty()) {
 			changeTime = 1;
 			run();
 		}else {
@@ -314,13 +349,33 @@ public class Scoreboard extends BukkitRunnable implements Listener {
 		board.updateTitle(Lang.SCOREBOARD_NAME.toString());
 	}
 
-	class QuestEntry {
+	public class QuestEntry {
 		private final @NotNull Quester quester;
 		private @NotNull Quest quest; // not final because the quest can be edited
 
-		public QuestEntry(@NotNull Quest quest, @NotNull Quester quester) {
+		private boolean pinned = false;
+
+		private QuestEntry(@NotNull Quest quest, @NotNull Quester quester) {
 			this.quest = quest;
 			this.quester = quester;
+		}
+
+		public void setPinned(boolean pinned) {
+			if (pinned) {
+				if (!hasPinnedEntry())
+					shown.clear();
+				shown.add(this);
+				shownIndex = OptionalInt.of(shown.indexOf(this));
+				refreshQuestsLines(true);
+				this.pinned = true;
+			} else {
+				this.pinned = false;
+				removeShown(this);
+			}
+		}
+
+		public boolean isPinned() {
+			return pinned;
 		}
 
 		public boolean applies(Quest quest, Quester quester) {

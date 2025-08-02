@@ -562,6 +562,8 @@ public enum Lang implements Locale {
 	inProgress("inv.listQuests.inProgress"),
 	dialogsHistoryLore("inv.listQuests.loreDialogsHistoryClick"),
 	cancelLore("inv.listQuests.loreCancelClick"),
+	scoreboardPinLore("inv.listQuests.loreScoreboardPinClick"),
+	scoreboardUnpinLore("inv.listQuests.loreScoreboardUnpinClick"),
 	startLore("inv.listQuests.loreStart"),
 	startImpossibleLore("inv.listQuests.loreStartUnavailable"),
 	timeWait("inv.listQuests.timeToWaitRedo"),

@@ -56,7 +56,7 @@ public class ScoreboardManager implements Listener, QuestsHandler {
 		return changeTime;
 	}
 
-	public boolean hideEmtptyScoreboard(){
+	public boolean hideEmptyScoreboard(){
 		return hide;
 	}
 

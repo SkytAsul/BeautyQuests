@@ -592,6 +592,9 @@ public class BeautyQuests extends JavaPlugin implements QuestsPlugin {
 			getAPI().registerQuestsHandler(scoreboards);
 		}
 
+		pools = new QuestPoolsManagerImplementation(this, new File(getDataFolder(), "questPools.yml"));
+		quests = new QuestsManagerImplementation(this, data.getInt("lastID"), saveFolder);
+
 		try{
 			questerManager.load();
 		}catch (Exception ex) {
@@ -606,9 +609,6 @@ public class BeautyQuests extends JavaPlugin implements QuestsPlugin {
 				}
 			}
 		}
-
-		pools = new QuestPoolsManagerImplementation(this, new File(getDataFolder(), "questPools.yml"));
-		quests = new QuestsManagerImplementation(this, data.getInt("lastID"), saveFolder);
 
 		getAPI().getQuestsHandlers().forEach(handler -> {
 			try {

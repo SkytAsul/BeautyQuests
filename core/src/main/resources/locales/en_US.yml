@@ -588,6 +588,8 @@ inv:
     inProgress: Quests in progress
     loreDialogsHistoryClick: §7View the dialogs
     loreCancelClick: §cCancel the quest
+    loreScoreboardPinClick: §7Pin to the scoreboard
+    loreScoreboardUnpinClick: §7§lUnpin from the scoreboard
     loreStart: §a§oClick to start the quest.
     loreStartUnavailable: §c§oYou do not meet requirements to start the quest.
     timeToWaitRedo: §7§oYou can restart this quest in {time_left}...

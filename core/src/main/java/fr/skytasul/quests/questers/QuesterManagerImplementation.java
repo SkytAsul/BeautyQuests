@@ -68,6 +68,7 @@ public class QuesterManagerImplementation implements QuesterManager {
 	}
 
 	public void load() throws DataLoadingException {
+		LOGGER.debug("Locking quester manager.");
 		lockData = true;
 		dataManager.load(this);
 		providers.values().forEach(provider -> provider.load(this));

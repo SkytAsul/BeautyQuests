@@ -1,6 +1,7 @@
 package fr.skytasul.quests.gui.quests;
 
 import com.cryptomorin.xseries.XMaterial;
+import fr.skytasul.quests.BeautyQuests;
 import fr.skytasul.quests.api.QuestsAPI;
 import fr.skytasul.quests.api.QuestsConfiguration;
 import fr.skytasul.quests.api.QuestsPlugin;
@@ -18,6 +19,7 @@ import fr.skytasul.quests.api.quests.Quest;
 import fr.skytasul.quests.api.utils.PlayerListCategory;
 import fr.skytasul.quests.options.OptionStartDialog;
 import fr.skytasul.quests.options.OptionStartable;
+import fr.skytasul.quests.scoreboards.Scoreboard;
 import fr.skytasul.quests.utils.QuestUtils;
 import org.bukkit.DyeColor;
 import org.bukkit.entity.Player;
@@ -101,6 +103,8 @@ public class PlayerListGUI extends PagedGUI<Quest> {
 		var quester = quests.get(qu);
 
 		ItemStack item;
+		boolean glittering = false;
+
 		try {
 			List<String> lore = new QuestDescriptionContext(QuestsConfiguration.getConfig().getQuestDescriptionConfig(),
 					qu, player, quester, cat, DescriptionSource.MENU).formatDescription();
@@ -114,19 +118,24 @@ public class PlayerListGUI extends PagedGUI<Quest> {
 					break;
 
 				case IN_PROGRESS:
-					boolean hasDialogs =
-							QuestsConfiguration.getConfig().getDialogsConfig().isHistoryEnabled() && hadDialog(qu, quester);
-					boolean cancellable =
-							QuestsConfiguration.getConfig().getQuestsMenuConfig().allowPlayerCancelQuest()
-									&& qu.isCancellable();
-					if (cancellable || hasDialogs) {
-						if (!lore.isEmpty())
-							lore.add(null);
-						if (cancellable)
-							lore.add("§8" + Lang.ClickLeft + " §8> " + Lang.cancelLore);
-						if (hasDialogs)
-							lore.add("§8" + Lang.ClickRight + " §8> " + Lang.dialogsHistoryLore);
+					var additionalLore = new ArrayList<String>();
+					if (QuestsConfiguration.getConfig().getQuestsMenuConfig().allowPlayerCancelQuest() && qu.isCancellable())
+						additionalLore.add("§8" + Lang.ClickLeft + " §8> " + Lang.cancelLore);
+					if (QuestsConfiguration.getConfig().getDialogsConfig().isHistoryEnabled() && hadDialog(qu, quester))
+						additionalLore.add("§8" + Lang.ClickRight + " §8> " + Lang.dialogsHistoryLore);
+					if (BeautyQuests.getInstance().getScoreboardManager() != null && qu.isScoreboardEnabled()) {
+						var scoreboard = BeautyQuests.getInstance().getScoreboardManager().getPlayerScoreboard(player);
+						if (scoreboard != null) {
+							boolean isPinned = scoreboard.getEntry(qu, quester).map(entry -> entry.isPinned()).orElse(false);
+							additionalLore.add("§8" + Lang.ClickShiftLeft + " §8> "
+									+ (isPinned ? Lang.scoreboardUnpinLore : Lang.scoreboardPinLore));
+							if (isPinned)
+								glittering = true;
+						}
 					}
+					if (!additionalLore.isEmpty() && !lore.isEmpty())
+						lore.add(null);
+					lore.addAll(additionalLore);
 					break;
 
 				case NOT_STARTED:
@@ -139,6 +148,7 @@ public class PlayerListGUI extends PagedGUI<Quest> {
 			item = ItemUtils.nameAndLore(qu.getQuestItem().clone(),
 					player.hasPermission("beautyquests.seeId") ? Lang.formatId.format(qu) : Lang.formatNormal.format(qu),
 					lore);
+			ItemUtils.setGlittering(item, glittering);
 		} catch (Exception ex) {
 			item = ItemUtils.item(XMaterial.BARRIER, "§cError - Quest #" + qu.getId());
 			QuestsPlugin.getPlugin().getLoggerExpanded().severe("An error ocurred when creating item of quest {} for {}", ex,
@@ -172,18 +182,37 @@ public class PlayerListGUI extends PagedGUI<Quest> {
 				qu.attemptStart(player);
 			}
 		} else {
-			if (clickType.isRightClick()) {
-				if (QuestsConfiguration.getConfig().getDialogsConfig().isHistoryEnabled() && hadDialog(qu, quester)) {
-					QuestUtils.playPluginSound(QuestsPlugin.getPlugin().getAudiences().player(getViewer()),
-							"ITEM_BOOK_PAGE_TURN", 0.5f, 1.4f);
-					new DialogHistoryGUI(quester, qu, this::reopen).open(getViewer());
-				}
-			} else if (clickType.isLeftClick()) {
-				if (QuestsConfiguration.getConfig().getQuestsMenuConfig().allowPlayerCancelQuest()
-						&& cat == PlayerListCategory.IN_PROGRESS && qu.isCancellable()) {
-					QuestsPlugin.getPlugin().getGuiManager().getFactory().createConfirmation(() -> qu.cancelQuester(quester),
-							this::reopen, Lang.INDICATION_CANCEL.format(qu)).open(player);
-				}
+			switch (clickType) {
+				case LEFT:
+					if (QuestsConfiguration.getConfig().getQuestsMenuConfig().allowPlayerCancelQuest()
+							&& cat == PlayerListCategory.IN_PROGRESS && qu.isCancellable()) {
+						QuestsPlugin.getPlugin().getGuiManager().getFactory()
+								.createConfirmation(() -> qu.cancelQuester(quester),
+										this::reopen, Lang.INDICATION_CANCEL.format(qu))
+								.open(player);
+					}
+					break;
+				case RIGHT:
+					if (QuestsConfiguration.getConfig().getDialogsConfig().isHistoryEnabled() && hadDialog(qu, quester)) {
+						QuestUtils.playPluginSound(QuestsPlugin.getPlugin().getAudiences().player(getViewer()),
+								"ITEM_BOOK_PAGE_TURN", 0.5f, 1.4f);
+						new DialogHistoryGUI(quester, qu, this::reopen).open(getViewer());
+					}
+					break;
+				case SHIFT_LEFT:
+					if (cat == PlayerListCategory.IN_PROGRESS && qu.isScoreboardEnabled()
+							&& BeautyQuests.getInstance().getScoreboardManager() != null) {
+						Scoreboard sb = BeautyQuests.getInstance().getScoreboardManager().getPlayerScoreboard(player);
+						if (sb != null) {
+							sb.getEntry(qu, quester).ifPresent(entry -> {
+								entry.setPinned(!entry.isPinned());
+								setItems(); // refresh the glittering effect
+							});
+						}
+					}
+					break;
+				default:
+					break;
 			}
 		}
 	}
