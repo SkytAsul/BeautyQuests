@@ -9,9 +9,6 @@ import java.util.Optional;
 
 public interface QuesterProvider extends Keyed {
 
-	// Really useful?
-	// @NotNull Optional<Quester> getQuester(@NotNull String identifier);
-
 	@NotNull
 	default Optional<String> getQuesterName(@NotNull String identifier) {
 		return Optional.empty();

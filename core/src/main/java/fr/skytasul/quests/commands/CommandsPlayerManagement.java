@@ -250,6 +250,8 @@ public class CommandsPlayerManagement implements OrphanCommand {
 		List<CompletableFuture<Boolean>> futures = new ArrayList<>(Bukkit.getOnlinePlayers().size());
 
 		for (var quester : QuestsAPI.getAPI().getQuesterManager().getLoadedQuesters()) {
+			if (!quest.getQuesterStrategy().isQuesterApplicable(quester))
+				continue;
 			futures.add(quest.resetQuester(quester)
 					.whenComplete(QuestsPlugin.getPlugin().getLoggerExpanded().logError(
 							"An error occurred while resetting quest {} to {}", actor.audience().get(), quest.getId(),

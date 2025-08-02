@@ -18,8 +18,8 @@ import java.util.List;
 
 public class QuesterSelectorParameter implements ParameterType<BukkitCommandActor, QuesterSelector> {
 
-	private @NotNull QuesterManager questerManager;
-	private @NotNull PlayerManager playerManager;
+	private final @NotNull QuesterManager questerManager;
+	private final @NotNull PlayerManager playerManager;
 
 	public QuesterSelectorParameter(@NotNull QuesterManager questerManager, @NotNull PlayerManager playerManager) {
 		this.questerManager = questerManager;
@@ -30,22 +30,21 @@ public class QuesterSelectorParameter implements ParameterType<BukkitCommandActo
 	public QuesterSelector parse(@NotNull MutableStringStream input, @NotNull ExecutionContext<BukkitCommandActor> context) {
 		var string = input.readString();
 
-		try {
+		var questerOpt = QuesterParameter.parseQuester(string, questerManager);
+		if (questerOpt.isPresent()) {
+			return new QuesterSelectorImpl(List.of(questerOpt.get()));
+		} else {
 			var entities = Bukkit.selectEntities(context.actor().sender(), string);
 			var players = entities.stream().filter(Player.class::isInstance).map(Player.class::cast).toList();
 			if (players.isEmpty())
 				throw new EmptyEntitySelectorException(string);
 			return new QuesterSelectorImpl(players.stream().map(x -> (Quester) playerManager.getQuester(x)).toList());
-		} catch (IllegalArgumentException __) {
-			// means it is not an entity selector
-			// TODO implement quester search
-			throw new EmptyEntitySelectorException(string);
 		}
 	}
 
 	@Override
 	public @NotNull SuggestionProvider<@NotNull BukkitCommandActor> defaultSuggestions() {
-		return (context) -> Bukkit.getOnlinePlayers().stream().map(Player::getName).toList();
+		return new QuesterParameter.SuggestionProviderImplementation(questerManager, playerManager);
 	}
 
 }
