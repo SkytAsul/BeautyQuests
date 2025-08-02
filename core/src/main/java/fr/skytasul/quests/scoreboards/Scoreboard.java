@@ -163,6 +163,7 @@ public class Scoreboard extends BukkitRunnable implements Listener {
 		int index = shownIndex.orElse(-1) + 1;
 		shown.add(index, entry);
 		shownIndex = OptionalInt.of(index);
+		resetChangeTime();
 		refreshQuestsLines(true);
 	}
 
@@ -266,9 +267,16 @@ public class Scoreboard extends BukkitRunnable implements Listener {
 			if (errorWhenUnknown)
 				throw new IllegalArgumentException("Quest is not running for player.");
 		} else if (!hasPinnedEntry() || entryOpt.get().isPinned()) {
-			shownIndex = OptionalInt.of(shown.indexOf(entryOpt.get()));
+			if (!getShown().equals(entryOpt)) {
+				shownIndex = OptionalInt.of(shown.indexOf(entryOpt.get()));
+				resetChangeTime();
+			}
 			refreshQuestsLines(true);
 		}
+	}
+
+	protected void resetChangeTime() {
+		changeTime = manager.getQuestChangeTime();
 	}
 
 	public void refreshQuestsLines(boolean updateBoard) {
@@ -366,6 +374,7 @@ public class Scoreboard extends BukkitRunnable implements Listener {
 					shown.clear();
 				shown.add(this);
 				shownIndex = OptionalInt.of(shown.indexOf(this));
+				resetChangeTime();
 				refreshQuestsLines(true);
 				this.pinned = true;
 			} else {
