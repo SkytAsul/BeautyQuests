@@ -14,7 +14,6 @@ import fr.skytasul.quests.api.stages.StageDescriptionPlaceholdersContext;
 import fr.skytasul.quests.api.stages.creation.StageCreation;
 import fr.skytasul.quests.api.stages.creation.StageCreationContext;
 import fr.skytasul.quests.api.stages.creation.StageGuiLine;
-import fr.skytasul.quests.api.utils.MinecraftVersion;
 import fr.skytasul.quests.api.utils.messaging.PlaceholderRegistry;
 import fr.skytasul.quests.api.utils.progress.ProgressPlaceholders;
 import fr.skytasul.quests.api.utils.progress.itemdescription.HasItemsDescriptionConfiguration.HasSingleObject;
@@ -120,8 +119,6 @@ public class StageBucket extends AbstractStage implements HasSingleObject, Liste
 		SNOW(Lang.BucketSnow, XMaterial.POWDER_SNOW_BUCKET)
 		;
 
-		private static BucketType[] AVAILABLE;
-
 		private Lang name;
 		private XMaterial type;
 
@@ -146,12 +143,8 @@ public class StageBucket extends AbstractStage implements HasSingleObject, Liste
 		}
 
 		public static BucketType[] getAvailable() {
-			if (AVAILABLE == null) {
-				AVAILABLE = MinecraftVersion.MAJOR >= 17 ? values() : new BucketType[] {WATER, LAVA, MILK};
-				// inefficient? yes. But it's christmas and I don't want to work on this anymore, plus there will
-				// probably not be more bucket types in the future
-			}
-			return AVAILABLE;
+			// if new bucket types are added in the future, this will be different
+			return BucketType.values();
 		}
 	}
 

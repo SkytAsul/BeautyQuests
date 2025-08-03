@@ -10,7 +10,6 @@ import fr.skytasul.quests.api.npcs.NpcClickType;
 import fr.skytasul.quests.api.options.description.DescriptionSource;
 import fr.skytasul.quests.api.options.description.QuestDescription;
 import fr.skytasul.quests.api.utils.MinecraftNames;
-import fr.skytasul.quests.api.utils.MinecraftVersion;
 import fr.skytasul.quests.api.utils.PlayerListCategory;
 import fr.skytasul.quests.api.utils.Utils;
 import fr.skytasul.quests.utils.ParticleEffect;
@@ -112,15 +111,13 @@ public class QuestsConfigurationImplementation implements QuestsConfiguration {
 		hookAcounts = config.getBoolean("accountsHook");
 		usePlayerBlockTracker = config.getBoolean("usePlayerBlockTracker");
 
-		if (MinecraftVersion.MAJOR >= 9) {
-			particleStart = loadParticles("start", new ParticleEffect(Utils.valueOfEnum(Particle.class, "REDSTONE", "DUST"),
-					ParticleShape.POINT, Color.YELLOW));
-			particleTalk = loadParticles("talk", new ParticleEffect(
-					Utils.valueOfEnum(Particle.class, "VILLAGER_HAPPY", "HAPPY_VILLAGER"), ParticleShape.BAR, null));
-			particleNext =
-					loadParticles("next", new ParticleEffect(Utils.valueOfEnum(Particle.class, "SMOKE_NORMAL", "SMOKE"),
-							ParticleShape.SPOT, null));
-		}
+		particleStart = loadParticles("start", new ParticleEffect(Utils.valueOfEnum(Particle.class, "REDSTONE", "DUST"),
+				ParticleShape.POINT, Color.YELLOW));
+		particleTalk = loadParticles("talk", new ParticleEffect(
+				Utils.valueOfEnum(Particle.class, "VILLAGER_HAPPY", "HAPPY_VILLAGER"), ParticleShape.BAR, null));
+		particleNext =
+				loadParticles("next", new ParticleEffect(Utils.valueOfEnum(Particle.class, "SMOKE_NORMAL", "SMOKE"),
+						ParticleShape.SPOT, null));
 
 		holoLaunchItem = loadHologram("launchItem");
 		holoLaunchNoItem = loadHologram("nolaunchItem");
@@ -137,26 +134,20 @@ public class QuestsConfigurationImplementation implements QuestsConfiguration {
 	}
 
 	private void initializeTranslations() {
-		if (MinecraftVersion.MAJOR >= 13) {
-			String fileName = minecraftTranslationsFile;
-			Optional<String> extension = Utils.getFilenameExtension(minecraftTranslationsFile);
-			if (extension.isPresent()) {
-				if (extension.get().equalsIgnoreCase("json")) {
-					QuestsPlugin.getPlugin().getLoggerExpanded().warning("File " + fileName + " is not a JSON file.");
-					return;
-				}
-			} else {
-				fileName += ".json";
-			}
-
-			if (!MinecraftNames.intialize(QuestsPlugin.getPlugin().getDataFolder().toPath().resolve(fileName))) {
-				QuestsPlugin.getPlugin().getLoggerExpanded()
-						.warning("Cannot enable the \"minecraftTranslationsFile\" option : problem when initializing");
-				minecraftTranslationsFile = null;
+		String fileName = minecraftTranslationsFile;
+		Optional<String> extension = Utils.getFilenameExtension(minecraftTranslationsFile);
+		if (extension.isPresent()) {
+			if (extension.get().equalsIgnoreCase("json")) {
+				QuestsPlugin.getPlugin().getLoggerExpanded().warning("File " + fileName + " is not a JSON file.");
+				return;
 			}
 		} else {
-			QuestsPlugin.getPlugin().getLoggerExpanded().warning(
-					"Cannot enable the \"minecraftTranslationsFile\" option : only supported on Spigot 1.13 and higher");
+			fileName += ".json";
+		}
+
+		if (!MinecraftNames.intialize(QuestsPlugin.getPlugin().getDataFolder().toPath().resolve(fileName))) {
+			QuestsPlugin.getPlugin().getLoggerExpanded()
+					.warning("Cannot enable the \"minecraftTranslationsFile\" option : problem when initializing");
 			minecraftTranslationsFile = null;
 		}
 	}
@@ -579,7 +570,7 @@ public class QuestsConfigurationImplementation implements QuestsConfiguration {
 		}
 
 		private void init() {
-			inActionBar = MinecraftVersion.MAJOR > 8 && config.getBoolean("inActionBar");
+			inActionBar = config.getBoolean("inActionBar");
 			defaultTime = config.getInt("defaultTime");
 			defaultSkippable = config.getBoolean("defaultSkippable");
 			disableClick = config.getBoolean("disableClick");

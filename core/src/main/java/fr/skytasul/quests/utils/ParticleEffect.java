@@ -1,6 +1,5 @@
 package fr.skytasul.quests.utils;
 
-import fr.skytasul.quests.api.utils.MinecraftVersion;
 import fr.skytasul.quests.utils.nms.NMS;
 import org.apache.commons.lang.Validate;
 import org.bukkit.Color;
@@ -11,7 +10,6 @@ import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Random;
 
@@ -131,8 +129,7 @@ public class ParticleEffect {
 	}
 
 	public static boolean canHaveColor(Particle particle) {
-		if (MinecraftVersion.MAJOR >= 13) return particle.getDataType() == Particle.DustOptions.class;
-		return Arrays.asList("REDSTONE", "SPELL_MOB", "SPELL_MOB_AMBIENT").contains(particle.name());
+		return particle.getDataType() == Particle.DustOptions.class;
 	}
 
 	public enum ParticleShape {
@@ -151,7 +148,7 @@ public class ParticleEffect {
 			if (particle == Particle.NOTE) {
 				colored = true;
 				dustColored = false;
-			}else if (MinecraftVersion.MAJOR >= 13) {
+			} else {
 				if (particle.getDataType() == Particle.DustOptions.class) {
 					colored = true;
 					dustColored = true;
@@ -159,9 +156,6 @@ public class ParticleEffect {
 					colored = false;
 					dustColored = false;
 				}
-			}else {
-				colored = canHaveColor(particle);
-				dustColored = false;
 			}
 
 			if (particle.getDataType() != Void.class && !dustColored) throw new IllegalArgumentException("Particle type " + particle.name() + " must have a " + particle.getDataType().getName() + " data");

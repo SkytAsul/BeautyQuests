@@ -13,7 +13,6 @@ import fr.skytasul.quests.api.questers.QuesterManager;
 import fr.skytasul.quests.api.quests.Quest;
 import fr.skytasul.quests.api.quests.QuestsManager;
 import fr.skytasul.quests.api.utils.ChatColorUtils;
-import fr.skytasul.quests.api.utils.MinecraftVersion;
 import fr.skytasul.quests.api.utils.PlayerListCategory;
 import fr.skytasul.quests.api.utils.messaging.MessageUtils;
 import fr.skytasul.quests.api.utils.messaging.PlaceholdersContext;
@@ -32,7 +31,7 @@ import java.util.stream.Collectors;
 public class Scoreboard extends BukkitRunnable implements Listener {
 
 	private static final Pattern QUEST_PLACEHOLDER = Pattern.compile("\\{quest_(.+)\\}");
-	private static final int maxLength = MinecraftVersion.MAJOR >= 13 ? 1024 : 30;
+	private static final int maxLength = 1024;
 
 	private final Player p;
 	private final ScoreboardManager manager;

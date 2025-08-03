@@ -14,7 +14,6 @@ import fr.skytasul.quests.api.stages.creation.StageGuiLine;
 import fr.skytasul.quests.api.stages.types.Locatable;
 import fr.skytasul.quests.api.stages.types.Locatable.LocatableType;
 import fr.skytasul.quests.api.stages.types.Locatable.LocatedType;
-import fr.skytasul.quests.api.utils.MinecraftVersion;
 import fr.skytasul.quests.api.utils.messaging.PlaceholderRegistry;
 import fr.skytasul.quests.gui.blocks.SelectBlockGUI;
 import org.bukkit.configuration.ConfigurationSection;
@@ -59,7 +58,8 @@ public class StageInteractBlock extends AbstractStage implements Locatable.Multi
 	@EventHandler
 	public void onInteract(PlayerInteractEvent e){
 		if (e.getClickedBlock() == null) return;
-		if (MinecraftVersion.MAJOR >= 9 && e.getHand() != EquipmentSlot.HAND) return;
+		if (e.getHand() != EquipmentSlot.HAND)
+			return;
 
 		if (left){
 			if (e.getAction() != Action.LEFT_CLICK_BLOCK) return;

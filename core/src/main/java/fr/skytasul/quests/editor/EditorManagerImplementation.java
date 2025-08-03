@@ -5,7 +5,6 @@ import fr.skytasul.quests.api.editors.Editor;
 import fr.skytasul.quests.api.editors.EditorFactory;
 import fr.skytasul.quests.api.editors.EditorManager;
 import fr.skytasul.quests.api.localization.Lang;
-import fr.skytasul.quests.api.utils.MinecraftVersion;
 import fr.skytasul.quests.api.utils.messaging.DefaultErrors;
 import fr.skytasul.quests.utils.QuestUtils;
 import net.kyori.adventure.bossbar.BossBar;
@@ -49,12 +48,7 @@ public class EditorManagerImplementation implements EditorManager, Listener {
 		QuestsPlugin.getPlugin().getLoggerExpanded()
 				.debug(player.getName() + " is entering editor " + editor.getClass().getName() + ".");
 
-		if (MinecraftVersion.MAJOR > 11) {
-			player.sendTitle(Lang.ENTER_EDITOR_TITLE.toString(), Lang.ENTER_EDITOR_SUB.toString(), 5, 50, 5);
-		} else {
-			Lang.ENTER_EDITOR_TITLE.send(player);
-			Lang.ENTER_EDITOR_SUB.send(player);
-		}
+		player.sendTitle(Lang.ENTER_EDITOR_TITLE.toString(), Lang.ENTER_EDITOR_SUB.toString(), 5, 50, 5);
 		bar.addViewer(QuestsPlugin.getPlugin().getAudiences().player(player));
 
 		QuestUtils.autoRegister(editor);

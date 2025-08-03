@@ -8,7 +8,6 @@ import fr.skytasul.quests.api.gui.templates.PagedGUI;
 import fr.skytasul.quests.api.localization.Lang;
 import fr.skytasul.quests.api.mobs.LeveledMobFactory;
 import fr.skytasul.quests.api.options.QuestOption;
-import fr.skytasul.quests.api.utils.MinecraftVersion;
 import fr.skytasul.quests.api.utils.Utils;
 import fr.skytasul.quests.integrations.IntegrationsConfiguration;
 import io.lumine.mythic.api.mobs.MythicMob;
@@ -113,7 +112,6 @@ public class MythicMobs5 implements LeveledMobFactory<MythicMob>, Listener {
 
 		if (typeName.contains("BABY_")) typeName = typeName.substring(5);
 		if (typeName.equalsIgnoreCase("MPET")) typeName = data.getConfig().getString("MPet.Anchor");
-		if (MinecraftVersion.MAJOR < 11 && typeName.equals("WITHER_SKELETON")) typeName = "SKELETON";
 		EntityType type = EntityType.fromName(typeName);
 		if (type == null) {
 			try {

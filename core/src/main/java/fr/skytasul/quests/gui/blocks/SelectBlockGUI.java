@@ -13,7 +13,6 @@ import fr.skytasul.quests.api.gui.layout.LayoutedClickEvent;
 import fr.skytasul.quests.api.gui.layout.LayoutedGUI;
 import fr.skytasul.quests.api.localization.Lang;
 import fr.skytasul.quests.api.options.QuestOption;
-import fr.skytasul.quests.api.utils.MinecraftVersion;
 import fr.skytasul.quests.api.utils.messaging.PlaceholderRegistry;
 import fr.skytasul.quests.utils.nms.NMS;
 import org.bukkit.Bukkit;
@@ -58,7 +57,7 @@ public class SelectBlockGUI extends LayoutedGUI.LayoutedRowsGUI {
 			@Override
 			public void place(@NotNull Inventory inventory, int slot) {
 				XMaterial mat = type;
-				if (MinecraftVersion.MAJOR >= 13 && !type.parseMaterial().isItem())
+				if (!type.get().isItem())
 					mat = XMaterial.STONE;
 				placeInternal(inventory, slot, mat);
 
@@ -80,24 +79,22 @@ public class SelectBlockGUI extends LayoutedGUI.LayoutedRowsGUI {
 			}
 
 		});
-		if (MinecraftVersion.MAJOR >= 13) {
-			buttons.put(5, LayoutedButton.create(() -> {
-				ItemStack item = ItemUtils.item(XMaterial.COMMAND_BLOCK, Lang.blockData.toString(),
-						QuestOption.formatNullableValue(blockData, blockData == null));
-				if (blockData != null)
-					ItemUtils.setGlittering(item, true);
-				return item;
-			}, this::dataClick));
+		buttons.put(5, LayoutedButton.create(() -> {
+			ItemStack item = ItemUtils.item(XMaterial.COMMAND_BLOCK, Lang.blockData.toString(),
+					QuestOption.formatNullableValue(blockData, blockData == null));
+			if (blockData != null)
+				ItemUtils.setGlittering(item, true);
+			return item;
+		}, this::dataClick));
 
-			buttons.put(6, LayoutedButton.create(() -> {
-				ItemStack item = ItemUtils.item(XMaterial.FILLED_MAP, Lang.blockTag.toString(),
-						QuestOption.formatDescription(Lang.blockTagLore.toString()), "",
-						QuestOption.formatNullableValue(tag, tag == null));
-				if (tag != null)
-					ItemUtils.setGlittering(item, true);
-				return item;
-			}, this::tagClick));
-		}
+		buttons.put(6, LayoutedButton.create(() -> {
+			ItemStack item = ItemUtils.item(XMaterial.FILLED_MAP, Lang.blockTag.toString(),
+					QuestOption.formatDescription(Lang.blockTagLore.toString()), "",
+					QuestOption.formatNullableValue(tag, tag == null));
+			if (tag != null)
+				ItemUtils.setGlittering(item, true);
+			return item;
+		}, this::tagClick));
 
 		buttons.put(8, LayoutedButton.create(QuestsPlugin.getPlugin().getGuiManager().getItemFactory().getDone(), this::doneClick));
 	}

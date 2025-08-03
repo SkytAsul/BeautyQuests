@@ -17,7 +17,6 @@ import fr.skytasul.quests.api.stages.StageDescriptionPlaceholdersContext;
 import fr.skytasul.quests.api.stages.creation.StageCreation;
 import fr.skytasul.quests.api.stages.creation.StageCreationContext;
 import fr.skytasul.quests.api.stages.creation.StageGuiLine;
-import fr.skytasul.quests.api.utils.MinecraftVersion;
 import fr.skytasul.quests.api.utils.Utils;
 import fr.skytasul.quests.api.utils.messaging.PlaceholderRegistry;
 import fr.skytasul.quests.api.utils.messaging.PlaceholdersContext.QuesterPlaceholdersContext;
@@ -197,13 +196,7 @@ public class StagePlayTime extends AbstractStage implements HasProgress {
 
 	public enum TimeMode {
 		ONLINE(Lang.stagePlayTimeModeOnline.toString()),
-		OFFLINE(Lang.stagePlayTimeModeOffline.toString()) {
-			@Override
-			public boolean isActive() {
-				// no way to get full world time before 1.16.5
-				return MinecraftVersion.MAJOR > 16 || (MinecraftVersion.MAJOR == 16 && MinecraftVersion.MINOR == 5);
-			}
-		},
+		OFFLINE(Lang.stagePlayTimeModeOffline.toString()),
 		REALTIME(Lang.stagePlayTimeModeRealtime.toString());
 
 		private final String description;

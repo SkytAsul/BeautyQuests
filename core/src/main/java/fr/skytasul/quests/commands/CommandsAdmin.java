@@ -186,9 +186,6 @@ public class CommandsAdmin implements OrphanCommand {
 	@Subcommand ("downloadTranslations")
 	@CommandPermission ("beautyquests.command.manage")
 	public void downloadTranslations(BukkitCommandActor actor, @Optional String lang, @Switch boolean overwrite) {
-		if (MinecraftVersion.MAJOR < 13)
-			throw new CommandErrorException(Lang.VERSION_REQUIRED.quickFormat("version", "≥ 1.13"));
-
 		if (lang == null)
 			throw new CommandErrorException(Lang.COMMAND_TRANSLATION_SYNTAX.toString());
 

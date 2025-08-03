@@ -11,7 +11,6 @@ import fr.skytasul.quests.api.gui.layout.LayoutedClickEvent;
 import fr.skytasul.quests.api.gui.layout.LayoutedGUI;
 import fr.skytasul.quests.api.localization.Lang;
 import fr.skytasul.quests.api.options.QuestOption;
-import fr.skytasul.quests.api.utils.MinecraftVersion;
 import fr.skytasul.quests.utils.ParticleEffect;
 import fr.skytasul.quests.utils.ParticleEffect.ParticleShape;
 import org.bukkit.Color;
@@ -30,9 +29,7 @@ public class ParticleEffectGUI extends LayoutedGUI.LayoutedRowsGUI {
 
 	static final List<Particle> PARTICLES = Arrays.stream(Particle.values()).filter(particle -> {
 		if (particle.getDataType() == Void.class) return true;
-		if (MinecraftVersion.MAJOR >= 13)
-			return particle.getDataType() == DustOptions.class;
-		return false;
+		return particle.getDataType() == DustOptions.class;
 	}).collect(Collectors.toList());
 
 	private final @NotNull Consumer<ParticleEffect> end;

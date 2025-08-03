@@ -19,7 +19,6 @@ import fr.skytasul.quests.api.stages.StageType;
 import fr.skytasul.quests.api.stages.StageTypeRegistry;
 import fr.skytasul.quests.api.stages.options.StageOptionAutoRegister;
 import fr.skytasul.quests.api.stages.options.StageOptionCreator;
-import fr.skytasul.quests.api.utils.MinecraftVersion;
 import fr.skytasul.quests.api.utils.QuestVisibilityLocation;
 import fr.skytasul.quests.api.utils.messaging.MessageProcessor;
 import fr.skytasul.quests.api.utils.messaging.MessageType;
@@ -215,9 +214,8 @@ public final class DefaultQuestFeatures {
 				.register(new RewardCreator("wait", WaitReward.class,
 						item(XMaterial.CLOCK, Lang.rewardWait.toString()), WaitReward::new, true)
 								.setCanBeAsync(true));
-		if (MinecraftVersion.MAJOR >= 9)
-			QuestsAPI.getAPI().getRewards().register(new RewardCreator("titleReward", TitleReward.class,
-					item(XMaterial.NAME_TAG, Lang.rewardTitle.toString()), TitleReward::new, false));
+		QuestsAPI.getAPI().getRewards().register(new RewardCreator("titleReward", TitleReward.class,
+				item(XMaterial.NAME_TAG, Lang.rewardTitle.toString()), TitleReward::new, false));
 	}
 
 	public static void registerRequirements() {
@@ -233,11 +231,9 @@ public final class DefaultQuestFeatures {
 		QuestsAPI.getAPI().getRequirements()
 				.register(new RequirementCreator("scoreboardRequired", ScoreboardRequirement.class,
 						item(XMaterial.COMMAND_BLOCK, Lang.RScoreboard.toString()), ScoreboardRequirement::new));
-		if (MinecraftVersion.MAJOR >= 9)
-			QuestsAPI.getAPI().getRequirements()
-					.register(new RequirementCreator("equipmentRequired", EquipmentRequirement.class,
-							item(XMaterial.CHAINMAIL_HELMET, Lang.REquipment.toString()),
-							EquipmentRequirement::new));
+		QuestsAPI.getAPI().getRequirements()
+				.register(new RequirementCreator("equipmentRequired", EquipmentRequirement.class,
+						item(XMaterial.CHAINMAIL_HELMET, Lang.REquipment.toString()), EquipmentRequirement::new));
 	}
 
 	public static void registerItemComparisons() {
@@ -246,13 +242,7 @@ public final class DefaultQuestFeatures {
 		QuestsAPI.getAPI().registerItemComparison(new ItemComparison("customBukkit", Lang.comparisonCustomBukkit.toString(),
 				Lang.comparisonCustomBukkitLore.toString(), QuestUtils::isSimilar));
 		QuestsAPI.getAPI().registerItemComparison(new ItemComparison("material", Lang.comparisonMaterial.toString(),
-				Lang.comparisonMaterialLore.toString(), (item1, item2) -> {
-					if (item2.getType() != item1.getType())
-						return false;
-					if (item1.getType().getMaxDurability() > 0 || MinecraftVersion.MAJOR >= 13)
-						return true;
-					return item2.getDurability() == item1.getDurability();
-				}));
+				Lang.comparisonMaterialLore.toString(), (item1, item2) -> item2.getType().equals(item1.getType())));
 		QuestsAPI.getAPI().registerItemComparison(new ItemComparison("name", Lang.comparisonName.toString(),
 				Lang.comparisonNameLore.toString(), (item1, item2) -> {
 					ItemMeta meta1 = item1.getItemMeta();

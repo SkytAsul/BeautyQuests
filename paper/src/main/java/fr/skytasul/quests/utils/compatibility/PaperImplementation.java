@@ -1,6 +1,5 @@
 package fr.skytasul.quests.utils.compatibility;
 
-import fr.skytasul.quests.api.utils.MinecraftVersion;
 import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.inventory.ItemStack;
 import java.util.Iterator;
@@ -10,8 +9,6 @@ public class PaperImplementation implements Paper {
 
 	@Override
 	public void keepDeathItems(PlayerDeathEvent event, Predicate<ItemStack> predicate) {
-		if (MinecraftVersion.MAJOR < 13) return;
-
 		for (Iterator<ItemStack> iterator = event.getDrops().iterator(); iterator.hasNext();) {
 			ItemStack item = iterator.next();
 			if (predicate.test(item)) {

@@ -3,19 +3,18 @@ package fr.skytasul.quests.editor.parsers;
 import com.cryptomorin.xseries.XMaterial;
 import fr.skytasul.quests.api.editors.parsers.AbstractParser;
 import fr.skytasul.quests.api.localization.Lang;
-import fr.skytasul.quests.api.utils.MinecraftVersion;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 
 public class MaterialParser implements AbstractParser<XMaterial> {
-	
+
 	private boolean item, block;
-	
+
 	public MaterialParser(boolean item, boolean block) {
 		this.item = item;
 		this.block = block;
 	}
-	
+
 	@Override
 	public XMaterial parse(Player p, String msg) throws Throwable {
 		XMaterial tmp = XMaterial.matchXMaterial(msg).orElse(null);
@@ -30,12 +29,12 @@ public class MaterialParser implements AbstractParser<XMaterial> {
 			}
 		}
 		if (item) {
-			if (MinecraftVersion.MAJOR >= 13 && !tmp.parseMaterial().isItem()) {
+			if (!tmp.get().isItem()) {
 				Lang.INVALID_ITEM_TYPE.send(p);
 				return null;
 			}
 		}else if (block) {
-			if (MinecraftVersion.MAJOR >= 13 && !tmp.parseMaterial().isBlock()) {
+			if (!tmp.get().isBlock()) {
 				Lang.INVALID_BLOCK_TYPE.send(p);
 				return null;
 			}
