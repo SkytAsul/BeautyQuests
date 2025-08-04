@@ -12,11 +12,11 @@ import java.util.Optional;
 
 public abstract class StageOption<T extends AbstractStage> extends SerializableObject implements StageHandler {
 
-	private final @NotNull Class<T> stageClass;
+	private final @NotNull Class<? extends T> stageClass;
 
 	private @Nullable StageController controller;
 
-	protected StageOption(@NotNull Class<T> stageClass) {
+	protected StageOption(@NotNull Class<? extends T> stageClass) {
 		super(QuestsAPI.getAPI().getStages()
 				.getType(stageClass)
 				.orElseThrow(() -> new IllegalArgumentException(stageClass.getName() + "has not been registered as a stage type via the API."))
@@ -24,7 +24,7 @@ public abstract class StageOption<T extends AbstractStage> extends SerializableO
 		this.stageClass = stageClass;
 	}
 
-	public @NotNull Class<T> getStageClass() {
+	public @NotNull Class<? extends T> getStageClass() {
 		return stageClass;
 	}
 

@@ -28,6 +28,16 @@ public interface StageController {
 	 */
 	public @NotNull Collection<Quester> getApplicableQuesters(@NotNull Player player);
 
+	/**
+	 * Gets whether or not a quester can get advancement when the player performs the action of the
+	 * stage.
+	 *
+	 * @param player Player that did an action regarding the stage
+	 * @return <code>true</code> if {@link #getApplicableQuesters(Player)} will return a non-empty
+	 *         collection
+	 */
+	public boolean hasApplicableQuester(@NotNull Player player);
+
 	public void finishStage(@NotNull Quester quester);
 
 	public boolean hasStarted(@NotNull Quester quester);

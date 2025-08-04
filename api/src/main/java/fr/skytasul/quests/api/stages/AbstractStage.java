@@ -124,7 +124,7 @@ public abstract class AbstractStage implements HasPlaceholders {
 	 * @param player Player to test
 	 */
 	protected final boolean hasApplicableQuester(@NotNull Player player) {
-		return !controller.getApplicableQuesters(player).isEmpty();
+		return controller.hasApplicableQuester(player);
 	}
 
 	/**

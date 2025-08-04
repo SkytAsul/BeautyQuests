@@ -10,6 +10,7 @@ import fr.skytasul.quests.api.questers.data.QuesterQuestData;
 import fr.skytasul.quests.api.questers.events.QuesterJoinEvent;
 import fr.skytasul.quests.api.questers.events.QuesterLeaveEvent;
 import fr.skytasul.quests.api.stages.*;
+import fr.skytasul.quests.api.stages.options.StageQuesterStrategy;
 import fr.skytasul.quests.api.utils.CustomizedObjectTypeAdapter;
 import fr.skytasul.quests.api.utils.messaging.MessageType;
 import fr.skytasul.quests.api.utils.messaging.MessageUtils;
@@ -81,8 +82,23 @@ public class StageControllerImplementation<T extends AbstractStage> implements S
 		var optQuester = branch.getQuest().getQuesterStrategy().getPlayerQuester(player);
 		if (optQuester.isEmpty() || !hasStarted(optQuester.get()))
 			return List.of();
-		return List.of(optQuester.get());
-		// TODO add more possibilities!
+
+		var questers = new HashSet<Quester>();
+		questers.add(optQuester.get());
+
+		for (var option : stage.getOptions())
+			if (option instanceof StageQuesterStrategy strategy)
+				for (var additionalQuester : strategy.getAdditionalQuesters(player))
+					if (hasStarted(additionalQuester))
+						questers.add(additionalQuester);
+
+		return questers;
+	}
+
+	@Override
+	public boolean hasApplicableQuester(@NotNull Player player) {
+		var optQuester = branch.getQuest().getQuesterStrategy().getPlayerQuester(player);
+		return optQuester.isPresent() && hasStarted(optQuester.get());
 	}
 
 	@Override

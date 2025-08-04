@@ -30,7 +30,7 @@ public class StageOptionProgressBar<T extends AbstractStage & HasProgress> exten
 
 	private final @NotNull Map<Quester, ProgressBar> bars = new HashMap<>();
 
-	public StageOptionProgressBar(@NotNull Class<T> stageClass) {
+	public StageOptionProgressBar(@NotNull Class<? extends T> stageClass) {
 		super(stageClass);
 	}
 
