@@ -11,7 +11,6 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.List;
 import java.util.jar.JarFile;
-import java.util.logging.Logger;
 
 public class BeautyQuestsLoader implements PluginLoader {
 
@@ -35,7 +34,7 @@ public class BeautyQuestsLoader implements PluginLoader {
 		try {
 			repository = MavenLibraryResolver.MAVEN_CENTRAL_DEFAULT_MIRROR;
 			if (repository.equals("https://maven-central.storage-download.googleapis.com/maven2")) {
-				Logger.getGlobal().info("""
+				classpathBuilder.getContext().getLogger().info("""
 					Paper is using the Google mirror for Maven central repository, which lacks some artifacts.
 					BeautyQuests will use the default Maven central CDN until a better mirror has been found.
 					""");
@@ -46,6 +45,8 @@ public class BeautyQuestsLoader implements PluginLoader {
 		}
 		resolver.addRepository(new RemoteRepository.Builder("central", "default", repository).build());
 
+		classpathBuilder.getContext().getLogger().info("Loading {} libraries using Paper plugin loader...",
+				librariesList.size());
 		for (String library : librariesList) {
 			resolver.addDependency(new Dependency(new DefaultArtifact(library), null));
 		}

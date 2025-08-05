@@ -103,8 +103,14 @@ public class LoggerExpanded {
 			@Nullable Audience sender, Object... parameters) {
 		return (object, ex) -> {
 			if (ex == null) {
-				if (consumer != null)
-					consumer.accept(object);
+				if (consumer != null) {
+					try {
+						consumer.accept(object);
+					} catch (Throwable consumerEx) {
+						severe(friendlyErrorMessage, consumerEx, parameters);
+						throw consumerEx;
+					}
+				}
 			} else {
 				if (ex instanceof CompletionException) {
 					CompletionException exCompl = (CompletionException) ex;

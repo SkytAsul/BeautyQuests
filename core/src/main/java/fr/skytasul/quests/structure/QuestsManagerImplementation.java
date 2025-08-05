@@ -59,6 +59,7 @@ public class QuestsManagerImplementation implements QuestsManager {
 				}
 			}
 		}
+		LOGGER.debug("Finished loading {} quests", quests.size());
 	}
 
 	public @NotNull BeautyQuests getPlugin() {
