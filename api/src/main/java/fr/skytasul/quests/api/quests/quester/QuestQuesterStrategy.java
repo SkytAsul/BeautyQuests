@@ -2,6 +2,7 @@ package fr.skytasul.quests.api.quests.quester;
 
 import fr.skytasul.quests.api.options.description.QuestDescriptionContext;
 import fr.skytasul.quests.api.questers.Quester;
+import fr.skytasul.quests.api.quests.creation.QuestCreationGuiClickEvent;
 import fr.skytasul.quests.api.serializable.SerializableObject;
 import fr.skytasul.quests.api.serializable.SerializableRegistry;
 import org.bukkit.entity.Player;
@@ -47,5 +48,14 @@ public abstract class QuestQuesterStrategy extends SerializableObject {
 	 *         quester strategy, or <code>null</code> if nothing should be shown.
 	 */
 	public abstract @Nullable String getTooltip(@NotNull QuestDescriptionContext context);
+
+	public interface EditableStrategy {
+		/**
+		 * Called when the player clicked on the strategy item to edit it.
+		 *
+		 * @param event click event
+		 */
+		public abstract void click(@NotNull QuestCreationGuiClickEvent event);
+	}
 
 }

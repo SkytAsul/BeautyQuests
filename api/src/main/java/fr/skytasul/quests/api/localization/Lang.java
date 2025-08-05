@@ -321,11 +321,13 @@ public enum Lang implements Locale {
 	Not_Started("advancement.notStarted"),
 
 	/* Inventories */
+	// Generic actions
 	done("inv.validate"),
 	cancel("inv.cancel"),
 	search("inv.search"),
 	addObject("inv.addObject"),
 	pickAnother("inv.pickAnother"),
+	edit("inv.edit"),
 
 	INVENTORY_CONFIRM("inv.confirm.name"),
 	confirmYes("inv.confirm.yes"),
@@ -453,7 +455,7 @@ public enum Lang implements Locale {
 	questStarterSelectPool("inv.details.selectStarterNPCPool"),
 	create("inv.details.createQuestName"),
 	createLore("inv.details.createQuestLore"),
-	edit("inv.details.editQuestName"),
+	editQuestName("inv.details.editQuestName"),
 	endMessage("inv.details.endMessage"),
 	endMessageLore("inv.details.endMessageLore"),
 	endSound("inv.details.endSound"),

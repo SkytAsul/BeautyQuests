@@ -4,6 +4,7 @@ import com.cryptomorin.xseries.XMaterial;
 import fr.skytasul.quests.api.comparison.ItemComparisonMap;
 import fr.skytasul.quests.api.gui.ItemUtils;
 import fr.skytasul.quests.api.localization.Lang;
+import fr.skytasul.quests.api.options.QuestOption;
 import fr.skytasul.quests.api.stages.StageController;
 import fr.skytasul.quests.api.stages.StageDescriptionPlaceholdersContext;
 import fr.skytasul.quests.api.stages.creation.StageCreationContext;
@@ -44,7 +45,8 @@ public class StageMelt extends AbstractItemStage implements Listener {
 
 	public static class Creator extends AbstractItemStage.Creator<StageMelt> {
 
-		private static final ItemStack editItems = ItemUtils.item(XMaterial.FURNACE, Lang.editItemsToMelt.toString());
+		private static final ItemStack editItems =
+				ItemUtils.item(XMaterial.FURNACE, Lang.editItemsToMelt.toString(), QuestOption.formatDescription("TODO"));
 
 		public Creator(@NotNull StageCreationContext<StageMelt> context) {
 			super(context);

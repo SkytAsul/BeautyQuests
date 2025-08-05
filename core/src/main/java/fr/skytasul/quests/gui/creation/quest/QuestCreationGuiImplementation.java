@@ -68,7 +68,7 @@ public class QuestCreationGuiImplementation extends LayoutedGUI implements Quest
 			boolean finishable = isFinishable();
 			XMaterial type = finishable ? XMaterial.GOLD_INGOT : XMaterial.NETHER_BRICK;
 			String itemName = (finishable ? ChatColor.GOLD : ChatColor.DARK_PURPLE).toString()
-					+ (session.isEdition() ? Lang.edit : Lang.create).toString();
+					+ (session.isEdition() ? Lang.editQuestName : Lang.create).toString();
 			List<String> lore = new ArrayList<>(3);
 			lore.add(QuestOption.formatDescription(Lang.createLore.toString()) + (finishable ? " §a✔" : " §c✖"));
 			if (Boolean.FALSE.equals(keepPlayerDatas)) {

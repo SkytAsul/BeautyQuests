@@ -338,6 +338,7 @@ inv:
   search: §e§lSearch
   addObject: §aAdd an object
   pickAnother: Pick another
+  edit: Edit
   confirm:
     name: Are you sure?
     'yes': §aConfirm

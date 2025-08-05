@@ -11,6 +11,7 @@ import fr.skytasul.quests.api.options.description.QuestDescriptionContext;
 import fr.skytasul.quests.api.options.description.QuestDescriptionProvider;
 import fr.skytasul.quests.api.quests.creation.QuestCreationGuiClickEvent;
 import fr.skytasul.quests.api.quests.quester.QuestQuesterStrategy;
+import fr.skytasul.quests.api.quests.quester.QuestQuesterStrategy.EditableStrategy;
 import fr.skytasul.quests.api.quests.quester.QuestQuesterStrategyCreator;
 import org.bukkit.DyeColor;
 import org.bukkit.configuration.ConfigurationSection;
@@ -44,10 +45,13 @@ public class OptionQuesterStrategy extends QuestOption<QuestQuesterStrategy> imp
 	@Override
 	public @NotNull ItemStack getItemStack(@NotNull OptionSet options) {
 		var strategyCreator = (QuestQuesterStrategyCreator) getValue().getCreator();
+		var isEditable = getValue() instanceof EditableStrategy;
+
 		return ItemUtils.item(XMaterial.PLAYER_HEAD, "§b" + Lang.optionQuesterStrategy, "",
 				QuestOption.formatNullableValue(strategyCreator.getName(), !hasCustomValue()), "",
 				QuestOption.formatDescription(strategyCreator.getDescription()), "",
-				"§8" + Lang.ClickLeft + " > §7" + Lang.pickAnother);
+				"§8" + Lang.ClickLeft + " > §7" + Lang.pickAnother,
+				isEditable ? "§8" + Lang.ClickRight + " > §7" + Lang.edit : null);
 	}
 
 	@Override
@@ -57,22 +61,26 @@ public class OptionQuesterStrategy extends QuestOption<QuestQuesterStrategy> imp
 
 	@Override
 	public void click(@NotNull QuestCreationGuiClickEvent event) {
-		new PagedGUI<>("Choose a strategy", DyeColor.MAGENTA,
-				QuestsAPI.getAPI().getQuestQuesterStrategyRegistry().getCreators()) {
-			@Override
-			public @NotNull ItemStack getItemStack(@NotNull QuestQuesterStrategyCreator object) {
-				return ItemUtils.item(XMaterial.PLAYER_HEAD, object.getName(),
-						QuestOption.formatDescription(object.getDescription()));
-			}
+		if (event.getClick() == ClickType.LEFT) {
+			new PagedGUI<>("Choose a strategy", DyeColor.MAGENTA,
+					QuestsAPI.getAPI().getQuestQuesterStrategyRegistry().getCreators()) {
+				@Override
+				public @NotNull ItemStack getItemStack(@NotNull QuestQuesterStrategyCreator object) {
+					return ItemUtils.item(XMaterial.PLAYER_HEAD, object.getName(),
+							QuestOption.formatDescription(object.getDescription()));
+				}
 
-			@Override
-			public void click(@NotNull QuestQuesterStrategyCreator existing, @NotNull ItemStack item,
-					@NotNull ClickType clickType) {
-				setValue(existing.newObject());
-				event.getGui().updateOptionItem(OptionQuesterStrategy.this);
-				event.reopen();
-			}
-		}.open(event.getPlayer());
+				@Override
+				public void click(@NotNull QuestQuesterStrategyCreator existing, @NotNull ItemStack item,
+						@NotNull ClickType clickType) {
+					setValue(existing.newObject());
+					event.getGui().updateOptionItem(OptionQuesterStrategy.this);
+					event.reopen();
+				}
+			}.open(event.getPlayer());
+		} else if (event.getClick() == ClickType.RIGHT && getValue() instanceof EditableStrategy strategy) {
+			strategy.click(event);
+		}
 	}
 
 	@Override
