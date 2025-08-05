@@ -394,6 +394,7 @@ inv:
     leftClick: Click must be left-click
     editFishes: §eEdit fishes to catch
     editItemsToMelt: §eEdit items to melt
+    editItemsToMeltLore: The items you put here are the ones the players should get OUT of the furnace, not the ones they put IN.
     editItemsToEnchant: §eEdit items to enchant
     editItem: §eEdit item to craft
     editBucketType: §eEdit type of bucket to fill

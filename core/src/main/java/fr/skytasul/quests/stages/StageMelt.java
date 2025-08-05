@@ -45,8 +45,8 @@ public class StageMelt extends AbstractItemStage implements Listener {
 
 	public static class Creator extends AbstractItemStage.Creator<StageMelt> {
 
-		private static final ItemStack editItems =
-				ItemUtils.item(XMaterial.FURNACE, Lang.editItemsToMelt.toString(), QuestOption.formatDescription("TODO"));
+		private static final ItemStack editItems = ItemUtils.item(XMaterial.FURNACE, Lang.editItemsToMelt.toString(),
+						QuestOption.formatDescription(Lang.editItemsToMeltLore.toString()));
 
 		public Creator(@NotNull StageCreationContext<StageMelt> context) {
 			super(context);

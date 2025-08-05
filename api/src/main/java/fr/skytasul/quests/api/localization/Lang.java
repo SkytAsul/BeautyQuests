@@ -383,6 +383,7 @@ public enum Lang implements Locale {
 	leftClick("inv.create.leftClick"),
 	editFishes("inv.create.editFishes"),
 	editItemsToMelt("inv.create.editItemsToMelt"),
+	editItemsToMeltLore("inv.create.editItemsToMeltLore"),
 	editItemsToEnchant("inv.create.editItemsToEnchant"),
 	editItem("inv.create.editItem"),
 	editBucketType("inv.create.editBucketType"),
