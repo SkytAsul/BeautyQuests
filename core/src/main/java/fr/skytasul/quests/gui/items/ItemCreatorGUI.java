@@ -79,11 +79,11 @@ public class ItemCreatorGUI extends AbstractGui {
 			case 1:
 				Lang.CHOOSE_ITEM_AMOUNT.send(event.getPlayer());
 				new TextEditor<>(event.getPlayer(), event::reopen, obj -> {
-					amount = /* Math.min(obj, 64) */ obj;
+					amount = obj;
 					ItemUtils.name(event.getClicked(), Lang.Amount.quickFormat("amount", amount));
 					event.reopen();
 					refresh();
-				}, NumberParser.INTEGER_PARSER_STRICT_POSITIVE).start();
+				}, new NumberParser<>(Integer.class, 1, 64)).start();
 				break;
 
 			case 2:
