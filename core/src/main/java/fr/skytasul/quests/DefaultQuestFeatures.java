@@ -42,6 +42,7 @@ import org.bukkit.inventory.meta.Repairable;
 import org.jetbrains.annotations.NotNull;
 import java.util.Arrays;
 import java.util.Objects;
+import java.util.OptionalInt;
 
 public final class DefaultQuestFeatures {
 
@@ -130,6 +131,8 @@ public final class DefaultQuestFeatures {
 	}
 
 	public static void registerQuestOptions() {
+		QuestsAPI.getAPI().registerQuestOption(new QuestOptionCreator<>("customOrder", 8, OptionCustomOrder.class,
+				OptionCustomOrder::new, OptionalInt.empty()));
 		QuestsAPI.getAPI()
 				.registerQuestOption(new QuestOptionCreator<>("pool", 9, OptionQuestPool.class, OptionQuestPool::new, null));
 		QuestsAPI.getAPI()

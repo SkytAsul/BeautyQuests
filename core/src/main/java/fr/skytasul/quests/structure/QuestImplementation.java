@@ -48,7 +48,7 @@ import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.regex.Pattern;
 
-public class QuestImplementation implements Quest, QuestDescriptionProvider {
+public class QuestImplementation implements Quest, QuestDescriptionProvider, Comparable<Quest> {
 
 	private static final Pattern PERMISSION_PATTERN = Pattern.compile("^beautyquests\\.start\\.(\\d+)$");
 
@@ -203,6 +203,14 @@ public class QuestImplementation implements Quest, QuestDescriptionProvider {
 	@Override
 	public @NotNull BranchesManagerImplementation getBranchesManager() {
 		return manager;
+	}
+
+	@Override
+	public int compareTo(Quest o) {
+		int order1 = getOptionValueOrDef(OptionCustomOrder.class).orElse(id);
+		int order2 = o.getOptionValueOrDef(OptionCustomOrder.class).orElse(o.getId());
+
+		return Integer.compare(order1, order2);
 	}
 
 	@Override

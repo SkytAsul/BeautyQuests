@@ -77,9 +77,4 @@ public interface Quest extends OptionSet, Comparable<Quest>, HasPlaceholders {
 	@NotNull
 	QuestQuesterStrategy getQuesterStrategy();
 
-	@Override
-	default int compareTo(Quest o) {
-		return Integer.compare(getId(), o.getId());
-	}
-
 }

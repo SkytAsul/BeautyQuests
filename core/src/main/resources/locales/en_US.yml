@@ -67,6 +67,7 @@ msg:
     to start the quest: (Write "null" if you want the default message.)'
   writeQuestDescription: '§aWrite the description of the quest, shown in the player''s quest GUI.'
   writeQuestMaterial: '§aWrite the material of the quest item.'
+  writeQuestCustomOrder: 'Write the custom ordering index of the quest, or "null" to reset to the quest''s ID.'
   requirements:
     quest: §cYou must have finished the quest §e{quest_name}§c!
     level: §cYour level must be {long_level}!
@@ -514,6 +515,11 @@ inv:
     visibilityLore: Choose in which tabs of the menu will the quest be shown, and if
       the quest is visible on dynamic maps.
     questerStrategy: Quester strategy
+    customOrder: §eCustom quest order
+    customOrderLore: |-
+      Number used to order the quests in the menu.
+      
+      If not set, the quest's ID will be used instead.
     keepDatas: Preserve players datas
     keepDatasLore: |-
       Force the plugin to preserve players datas, even though stages have been edited.

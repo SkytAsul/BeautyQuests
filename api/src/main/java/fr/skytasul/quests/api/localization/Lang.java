@@ -79,6 +79,7 @@ public enum Lang implements Locale {
 	CONFIRM_MESSAGE("msg.writeConfirmMessage"),
 	QUEST_DESCRIPTION("msg.writeQuestDescription"),
 	QUEST_MATERIAL("msg.writeQuestMaterial"),
+	QUEST_CUSTOM_ORDER("msg.writeQuestCustomOrder", EditorPrefix),
 
 	REQUIREMENT_QUEST("msg.requirements.quest"),
 	REQUIREMENT_LEVEL("msg.requirements.level"),
@@ -499,6 +500,8 @@ public enum Lang implements Locale {
 	optionVisibility("inv.details.visibility"),
 	optionVisibilityLore("inv.details.visibilityLore"),
 	optionQuesterStrategy("inv.details.questerStrategy"),
+	optionCustomOrder("inv.details.customOrder"),
+	optionCustomOrderLore("inv.details.customOrderLore"),
 	keepDatas("inv.details.keepDatas"),
 	keepDatasLore("inv.details.keepDatasLore"),
 	resetLore("inv.details.loreReset"),
