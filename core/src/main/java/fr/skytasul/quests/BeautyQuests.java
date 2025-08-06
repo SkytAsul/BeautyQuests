@@ -721,6 +721,12 @@ public class BeautyQuests extends JavaPlugin implements QuestsPlugin {
 	}
 
 	public void performReload(CommandSender sender){
+		if (true) {
+			sender.sendMessage(
+					"§cReloading is currently disabled because it caused too many bugs. Please restart your server instead.");
+			return;
+		}
+
 		try {
 			sender.sendMessage("§c§l-- ⚠ Warning ! This command can occur §omuch§r§c§l bugs ! --");
 			saveAllConfig(true);

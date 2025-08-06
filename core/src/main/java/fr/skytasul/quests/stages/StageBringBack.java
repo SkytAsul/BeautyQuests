@@ -19,7 +19,6 @@ import fr.skytasul.quests.api.stages.StageController;
 import fr.skytasul.quests.api.stages.StageDescriptionPlaceholdersContext;
 import fr.skytasul.quests.api.stages.creation.StageCreationContext;
 import fr.skytasul.quests.api.stages.creation.StageGuiLine;
-import fr.skytasul.quests.api.utils.Utils;
 import fr.skytasul.quests.api.utils.messaging.MessageUtils;
 import fr.skytasul.quests.api.utils.messaging.PlaceholderRegistry;
 import fr.skytasul.quests.api.utils.progress.ProgressPlaceholders;
@@ -51,6 +50,8 @@ public class StageBringBack extends StageNPC{
 		this.items = items;
 		for (ItemStack item : items) {
 			int amount = (amountsMap.containsKey(item) ? amountsMap.get(item) : 0) + item.getAmount();
+			item = item.clone();
+			item.setAmount(1);
 			amountsMap.put(item, amount);
 		}
 	}
@@ -111,21 +112,21 @@ public class StageBringBack extends StageNPC{
 					// Therefore, we initialize itemsDescription the first time we actually use it: now.
 					if (itemsDescriptions == null) {
 						itemsDescriptions =
-								Arrays.stream(items).map(item -> ProgressPlaceholders.formatObject(new HasSingleObject() {
+								amountsMap.entrySet().stream().map(item -> ProgressPlaceholders.formatObject(new HasSingleObject() {
 
 									@Override
 									public long getRemainingAmount(@NotNull Quester quester) {
-										return item.getAmount();
+										return item.getValue();
 									}
 
 									@Override
 									public @NotNull String getObjectName() {
-										return ItemUtils.getName(item, true);
+										return ItemUtils.getName(item.getKey(), true);
 									}
 
 									@Override
 									public long getObjectAmount() {
-										return item.getAmount();
+										return item.getValue();
 									}
 								}, context)).toArray(String[]::new);
 					}
@@ -231,7 +232,7 @@ public class StageBringBack extends StageNPC{
 		}
 
 		public void setItems(List<ItemStack> items) {
-			this.items = Utils.combineItems(items);
+			this.items = items;
 			getLine().refreshItemLore(5,
 					QuestOption.formatNullableValue(Lang.AmountItems.quickFormat("items_amount", this.items.size())));
 		}

@@ -191,21 +191,6 @@ public class Utils{
 			to.set(toKey, from.get(fromKey));
 	}
 
-	public static List<ItemStack> combineItems(List<ItemStack> items) {
-		ArrayList<ItemStack> newItems = new ArrayList<>(items.size());
-		items: for (ItemStack original : items) {
-			for (ItemStack newItem : newItems) {
-				if (newItem.isSimilar(original)) {
-					newItem.setAmount(newItem.getAmount() + original.getAmount());
-					continue items;
-				}
-			}
-			newItems.add(original.clone());
-		}
-		newItems.trimToSize();
-		return newItems;
-	}
-
 	public static List<ItemStack> extractItems(List<ItemStack> items) {
 		List<ItemStack> newItems = new ArrayList<>(items.size());
 		for (ItemStack original : items) {
