@@ -394,6 +394,7 @@ public class BeautyQuests extends JavaPlugin implements QuestsPlugin {
 						return entry;
 					}));
 		}));
+		metrics.addCustomChart(new SimplePie("scoreboards", () -> scoreboards == null ? "Disabled" : "Enabled"));
 		logger.debug("Started bStats metrics");
 	}
 
