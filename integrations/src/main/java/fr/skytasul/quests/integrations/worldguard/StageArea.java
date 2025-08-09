@@ -30,7 +30,6 @@ import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
-import org.bukkit.event.player.PlayerMoveEvent;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -58,24 +57,6 @@ public class StageArea extends AbstractStage implements Locatable.PreciseLocatab
 		this.region = reg;
 
 		this.exit = exit;
-	}
-
-	@EventHandler
-	public void onPlayerMove(PlayerMoveEvent e) {
-		if (BQWorldGuard.getInstance().doHandleEntry())
-			return; // on WG 7.0 or higher
-
-		if (e.getFrom().getBlockX() == e.getTo().getBlockX() && e.getFrom().getBlockY() == e.getTo().getBlockY()
-				&& e.getFrom().getBlockZ() == e.getTo().getBlockZ())
-			return;
-
-		if (hasApplicableQuester(e.getPlayer()) && matchesRequirements(e.getPlayer())) {
-			if (world.equals(e.getTo().getWorld())
-					&& BQWorldGuard.getInstance().isInRegion(region, e.getTo(), false) == !exit) {
-				for (Quester quester : controller.getApplicableQuesters(e.getPlayer()))
-					testFinition(quester, e.getPlayer());
-			}
-		}
 	}
 
 	@EventHandler
