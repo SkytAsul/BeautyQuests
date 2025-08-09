@@ -48,6 +48,8 @@ public class Scoreboard extends BukkitRunnable implements Listener {
 	private boolean hidForce = false;
 	private int changeTime = 1;
 
+	private int autoHideTime;
+
 	Scoreboard(Player player, ScoreboardManager manager, QuesterManager questerManager, QuestsManager questsManager) {
 		Bukkit.getPluginManager().registerEvents(this, BeautyQuests.getInstance());
 		this.p = player;
@@ -65,6 +67,7 @@ public class Scoreboard extends BukkitRunnable implements Listener {
 		shown = new ArrayList<>(launched); // at the beginning, all quests are shown
 
 		hid = !manager.isWorldAllowed(p.getWorld().getName());
+		autoHideTime = manager.getAutoHideTime();
 
 		super.runTaskTimerAsynchronously(BeautyQuests.getInstance(), 2L, 20L);
 	}
@@ -73,6 +76,17 @@ public class Scoreboard extends BukkitRunnable implements Listener {
 	public void run() {
 		if (!p.isOnline()) return;
 		if (hid) return;
+
+		if (autoHideTime != -1) {
+			if (autoHideTime > 0)
+				autoHideTime--;
+			else {
+				if (board != null)
+					deleteBoard();
+				return;
+			}
+		}
+
 		changeTime--;
 		if (changeTime == 0) {
 			changeTime = manager.getQuestChangeTime();
@@ -161,9 +175,7 @@ public class Scoreboard extends BukkitRunnable implements Listener {
 			return;
 		int index = shownIndex.orElse(-1) + 1;
 		shown.add(index, entry);
-		shownIndex = OptionalInt.of(index);
-		resetChangeTime();
-		refreshQuestsLines(true);
+		setShownQuest(quest, quester, true);
 	}
 
 	protected void questRemove(@NotNull Quest quest) {
@@ -266,16 +278,20 @@ public class Scoreboard extends BukkitRunnable implements Listener {
 			if (errorWhenUnknown)
 				throw new IllegalArgumentException("Quest is not running for player.");
 		} else if (!hasPinnedEntry() || entryOpt.get().isPinned()) {
-			if (!getShown().equals(entryOpt)) {
-				shownIndex = OptionalInt.of(shown.indexOf(entryOpt.get()));
-				resetChangeTime();
-			}
+			shownIndex = OptionalInt.of(shown.indexOf(entryOpt.get()));
+			resetChangeTime();
+			resetAutoHideTime();
 			refreshQuestsLines(true);
 		}
 	}
 
 	protected void resetChangeTime() {
 		changeTime = manager.getQuestChangeTime();
+	}
+
+	protected void resetAutoHideTime() {
+		if (autoHideTime != -1)
+			autoHideTime = manager.getAutoHideTime();
 	}
 
 	public void refreshQuestsLines(boolean updateBoard) {

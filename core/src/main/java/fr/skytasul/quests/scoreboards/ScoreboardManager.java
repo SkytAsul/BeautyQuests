@@ -39,6 +39,7 @@ public class ScoreboardManager implements Listener, QuestsHandler {
 	private boolean hide;
 	private boolean refreshLines;
 	private boolean hideUnknownQuestPlaceholders;
+	private int autoHide;
 
 	private List<String> worldsFilter;
 	private boolean isWorldAllowList;
@@ -78,6 +79,10 @@ public class ScoreboardManager implements Listener, QuestsHandler {
 
 	public boolean isWorldAllowed(String worldName) {
 		return isWorldAllowList() ? getWorldsFilter().contains(worldName) : !getWorldsFilter().contains(worldName);
+	}
+
+	public int getAutoHideTime() {
+		return autoHide;
 	}
 
 	public Scoreboard getPlayerScoreboard(Player p){
@@ -124,6 +129,8 @@ public class ScoreboardManager implements Listener, QuestsHandler {
 		hide = questsSection.getBoolean("hideIfEmpty", true);
 		refreshLines = questsSection.getBoolean("refreshLines", true);
 		hideUnknownQuestPlaceholders = questsSection.getBoolean("hide unknown quest placeholders");
+
+		autoHide = config.getInt("auto hide", -1);
 
 		worldsFilter = config.getStringList("worlds.filterList");
 		isWorldAllowList = config.getBoolean("worlds.isAllowList");
