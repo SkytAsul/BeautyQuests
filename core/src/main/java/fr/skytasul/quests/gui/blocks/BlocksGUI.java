@@ -23,16 +23,17 @@ public class BlocksGUI extends ListGUI<MutableCountableObject<BQBlock>> {
 		super(Lang.INVENTORY_BLOCKSLIST.toString(), DyeColor.GREEN, blocks);
 		this.end = end;
 	}
-	
+
 	@Override
 	public void finish(List<MutableCountableObject<BQBlock>> objects) {
 		end.accept(objects);
 	}
-	
+
 	@Override
 	public void createObject(Function<MutableCountableObject<BQBlock>, ItemStack> callback) {
 		new SelectBlockGUI(true, (type, amount) -> {
-			callback.apply(CountableObject.createMutable(UUID.randomUUID(), type, amount));
+			UUID uuid = UUID.nameUUIDFromBytes(type.getAsString().getBytes());
+			callback.apply(CountableObject.createMutable(uuid, type, amount));
 		}).open(player);
 	}
 

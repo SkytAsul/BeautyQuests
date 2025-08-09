@@ -68,11 +68,13 @@ public class MobsListGUI extends ListGUI<MutableCountableObject<Mob<?>>> {
 	@Override
 	public void createObject(Function<MutableCountableObject<Mob<?>>, ItemStack> callback) {
 		new MobSelectionGUI(mob -> {
-			if (mob == null)
+			if (mob == null) {
 				reopen();
-			else
-				callback.apply(CountableObject.createMutable(UUID.randomUUID(), mob, 1));
-		}).open(player);
+			} else {
+				UUID uuid = UUID.nameUUIDFromBytes(mob.serialize().toString().getBytes());
+				callback.apply(CountableObject.createMutable(uuid, mob, 1));
+			}
+		}).open(getViewer());
 	}
 
 	@Override
