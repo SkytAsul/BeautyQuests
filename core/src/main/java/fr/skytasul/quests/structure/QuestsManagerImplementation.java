@@ -67,21 +67,17 @@ public class QuestsManagerImplementation implements QuestsManager {
 	}
 
 	public int getFreeQuestID() {
-		int id = getLastID();
+		int id = lastID.incrementAndGet();
 
-		if (quests.stream().noneMatch(quest -> quest.getId() == id)) return id;
+		if (quests.stream().noneMatch(quest -> quest.getId() == id))
+			return id;
 
 		LOGGER.warning("Quest id {0} already taken, this should not happen.", id);
-		incrementLastID();
 		return getFreeQuestID();
 	}
 
 	public int getLastID() {
 		return lastID.get();
-	}
-
-	public int incrementLastID() {
-		return lastID.incrementAndGet();
 	}
 
 	public int updateAll() {
