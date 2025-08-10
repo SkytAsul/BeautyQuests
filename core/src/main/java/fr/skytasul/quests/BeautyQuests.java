@@ -3,6 +3,7 @@ package fr.skytasul.quests;
 import com.jeff_media.updatechecker.UpdateCheckSource;
 import com.jeff_media.updatechecker.UpdateChecker;
 import com.tchristofferson.configupdater.ConfigUpdater;
+import fr.skytasul.quests.api.QuestsHandler;
 import fr.skytasul.quests.api.QuestsPlugin;
 import fr.skytasul.quests.api.editors.EditorManager;
 import fr.skytasul.quests.api.events.internal.BeautyQuestsLoadedEvent;
@@ -50,10 +51,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 import java.util.logging.Level;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -612,13 +610,15 @@ public class BeautyQuests extends JavaPlugin implements QuestsPlugin {
 			}
 		}
 
-		getAPI().getQuestsHandlers().forEach(handler -> {
+		for (var iterator = getAPI().getQuestsHandlers().iterator(); iterator.hasNext();) {
+			QuestsHandler handler = iterator.next();
 			try {
 				handler.load();
 			}catch (Exception ex) {
 				logger.severe("Cannot load quest handler " + handler.getClass().getName(), ex);
+				iterator.remove();
 			}
-		});
+		}
 
 		Bukkit.getScheduler().runTaskLater(BeautyQuests.getInstance(), () -> {
 			players.loadOnlinePlayers();
