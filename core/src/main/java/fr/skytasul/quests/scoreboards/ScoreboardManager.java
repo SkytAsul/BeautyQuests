@@ -92,7 +92,7 @@ public class ScoreboardManager implements Listener, QuestsHandler {
 	public void removePlayerScoreboard(Player p){
 		Scoreboard scoreboard = scoreboards.remove(p);
 		if (scoreboard != null) {
-			scoreboard.cancel();
+			scoreboard.stop();
 			forceHiddenState.put(p.getUniqueId(), scoreboard.isForceHidden());
 		}
 	}
@@ -159,7 +159,8 @@ public class ScoreboardManager implements Listener, QuestsHandler {
 		if (scoreboards == null)
 			return;
 		HandlerList.unregisterAll(this);
-		for (Scoreboard s : scoreboards.values()) s.cancel();
+		for (Scoreboard s : scoreboards.values())
+			s.stop();
 		if (!scoreboards.isEmpty())
 			LOGGER.debug("{0} scoreboards deleted.", scoreboards.size());
 		scoreboards.clear();

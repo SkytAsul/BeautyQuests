@@ -21,14 +21,14 @@ import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import org.bukkit.event.HandlerList;
 import org.bukkit.event.Listener;
-import org.bukkit.scheduler.BukkitRunnable;
+import org.bukkit.scheduler.BukkitTask;
 import org.jetbrains.annotations.NotNull;
 import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
-public class Scoreboard extends BukkitRunnable implements Listener {
+public class Scoreboard implements Listener {
 
 	private static final Pattern QUEST_PLACEHOLDER = Pattern.compile("\\{quest_(.+)\\}");
 	private static final int maxLength = 1024;
@@ -36,6 +36,8 @@ public class Scoreboard extends BukkitRunnable implements Listener {
 	private final Player p;
 	private final ScoreboardManager manager;
 	private final QuesterManager questerManager;
+
+	private final BukkitTask task;
 
 	private FastBoard board;
 	private LinkedList<Line> lines = new LinkedList<>();
@@ -46,7 +48,7 @@ public class Scoreboard extends BukkitRunnable implements Listener {
 
 	private boolean hid = false;
 	private boolean hidForce = false;
-	private int changeTime = 1;
+	private int changeTime = 0;
 
 	private int autoHideTime;
 
@@ -69,11 +71,10 @@ public class Scoreboard extends BukkitRunnable implements Listener {
 		hid = !manager.isWorldAllowed(p.getWorld().getName());
 		autoHideTime = manager.getAutoHideTime();
 
-		super.runTaskTimerAsynchronously(BeautyQuests.getInstance(), 2L, 20L);
+		task = Bukkit.getScheduler().runTaskTimerAsynchronously(BeautyQuests.getInstance(), this::periodicRefresh, 2L, 20L);
 	}
 
-	@Override
-	public void run() {
+	private void periodicRefresh() {
 		if (!p.isOnline()) return;
 		if (hid) return;
 
@@ -87,18 +88,17 @@ public class Scoreboard extends BukkitRunnable implements Listener {
 			}
 		}
 
-		changeTime--;
-		if (changeTime == 0) {
-			changeTime = manager.getQuestChangeTime();
+		if (board == null) {
+			if (!manager.hideEmptyScoreboard() || !shown.isEmpty())
+				initScoreboard();
+			else
+				return;
+		}
 
-			if (shown.isEmpty()) {
-				shownIndex = OptionalInt.empty();
-				if (manager.hideEmptyScoreboard()) {
-					if (board != null) deleteBoard();
-					return;
-				}
-			}
-			if (board == null) initScoreboard();
+		if (changeTime > 0) {
+			changeTime--;
+		} else {
+			resetChangeTime();
 
 			if (!shown.isEmpty()) {
 				int newId;
@@ -113,7 +113,6 @@ public class Scoreboard extends BukkitRunnable implements Listener {
 				}
 			}
 		}
-		if (board == null) return;
 
 		updateBoard(false, true);
 	}
@@ -138,7 +137,8 @@ public class Scoreboard extends BukkitRunnable implements Listener {
 			shownIndex = OptionalInt.of(0);
 		} else {
 			shownIndex = OptionalInt.empty();
-			refreshQuestsLines(true); // to hide the scoreboard
+			if (manager.hideEmptyScoreboard() && board != null)
+				deleteBoard();
 		}
 	}
 
@@ -160,6 +160,7 @@ public class Scoreboard extends BukkitRunnable implements Listener {
 		if (index == shownIndex.getAsInt()) {
 			// removing the shown quest
 			shownIndex = OptionalInt.of(index % shown.size());
+			resetChangeTime();
 			refreshQuestsLines(true);
 		} else if (index < shownIndex.getAsInt()) {
 			// removing a quest before the shown quest
@@ -208,12 +209,8 @@ public class Scoreboard extends BukkitRunnable implements Listener {
 			if (entryOpt.isEmpty()) {
 				// if scoreboard has been enabled during quest edition,
 				// we add the quest to the player list
-				if (newQuest.isScoreboardEnabled() && newQuest.hasStarted(quester)) {
-					var entry = new QuestEntry(newQuest, quester);
-					launched.add(entry);
-					if (!hasPinnedEntry())
-						shown.add(entry);
-				}
+				if (newQuest.isScoreboardEnabled() && newQuest.hasStarted(quester))
+					questAdd(newQuest, quester);
 				continue;
 			}
 
@@ -224,6 +221,7 @@ public class Scoreboard extends BukkitRunnable implements Listener {
 				continue;
 			}
 
+			// quest was simply edited without touching the scoreboard settings
 			entryOpt.get().quest = newQuest;
 			if (shownIndex.orElse(-2) == shown.indexOf(entryOpt.get()))
 				refreshQuestsLines(true);
@@ -297,9 +295,8 @@ public class Scoreboard extends BukkitRunnable implements Listener {
 	public void refreshQuestsLines(boolean updateBoard) {
 		if (!manager.refreshLines()) return;
 		lines.stream().filter(line -> line.hasQuestPlaceholders).forEach(line -> line.willRefresh = true);
-		if (board == null || shown.isEmpty()) {
-			changeTime = 1;
-			run();
+		if (board == null) {
+			periodicRefresh(); // feels snappier than just waiting for next iteration
 		}else {
 			if (updateBoard) updateBoard(false, false);
 		}
@@ -360,9 +357,8 @@ public class Scoreboard extends BukkitRunnable implements Listener {
 		return true;
 	}
 
-	@Override
-	public synchronized void cancel() throws IllegalStateException {
-		super.cancel();
+	public void stop() {
+		task.cancel();
 		HandlerList.unregisterAll(this);
 		if (board != null) deleteBoard();
 	}
