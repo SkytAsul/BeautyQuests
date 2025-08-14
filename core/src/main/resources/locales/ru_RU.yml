@@ -116,8 +116,6 @@ msg:
     cancelQuest: '§6Вы отменили квест {quest}.'
     cancelQuestUnavailable: '§cЗадание {quest} не может быть отменено.'
     backupCreated: '§6Вы успешно создали резервную копию всех квестов и информации о игроках.'
-    backupPlayersFailed: '§cНе удалось создать резервную копию всей информации о игроках.'
-    backupQuestsFailed: '§cНе удалось создать резервную копию всех квестов.'
     adminModeEntered: '§aВы вошли в режим администратора.'
     adminModeLeft: '§aВы вышли из режима администратора.'
     resetPlayerPool:
@@ -217,6 +215,7 @@ msg:
       unknownBlockType: '§cНеизвестный тип блока.'
       invalidBlockType: '§cНедопустимый тип блока.'
     dialog:
+      syntaxMessage: '§cПравильный синтаксис: {command} <message>'
       syntaxRemove: '§cCorrect syntax: удалить <id>'
       player: '§aСообщение "§7{msg}§a" добавлено для игрока.'
       npc: '§aСообщение "§7{msg}§a" добавлено для NPC.'
@@ -339,6 +338,7 @@ inv:
     editMessageType: '§eРедактировать сообщение для записи'
     cancelMessage: Отменить отправку
     ignoreCase: Игнорировать регистр сообщения
+    replacePlaceholders: 'Заменяет \{PLAYER} и заполнители из PAPI'
     selectItems: '§eОтредактировать требуемые предметы'
     selectItemsMessage: '§eРедактировать запрашивающее сообщение'
     selectItemsComparisons: '§eВыбор сравнения товаров (ADVANCED) (РАСШИРЕННЫЙ)'
@@ -643,6 +643,9 @@ inv:
     fadeIn: '§aПродолжительность постепенного появления'
     stay: '§bПродолжительность пребывания'
     fadeOut: '§aПродолжительность затухания'
+  particleList:
+    name: Список частиц
+    colored: Цветная частица
   damageCause:
     name: Причина повреждения
   damageCausesList:
@@ -650,6 +653,12 @@ inv:
   visibility:
     name: Видимость квеста
     notStarted: 'Вкладка меню "Не запущено"'
+    inProgress: 'Вкладка меню "В процессе"'
+    finished: 'Вкладка меню "Завершено"'
+  equipmentSlots:
+    name: Ячейки снаряжения
+  questObjects:
+    setCustomDescription: 'Установить уникальное описание'
 scoreboard:
   name: '§6§lЗАДАНИЯ'
   noLaunched: '§cНет заданий в процессе выполнения.'
@@ -709,12 +718,15 @@ misc:
     chat: Пиши в чат
     interact: Взаимодействовать с блоком
     Fish: Ловить рыбу
+    Melt: Расплавить предметы
+    Enchant: Зачаровать предметы
     Craft: Создать предмет
     Bucket: Наполнить ведро
     location: Найти место
     playTime: Время игры
     breedAnimals: Разводите животных
     tameAnimals: Приручить животных
+    die: Умереть
     dealDamage: Наносит урон
     eatDrink: Есть или пить
   comparison:
@@ -739,6 +751,7 @@ misc:
     quest: '§aТребуется квест'
     mcMMOSkillLevel: '§dТребуемый уровень mcMMOSkillLevel'
     money: '§dТребуются деньги'
+    equipment: '§eНеобходимо снаряжение'
   bucket:
     water: Ведро воды
     lava: Ведро лавы
@@ -748,9 +761,16 @@ misc:
     left: ЛКМ
     shift-right: Shift+щелчок правой
     shift-left: Shift+щелчок левой
+    middle: Колесико мыши
   amounts:
     comparisons: '{comparisons_amount} сравнение(ы)'
+    permissions: '{permissions_amount} разрешение(ий)'
+    mobs: '{mobs_amount} моб(а)'
+    xp: '{xp_amount} очков опыта'
   ticks: '{ticks} тиков'
+  location: |-
+    Расположение: {x} {y} {z}
+    Мир: {world}
   questItemLore: '§e§oКвестовый предмет'
   hologramText: '§8§lКвестовый NPC'
   poolHologramText: '§eДоступно новое задание!'
@@ -760,6 +780,7 @@ misc:
   disabled: Выключено
   unknown: неизвестно
   notSet: '§cне установлено'
+  removeRaw: Убрать
   reset: Перезагрузка
   or: или
   amount: '§eКоличество: {amount}'

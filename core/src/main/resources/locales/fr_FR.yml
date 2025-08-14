@@ -28,6 +28,7 @@ msg:
     drop: '§cVous ne pouvez pas jeter un objet de quête !'
     craft: '§cVous ne pouvez pas utiliser un objet de quête pour crafter !'
     eat: '§cVous ne pouvez pas manger un objet de quête !'
+    place: '§cVous ne pouvez pas placer d''objet de quête !'
   stageMobs:
     listMobs: '§aIl faut que vous tuiez {mobs}.'
   writeNPCText: '§aÉcrivez le dialogue qui sera dit au joueur par le NPC : (Tapez "help" pour recevoir de l''aide.)'
@@ -52,6 +53,7 @@ msg:
   writeConfirmMessage: '§aÉcrivez le message de confirmation affiché lorsqu''un joueur est sur le point de démarrer la quête : (Tapez "null" si vous voulez le message par défaut).'
   writeQuestDescription: '§aÉcrivez la description de la quête, affichée dans l''interface des quêtes du joueur.'
   writeQuestMaterial: '§aIndiquez le type d''item pour la quête.'
+  writeQuestCustomOrder: 'Écrivez l''ordre personnalisé de la quête, ou "null" pour le réinitialiser à l''ID de la quête.'
   requirements:
     quest: '§cVous devez avoir terminé la quête §e{quest_name}§c !'
     level: '§cVotre niveau doit être {long_level}!'
@@ -109,7 +111,7 @@ msg:
     leaveAll: '§aVous avez forcé la fin de {success} quête(s). §c{errors} erreur(s).'
     resetPlayer:
       player: '§6Les données de vos {quest_amount} quêtes ont été supprimées par {deleter_name}.'
-      remover: '§6Les données de {quest_amount} quête(s) (et {quest_pool} pools) pour le joueur {player} ont bien été supprimées.'
+      remover: '§6Les données de {quest_amount} quête(s) (et {quest_pool} pools) pour le joueur {player_name} ont bien été supprimées.'
     resetPlayerQuest:
       player: '§6Les données de la quête {quest} ont été supprimées par {deleter_name}.'
       remover: '§6Les données de la quête {quest} du joueur {player} ont bien été supprimées.'
@@ -119,13 +121,13 @@ msg:
     cancelQuest: '§6Vous avez annulé la quête {quest}.'
     cancelQuestUnavailable: '§cLa quête {quest} ne peut être annulée.'
     backupCreated: '§6Vous avez créé une sauvegarde des quêtes et des données joueurs avec succès.'
-    backupPlayersFailed: '§cLa création d''une sauvegarde des données joueur a échoué.'
-    backupQuestsFailed: '§cLa création d''une sauvegarde des quêtes a échoué.'
+    backupFailed: La création de la sauvegarde a échoué.
     adminModeEntered: '§aVous entrez dans le mode Administrateur.'
     adminModeLeft: '§aVous sortez du mode Administrateur.'
     resetPlayerPool:
       timer: '§aVous avez réinitialisé le minuteur de {player} pour le groupe {pool}.'
       full: '§aVous avez réinitialisé les données de {player} pour le groupe {pool}.'
+    resetPool: Les données du groupe de quêtes ont été supprimées pour {player_amount} joueurs.
     startPlayerPool:
       error: 'Impossible de démarrer le groupe {pool} pour {player}.'
       success: 'Groupe {pool} démarré pour {player}. Résultat: {result}'
@@ -302,6 +304,8 @@ inv:
   cancel: '§c§lAnnuler'
   search: '§e§lRechercher'
   addObject: '§aAjouter un objet'
+  pickAnother: Choisir
+  edit: Modifier
   confirm:
     name: Êtes-vous sûr ?
     'yes': '§aConfirmer'
@@ -357,6 +361,7 @@ inv:
     leftClick: Clic gauche nécessaire
     editFishes: '§eModifier les poissons nécessaires'
     editItemsToMelt: '§eModifier les items à cuire'
+    editItemsToMeltLore: Les objets que vous mettez ici sont ceux que les joueurs doivent SORTIR du fourneau, pas ceux qu'ils doivent RENTRER.
     editItemsToEnchant: '§eModifier les items à enchanter'
     editItem: '§eEditer l''objet à fabriquer'
     editBucketType: '§eModifier le type de seau à remplir'
@@ -474,6 +479,12 @@ inv:
     fireworkLoreDrop: Déposez votre feu d'artifice personnalisé ici
     visibility: '§bVisibilité de la quête'
     visibilityLore: Choisir dans quels onglets du menu seront affichés la quête et si la quête est visible sur les cartes dynamiques.
+    questerStrategy: Type de quêteur
+    customOrder: '§eOrdre de quête personnalisé'
+    customOrderLore: |-
+      Nombre utilisé pour ordonner les quêtes dans le menu.
+
+      Si non défini, l'ID de la quête sera utilisé à la place.
     keepDatas: Conserver les données des joueurs
     keepDatasLore: |-
       Forcer le plugin à préserver les données des joueurs, même si les étapes ont été modifiées. §c§lAVERTISSEMENT §c- activer cette option peut endommager les données de vos joueurs.
@@ -549,6 +560,8 @@ inv:
     inProgress: Quêtes en cours
     loreDialogsHistoryClick: '§7Voir les dialogues'
     loreCancelClick: '§cAnnuler la quête'
+    loreScoreboardPinClick: '§7Épingler au scoreboard'
+    loreScoreboardUnpinClick: '§7§lDésépingler du scoreboard'
     loreStart: '§a§oCliquez pour commencer la quête.'
     loreStartUnavailable: '§c§oVous ne remplissez pas les conditions pour commencer la quête.'
     timeToWaitRedo: '§7§oVous pouvez refaire cette quête dans {time_left}...'
@@ -751,6 +764,9 @@ misc:
     hours: '{hours_amount} heures'
     minutes: '{minutes_amount} minutes'
     lessThanAMinute: 'moins d''une minute'
+  playerQuester:
+    name: Joueur
+    description: Données de quêtes par joueur
   stageType:
     region: Trouver une region
     npc: Trouver un NPC

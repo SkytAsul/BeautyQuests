@@ -119,8 +119,6 @@ msg:
     cancelQuest: '§6你放弃了任务 {quest}.'
     cancelQuestUnavailable: '§c无法取消任务 {quest} .'
     backupCreated: '§6你成功地创建了任务和玩家数据的备份文件.'
-    backupPlayersFailed: '§c创建玩家数据备份失败.'
-    backupQuestsFailed: '§c创建任务数据备份失败.'
     adminModeEntered: '§a你已进入管理员模式.'
     adminModeLeft: '§a你退出了管理员模式.'
     resetPlayerPool:
