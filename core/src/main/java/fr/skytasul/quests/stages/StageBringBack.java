@@ -49,9 +49,10 @@ public class StageBringBack extends StageNPC{
 
 		this.items = items;
 		for (ItemStack item : items) {
-			int amount = (amountsMap.containsKey(item) ? amountsMap.get(item) : 0) + item.getAmount();
+			int amount = item.getAmount();
 			item = item.clone();
 			item.setAmount(1);
+			amount += amountsMap.getOrDefault(item, 0);
 			amountsMap.put(item, amount);
 		}
 	}
