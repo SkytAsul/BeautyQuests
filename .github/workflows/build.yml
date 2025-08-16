@@ -32,6 +32,11 @@ jobs:
       - name: Install private dependencies
         run: "./integrations/libs.sh mvn ./jars"
 
+      - name: Install missing dependencies
+        run: |
+          curl -s https://skytasul.fr/SpigotUpdateChecker-3.0.3-offline.jar -o ./jars/SpigotUpdateChecker-3.0.3-offline.jar
+          mvn org.apache.maven.plugins:maven-install-plugin:2.5.2:install-file -Dfile=./jars/SpigotUpdateChecker-3.0.3-offline.jar
+
       - name: Build and package with Maven
         run: |
           profile=$([ "${{ github.ref_name }}" == "${{ github.event.repository.default_branch }}" ] && echo "release" || echo "devbuild")

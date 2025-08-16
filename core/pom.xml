@@ -66,10 +66,10 @@
 	</build>
 
 	<repositories>
-		<repository>
+		<!-- <repository>
 			<id>jeff-media-public</id>
 			<url>https://repo.jeff-media.com/public/</url>
-		</repository>
+		</repository> -->
 		<repository> <!-- For PlayerBlockTracker -->
 			<id>jitpack.io</id>
 			<url>https://jitpack.io</url>
@@ -176,7 +176,7 @@
 		<dependency>
 			<groupId>com.jeff_media</groupId>
 			<artifactId>SpigotUpdateChecker</artifactId>
-			<version>3.0.3</version>
+			<version>3.0.3-offline</version>
 			<scope>compile</scope>
 		</dependency>
 	</dependencies>
