@@ -96,7 +96,9 @@ public abstract class PagedGUI<T> extends AbstractGui {
 		}
 	}
 
-	protected Player getViewer() {
+	protected @NotNull Player getViewer() {
+		if (player == null)
+			throw new IllegalStateException("Inventory does not have a viewer");
 		return player;
 	}
 

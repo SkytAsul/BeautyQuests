@@ -102,18 +102,20 @@ public class DialogHistoryGUI extends PagedGUI<WrappedDialogable> {
 		static final int MAX_LINES = 9;
 
 		final Dialogable dialogable;
-		final List<Page> pages;
-
 		int page = 0;
+
+		private List<Page> pages;
 
 		WrappedDialogable(Dialogable dialogable) {
 			this.dialogable = dialogable;
+		}
 
+		private void fetchPages() {
 			List<Message> messages = dialogable.getDialog().getMessages();
 			List<List<String>> lines = new ArrayList<>(messages.size());
 			for (int i = 0; i < messages.size(); i++) {
 				Message msg = messages.get(i);
-				String formatted = msg.formatMessage(player, dialogable.getNPC(),
+				String formatted = msg.formatMessage(getViewer(), dialogable.getNPC(),
 						dialogable.getDialog().getNPCName(dialogable.getNPC()), i, messages.size());
 				lines.add(ChatColorUtils.wordWrap(formatted, 40, 100));
 			}
@@ -170,6 +172,8 @@ public class DialogHistoryGUI extends PagedGUI<WrappedDialogable> {
 		}
 
 		public Page getCurrentPage() {
+			if (pages == null)
+				fetchPages();
 			return pages.get(page);
 		}
 
