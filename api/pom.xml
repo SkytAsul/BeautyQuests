@@ -62,6 +62,10 @@
 	</build>
 
 	<repositories>
+		<repository> <!-- Before JitPack to fix https://github.com/CryptoMorin/XSeries/issues/362 -->
+			<id>central</id>
+			<url>https://repo.maven.apache.org/maven2</url>
+		</repository>
 		<repository>
 			<id>jitpack.io</id>
 			<url>https://jitpack.io</url>
