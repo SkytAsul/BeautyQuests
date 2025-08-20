@@ -50,8 +50,8 @@
 		<mockbukkit.version.minecraft>1.21</mockbukkit.version.minecraft>
 		<mockbukkit.version>4.68.0</mockbukkit.version>
 
-		<lamp.version>4.0.0-rc.9</lamp.version>
-		<xseries.version>13.2.0</xseries.version>
+		<lamp.version>4.0.0-rc.12</lamp.version>
+		<xseries.version>13.3.3</xseries.version>
 		<hikaricp.version>6.0.0</hikaricp.version>
 		<fastboard.version>2.1.5</fastboard.version>
 		<adventure.version>4.23.0</adventure.version>
