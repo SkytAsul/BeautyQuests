@@ -292,7 +292,7 @@ public class CommandsPlayerManagement implements OrphanCommand {
 	@CommandPermission ("beautyquests.command.start")
 	public void start(BukkitCommandActor actor, ExecutableCommand<BukkitCommandActor> command,
 			QuesterSelector questers, @Optional Quest quest,
-			@CommandPermission("beautyquests.command.start.other") @Switch boolean overrideRequirements) {
+			@CommandPermission("beautyquests.command.start.other") @Switch boolean force) {
 		if (actor.isPlayer() && !startOtherPermission.isExecutableBy(actor)) {
 			if (questers.isEmpty() || questers.size() > 1 || (questers.get(0) != PlayerManager.getPlayerAccount(actor.asPlayer())))
 				throw new NoPermissionException(command);
@@ -302,16 +302,16 @@ public class CommandsPlayerManagement implements OrphanCommand {
 		for (var quester : questers) {
 			if (quest == null) {
 				new QuestsListGUI(obj -> {
-					start(actor.sender(), quester, obj, overrideRequirements);
+					start(actor.sender(), quester, obj, force);
 				}, quester, false, true, false).open(actor.requirePlayer());
 			}else {
-				start(actor.sender(), quester, quest, overrideRequirements);
+				start(actor.sender(), quester, quest, force);
 			}
 		}
 	}
 
-	private void start(CommandSender sender, Quester target, Quest quest, boolean overrideRequirements) {
-		if (!overrideRequirements) {
+	private void start(CommandSender sender, Quester target, Quest quest, boolean force) {
+		if (!force) {
 			if (!(target instanceof PlayerQuester playerQuester) || !playerQuester.isActive()) {
 				DefaultErrors.sendGeneric(BeautyQuests.getInstance().getAudiences().sender(sender),
 						"Cannot test requirements for non-player quester");
