@@ -188,7 +188,7 @@ public class SqlHandler {
 								ADD COLUMN quester_identifier VARCHAR(255) NOT NULL
 							""".formatted(POOLS_DATAS_TABLE));
 					statement.execute("UPDATE %s SET quester_identifier = '_migration', quester_provider = '%s'"
-							.formatted(QUESTS_DATAS_TABLE, PlayerManagerImplementation.KEY.asString()));
+							.formatted(POOLS_DATAS_TABLE, PlayerManagerImplementation.KEY.asString()));
 					statement.execute("""
 							UPDATE %1$s AS pools
 								INNER JOIN %2$s AS questers ON pools.account_id = questers.id
