@@ -96,8 +96,6 @@ public class SqlHandler {
 					""".formatted(POOLS_DATAS_TABLE));
 
 			var questersHasId = new AtomicBoolean(false);
-			var questsHasId = new AtomicBoolean(false);
-			var poolsHasId = new AtomicBoolean(false);
 
 			upgradeTable(connection, QUESTERS_TABLE, columns -> {
 				for (SavableData<?> data : questerManager.getSavableData()) {
@@ -174,9 +172,6 @@ public class SqlHandler {
 							""".formatted(QUESTS_DATAS_TABLE));
 					LOGGER.info("Updated database by changing layout of the quests data table.");
 				}
-
-				if (columns.contains("account_id"))
-					questsHasId.set(true);
 			});
 
 			upgradeTable(connection, POOLS_DATAS_TABLE, columns -> {
@@ -213,18 +208,11 @@ public class SqlHandler {
 					LOGGER
 							.info("Updated database by changing layout of the pools data table.");
 				}
-
-				if (columns.contains("account_id"))
-					poolsHasId.set(true);
 			});
 
 			if (questersHasId.get()) {
-				if (questsHasId.get() || poolsHasId.get()) {
-					LOGGER.warning(
-							"Cannot remove unnecessary column 'id' in questers DB table. This is a bug and should be reported.");
-				} else {
-					statement.execute("ALTER TABLE %s DROP COLUMN id".formatted(QUESTERS_TABLE));
-				}
+				statement.execute("ALTER TABLE %s DROP COLUMN id".formatted(QUESTERS_TABLE));
+				LOGGER.info("Dropped the legacy id column of the questers table.");
 			}
 		}
 	}
