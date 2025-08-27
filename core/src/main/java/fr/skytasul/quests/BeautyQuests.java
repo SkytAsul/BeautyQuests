@@ -51,7 +51,10 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.text.SimpleDateFormat;
-import java.util.*;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Optional;
 import java.util.logging.Level;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -170,36 +173,19 @@ public class BeautyQuests extends JavaPlugin implements QuestsPlugin {
 			}
 
 			// Launch loading task
-			String pluginVersion = getDescription().getVersion();
-			new BukkitRunnable() {
-				@Override
-				public void run() {
-					try {
-						long lastMillis = System.currentTimeMillis();
-						loadAllDatas();
-						getLogger().info(quests.getQuestsAmount() + " quests loaded ("
-								+ (((double) System.currentTimeMillis() - lastMillis) / 1000D) + "s)!");
-
-						getServer().getPluginManager().registerEvents(new QuestsListener(), BeautyQuests.this);
-
-						if (!unitTesting)
-							launchSaveCycle();
-
-						if (!lastVersion.equals(pluginVersion)) { // maybe change in data structure : update of all quest files
-							logger.debug("Migrating from " + lastVersion + " to " + pluginVersion);
-							int updated = quests.updateAll();
-							if (updated > 0) logger.info("Updated " + updated + " quests during migration.");
-							pools.updateAll();
-							saveAllConfig(false);
-						}
-					}catch (Throwable e) {
-						logger.severe("An error occurred while loading plugin datas.", e);
-					}
+			Bukkit.getScheduler().runTask(this, () -> {
+				// At this point, we know how much time we need to wait before loading the quests
+				long timeToWait = npcManager.getTimeToWaitForNPCs();
+				if (timeToWait > 0) {
+					Bukkit.getScheduler().runTaskLater(this, this::finishLoad, timeToWait);
+				} else {
+					finishLoad();
 				}
-			}.runTaskLater(this, npcManager.getTimeToWaitForNPCs());
+			});
 
 			// Start of non-essential systems
 			if (!unitTesting) {
+				String pluginVersion = getDescription().getVersion();
 				launchMetrics(pluginVersion);
 				try {
 					launchUpdateChecker(pluginVersion);
@@ -577,6 +563,32 @@ public class BeautyQuests extends JavaPlugin implements QuestsPlugin {
 				}
 			}
 		}else lastVersion = getDescription().getVersion();
+	}
+
+	private void finishLoad() {
+		try {
+			long lastMillis = System.currentTimeMillis();
+			loadAllDatas();
+			getLogger().info(quests.getQuestsAmount() + " quests loaded ("
+					+ (((double) System.currentTimeMillis() - lastMillis) / 1000D) + "s)!");
+
+			getServer().getPluginManager().registerEvents(new QuestsListener(), BeautyQuests.this);
+
+			if (!unitTesting)
+				launchSaveCycle();
+
+			String pluginVersion = getDescription().getVersion();
+			if (!lastVersion.equals(pluginVersion)) { // maybe change in data structure : update of all quest files
+				logger.debug("Migrating from " + lastVersion + " to " + pluginVersion);
+				int updated = quests.updateAll();
+				if (updated > 0)
+					logger.info("Updated " + updated + " quests during migration.");
+				pools.updateAll();
+				saveAllConfig(false);
+			}
+		} catch (Throwable e) {
+			logger.severe("An error occurred while loading plugin datas.", e);
+		}
 	}
 
 	private void loadAllDatas() throws Throwable {

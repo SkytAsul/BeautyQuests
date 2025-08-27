@@ -1,10 +1,12 @@
 package fr.skytasul.quests.api.utils;
 
+import fr.skytasul.quests.api.QuestsPlugin;
 import fr.skytasul.quests.api.utils.logger.LoggerExpanded;
 import org.apache.commons.lang.Validate;
 import org.bukkit.Bukkit;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
+import org.bukkit.event.server.PluginDisableEvent;
 import org.bukkit.event.server.PluginEnableEvent;
 import org.bukkit.plugin.Plugin;
 import java.util.ArrayList;
@@ -66,6 +68,22 @@ public class IntegrationManager implements Listener {
 		dependencies.stream().filter(x -> !x.enabled && x.isPlugin(e.getPlugin())).findAny().ifPresent(dependency -> {
 			if (dependency.testCompatibility(true) && dependenciesInitialized)
 				dependency.initialize();
+		});
+	}
+
+	@EventHandler
+	public void onPluginDisable(PluginDisableEvent event) {
+		if (!lockDependencies)
+			return;
+
+		dependencies.stream().filter(x -> x.enabled && x.foundPlugin.equals(event.getPlugin())).findAny()
+				.ifPresent(dependency -> {
+			if (dependency.isEnabled()) {
+				LOGGER.info(
+						"A plugin BeautyQuests previously hooked into ({0}) just disabled. Shutting down BeautyQuests...",
+						event.getPlugin().getName());
+				Bukkit.getPluginManager().disablePlugin(QuestsPlugin.getPlugin());
+			}
 		});
 	}
 
