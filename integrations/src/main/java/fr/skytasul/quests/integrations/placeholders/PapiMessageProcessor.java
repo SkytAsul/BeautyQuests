@@ -11,7 +11,7 @@ public class PapiMessageProcessor implements MessageProcessor {
 
 	@Override
 	public @NotNull String processString(@NotNull String string, @NotNull PlaceholdersContext context) {
-		if (context.replacePluginPlaceholders()) {
+		if (context.replacePluginPlaceholders() && context.getAudience() != null) {
 			var playerOpt = context.getAudience().get(Identity.UUID).map(Bukkit::getOfflinePlayer);
 			if (playerOpt.isPresent() && playerOpt.get().hasPlayedBefore())
 				return PlaceholderAPI.setPlaceholders(playerOpt.get(), string);
