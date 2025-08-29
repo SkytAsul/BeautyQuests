@@ -23,7 +23,7 @@ public class PlayerQuesterStrategy extends QuestQuesterStrategy {
 
 	@Override
 	public @NotNull Optional<? extends Quester> getPlayerQuester(@NotNull Player player) {
-		return Optional.of(playerManager.getQuester(player));
+		return Optional.ofNullable(playerManager.getQuester(player));
 	}
 
 	@Override
