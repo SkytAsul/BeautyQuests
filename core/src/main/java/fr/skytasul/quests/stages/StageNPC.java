@@ -171,7 +171,7 @@ public class StageNPC extends AbstractStage implements Locatable.PreciseLocatabl
 
 	@Override
 	public Located getLocated() {
-		return npc;
+		return npc.getNpc().getLocation() == null ? null : npc;
 	}
 
 	@Override

@@ -103,7 +103,7 @@ public class BqNpcImplementation implements Located.LocatedEntity, BqNpc {
 
 	@Override
 	public @NotNull Location getLocation() {
-		return getNpc().getLocation();
+		return Objects.requireNonNull(getNpc().getLocation());
 	}
 
 	@Override

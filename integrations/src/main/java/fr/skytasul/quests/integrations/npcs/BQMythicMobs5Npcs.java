@@ -111,7 +111,7 @@ public class BQMythicMobs5Npcs implements BqInternalNpcFactory, Listener {
 		}
 
 		@Override
-		public @NotNull Location getLocation() {
+		public @Nullable Location getLocation() {
 			return getOneActiveMob().map(mob -> BukkitAdapter.adapt(mob.getLocation())).orElse(null);
 		}
 
