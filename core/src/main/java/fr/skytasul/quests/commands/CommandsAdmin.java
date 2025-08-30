@@ -27,7 +27,10 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.FireworkMeta;
 import org.bukkit.inventory.meta.ItemMeta;
-import revxrsal.commands.annotation.*;
+import revxrsal.commands.annotation.Optional;
+import revxrsal.commands.annotation.SecretCommand;
+import revxrsal.commands.annotation.Subcommand;
+import revxrsal.commands.annotation.Switch;
 import revxrsal.commands.bukkit.actor.BukkitCommandActor;
 import revxrsal.commands.bukkit.annotation.CommandPermission;
 import revxrsal.commands.exception.CommandErrorException;
@@ -47,12 +50,12 @@ public class CommandsAdmin implements OrphanCommand {
 	@Subcommand ("create")
 	@CommandPermission (value = "beautyquests.command.create")
 	@OutsideEditor
-	public void create(Player player, @Optional @Flag Integer id) {
+	public void create(Player player, @Optional Integer id) {
 		QuestCreationSession session = new QuestCreationSession(player);
 		if (id != null) {
 			if (id.intValue() < 0) throw new CommandErrorException(Lang.NUMBER_NEGATIVE.toString());
 			if (QuestsAPI.getAPI().getQuestsManager().getQuest(id) != null)
-				throw new CommandErrorException("Invalid quest ID: another quest exists with ID {0}", id);
+				throw new CommandErrorException("Invalid quest ID: another quest exists with ID " + id);
 
 			session.setCustomID(id);
 		}
