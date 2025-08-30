@@ -160,38 +160,41 @@ public abstract class AbstractCountableStage<T> extends AbstractStage implements
 	 * @param p player
 	 * @param object object of the event
 	 * @param amount amount completed
-	 * @return <code>true</code> if there is no need to call this method again in the same game tick.
+	 * @return <code>true</code> if the stage has been completed for all questers, thus making any
+	 *         subsequent call to this method useless in the same game tick.
 	 */
 	public boolean event(@NotNull Player p, @UnknownNullability Object object, int amount) {
 		if (amount < 0) throw new IllegalArgumentException("Event amount must be positive (" + amount + ")");
 		if (!matchesRequirements(p) || !hasApplicableQuester(p))
 			return true;
 
-		for (Quester quester : controller.getApplicableQuesters(p)) {
-			for (CountableObject<T> countableObject : objects) {
-				if (objectApplies(countableObject.getObject(), object)) {
-					Map<UUID, Integer> playerAmounts = getRawRemainingAmounts(quester, true);
-					if (playerAmounts.containsKey(countableObject.getUUID())) {
-						int playerAmount = playerAmounts.remove(countableObject.getUUID());
-						if (playerAmount <= amount) {
-							// playerAmount - amount will be negative, so this object must be removed.
-							// we do nothing as the entry has already been deleted
-						} else
-							playerAmounts.put(countableObject.getUUID(), playerAmount - amount);
-					} else
-						continue;
+		var questers = controller.getApplicableQuesters(p);
+		for (CountableObject<T> countableObject : objects) {
+			if (!objectApplies(countableObject.getObject(), object))
+				continue;
 
-					if (playerAmounts.isEmpty()) {
-						finishStage(quester);
-						return true;
-					} else {
-						updateRemaining(quester, playerAmounts);
-						return false;
-					}
+			for (var iterator = questers.iterator(); iterator.hasNext();) {
+				Quester quester = iterator.next();
+				Map<UUID, Integer> playerAmounts = getRawRemainingAmounts(quester, true);
+				if (playerAmounts.containsKey(countableObject.getUUID())) {
+					int playerAmount = playerAmounts.remove(countableObject.getUUID());
+					if (playerAmount <= amount) {
+						// playerAmount - amount will be negative, so this object must be removed.
+						// we do nothing as the entry has already been deleted
+					} else
+						playerAmounts.put(countableObject.getUUID(), playerAmount - amount);
+				} else
+					continue;
+
+				if (playerAmounts.isEmpty()) {
+					finishStage(quester);
+					iterator.remove();
+				} else {
+					updateRemaining(quester, playerAmounts);
 				}
 			}
 		}
-		return false;
+		return questers.isEmpty();
 	}
 
 	protected boolean objectApplies(@NotNull T object, @UnknownNullability Object other) {
