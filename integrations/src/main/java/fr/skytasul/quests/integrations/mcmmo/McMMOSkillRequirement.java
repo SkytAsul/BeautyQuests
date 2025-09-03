@@ -18,18 +18,20 @@ public class McMMOSkillRequirement extends TargetNumberRequirement {
 	public String skillName;
 
 	public McMMOSkillRequirement(){
-		this(null, null, 0, ComparisonMethod.GREATER_OR_EQUAL);
+		this(null, null, 0, ComparisonMethod.GREATER_OR_EQUAL, null);
 	}
-	
-	public McMMOSkillRequirement(String customDescription, String customReason, double target, ComparisonMethod comparison) {
+
+	public McMMOSkillRequirement(String customDescription, String customReason, double target, ComparisonMethod comparison,
+			String skillName) {
 		super(customDescription, customReason, target, comparison);
+		this.skillName = skillName;
 	}
 
 	@Override
 	public double getPlayerTarget(Player p) {
 		return ExperienceAPI.getLevel(p, skillName);
 	}
-	
+
 	@Override
 	protected String getPlaceholderName() {
 		return "level";
@@ -45,28 +47,28 @@ public class McMMOSkillRequirement extends TargetNumberRequirement {
 	protected String getDefaultReason(Player player) {
 		return Lang.REQUIREMENT_SKILL.format(this);
 	}
-	
+
 	@Override
 	public String getDefaultDescription(Player p) {
 		return Lang.RDSkillLevel.format(this);
 	}
-	
+
 	@Override
 	public Class<? extends Number> numberClass() {
 		return Integer.class;
 	}
-	
+
 	@Override
 	public void sendHelpString(Player p) {
 		Lang.CHOOSE_XP_REQUIRED.send(p);
 	}
-	
+
 	@Override
 	protected void addLore(LoreBuilder loreBuilder) {
 		super.addLore(loreBuilder);
 		loreBuilder.addDescription("§8Skill name: §7" + skillName);
 	}
-	
+
 	@Override
 	public void itemClick(QuestObjectClickEvent event) {
 		Lang.CHOOSE_SKILL_REQUIRED.send(event.getPlayer());
@@ -75,13 +77,13 @@ public class McMMOSkillRequirement extends TargetNumberRequirement {
 			super.itemClick(event);
 		}).useStrippedMessage().start();
 	}
-	
+
 	@Override
 	public void save(ConfigurationSection section) {
 		super.save(section);
 		section.set("skillName", skillName);
 	}
-	
+
 	@Override
 	public void load(ConfigurationSection section) {
 		super.load(section);
@@ -90,7 +92,7 @@ public class McMMOSkillRequirement extends TargetNumberRequirement {
 
 	@Override
 	public AbstractRequirement clone() {
-		return new McMMOSkillRequirement(getCustomDescription(), getCustomReason(), target, comparison);
+		return new McMMOSkillRequirement(getCustomDescription(), getCustomReason(), target, comparison, skillName);
 	}
-	
+
 }
