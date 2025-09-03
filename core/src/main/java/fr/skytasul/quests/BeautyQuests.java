@@ -598,7 +598,8 @@ public class BeautyQuests extends JavaPlugin implements QuestsPlugin {
 
 		if (scoreboards == null && config.getQuestsConfig().scoreboards()) {
 			File scFile = new File(getDataFolder(), "scoreboard.yml");
-			saveResource("scoreboard.yml", false);
+			if (!scFile.exists())
+				saveResource("scoreboard.yml", false);
 			ConfigUpdater.update(this, "scoreboard.yml", scFile);
 			scoreboards = new ScoreboardManager(this, scFile);
 			getAPI().registerQuestsHandler(scoreboards);

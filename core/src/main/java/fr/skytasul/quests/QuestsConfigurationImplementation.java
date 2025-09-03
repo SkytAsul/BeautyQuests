@@ -161,7 +161,7 @@ public class QuestsConfigurationImplementation implements QuestsConfiguration {
 				QuestsPlugin.getPlugin().getLoggerExpanded().warning("Loading of " + name + " particles failed: Invalid particle, color or shape.", ex);
 			}
 			if (particle == null) particle = defaultParticle;
-			QuestsPlugin.getPlugin().getLoggerExpanded().info("Loaded " + name + " particles: " + particle.toString());
+			QuestsPlugin.getPlugin().getLoggerExpanded().debug("Loaded " + name + " particles: " + particle.toString());
 		}
 		return particle;
 	}
