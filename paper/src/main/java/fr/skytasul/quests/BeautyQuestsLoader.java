@@ -48,7 +48,20 @@ public class BeautyQuestsLoader implements PluginLoader {
 		classpathBuilder.getContext().getLogger().info("Loading {} libraries using Paper plugin loader...",
 				librariesList.size());
 		for (String library : librariesList) {
-			resolver.addDependency(new Dependency(new DefaultArtifact(library), null));
+			var dependency = new Dependency(new DefaultArtifact(library), null);
+
+			// XXX: skipping Adventure does not seem to bring anything and might shoot us in the knee instead
+			// if (library.startsWith("net.kyori:adventure-api:")) {
+			// 	classpathBuilder.getContext().getLogger().debug("Skipping adventure on Paper");
+			// 	continue;
+			// }
+            //
+			// if (library.startsWith("net.kyori:adventure-platform-bukkit:")) {
+			// 	classpathBuilder.getContext().getLogger().debug("Excluding adventure from adventure-platform-bukkit");
+			// 	dependency = dependency.setExclusions(List.of(new Exclusion("net.kyori", "adventure-api", null, "jar")));
+			// }
+
+			resolver.addDependency(dependency);
 		}
 
 		classpathBuilder.addLibrary(resolver);

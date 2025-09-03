@@ -6,6 +6,40 @@ website: https://www.spigotmc.org/resources/beautyquests.39255/
 api-version: 1.17
 main: fr.skytasul.quests.BeautyQuests
 
+softdepend:
+- WorldGuard
+- MythicMobs
+- Vault
+- PlaceholderAPI
+- Fabled
+- HolographicDisplays
+- Jobs
+- Factions
+- AccountsHook
+- dynmap
+- EpicBosses
+- GPS
+- mcMMO
+- McCombatLevel
+- CMI
+- TokenEnchant
+- Boss
+- UltimateTimber
+- ServersNPC
+- Citizens
+- FancyNpcs
+- ZNPCsPlus
+- BlueMap
+- Sentinel
+- AdvancedSpawners
+- DecentHolograms
+- PlayerBlockTracker
+- LevelledMobs
+- WildStacker
+- ItemsAdder
+- StackMob
+- Tooltips
+
 # The default maven central repository of Paper does not contain some of the libraries below 
 paper-plugin-loader: fr.skytasul.quests.BeautyQuestsLoader
 paper-skip-libraries: true
