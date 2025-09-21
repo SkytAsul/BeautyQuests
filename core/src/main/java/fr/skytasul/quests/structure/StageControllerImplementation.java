@@ -238,13 +238,8 @@ public class StageControllerImplementation<T extends AbstractStage> implements S
 	}
 
 	@Override
-	public @NotNull String getFlowId() {
-		String flow = getBranch().getId() + ":";
-		if (branch.isEndingStage(this))
-			flow += "E" + branch.getEndingStageId(this);
-		else
-			flow += branch.getRegularStageId(this);
-		return flow;
+	public @NotNull StageIndex getIndex() {
+		return branch.getStageIndex(this);
 	}
 
 	private int getStorageId() {
@@ -255,7 +250,7 @@ public class StageControllerImplementation<T extends AbstractStage> implements S
 	public String toString() {
 		String flowId;
 		try {
-			flowId = getFlowId();
+			flowId = getIndex().toString();
 		} catch (Exception ex) {
 			flowId = "unknown";
 		}

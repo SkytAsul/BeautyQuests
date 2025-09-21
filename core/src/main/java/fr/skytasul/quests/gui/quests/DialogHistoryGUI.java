@@ -15,6 +15,7 @@ import fr.skytasul.quests.api.questers.Quester;
 import fr.skytasul.quests.api.questers.data.QuesterQuestData;
 import fr.skytasul.quests.api.quests.Quest;
 import fr.skytasul.quests.api.stages.StageController;
+import fr.skytasul.quests.api.stages.StageIndex;
 import fr.skytasul.quests.api.stages.types.Dialogable;
 import fr.skytasul.quests.api.utils.ChatColorUtils;
 import fr.skytasul.quests.gui.quests.DialogHistoryGUI.WrappedDialogable;
@@ -31,7 +32,7 @@ import java.util.concurrent.TimeUnit;
 
 public class DialogHistoryGUI extends PagedGUI<WrappedDialogable> {
 
-	private static Cache<List<StageController>, List<Dialogable>> dialogableCache =
+	private static Cache<List<StageIndex>, List<Dialogable>> dialogableCache =
 			CacheBuilder.newBuilder().expireAfterWrite(1, TimeUnit.MINUTES).build();
 
 	private final Runnable end;
@@ -84,15 +85,15 @@ public class DialogHistoryGUI extends PagedGUI<WrappedDialogable> {
 	}
 
 	public static List<Dialogable> getDialogable(QuesterQuestData datas, boolean useCache) {
-		var dialogable = dialogableCache.getIfPresent(datas.getQuestFlowStages());
+		var dialogable = dialogableCache.getIfPresent(datas.getQuestFlow());
 		if (!useCache || dialogable == null) {
-			dialogable = datas.getQuestFlowStages().stream()
+			dialogable = datas.getQuestFlowStages()
 					.map(StageController::getStage)
 					.filter(Dialogable.class::isInstance)
 					.map(Dialogable.class::cast)
 					.filter(Dialogable::hasDialog)
 					.toList();
-			dialogableCache.put(new ArrayList<>(datas.getQuestFlowStages()), dialogable);
+			dialogableCache.put(new ArrayList<>(datas.getQuestFlow()), dialogable);
 			// we put in cache a COPY of the quest flow list otherwise even after
 		}
 		return dialogable;

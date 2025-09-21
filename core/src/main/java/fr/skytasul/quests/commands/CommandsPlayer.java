@@ -36,7 +36,6 @@ public class CommandsPlayer implements OrphanCommand {
 			QuesterQuestData datas = account.getDataHolder().getQuestData(quest);
 
 			Optional<CheckpointReward> optionalCheckpoint = datas.getQuestFlowStages()
-					.stream()
 					.map(controller -> controller.getStage().getRewards().stream()
 							.filter(CheckpointReward.class::isInstance).findAny()
 							.map(CheckpointReward.class::cast).orElse(null))

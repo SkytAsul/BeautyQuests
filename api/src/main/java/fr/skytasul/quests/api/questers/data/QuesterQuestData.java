@@ -2,6 +2,7 @@ package fr.skytasul.quests.api.questers.data;
 
 import fr.skytasul.quests.api.quests.Quest;
 import fr.skytasul.quests.api.stages.StageController;
+import fr.skytasul.quests.api.stages.StageIndex;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.jetbrains.annotations.UnmodifiableView;
@@ -10,6 +11,7 @@ import java.util.Map;
 import java.util.OptionalInt;
 import java.util.OptionalLong;
 import java.util.concurrent.CompletableFuture;
+import java.util.stream.Stream;
 
 public interface QuesterQuestData {
 
@@ -85,7 +87,10 @@ public interface QuesterQuestData {
 
 	@NotNull
 	@UnmodifiableView
-	List<StageController> getQuestFlowStages();
+	List<StageIndex> getQuestFlow();
+
+	@NotNull
+	Stream<StageController> getQuestFlowStages();
 
 	@NotNull
 	CompletableFuture<Void> remove();

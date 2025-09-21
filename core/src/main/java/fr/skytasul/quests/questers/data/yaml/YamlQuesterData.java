@@ -1,7 +1,6 @@
 package fr.skytasul.quests.questers.data.yaml;
 
 import fr.skytasul.quests.api.QuestsAPI;
-import fr.skytasul.quests.api.QuestsPlugin;
 import fr.skytasul.quests.api.data.DataSavingException;
 import fr.skytasul.quests.api.data.SavableData;
 import fr.skytasul.quests.api.pools.QuestPool;
@@ -9,6 +8,7 @@ import fr.skytasul.quests.api.questers.data.QuesterPoolData;
 import fr.skytasul.quests.api.questers.data.QuesterQuestData;
 import fr.skytasul.quests.api.quests.Quest;
 import fr.skytasul.quests.api.stages.StageController;
+import fr.skytasul.quests.api.stages.StageIndex;
 import fr.skytasul.quests.api.utils.Utils;
 import fr.skytasul.quests.questers.AbstractQuesterDataImplementation;
 import fr.skytasul.quests.questers.AbstractQuesterPoolDataImplementation;
@@ -245,14 +245,7 @@ public class YamlQuesterData extends AbstractQuesterDataImplementation {
 
 			if (!questConfig.getString("questFlow", "").isEmpty() && getQuest() != null) {
 				for (String flowPart : questConfig.getString("questFlow").split(";")) {
-					try {
-						StageController stageFlow = getQuest().getBranchesManager().getStageFromFlow(flowPart);
-						super.questFlow.add(stageFlow);
-					} catch (Exception ex) {
-						QuestsPlugin.getPlugin().getLoggerExpanded().severe(
-								"Cannot find a part of the quest flow for quester {}, quest {}: {}", ex, id, questId,
-								flowPart);
-					}
+					super.questFlow.add(StageIndex.fromString(flowPart));
 				}
 			}
 
@@ -319,7 +312,7 @@ public class YamlQuesterData extends AbstractQuesterDataImplementation {
 		public void addQuestFlow(StageController finished) {
 			super.addQuestFlow(finished);
 			questConfig.set("questFlow",
-					super.questFlow.stream().map(StageController::getFlowId).collect(Collectors.joining(";")));
+					super.questFlow.stream().map(StageIndex::toString).collect(Collectors.joining(";")));
 		}
 
 		@Override

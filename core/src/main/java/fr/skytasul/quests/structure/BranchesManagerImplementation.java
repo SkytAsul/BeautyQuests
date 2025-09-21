@@ -9,6 +9,7 @@ import fr.skytasul.quests.api.questers.data.QuesterQuestData;
 import fr.skytasul.quests.api.quests.branches.QuestBranch;
 import fr.skytasul.quests.api.quests.branches.QuestBranchesManager;
 import fr.skytasul.quests.api.stages.StageController;
+import fr.skytasul.quests.api.stages.StageIndex;
 import org.apache.commons.lang.Validate;
 import org.bukkit.configuration.ConfigurationSection;
 import org.jetbrains.annotations.NotNull;
@@ -16,12 +17,8 @@ import org.jetbrains.annotations.Nullable;
 import org.jetbrains.annotations.UnmodifiableView;
 import java.util.*;
 import java.util.Map.Entry;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 public class BranchesManagerImplementation implements QuestBranchesManager {
-
-	private static final Pattern FLOW_PATTERN = Pattern.compile("(\\d+):(E)?(\\d+)");
 
 	private @NotNull Map<Integer, QuestBranchImplementation> branches = new TreeMap<>(Integer::compare);
 
@@ -80,23 +77,15 @@ public class BranchesManagerImplementation implements QuestBranchesManager {
 	}
 
 	@Override
-	public @Nullable StageController getStageFromFlow(@NotNull String flowId)
+	public @Nullable StageController getStageFromIndex(@NotNull StageIndex index)
 			throws IllegalArgumentException {
-		Matcher matcher = FLOW_PATTERN.matcher(flowId);
-
-		if (!matcher.matches())
-			throw new IllegalArgumentException("Invalid quest flow item: " + flowId);
-
-		int branchId = Integer.parseInt(matcher.group(1));
-		var branch = getBranch(branchId);
-
-		int stageId = Integer.parseInt(matcher.group(3));
-		if (matcher.group(2) != null) {
-			// means it matched the E meaning it's an ending stage
-			return branch.getEndingStage(stageId);
-		} else {
-			return branch.getRegularStage(stageId);
-		}
+		// TODO convert to switch in Java 21
+		if (index instanceof StageIndex.RegularStageIndex regularIndex)
+			return getBranch(regularIndex.branch()).getRegularStage(regularIndex.stageIndex());
+		else if (index instanceof StageIndex.EndingStageIndex endingIndex)
+			return getBranch(endingIndex.branch()).getEndingStage(endingIndex.stageId());
+		else
+			throw new UnsupportedOperationException();
 	}
 
 	/**

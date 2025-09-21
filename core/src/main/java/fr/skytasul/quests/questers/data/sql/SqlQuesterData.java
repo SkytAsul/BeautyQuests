@@ -10,6 +10,7 @@ import fr.skytasul.quests.api.questers.data.QuesterPoolData;
 import fr.skytasul.quests.api.questers.data.QuesterQuestData;
 import fr.skytasul.quests.api.quests.Quest;
 import fr.skytasul.quests.api.stages.StageController;
+import fr.skytasul.quests.api.stages.StageIndex;
 import fr.skytasul.quests.api.utils.CustomizedObjectTypeAdapter;
 import fr.skytasul.quests.questers.AbstractQuesterDataImplementation;
 import fr.skytasul.quests.questers.AbstractQuesterPoolDataImplementation;
@@ -214,14 +215,7 @@ public class SqlQuesterData extends AbstractQuesterDataImplementation {
 			String flow = result.getString("quest_flow");
 			if (flow != null && !flow.isEmpty() && getQuest() != null)
 				for (String flowPart : flow.split(";")) {
-					try {
-						StageController stageFlow = getQuest().getBranchesManager().getStageFromFlow(flowPart);
-						super.questFlow.add(stageFlow);
-					} catch (IllegalArgumentException ex) {
-						QuestsPlugin.getPlugin().getLoggerExpanded().severe(
-								"Cannot find a part of the quest flow for quester {}, quest {}: {}", ex, identifier, questId,
-								flowPart);
-					}
+					super.questFlow.add(StageIndex.fromString(flowPart));
 				}
 
 			String state = result.getString("state");
@@ -321,7 +315,7 @@ public class SqlQuesterData extends AbstractQuesterDataImplementation {
 		}
 
 		protected void updatedQuestFlow() {
-			var flowString = super.questFlow.stream().map(StageController::getFlowId).collect(Collectors.joining(";"));
+			var flowString = super.questFlow.stream().map(StageIndex::toString).collect(Collectors.joining(";"));
 			setDataInStatement((statement, i) -> statement.setString(i, flowString), "quest_flow");
 		}
 

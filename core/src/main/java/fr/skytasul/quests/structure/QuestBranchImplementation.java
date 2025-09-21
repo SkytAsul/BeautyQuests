@@ -15,6 +15,7 @@ import fr.skytasul.quests.api.quests.branches.QuestBranch;
 import fr.skytasul.quests.api.quests.events.questers.QuesterSetStageEvent;
 import fr.skytasul.quests.api.requirements.Actionnable;
 import fr.skytasul.quests.api.stages.StageController;
+import fr.skytasul.quests.api.stages.StageIndex;
 import fr.skytasul.quests.api.utils.messaging.MessageUtils;
 import fr.skytasul.quests.api.utils.messaging.PlaceholderRegistry;
 import fr.skytasul.quests.players.AdminMode;
@@ -93,6 +94,14 @@ public class QuestBranchImplementation implements QuestBranch {
 
 	public @Nullable QuestBranchImplementation getLinkedBranch(@NotNull StageController endingStage) {
 		return endStages.stream().filter(end -> end.getStage().equals(endingStage)).findAny().get().getBranch();
+	}
+
+	public @NotNull StageIndex getStageIndex(@NotNull StageController stage) {
+		if (regularStages.contains(stage))
+			return new StageIndex.RegularStageIndex(getId(), regularStages.indexOf(stage));
+		if (isEndingStage(stage))
+			return new StageIndex.EndingStageIndex(getId(), getEndingStageId(stage));
+		throw new IllegalArgumentException("Stage was not a part of the branch");
 	}
 
 	public int getRegularStageId(StageController stage) {
@@ -204,7 +213,7 @@ public class QuestBranchImplementation implements QuestBranch {
 		}
 
 		AdminMode.broadcast("Quester " + quester.getFriendlyName() + " has finished the stage "
-				+ stage.getFlowId() + " of quest " + getQuest().getId());
+				+ stage.getIndex() + " of quest " + getQuest().getId());
 		datas.addQuestFlow(stage);
 		if (isEndingStage(stage)) { // ending stage
 			for (EndingStageImplementation end : endStages) {

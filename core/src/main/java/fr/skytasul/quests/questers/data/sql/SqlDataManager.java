@@ -8,7 +8,7 @@ import fr.skytasul.quests.api.data.DataSavingException;
 import fr.skytasul.quests.api.questers.QuesterManager;
 import fr.skytasul.quests.api.questers.data.QuesterData;
 import fr.skytasul.quests.api.questers.data.QuesterDataManager;
-import fr.skytasul.quests.api.stages.StageController;
+import fr.skytasul.quests.api.stages.StageIndex;
 import fr.skytasul.quests.api.utils.logger.LoggerExpanded;
 import fr.skytasul.quests.utils.Database;
 import org.jetbrains.annotations.NotNull;
@@ -158,8 +158,8 @@ public class SqlDataManager implements QuesterDataManager {
 			fillInSerializable(statement, i++, quest.getAllStagesData());
 			fillInSerializable(statement, i++, quest.getAllAdditionalData());
 			statement.setString(i++, quest.getState().name());
-			statement.setString(i++, quest.getQuestFlowStages().stream().map(StageController::getFlowId)
-					.collect(Collectors.joining(";")));
+			statement.setString(i++,
+					quest.getQuestFlow().stream().map(StageIndex::toString).collect(Collectors.joining(";")));
 			statement.addBatch();
 		}
 		statement.executeBatch();

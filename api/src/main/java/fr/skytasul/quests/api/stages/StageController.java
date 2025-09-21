@@ -48,6 +48,6 @@ public interface StageController {
 
 	public <T> @Nullable T getData(@NotNull Quester quester, @NotNull String dataKey, @Nullable Class<T> dataType);
 
-	public @NotNull String getFlowId();
+	public @NotNull StageIndex getIndex();
 
 }

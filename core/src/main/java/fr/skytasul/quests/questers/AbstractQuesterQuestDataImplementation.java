@@ -1,13 +1,16 @@
 package fr.skytasul.quests.questers;
 
 import fr.skytasul.quests.api.QuestsAPI;
+import fr.skytasul.quests.api.QuestsPlugin;
 import fr.skytasul.quests.api.questers.data.QuesterQuestData;
 import fr.skytasul.quests.api.quests.Quest;
 import fr.skytasul.quests.api.stages.StageController;
+import fr.skytasul.quests.api.stages.StageIndex;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.jetbrains.annotations.UnmodifiableView;
 import java.util.*;
+import java.util.stream.Stream;
 
 public abstract class AbstractQuesterQuestDataImplementation implements QuesterQuestData {
 
@@ -24,8 +27,8 @@ public abstract class AbstractQuesterQuestDataImplementation implements QuesterQ
 
 	protected Map<String, Object> additionalData = new HashMap<>();
 
-	protected final List<StageController> questFlow = new ArrayList<>();
-	private final List<StageController> questFlowView = Collections.unmodifiableList(questFlow);
+	protected final List<StageIndex> questFlow = new ArrayList<>();
+	private final List<StageIndex> questFlowView = Collections.unmodifiableList(questFlow);
 
 	public AbstractQuesterQuestDataImplementation(int questID) {
 		this.questId = questID;
@@ -136,13 +139,27 @@ public abstract class AbstractQuesterQuestDataImplementation implements QuesterQ
 	}
 
 	@Override
-	public List<StageController> getQuestFlowStages() {
+	public @NotNull @UnmodifiableView List<StageIndex> getQuestFlow() {
 		return questFlowView;
 	}
 
 	@Override
+	public Stream<StageController> getQuestFlowStages() {
+		var quest = getQuest();
+		return questFlow.stream().map(entry -> {
+			try {
+				return quest.getBranchesManager().getStageFromIndex(entry);
+			} catch (Exception ex) {
+				QuestsPlugin.getPlugin().getLoggerExpanded().namedWarning("Cannot find stage with index {0} for quest {1}",
+						this, 60, entry, questId);
+				return null;
+			}
+		}).filter(stage -> stage != null);
+	}
+
+	@Override
 	public void addQuestFlow(StageController finished) {
-		questFlow.add(finished);
+		questFlow.add(finished.getIndex());
 	}
 
 	@Override

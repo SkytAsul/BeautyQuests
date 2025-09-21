@@ -3,6 +3,7 @@ package fr.skytasul.quests.api.quests.branches;
 import fr.skytasul.quests.api.questers.Quester;
 import fr.skytasul.quests.api.quests.Quest;
 import fr.skytasul.quests.api.stages.StageController;
+import fr.skytasul.quests.api.stages.StageIndex;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.jetbrains.annotations.UnmodifiableView;
@@ -23,6 +24,6 @@ public interface QuestBranchesManager {
 
 	public boolean hasBranchStarted(@NotNull Quester acc, @NotNull QuestBranch branch);
 
-	public @Nullable StageController getStageFromFlow(@NotNull String flowId) throws IllegalArgumentException;
+	public @NotNull StageController getStageFromIndex(@NotNull StageIndex index) throws IllegalArgumentException;
 
 }
