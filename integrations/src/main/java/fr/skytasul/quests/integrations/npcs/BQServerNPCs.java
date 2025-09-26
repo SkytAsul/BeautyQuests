@@ -2,6 +2,7 @@ package fr.skytasul.quests.integrations.npcs;
 
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
+import fr.skytasul.quests.api.QuestsPlugin;
 import fr.skytasul.quests.api.npcs.BqInternalNpc;
 import fr.skytasul.quests.api.npcs.BqInternalNpcFactory.BqInternalNpcFactoryCreatable;
 import fr.skytasul.quests.api.npcs.NpcClickType;
@@ -9,7 +10,6 @@ import io.github.gonalez.znpcs.ServersNPC;
 import io.github.gonalez.znpcs.configuration.ConfigurationConstants;
 import io.github.gonalez.znpcs.npc.NPC;
 import io.github.gonalez.znpcs.npc.NPCModel;
-import io.github.gonalez.znpcs.npc.NPCSkin;
 import io.github.gonalez.znpcs.npc.NPCType;
 import io.github.gonalez.znpcs.npc.event.NPCInteractEvent;
 import org.bukkit.Location;
@@ -70,8 +70,8 @@ public class BQServerNPCs implements BqInternalNpcFactoryCreatable, Listener {
 		NPC npc = ServersNPC.createNPC(id, NPCType.valueOf(type.name()), location, name);
 		npc.getNpcPojo().getFunctions().put("look", true);
 
-		if (type == EntityType.PLAYER)
-			NPCSkin.forName(skin, (values, exception) -> npc.changeSkin(NPCSkin.forValues(values)));
+		if (skin != null)
+			QuestsPlugin.getPlugin().getLogger().warning("Cannot set skin to a ZNPC");
 
 		return new BQServerNPC(npc);
 	}

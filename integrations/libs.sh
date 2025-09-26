@@ -24,7 +24,7 @@ echo -e "Maven path: $mavenPath\e[39m"
 "$mavenPath" install:install-file -Dfile=$jarsPath/CMILib.jar -DgroupId=com.zrips -DartifactId=cmilib -Dversion=1.2.3.3 -Dpackaging=jar -DgeneratePom=true
 "$mavenPath" org.apache.maven.plugins:maven-install-plugin:2.5.2:install-file -Dfile=$jarsPath/UltimateTimber.jar # contains pom.xml file, version 3.0.1
 "$mavenPath" install:install-file -Dfile=$jarsPath/AdvancedSpawners-API.jar -DgroupId=gcspawners -DartifactId=gcspawners -Dversion=3.3.0 -Dpackaging=jar -DgeneratePom=true
-"$mavenPath" install:install-file -Dfile=$jarsPath/znpcs.jar -DgroupId=io.github.gonalez -DartifactId=znpcs -Dversion=4.2 -Dpackaging=jar -DgeneratePom=true
+"$mavenPath" install:install-file -Dfile=$jarsPath/znpcs-5.2.jar -DgroupId=io.github.gonalez -DartifactId=znpcs -Dversion=5.2 -Dpackaging=jar -DgeneratePom=true
 #"$mavenPath" install:install-file -Dfile=$jarsPath/MythicMobs.jar -DgroupId=io.lumine.xikage -DartifactId=MythicMobs -Dversion=4.12.0 -Dpackaging=jar -DgeneratePom=true
 #"$mavenPath" install:install-file -Dfile=$jarsPath/TokenEnchantAPI.jar -DgroupId=com.vk2gpz.tokenenchant -DartifactId=TokenEnchantAPI -Dversion=18.15.2 -Dpackaging=jar -DgeneratePom=true
 

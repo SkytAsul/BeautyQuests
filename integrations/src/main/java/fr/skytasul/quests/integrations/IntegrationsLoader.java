@@ -51,8 +51,7 @@ public class IntegrationsLoader {
 		IntegrationManager manager = QuestsPlugin.getPlugin().getIntegrationManager();
 
 		// NPCS
-		manager.addDependency(new BQDependency("ServersNPC",
-				() -> QuestsAPI.getAPI().addNpcFactory("znpcs", new BQServerNPCs()), null, this::isZnpcsVersionValid));
+		manager.addDependency(new BQDependency("ServersNPC", this::registerZNPCs, null, this::isZNPCsVersionValid));
 
 		manager.addDependency(new BQDependency("ZNPCsPlus", this::registerZnpcsPlus));
 
@@ -237,13 +236,17 @@ public class IntegrationsLoader {
 		}
 	}
 
-	private boolean isZnpcsVersionValid(Plugin plugin) {
-		if (plugin.getClass().getName().equals("lol.pyr.znpcsplus.api.NpcApiProvider")) // NOSONAR
+	private boolean isZNPCsVersionValid(Plugin plugin) {
+		if (plugin.getClass().getName().equals("io.github.gonalez.znpcs.ServersNPC")) // NOSONAR
 			return true;
 
-		QuestsPlugin.getPlugin().getLoggerExpanded().warning("Your version of znpcs ("
-				+ plugin.getDescription().getVersion() + ") is not supported by BeautyQuests.");
+		QuestsPlugin.getPlugin().getLoggerExpanded().warning("Your version of znpcs ({}) is not supported by BeautyQuests.",
+				plugin.getDescription().getVersion());
 		return false;
+	}
+
+	private void registerZNPCs() {
+		QuestsAPI.getAPI().addNpcFactory("znpcs", new BQServerNPCs());
 	}
 
 	private void registerZnpcsPlus() {
