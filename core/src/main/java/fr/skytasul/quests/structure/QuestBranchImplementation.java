@@ -168,8 +168,8 @@ public class QuestBranchImplementation implements QuestBranch {
 		if (data.getBranch().isEmpty() || data.getBranch().getAsInt() != getId())
 			return false;
 
-		if (isInStageEnd(data))
-			return isEndingStage(stage);
+		if (isEndingStage(stage))
+			return isInStageEnd(data);
 
 		return getRegularStageId(stage) == data.getStage().orElse(-1);
 	}
