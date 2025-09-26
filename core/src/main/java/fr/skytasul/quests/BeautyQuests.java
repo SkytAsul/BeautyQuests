@@ -345,7 +345,7 @@ public class BeautyQuests extends JavaPlugin implements QuestsPlugin {
 			Map<String, Map<String, Integer>> map = new HashMap<>();
 			String version = pluginVersion;
 			Map<String, Integer> entry = new HashMap<>();
-			String[] split = version.split("+");
+			String[] split = version.split("\\+");
 			if (split.length == 1) {
 				entry.put("Release", 1);
 			}else {
