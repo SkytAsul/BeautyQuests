@@ -45,6 +45,13 @@
 							<shadedPattern>fr.skytasul.quests.utils.bstats</shadedPattern>
 						</relocation>
 					</relocations>
+					<artifactSet>
+						<includes>
+							<include>org.bstats:*</include>
+							<include>com.tchristofferson:ConfigUpdater</include>
+							<include>com.jeff_media:SpigotUpdateChecker</include>
+						</includes>
+					</artifactSet>
 				</configuration>
 				<executions>
 					<execution>
@@ -92,7 +99,7 @@
 			<groupId>fr.skytasul</groupId>
 			<artifactId>beautyquests-api</artifactId>
 			<version>${revision}</version>
-			<scope>provided</scope>
+			<scope>compile</scope>
 		</dependency>
 
 		<!-- Development dependencies -->
@@ -153,7 +160,7 @@
 			<groupId>com.zaxxer</groupId>
 			<artifactId>HikariCP</artifactId>
 			<version>${hikaricp.version}</version>
-			<scope>provided</scope>
+			<scope>compile</scope>
 		</dependency>
 		<dependency>
 			<groupId>org.bstats</groupId>
@@ -165,7 +172,7 @@
 			<groupId>fr.mrmicky</groupId>
 			<artifactId>fastboard</artifactId>
 			<version>${fastboard.version}</version>
-			<scope>provided</scope>
+			<scope>compile</scope>
 		</dependency>
 		<dependency>
 			<groupId>com.tchristofferson</groupId>
