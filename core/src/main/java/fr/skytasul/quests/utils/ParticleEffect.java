@@ -1,6 +1,5 @@
 package fr.skytasul.quests.utils;
 
-import fr.skytasul.quests.utils.nms.NMS;
 import org.apache.commons.lang.Validate;
 import org.bukkit.Color;
 import org.bukkit.Location;
@@ -64,7 +63,7 @@ public class ParticleEffect {
 	}
 
 	public void send(Entity entity, List<Player> players) {
-		send(entity.getLocation(), NMS.getNMS().entityNameplateHeight(entity), players);
+		send(entity.getLocation(), entity.getHeight(), players);
 	}
 
 	public void send(Location bottom, double height, List<Player> players) {

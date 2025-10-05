@@ -10,8 +10,6 @@ import fr.skytasul.quests.api.npcs.BqNpc;
 import fr.skytasul.quests.api.quests.Quest;
 import fr.skytasul.quests.api.utils.MinecraftNames;
 import fr.skytasul.quests.api.utils.MinecraftVersion;
-import fr.skytasul.quests.api.utils.messaging.MessageType;
-import fr.skytasul.quests.api.utils.messaging.MessageUtils;
 import fr.skytasul.quests.api.utils.messaging.PlaceholderRegistry;
 import fr.skytasul.quests.gui.creation.QuestCreationSession;
 import fr.skytasul.quests.gui.misc.ListBook;
@@ -21,7 +19,6 @@ import fr.skytasul.quests.questers.data.sql.SqlDataManager;
 import fr.skytasul.quests.structure.QuestImplementation;
 import fr.skytasul.quests.utils.Database;
 import fr.skytasul.quests.utils.QuestUtils;
-import fr.skytasul.quests.utils.nms.NMS;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
@@ -180,10 +177,7 @@ public class CommandsAdmin implements OrphanCommand {
 	@Subcommand ("list")
 	@CommandPermission ("beautyquests.command.list")
 	public void list(Player player) {
-		if (NMS.isValid()) {
-			ListBook.openQuestBook(player);
-		} else
-			MessageUtils.sendMessage(player, "Version not supported", MessageType.DefaultMessageType.PREFIXED);
+		ListBook.openQuestBook(player);
 	}
 
 	@Subcommand ("downloadTranslations")

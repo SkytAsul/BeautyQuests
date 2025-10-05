@@ -38,22 +38,13 @@ public final class QuestUtils {
 
 	private QuestUtils() {}
 
-	public static void openBook(Player p, ItemStack book) {
-		int slot = p.getInventory().getHeldItemSlot();
-		ItemStack old = p.getInventory().getItem(slot);
-		p.getInventory().setItem(slot, book);
-
-		NMS.getNMS().openBookInHand(p);
-		p.getInventory().setItem(slot, old);
-	}
-
 	private static boolean cachedScoreboardPresent = false;
 	private static long cachedScoreboardPresenceExp = 0;
 
 	public static Location upLocationForEntity(LivingEntity en, double value) {
 		double height = value;
 		height += QuestsConfigurationImplementation.getConfiguration().getHologramsHeight();
-		height += NMS.getNMS().entityNameplateHeight(en);
+		height += en.getHeight();
 		if (en instanceof Player) {
 			if (cachedScoreboardPresenceExp < System.currentTimeMillis()) {
 				cachedScoreboardPresenceExp = System.currentTimeMillis() + 60_000;

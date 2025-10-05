@@ -15,6 +15,7 @@ import fr.skytasul.quests.api.localization.Lang;
 import fr.skytasul.quests.api.options.QuestOption;
 import fr.skytasul.quests.api.utils.messaging.PlaceholderRegistry;
 import fr.skytasul.quests.utils.nms.NMS;
+import net.kyori.adventure.key.Key;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
@@ -153,12 +154,8 @@ public class SelectBlockGUI extends LayoutedGUI.LayoutedRowsGUI {
 	}
 
 	private void tagClick(LayoutedClickEvent event) {
-		String tagList = NMS.getNMS().getAvailableBlockTags().stream().map(tag -> {
-			NamespacedKey key = NamespacedKey.fromString(tag);
-			if (key.getNamespace().equals(NamespacedKey.MINECRAFT))
-				return key.getKey();
-			return key.toString();
-		}).sorted().collect(Collectors.joining(", "));
+		String tagList = NMS.getNMS().getAvailableBlockTags().stream().map(Key::asMinimalString).sorted()
+				.collect(Collectors.joining(", "));
 		Lang.BLOCK_TAGS.quickSend(event.getPlayer(), "available_tags", tagList);
 
 		new TextEditor<>(event.getPlayer(), event::reopen, obj -> {

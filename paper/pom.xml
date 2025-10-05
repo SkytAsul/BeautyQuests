@@ -80,6 +80,13 @@
 			<version>${minecraft.version}</version>
 			<scope>provided</scope>
 		</dependency>
+		<dependency> <!-- To have NMS on the classpath -->
+			<groupId>org.spigotmc</groupId>
+			<artifactId>spigot</artifactId>
+			<version>${minecraft.version}</version>
+			<classifier>remapped-mojang</classifier>
+			<scope>provided</scope>
+		</dependency>
 	</dependencies>
 
 	<build>

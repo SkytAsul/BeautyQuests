@@ -152,7 +152,7 @@ public class BeautyQuests extends JavaPlugin implements QuestsPlugin {
 			audiences = BukkitAudiences.create(this);
 
 			saveDefaultConfig();
-			NMS.isValid(); // to force initialization
+			NMS.getNMS(); // to force initialization
 
 			saveFolder = new File(getDataFolder(), "quests");
 			if (!saveFolder.exists()) saveFolder.mkdirs();

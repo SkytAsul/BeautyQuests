@@ -1,5 +1,7 @@
 package fr.skytasul.quests.utils.nms;
 
+import io.papermc.paper.registry.RegistryAccess;
+import io.papermc.paper.registry.RegistryKey;
 import net.kyori.adventure.key.Key;
 import net.minecraft.core.Holder.Reference;
 import net.minecraft.core.HolderLookup.RegistryLookup;
@@ -17,11 +19,11 @@ import org.bukkit.inventory.meta.ItemMeta;
 import java.lang.reflect.Field;
 import java.util.List;
 
-public class v1_21_R3 extends NMS{
+public class PaperNMS extends NMS {
 
 	private Field customTagField;
 
-	public v1_21_R3() throws NoSuchFieldException, SecurityException {
+	public PaperNMS() throws NoSuchFieldException, SecurityException {
 		customTagField = craftReflect.fromName("inventory.CraftMetaItem").getDeclaredField("customTag");
 		customTagField.setAccessible(true);
 	}
@@ -37,8 +39,8 @@ public class v1_21_R3 extends NMS{
 
 	@Override
 	public List<Key> getAvailableBlockTags() {
-		return MinecraftServer.getServer().registryAccess().lookupOrThrow(Registries.BLOCK).listTags()
-				.map(x -> Key.key(x.key().location().toString())).toList();
+		return RegistryAccess.registryAccess().getRegistry(RegistryKey.BLOCK).getTags().stream()
+				.map(x -> x.tagKey().key()).toList();
 	}
 
 	@Override

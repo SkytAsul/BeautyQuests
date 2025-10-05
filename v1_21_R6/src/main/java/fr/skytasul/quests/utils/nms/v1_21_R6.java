@@ -17,11 +17,11 @@ import org.bukkit.inventory.meta.ItemMeta;
 import java.lang.reflect.Field;
 import java.util.List;
 
-public class v1_21_R3 extends NMS{
+public class v1_21_R6 extends NMS{
 
 	private Field customTagField;
 
-	public v1_21_R3() throws NoSuchFieldException, SecurityException {
+	public v1_21_R6() throws NoSuchFieldException, SecurityException {
 		customTagField = craftReflect.fromName("inventory.CraftMetaItem").getDeclaredField("customTag");
 		customTagField.setAccessible(true);
 	}

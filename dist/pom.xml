@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<packaging>pom</packaging>
@@ -9,7 +10,7 @@
 		<artifactId>beautyquests-parent</artifactId>
 		<version>${revision}</version>
 	</parent>
-	
+
 	<build>
 		<directory>../target</directory>
 		<finalName>beautyquests-${revision}</finalName>
@@ -29,6 +30,11 @@
 							<descriptors>
 								<descriptor>all-jar.xml</descriptor>
 							</descriptors>
+							<archive>
+								<manifestEntries>
+									<paperweight-mappings-namespace>mojang</paperweight-mappings-namespace>
+								</manifestEntries>
+							</archive>
 						</configuration>
 					</execution>
 				</executions>
@@ -159,6 +165,13 @@
 		<dependency>
 			<groupId>${project.groupId}</groupId>
 			<artifactId>beautyquests-v1_21_R5</artifactId>
+			<version>${revision}</version>
+			<type>jar</type>
+			<scope>compile</scope>
+		</dependency>
+		<dependency>
+			<groupId>${project.groupId}</groupId>
+			<artifactId>beautyquests-v1_21_R6</artifactId>
 			<version>${revision}</version>
 			<type>jar</type>
 			<scope>compile</scope>
