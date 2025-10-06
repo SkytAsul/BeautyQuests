@@ -51,7 +51,7 @@
 		<mockbukkit.version>4.68.0</mockbukkit.version>
 
 		<lamp.version>4.0.0-rc.13</lamp.version>
-		<xseries.version>13.4.0</xseries.version>
+		<xseries.version>13.5.0</xseries.version>
 		<hikaricp.version>6.0.0</hikaricp.version>
 		<fastboard.version>2.1.5</fastboard.version>
 		<adventure.version>4.23.0</adventure.version>
