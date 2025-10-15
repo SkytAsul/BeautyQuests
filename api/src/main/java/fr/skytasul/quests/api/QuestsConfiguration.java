@@ -127,6 +127,8 @@ public interface QuestsConfiguration {
 
 		Set<PlayerListCategory> getEnabledTabs();
 
+		boolean keepMenuOpen();
+
 	}
 
 	interface StageDescription extends ItemsDescriptionConfiguration, ProgressBarConfig {

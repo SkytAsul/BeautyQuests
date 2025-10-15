@@ -135,6 +135,8 @@ questsMenu:
   openNotStartedTabWhenEmpty: true
   # Allows player to cancel quests they have started with the GUI
   allowPlayerCancelQuest: true
+  # Keep menu open after accepting or cancelling a quest
+  keep menu open: true
 
 # - Integrations -
 # Enable or disable AccountsHook managing player accounts

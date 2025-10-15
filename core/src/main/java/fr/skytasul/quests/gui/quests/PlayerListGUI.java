@@ -17,6 +17,7 @@ import fr.skytasul.quests.api.questers.Quester;
 import fr.skytasul.quests.api.questers.QuesterManager;
 import fr.skytasul.quests.api.quests.Quest;
 import fr.skytasul.quests.api.utils.PlayerListCategory;
+import fr.skytasul.quests.api.utils.logger.LoggerExpanded;
 import fr.skytasul.quests.options.OptionStartDialog;
 import fr.skytasul.quests.options.OptionStartable;
 import fr.skytasul.quests.scoreboards.Scoreboard;
@@ -32,6 +33,8 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 public class PlayerListGUI extends PagedGUI<Quest> {
+
+	private static final LoggerExpanded LOGGER = LoggerExpanded.get("BeautyQuests.PlayerListGUI");
 
 	static final String UNSELECTED_PREFIX = "§7○ ";
 	private static final String SELECTED_PREFIX = "§b§l● ";
@@ -54,6 +57,7 @@ public class PlayerListGUI extends PagedGUI<Quest> {
 
 	@Override
 	protected void populate(@NotNull Player player, @NotNull Inventory inventory) {
+		setObjects(Collections.emptyList());
 		super.populate(player, inventory);
 
 		for (PlayerListCategory enabledCat : QuestsConfiguration.getConfig().getQuestsMenuConfig().getEnabledTabs()) {
@@ -72,7 +76,8 @@ public class PlayerListGUI extends PagedGUI<Quest> {
 	}
 
 	private void setCategory(PlayerListCategory category){
-		if (cat == category) return;
+		if (cat == category)
+			return;
 		if (cat != null)
 			setCategorySelected(false);
 		cat = category;
@@ -151,7 +156,7 @@ public class PlayerListGUI extends PagedGUI<Quest> {
 			ItemUtils.setGlittering(item, glittering);
 		} catch (Exception ex) {
 			item = ItemUtils.item(XMaterial.BARRIER, "§cError - Quest #" + qu.getId());
-			QuestsPlugin.getPlugin().getLoggerExpanded().severe("An error ocurred when creating item of quest {} for {}", ex,
+			LOGGER.severe("An error ocurred when creating item of quest {} for {}", ex,
 					qu.getId(), quester.getDetailedName());
 		}
 		return item;
@@ -179,7 +184,11 @@ public class PlayerListGUI extends PagedGUI<Quest> {
 				return;
 			if (qu.canStart(player, true)) {
 				close();
-				qu.attemptStart(player);
+				qu.attemptStart(player).whenComplete(LOGGER.logError(result -> {
+					if (result && QuestsConfiguration.getConfig().getQuestsMenuConfig().keepMenuOpen()) {
+						reopen(getViewer(), true);
+					}
+				}, "An error occurred while giving a quest to {}", null, player.getName()));
 			}
 		} else {
 			switch (clickType) {
@@ -187,9 +196,12 @@ public class PlayerListGUI extends PagedGUI<Quest> {
 					if (QuestsConfiguration.getConfig().getQuestsMenuConfig().allowPlayerCancelQuest()
 							&& cat == PlayerListCategory.IN_PROGRESS && qu.isCancellable()) {
 						QuestsPlugin.getPlugin().getGuiManager().getFactory()
-								.createConfirmation(() -> qu.cancelQuester(quester),
-										this::reopen, Lang.INDICATION_CANCEL.format(qu))
-								.open(player);
+								.createConfirmation(() -> {
+									qu.cancelQuester(quester);
+									if (QuestsConfiguration.getConfig().getQuestsMenuConfig().keepMenuOpen()) {
+										reopen(getViewer(), true);
+									}
+								}, this::reopen, Lang.INDICATION_CANCEL.format(qu)).open(player);
 					}
 					break;
 				case RIGHT:

@@ -723,6 +723,7 @@ public class QuestsConfigurationImplementation implements QuestsConfiguration {
 		private Set<PlayerListCategory> tabs;
 		private boolean openNotStartedTabWhenEmpty = true;
 		private boolean allowPlayerCancelQuest = true;
+		private boolean keepMenuOpen = false;
 
 		private ConfigurationSection config;
 
@@ -764,6 +765,7 @@ public class QuestsConfigurationImplementation implements QuestsConfiguration {
 			}
 			openNotStartedTabWhenEmpty = config.getBoolean("openNotStartedTabWhenEmpty");
 			allowPlayerCancelQuest = config.getBoolean("allowPlayerCancelQuest");
+			keepMenuOpen = config.getBoolean("keep menu open");
 		}
 
 		@Override
@@ -779,6 +781,11 @@ public class QuestsConfigurationImplementation implements QuestsConfiguration {
 		@Override
 		public Set<PlayerListCategory> getEnabledTabs() {
 			return tabs;
+		}
+
+		@Override
+		public boolean keepMenuOpen() {
+			return keepMenuOpen;
 		}
 
 	}
