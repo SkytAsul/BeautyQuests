@@ -139,11 +139,11 @@ public class StageOptionProgressBar<T extends AbstractStage & HasProgress> exten
 			bar = BossBar.bossBar(Component.empty(), 0, Color.YELLOW, style);
 
 			update();
-			bar.addViewer(quester);
+			quester.showBossBar(bar);
 		}
 
 		public void remove() {
-			bar.removeViewer(quester);
+			quester.hideBossBar(bar);
 			if (timer != null)
 				timer.cancel();
 		}
@@ -163,7 +163,7 @@ public class StageOptionProgressBar<T extends AbstractStage & HasProgress> exten
 			String formattedName = MessageUtils.format(getProgressConfig().getBossBarFormat(), placeholders,
 					PlaceholdersContext.of(quester, true, null));
 			bar.name(LegacyComponentSerializer.legacySection().deserialize(formattedName));
-			bar.addViewer(quester);
+			quester.showBossBar(bar);
 		}
 
 		private void timer() {
@@ -174,7 +174,7 @@ public class StageOptionProgressBar<T extends AbstractStage & HasProgress> exten
 				timer.cancel();
 
 			timer = Bukkit.getScheduler().runTaskLater(QuestsPlugin.getPlugin(), () -> {
-				bar.removeViewer(quester);
+				quester.hideBossBar(bar);
 				timer = null;
 			}, getProgressConfig().getBossBarTimeout() * 20L);
 		}

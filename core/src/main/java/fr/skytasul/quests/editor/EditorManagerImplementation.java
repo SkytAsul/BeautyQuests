@@ -49,7 +49,7 @@ public class EditorManagerImplementation implements EditorManager, Listener {
 				.debug(player.getName() + " is entering editor " + editor.getClass().getName() + ".");
 
 		player.sendTitle(Lang.ENTER_EDITOR_TITLE.toString(), Lang.ENTER_EDITOR_SUB.toString(), 5, 50, 5);
-		bar.addViewer(QuestsPlugin.getPlugin().getAudiences().player(player));
+		QuestsPlugin.getPlugin().getAudiences().player(player).showBossBar(bar);
 
 		QuestUtils.autoRegister(editor);
 
@@ -71,7 +71,7 @@ public class EditorManagerImplementation implements EditorManager, Listener {
 			return;
 
 		QuestsPlugin.getPlugin().getLoggerExpanded().debug(player.getName() + " has left the editor.");
-		bar.removeViewer(QuestsPlugin.getPlugin().getAudiences().player(player));
+		QuestsPlugin.getPlugin().getAudiences().player(player).hideBossBar(bar);
 		editor.end();
 
 		QuestUtils.autoUnregister(editor);

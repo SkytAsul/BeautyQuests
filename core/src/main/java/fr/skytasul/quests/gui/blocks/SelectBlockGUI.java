@@ -154,8 +154,11 @@ public class SelectBlockGUI extends LayoutedGUI.LayoutedRowsGUI {
 	}
 
 	private void tagClick(LayoutedClickEvent event) {
-		String tagList = NMS.getNMS().getAvailableBlockTags().stream().map(Key::asMinimalString).sorted()
-				.collect(Collectors.joining(", "));
+		String tagList = NMS.getNMS().getAvailableBlockTags().stream().map(key -> {
+			if (key.namespace() == Key.MINECRAFT_NAMESPACE)
+				return key.value();
+			return key.asString();
+		}).sorted().collect(Collectors.joining(", "));
 		Lang.BLOCK_TAGS.quickSend(event.getPlayer(), "available_tags", tagList);
 
 		new TextEditor<>(event.getPlayer(), event::reopen, obj -> {

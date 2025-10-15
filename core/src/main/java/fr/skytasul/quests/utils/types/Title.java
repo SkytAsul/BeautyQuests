@@ -36,7 +36,7 @@ public class Title {
 		this.fadeOut = fadeOut;
 
 		this.adventureTitle = net.kyori.adventure.title.Title.title(deserializeText(title), deserializeText(subtitle),
-				Times.times(Ticks.duration(fadeIn), Ticks.duration(stay), Ticks.duration(fadeOut)));
+				Times.of(Ticks.duration(fadeIn), Ticks.duration(stay), Ticks.duration(fadeOut)));
 	}
 
 	public Title(Title other) {

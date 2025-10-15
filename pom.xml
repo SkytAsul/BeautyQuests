@@ -54,9 +54,15 @@
 		<xseries.version>13.5.0</xseries.version>
 		<hikaricp.version>6.0.0</hikaricp.version>
 		<fastboard.version>2.1.5</fastboard.version>
-		<adventure.version>4.23.0</adventure.version>
-		<adventure.bukkit.version>4.4.0</adventure.bukkit.version>
 		<commons-lang.version>2.6</commons-lang.version>
+
+		<!--
+			Version of Adventure included in Paper 1.17.1.
+			Since we cannot load a different Adventure version,
+			we've got to comply with this one.
+		-->
+		<adventure.version>4.9.3</adventure.version>
+		<adventure.bukkit.version>4.0.1</adventure.bukkit.version>
 	</properties>
 
 	<profiles>
