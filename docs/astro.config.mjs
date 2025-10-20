@@ -1,0 +1,38 @@
+// @ts-check
+import { defineConfig } from 'astro/config';
+import starlight from '@astrojs/starlight';
+
+// https://astro.build/config
+export default defineConfig({
+	site: "https://beautyquests.skytasul.fr",
+	integrations: [
+		starlight({
+			title: 'BeautyQuests',
+			logo: {
+				src: './src/assets/logo.png',
+			},
+			favicon: '/favicon.png',
+			social: [
+				{ icon: 'github', label: 'GitHub', href: 'https://github.com/SkytAsul/BeautyQuests' },
+				{ icon: 'discord', label: "Discord", href: 'https://discord.gg/H8fXrkD' },
+			],
+			editLink: {
+				baseUrl: 'https://github.com/SkytAsul/BeautyQuests/edit/${branch}/docs/'
+			},
+			sidebar: [
+				{
+					label: 'Guides',
+					items: [
+						// Each item here is one entry in the navigation menu.
+						{ label: 'Getting Started', slug: 'guides/getting-started' },
+					],
+				},
+				{
+					label: 'Reference',
+					items: [{ autogenerate: { directory: 'reference' } }],
+				},
+			],
+			credits: true
+		}),
+	],
+});
