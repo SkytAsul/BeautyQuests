@@ -1,11 +1,13 @@
 package fr.skytasul.quests.api.quests.branches;
 
-import java.util.Collection;
+import fr.skytasul.quests.api.questers.Quester;
+import fr.skytasul.quests.api.quests.Quest;
+import fr.skytasul.quests.api.stages.StageController;
+import fr.skytasul.quests.api.stages.StageIndex;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.jetbrains.annotations.UnmodifiableView;
-import fr.skytasul.quests.api.players.PlayerAccount;
-import fr.skytasul.quests.api.quests.Quest;
+import java.util.Collection;
 
 public interface QuestBranchesManager {
 
@@ -18,8 +20,10 @@ public interface QuestBranchesManager {
 
 	public @Nullable QuestBranch getBranch(int id);
 
-	public @Nullable QuestBranch getPlayerBranch(@NotNull PlayerAccount acc);
+	public @Nullable QuestBranch getPlayerBranch(@NotNull Quester acc);
 
-	public boolean hasBranchStarted(@NotNull PlayerAccount acc, @NotNull QuestBranch branch);
+	public boolean hasBranchStarted(@NotNull Quester acc, @NotNull QuestBranch branch);
+
+	public @NotNull StageController getStageFromIndex(@NotNull StageIndex index) throws IllegalArgumentException;
 
 }

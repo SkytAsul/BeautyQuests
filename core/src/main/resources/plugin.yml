@@ -3,7 +3,7 @@ author: SkytAsul
 version: "${plugin.version}"
 description: Quests system with a simple graphical interface.
 website: https://www.spigotmc.org/resources/beautyquests.39255/
-api-version: 1.13
+api-version: 1.17
 main: fr.skytasul.quests.BeautyQuests
 
 softdepend:
@@ -39,7 +39,20 @@ softdepend:
 - ItemsAdder
 - StackMob
 - Tooltips
- 
+
+# The default maven central repository of Paper does not contain some of the libraries below 
+paper-plugin-loader: fr.skytasul.quests.BeautyQuestsLoader
+paper-skip-libraries: true
+
+libraries:
+- io.github.revxrsal:lamp.bukkit:${lamp.version}
+- io.github.revxrsal:lamp.common:${lamp.version}
+- com.github.cryptomorin:XSeries:${xseries.version}
+- com.zaxxer:HikariCP:${hikaricp.version}
+- fr.mrmicky:fastboard:${fastboard.version}
+- net.kyori:adventure-api:${adventure.version}
+- net.kyori:adventure-platform-bukkit:${adventure.bukkit.version}
+- commons-lang:commons-lang:${commons-lang.version}
 
 #commands:
 #  beautyquests:

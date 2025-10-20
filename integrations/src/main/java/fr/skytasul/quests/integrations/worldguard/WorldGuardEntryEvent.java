@@ -1,10 +1,10 @@
 package fr.skytasul.quests.integrations.worldguard;
 
-import java.util.Set;
+import com.sk89q.worldguard.protection.regions.ProtectedRegion;
 import org.bukkit.entity.Player;
 import org.bukkit.event.HandlerList;
 import org.bukkit.event.player.PlayerEvent;
-import com.sk89q.worldguard.protection.regions.ProtectedRegion;
+import java.util.Set;
 
 public class WorldGuardEntryEvent extends PlayerEvent {
 	

@@ -1,8 +1,16 @@
 package fr.skytasul.quests.integrations.mobs;
 
-import java.util.Arrays;
-import java.util.List;
-import java.util.function.Consumer;
+import com.cryptomorin.xseries.XMaterial;
+import fr.skytasul.quests.api.QuestsPlugin;
+import fr.skytasul.quests.api.gui.ItemUtils;
+import fr.skytasul.quests.api.gui.templates.PagedGUI;
+import fr.skytasul.quests.api.localization.Lang;
+import fr.skytasul.quests.api.mobs.LeveledMobFactory;
+import fr.skytasul.quests.api.options.QuestOption;
+import fr.skytasul.quests.api.utils.Utils;
+import io.lumine.xikage.mythicmobs.api.bukkit.events.MythicMobDeathEvent;
+import io.lumine.xikage.mythicmobs.mobs.MythicMob;
+import io.lumine.xikage.mythicmobs.skills.placeholders.parsers.PlaceholderString;
 import org.bukkit.DyeColor;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
@@ -11,18 +19,9 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.ClickType;
 import org.bukkit.inventory.ItemStack;
-import fr.skytasul.quests.api.QuestsPlugin;
-import fr.skytasul.quests.api.gui.ItemUtils;
-import fr.skytasul.quests.api.gui.templates.PagedGUI;
-import fr.skytasul.quests.api.localization.Lang;
-import fr.skytasul.quests.api.mobs.LeveledMobFactory;
-import fr.skytasul.quests.api.options.QuestOption;
-import fr.skytasul.quests.api.utils.MinecraftVersion;
-import fr.skytasul.quests.api.utils.Utils;
-import fr.skytasul.quests.api.utils.XMaterial;
-import io.lumine.xikage.mythicmobs.api.bukkit.events.MythicMobDeathEvent;
-import io.lumine.xikage.mythicmobs.mobs.MythicMob;
-import io.lumine.xikage.mythicmobs.skills.placeholders.parsers.PlaceholderString;
+import java.util.Arrays;
+import java.util.List;
+import java.util.function.Consumer;
 
 public class MythicMobs implements LeveledMobFactory<MythicMob>, Listener {
 
@@ -64,7 +63,7 @@ public class MythicMobs implements LeveledMobFactory<MythicMob>, Listener {
 	public MythicMob fromValue(String value) {
 		return io.lumine.xikage.mythicmobs.MythicMobs.inst().getMobManager().getMythicMob(value);
 	}
-	
+
 	@Override
 	public boolean bukkitMobApplies(MythicMob first, Entity entity) {
 		return io.lumine.xikage.mythicmobs.MythicMobs.inst().getMobManager().getActiveMob(entity.getUniqueId())
@@ -102,7 +101,6 @@ public class MythicMobs implements LeveledMobFactory<MythicMob>, Listener {
 		}
 		if (typeName.contains("BABY_")) typeName = typeName.substring(5);
 		if (typeName.equalsIgnoreCase("MPET")) typeName = data.getConfig().getString("MPet.Anchor");
-		if (MinecraftVersion.MAJOR < 11 && typeName.equals("WITHER_SKELETON")) typeName = "SKELETON";
 		EntityType type = EntityType.fromName(typeName);
 		if (type == null) {
 			try {
@@ -127,8 +125,7 @@ public class MythicMobs implements LeveledMobFactory<MythicMob>, Listener {
 	@EventHandler
 	public void onMythicDeath(MythicMobDeathEvent e) {
 		if (e.getKiller() == null) return;
-		if (!(e.getKiller() instanceof Player)) return;
-		callEvent(e, e.getMob().getType(), e.getEntity(), (Player) e.getKiller());
+		callEvent(e, e.getMob().getType(), e.getEntity(), e.getKiller());
 	}
-	
+
 }

@@ -1,5 +1,10 @@
 package fr.skytasul.quests.integrations.maps;
 
+import fr.skytasul.quests.api.AbstractMapIntegration;
+import fr.skytasul.quests.api.QuestsPlugin;
+import fr.skytasul.quests.api.quests.Quest;
+import fr.skytasul.quests.integrations.IntegrationsConfiguration;
+import net.md_5.bungee.api.ChatColor;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.dynmap.DynmapAPI;
@@ -7,11 +12,6 @@ import org.dynmap.markers.Marker;
 import org.dynmap.markers.MarkerAPI;
 import org.dynmap.markers.MarkerIcon;
 import org.dynmap.markers.MarkerSet;
-import fr.skytasul.quests.api.AbstractMapIntegration;
-import fr.skytasul.quests.api.QuestsPlugin;
-import fr.skytasul.quests.api.quests.Quest;
-import fr.skytasul.quests.integrations.IntegrationsConfiguration;
-import net.md_5.bungee.api.ChatColor;
 
 public class BQDynmap extends AbstractMapIntegration {
 

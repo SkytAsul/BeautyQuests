@@ -119,8 +119,6 @@ msg:
     cancelQuest: '§6Bạn đã thoát khởi nhiệm vụ {quest}'
     cancelQuestUnavailable: '§6Không thể thoát khỏi nhiệm vụ {quest}'
     backupCreated: '§6Bạn đã tạo thành công file backup toàn bộ thông tin nhiệm vụ và thông tin người chơi'
-    backupPlayersFailed: '§cTạo backup cho toàn bộ thông tin người chơi thất bại'
-    backupQuestsFailed: '§cTạo backup cho toàn bộ nhiệm vụ thất bại'
     adminModeEntered: '§aBạn đã kích hoạt chế độ admin'
     adminModeLeft: '§aBạn đã thoát khỏi chế độ admin'
     resetPlayerPool:
@@ -673,6 +671,7 @@ inv:
   damageCausesList:
     name: Danh sách nguyên nhân thiệu hại
   visibility:
+    name:
     notStarted: '"Chưa bắt đầu" menu tab'
     inProgress: '"Đang thực hiện" menu tab'
     finished: '"Đã hoành thành" menu tab'
@@ -792,6 +791,9 @@ misc:
     dialogLines: '{lines_amount} dòng'
     permissions: '{permissions_amount} quyền'
     mobs: '{mobs_amount} mob'
+  location: |-
+    Tọa độ: {{x} {y} {z}}
+    Thế giới: {world}
   questItemLore: '§e§oVật phẩm nhiệm vụ'
   hologramText: '§8§lNPC Nhiệm vụ'
   poolHologramText: '§eNhiệm vụ khả dụng'

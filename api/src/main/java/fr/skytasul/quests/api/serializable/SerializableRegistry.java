@@ -1,32 +1,36 @@
 package fr.skytasul.quests.api.serializable;
 
+import fr.skytasul.quests.api.utils.logger.LoggerExpanded;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
-import fr.skytasul.quests.api.QuestsPlugin;
 
 /**
  * This class is a registry for types of objects that can be serialized
  * into Spigot configuration system.
- * 
+ *
  * @param <T> type of serializable object
  * @param <C> type of the creator associated with the serializable objects
  */
 public class SerializableRegistry<T extends SerializableObject, C extends SerializableCreator<T>> implements Iterable<C> {
-	
+
 	protected final String id;
 	protected final List<C> creators = new ArrayList<>();
 
+	protected final LoggerExpanded logger;
+
 	public SerializableRegistry(@NotNull String id) {
 		this.id = id;
+
+		this.logger = LoggerExpanded.get("BeautyQuests.Registry " + id);
 	}
-	
+
 	public @NotNull String getID() {
 		return id;
 	}
-	
+
 	/**
 	 * Registers a new type of serializable object.
 	 * @param creator object that will be used to instanciate objects of type <code>&lt;T&gt;</code>
@@ -35,7 +39,7 @@ public class SerializableRegistry<T extends SerializableObject, C extends Serial
 		if (creators.stream().anyMatch(x -> x.getID().equals(creator.getID())))
 			throw new IllegalStateException("A creator with the same id " + creator.getID() + " has been registered.");
 		creators.add(creator);
-		QuestsPlugin.getPlugin().getLoggerExpanded().debug("Quest object registered in registry " + id + " (id: " + creator.getID() + ", class: " + creator.getSerializableClass().getName() + ")");
+		logger.debug("New object: id {0}, class {1}", creator.getID(), creator.getSerializableClass().getName());
 	}
 
 	public @Nullable C getByClass(@NotNull Class<?> clazz) {
@@ -62,5 +66,5 @@ public class SerializableRegistry<T extends SerializableObject, C extends Serial
 	public Iterator<C> iterator() {
 		return creators.iterator();
 	}
-	
+
 }

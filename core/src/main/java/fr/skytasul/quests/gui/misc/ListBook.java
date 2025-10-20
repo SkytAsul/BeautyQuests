@@ -1,25 +1,24 @@
 package fr.skytasul.quests.gui.misc;
 
+import fr.skytasul.quests.api.QuestsAPI;
+import fr.skytasul.quests.api.localization.Lang;
+import fr.skytasul.quests.options.OptionRequirements;
+import fr.skytasul.quests.options.OptionStarterNPC;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.BookMeta;
-import fr.skytasul.quests.api.QuestsAPI;
-import fr.skytasul.quests.api.localization.Lang;
-import fr.skytasul.quests.options.OptionRequirements;
-import fr.skytasul.quests.options.OptionStarterNPC;
-import fr.skytasul.quests.utils.QuestUtils;
 
 public class ListBook{
 
 	public static void openQuestBook(Player p){
 		ItemStack is = new ItemStack(Material.WRITTEN_BOOK);
 		BookMeta im = (BookMeta) is.getItemMeta();
-		
+
 		im.setTitle("Quests list");
 		im.setAuthor("BeautyQuests");
-		
+
 		QuestsAPI.getAPI().getQuestsManager().getQuests().stream().sorted().forEach(qu -> {
 			StringBuilder stb = new StringBuilder(formatLine(Lang.BOOK_NAME.toString(), qu.getName())
 					+ formatLine("ID", qu.getId() + "")
@@ -40,11 +39,11 @@ public class ListBook{
 		if (QuestsAPI.getAPI().getQuestsManager().getQuests().isEmpty()) {
 			im.addPage(Lang.BOOK_NOQUEST.toString());
 		}
-		
+
 		is.setItemMeta(im);
-		QuestUtils.openBook(p, is);
+		p.openBook(is);
 	}
-	
+
 	private static String formatLine(String title, String object){
 		return ChatColor.DARK_GREEN + ChatColor.BOLD.toString() + title + " :§r " + ChatColor.DARK_BLUE + object + "§r\n";
 	}

@@ -1,5 +1,37 @@
 package fr.skytasul.quests.commands;
 
+import fr.skytasul.quests.BeautyQuests;
+import fr.skytasul.quests.api.QuestsAPI;
+import fr.skytasul.quests.api.QuestsPlugin;
+import fr.skytasul.quests.api.commands.OutsideEditor;
+import fr.skytasul.quests.api.data.DataLoadingException;
+import fr.skytasul.quests.api.localization.Lang;
+import fr.skytasul.quests.api.npcs.BqNpc;
+import fr.skytasul.quests.api.quests.Quest;
+import fr.skytasul.quests.api.utils.MinecraftNames;
+import fr.skytasul.quests.api.utils.MinecraftVersion;
+import fr.skytasul.quests.api.utils.messaging.PlaceholderRegistry;
+import fr.skytasul.quests.gui.creation.QuestCreationSession;
+import fr.skytasul.quests.gui.misc.ListBook;
+import fr.skytasul.quests.npcs.BqNpcImplementation;
+import fr.skytasul.quests.players.AdminMode;
+import fr.skytasul.quests.questers.data.sql.SqlDataManager;
+import fr.skytasul.quests.structure.QuestImplementation;
+import fr.skytasul.quests.utils.Database;
+import fr.skytasul.quests.utils.QuestUtils;
+import org.bukkit.Material;
+import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.FireworkMeta;
+import org.bukkit.inventory.meta.ItemMeta;
+import revxrsal.commands.annotation.Optional;
+import revxrsal.commands.annotation.SecretCommand;
+import revxrsal.commands.annotation.Subcommand;
+import revxrsal.commands.annotation.Switch;
+import revxrsal.commands.bukkit.actor.BukkitCommandActor;
+import revxrsal.commands.bukkit.annotation.CommandPermission;
+import revxrsal.commands.exception.CommandErrorException;
+import revxrsal.commands.orphan.OrphanCommand;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
@@ -7,51 +39,20 @@ import java.io.IOException;
 import java.net.URL;
 import java.nio.channels.Channels;
 import java.nio.channels.ReadableByteChannel;
-import java.nio.file.Path;
-import org.bukkit.Material;
-import org.bukkit.entity.Player;
-import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.FireworkMeta;
-import org.bukkit.inventory.meta.ItemMeta;
-import fr.skytasul.quests.BeautyQuests;
-import fr.skytasul.quests.api.QuestsAPI;
-import fr.skytasul.quests.api.QuestsPlugin;
-import fr.skytasul.quests.api.commands.OutsideEditor;
-import fr.skytasul.quests.api.commands.revxrsal.annotation.*;
-import fr.skytasul.quests.api.commands.revxrsal.bukkit.BukkitCommandActor;
-import fr.skytasul.quests.api.commands.revxrsal.bukkit.annotation.CommandPermission;
-import fr.skytasul.quests.api.commands.revxrsal.exception.CommandErrorException;
-import fr.skytasul.quests.api.commands.revxrsal.orphan.OrphanCommand;
-import fr.skytasul.quests.api.localization.Lang;
-import fr.skytasul.quests.api.npcs.BqNpc;
-import fr.skytasul.quests.api.quests.Quest;
-import fr.skytasul.quests.api.utils.MinecraftNames;
-import fr.skytasul.quests.api.utils.MinecraftVersion;
-import fr.skytasul.quests.api.utils.messaging.MessageType;
-import fr.skytasul.quests.api.utils.messaging.MessageUtils;
-import fr.skytasul.quests.api.utils.messaging.PlaceholderRegistry;
-import fr.skytasul.quests.gui.creation.QuestCreationSession;
-import fr.skytasul.quests.gui.misc.ListBook;
-import fr.skytasul.quests.npcs.BqNpcImplementation;
-import fr.skytasul.quests.players.AdminMode;
-import fr.skytasul.quests.players.PlayersManagerDB;
-import fr.skytasul.quests.players.PlayersManagerYAML;
-import fr.skytasul.quests.structure.QuestImplementation;
-import fr.skytasul.quests.utils.Database;
-import fr.skytasul.quests.utils.QuestUtils;
-import fr.skytasul.quests.utils.nms.NMS;
+import java.sql.SQLException;
+import java.util.concurrent.ExecutionException;
 
 public class CommandsAdmin implements OrphanCommand {
 
 	@Subcommand ("create")
 	@CommandPermission (value = "beautyquests.command.create")
 	@OutsideEditor
-	public void create(Player player, @Optional @Flag Integer id) {
+	public void create(Player player, @Optional Integer id) {
 		QuestCreationSession session = new QuestCreationSession(player);
 		if (id != null) {
 			if (id.intValue() < 0) throw new CommandErrorException(Lang.NUMBER_NEGATIVE.toString());
 			if (QuestsAPI.getAPI().getQuestsManager().getQuest(id) != null)
-				throw new CommandErrorException("Invalid quest ID: another quest exists with ID {0}", id);
+				throw new CommandErrorException("Invalid quest ID: another quest exists with ID " + id);
 
 			session.setCustomID(id);
 		}
@@ -92,15 +93,15 @@ public class CommandsAdmin implements OrphanCommand {
 			doRemove(actor, quest);
 		}else {
 			Lang.CHOOSE_NPC_STARTER.send(actor.requirePlayer());
-			QuestsPlugin.getPlugin().getEditorManager().getFactory().createNpcSelection(actor.getAsPlayer(), () -> {
+			QuestsPlugin.getPlugin().getEditorManager().getFactory().createNpcSelection(actor.asPlayer(), () -> {
 			}, npc -> {
 				if (npc == null) return;
 				if (!npc.getQuests().isEmpty()) {
 					QuestsPlugin.getPlugin().getGuiManager().getFactory().createQuestSelection(clickedQuest -> {
 						doRemove(actor, clickedQuest);
-					}, null, npc.getQuests()).open(actor.getAsPlayer());
+					}, null, npc.getQuests()).open(actor.asPlayer());
 				}else {
-					Lang.NPC_NOT_QUEST.send(actor.getAsPlayer());
+					Lang.NPC_NOT_QUEST.send(actor.asPlayer());
 				}
 			}).start();
 		}
@@ -110,11 +111,11 @@ public class CommandsAdmin implements OrphanCommand {
 		if (sender.isPlayer()) {
 			QuestsPlugin.getPlugin().getGuiManager().getFactory().createConfirmation(() -> {
 				quest.delete(false, false);
-				Lang.SUCCESFULLY_REMOVED.send(sender.getSender(), quest);
-			}, null, Lang.INDICATION_REMOVE.format(quest)).open(sender.getAsPlayer());
+				Lang.SUCCESFULLY_REMOVED.send(sender.sender(), quest);
+			}, null, Lang.INDICATION_REMOVE.format(quest)).open(sender.asPlayer());
 		}else {
 			quest.delete(false, false);
-			Lang.SUCCESFULLY_REMOVED.send(sender.getSender(), quest);
+			Lang.SUCCESFULLY_REMOVED.send(sender.sender(), quest);
 		}
 	}
 
@@ -122,7 +123,7 @@ public class CommandsAdmin implements OrphanCommand {
 	@Subcommand ("reload")
 	@CommandPermission ("beautyquests.command.manage")
 	public void reload(BukkitCommandActor actor) {
-		BeautyQuests.getInstance().performReload(actor.getSender());
+		BeautyQuests.getInstance().performReload(actor.sender());
 	}
 
 	@Subcommand ("save")
@@ -131,7 +132,7 @@ public class CommandsAdmin implements OrphanCommand {
 		try {
 			BeautyQuests.getInstance().saveAllConfig(false);
 			actor.reply("§aDatas saved!");
-			QuestsPlugin.getPlugin().getLoggerExpanded().info("Datas saved ~ manual save from " + actor.getName());
+			QuestsPlugin.getPlugin().getLoggerExpanded().info("Datas saved ~ manual save from " + actor.name());
 		}catch (Throwable e) {
 			e.printStackTrace();
 			actor.error("Error while saving the data file.");
@@ -143,24 +144,19 @@ public class CommandsAdmin implements OrphanCommand {
 	public void backup(BukkitCommandActor actor, @Switch boolean force) {
 		if (!force) save(actor);
 
-		boolean success = true;
-		QuestsPlugin.getPlugin().getLoggerExpanded().info("Creating backup due to " + actor.getName() + "'s manual command.");
-		Path backup = BeautyQuests.getInstance().backupDir();
-		if (!BeautyQuests.getInstance().createFolderBackup(backup)) {
-			Lang.BACKUP_QUESTS_FAILED.send(actor.getSender());
-			success = false;
+		try {
+			BeautyQuests.getInstance().performBackup();
+			Lang.BACKUP_CREATED.send(actor.sender());
+		} catch (IOException ex) {
+			Lang.BACKUP_FAILED.send(actor.sender());
+			BeautyQuests.getInstance().getLoggerExpanded().warning("Failed to create backup", ex);
 		}
-		if (!BeautyQuests.getInstance().createDataBackup(backup)) {
-			Lang.BACKUP_PLAYERS_FAILED.send(actor.getSender());
-			success = false;
-		}
-		if (success) Lang.BACKUP_CREATED.send(actor.getSender());
 	}
 
 	@Subcommand ("adminMode")
 	@CommandPermission ("beautyquests.command.adminMode")
 	public void adminMode(BukkitCommandActor actor) {
-		AdminMode.toggle(actor.getSender());
+		AdminMode.toggle(actor.sender());
 	}
 
 	@Subcommand ("exitEditor")
@@ -181,18 +177,12 @@ public class CommandsAdmin implements OrphanCommand {
 	@Subcommand ("list")
 	@CommandPermission ("beautyquests.command.list")
 	public void list(Player player) {
-		if (NMS.isValid()) {
-			ListBook.openQuestBook(player);
-		} else
-			MessageUtils.sendMessage(player, "Version not supported", MessageType.DefaultMessageType.PREFIXED);
+		ListBook.openQuestBook(player);
 	}
 
 	@Subcommand ("downloadTranslations")
 	@CommandPermission ("beautyquests.command.manage")
 	public void downloadTranslations(BukkitCommandActor actor, @Optional String lang, @Switch boolean overwrite) {
-		if (MinecraftVersion.MAJOR < 13)
-			throw new CommandErrorException(Lang.VERSION_REQUIRED.quickFormat("version", "≥ 1.13"));
-
 		if (lang == null)
 			throw new CommandErrorException(Lang.COMMAND_TRANSLATION_SYNTAX.toString());
 
@@ -210,7 +200,7 @@ public class CommandsAdmin implements OrphanCommand {
 				destination.createNewFile();
 				try (FileOutputStream output = new FileOutputStream(destination)) {
 					output.getChannel().transferFrom(channel, 0, Long.MAX_VALUE);
-					Lang.COMMAND_TRANSLATION_DOWNLOADED.quickSend(actor.getSender(), "lang", lang);
+					Lang.COMMAND_TRANSLATION_DOWNLOADED.quickSend(actor.sender(), "lang", lang);
 				}
 			}catch (FileNotFoundException ex) {
 				throw new CommandErrorException(
@@ -226,33 +216,38 @@ public class CommandsAdmin implements OrphanCommand {
 	@Subcommand ("migrateDatas")
 	@CommandPermission ("beautyquests.command.manage")
 	public void migrateDatas(BukkitCommandActor actor) {
-		if (!(QuestsPlugin.getPlugin().getPlayersManager() instanceof PlayersManagerYAML))
-			throw new CommandErrorException("§cYou can't migrate YAML datas to a DB system if you are already using the DB system.");
+		if (BeautyQuests.getInstance().getQuesterManager().getDataManager() instanceof SqlDataManager)
+			throw new CommandErrorException(
+					"§cYou can't migrate datas to a DB system if you are already using the DB system.");
 
 		QuestUtils.runAsync(() -> {
 			actor.reply("§aConnecting to the database.");
-			Database db = null;
-			try {
-				// no try-with-resource because the database is used in another thread
-				db = new Database(BeautyQuests.getInstance().getConfig().getConfigurationSection("database"));
+			try (Database db = new Database(BeautyQuests.getInstance().getConfiguration().getDatabaseConfig())) {
 				db.testConnection();
 				actor.reply("§aConnection to database etablished.");
-				final Database fdb = db;
-				QuestUtils.runSync(() -> {
-					actor.reply("§aStarting migration...");
-					try {
-						actor.reply(PlayersManagerDB.migrate(fdb,
-								(PlayersManagerYAML) QuestsPlugin.getPlugin().getPlayersManager()));
-					}catch (Exception ex) {
-						actor.error("An exception occured during migration. Process aborted. " + ex.getMessage());
-						QuestsPlugin.getPlugin().getLoggerExpanded().severe("Error during data migration", ex);
-					}
-				});
-			} catch (Exception ex) {
+
+				var dataIterator = BeautyQuests.getInstance().getQuesterManager().getDataManager().getAll();
+				var targetDataManager = new SqlDataManager(db);
+				targetDataManager.load(BeautyQuests.getInstance().getQuesterManager());
+
+				try {
+					var results = targetDataManager.importAll(dataIterator).get();
+					actor.reply("Migration done. %d questers migrated, %d failures.".formatted(results.questers(),
+							results.failures()));
+				} finally {
+					targetDataManager.unload();
+				}
+			} catch (DataLoadingException ex) {
+				actor.error("Failed to load SQL questers data manager. " + ex.getMessage());
+				QuestsPlugin.getPlugin().getLoggerExpanded().severe("Error during SQL data manager load", ex);
+			} catch (InterruptedException ex) {
+				Thread.currentThread().interrupt();
+			} catch (ExecutionException ex) {
+				actor.error("An exception occured during migration. Process aborted. " + ex.getMessage());
+				QuestsPlugin.getPlugin().getLoggerExpanded().severe("Error during data migration", ex);
+			} catch (IOException | SQLException ex) {
 				actor.error("§cConnection to database has failed. Aborting. " + ex.getMessage());
 				QuestsPlugin.getPlugin().getLoggerExpanded().severe("An error occurred while connecting to the database for datas migration.", ex);
-				if (db != null)
-					db.close();
 			}
 		});
 	}

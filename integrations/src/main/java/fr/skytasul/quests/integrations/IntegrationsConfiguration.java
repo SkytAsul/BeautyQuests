@@ -1,7 +1,7 @@
 package fr.skytasul.quests.integrations;
 
-import org.bukkit.configuration.file.FileConfiguration;
 import fr.skytasul.quests.api.QuestsPlugin;
+import org.bukkit.configuration.file.FileConfiguration;
 
 public class IntegrationsConfiguration {
 
@@ -10,6 +10,7 @@ public class IntegrationsConfiguration {
 	private String dSetName = "Quests";
 	private String dIcon = "bookshelf";
 	private int dMinZoom = 0;
+	private boolean mythicMobsPetKillToOwner = true;
 
 	public IntegrationsConfiguration(FileConfiguration config) {
 		this.config = config;
@@ -25,6 +26,7 @@ public class IntegrationsConfiguration {
 		dSetName = config.getString("dynmap.markerSetName");
 		dIcon = config.getString("dynmap.markerIcon");
 		dMinZoom = config.getInt("dynmap.minZoom");
+		mythicMobsPetKillToOwner = config.getBoolean("mythicmobs.count kill for pet owner");
 	}
 
 	public String dynmapSetName() {
@@ -37,6 +39,10 @@ public class IntegrationsConfiguration {
 
 	public int dynmapMinimumZoom() {
 		return dMinZoom;
+	}
+
+	public boolean mythicMobsPetKillToOwner() {
+		return mythicMobsPetKillToOwner;
 	}
 
 	public static IntegrationsConfiguration getConfiguration() {

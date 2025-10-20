@@ -1,11 +1,12 @@
 package fr.skytasul.quests.api.gui;
 
+import com.cryptomorin.xseries.inventory.XInventoryView;
+import fr.skytasul.quests.api.gui.close.CloseBehavior;
+import fr.skytasul.quests.api.gui.close.StandardCloseBehavior;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import fr.skytasul.quests.api.gui.close.CloseBehavior;
-import fr.skytasul.quests.api.gui.close.StandardCloseBehavior;
 
 public abstract class AbstractGui implements Gui {
 
@@ -24,7 +25,7 @@ public abstract class AbstractGui implements Gui {
 		} else {
 			refresh(player, inventory);
 		}
-		inventory = player.openInventory(inventory).getTopInventory();
+		inventory = XInventoryView.of(player.openInventory(inventory)).getTopInventory();
 	}
 
 	@Override

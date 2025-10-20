@@ -41,7 +41,7 @@ public final class ItemUtils {
 					.warning("Trying to create an item for an unsupported material " + type.name());
 			type = XMaterial.SPONGE;
 		}
-		if (MinecraftVersion.MAJOR >= 13 && !type.parseMaterial().isItem())
+		if (!type.get().isItem())
 			type = XMaterial.SPONGE;
 		ItemStack is = type.parseItem();
 		ItemMeta im = is.getItemMeta();
@@ -63,7 +63,7 @@ public final class ItemUtils {
 					.warning("Trying to create an item for an unsupported material " + type.name());
 			type = XMaterial.SPONGE;
 		}
-		if (MinecraftVersion.MAJOR >= 13 && !type.parseMaterial().isItem())
+		if (!type.get().isItem())
 			type = XMaterial.SPONGE;
 		ItemStack is = type.parseItem();
 		ItemMeta im = is.getItemMeta();
@@ -155,12 +155,12 @@ public final class ItemUtils {
 		// depending on the item type/attributes/other things
 		if (im.hasEnchants())
 			im.addItemFlags(ItemFlag.HIDE_ENCHANTS);
-		if (MinecraftVersion.MAJOR >= 11 && im.isUnbreakable())
+		if (im.isUnbreakable())
 			im.addItemFlags(ItemFlag.HIDE_UNBREAKABLE);
-		if (material.getMaxDurability() != 0 || (MinecraftVersion.MAJOR > 12 && im.hasAttributeModifiers()))
+		if (material.getMaxDurability() != 0 || im.hasAttributeModifiers())
 			im.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
 		if (im instanceof BookMeta || im instanceof PotionMeta || im instanceof EnchantmentStorageMeta
-				|| (MinecraftVersion.MAJOR >= 12 && im instanceof KnowledgeBookMeta))
+				|| im instanceof KnowledgeBookMeta)
 			im.addItemFlags(Utils.valueOfEnum(ItemFlag.class, "HIDE_POTION_EFFECTS", "HIDE_ADDITIONAL_TOOLTIP"));
 		if (im instanceof LeatherArmorMeta)
 			im.addItemFlags(ItemFlag.HIDE_DYE);
@@ -402,9 +402,7 @@ public final class ItemUtils {
 		if (itemSwitch == null) return null;
 		String name = getName(itemSwitch);
 		name(itemSwitch, (enable ? "§a" : "§7") + name.substring(2));
-		if (MinecraftVersion.MAJOR >= 13) {
-			itemSwitch.setType(enable ? XMaterial.LIME_DYE.parseMaterial() : XMaterial.GRAY_DYE.parseMaterial());
-		}else itemSwitch.setDurability((short) (enable ? 10 : 8));
+		itemSwitch.setType(enable ? XMaterial.LIME_DYE.get() : XMaterial.GRAY_DYE.get());
 		return itemSwitch;
 	}
 

@@ -1,8 +1,14 @@
 package fr.skytasul.quests.scoreboards;
 
-import java.io.File;
-import java.util.*;
-import java.util.function.Consumer;
+import fr.mrmicky.fastboard.FastBoard;
+import fr.skytasul.quests.BeautyQuests;
+import fr.skytasul.quests.api.QuestsConfiguration;
+import fr.skytasul.quests.api.QuestsHandler;
+import fr.skytasul.quests.api.questers.Quester;
+import fr.skytasul.quests.api.questers.events.QuesterJoinEvent;
+import fr.skytasul.quests.api.questers.events.QuesterLeaveEvent;
+import fr.skytasul.quests.api.quests.Quest;
+import fr.skytasul.quests.api.utils.logger.LoggerExpanded;
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
@@ -12,19 +18,17 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.HandlerList;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerChangedWorldEvent;
-import fr.mrmicky.fastboard.FastBoard;
-import fr.skytasul.quests.BeautyQuests;
-import fr.skytasul.quests.api.QuestsConfiguration;
-import fr.skytasul.quests.api.QuestsHandler;
-import fr.skytasul.quests.api.QuestsPlugin;
-import fr.skytasul.quests.api.events.accounts.PlayerAccountJoinEvent;
-import fr.skytasul.quests.api.events.accounts.PlayerAccountLeaveEvent;
-import fr.skytasul.quests.api.players.PlayerAccount;
-import fr.skytasul.quests.api.quests.Quest;
+import org.jetbrains.annotations.NotNull;
+import java.io.File;
+import java.util.*;
+import java.util.function.Consumer;
 
 public class ScoreboardManager implements Listener, QuestsHandler {
 
-	private final File file;
+	static final LoggerExpanded LOGGER = LoggerExpanded.get("BeautyQuests.ScoreboardManager");
+
+	private final @NotNull BeautyQuests plugin;
+	private final @NotNull File configFile;
 	private Map<Player, Scoreboard> scoreboards;
 	private Map<UUID, Boolean> forceHiddenState;
 
@@ -35,12 +39,14 @@ public class ScoreboardManager implements Listener, QuestsHandler {
 	private boolean hide;
 	private boolean refreshLines;
 	private boolean hideUnknownQuestPlaceholders;
+	private int autoHide;
 
 	private List<String> worldsFilter;
 	private boolean isWorldAllowList;
 
-	public ScoreboardManager(File file) {
-		this.file = file;
+	public ScoreboardManager(@NotNull BeautyQuests plugin, @NotNull File configFile) {
+		this.plugin = plugin;
+		this.configFile = configFile;
 	}
 
 	public List<ScoreboardLine> getScoreboardLines(){
@@ -51,7 +57,7 @@ public class ScoreboardManager implements Listener, QuestsHandler {
 		return changeTime;
 	}
 
-	public boolean hideEmtptyScoreboard(){
+	public boolean hideEmptyScoreboard(){
 		return hide;
 	}
 
@@ -75,6 +81,10 @@ public class ScoreboardManager implements Listener, QuestsHandler {
 		return isWorldAllowList() ? getWorldsFilter().contains(worldName) : !getWorldsFilter().contains(worldName);
 	}
 
+	public int getAutoHideTime() {
+		return autoHide;
+	}
+
 	public Scoreboard getPlayerScoreboard(Player p){
 		return scoreboards.get(p);
 	}
@@ -82,7 +92,7 @@ public class ScoreboardManager implements Listener, QuestsHandler {
 	public void removePlayerScoreboard(Player p){
 		Scoreboard scoreboard = scoreboards.remove(p);
 		if (scoreboard != null) {
-			scoreboard.cancel();
+			scoreboard.stop();
 			forceHiddenState.put(p.getUniqueId(), scoreboard.isForceHidden());
 		}
 	}
@@ -92,7 +102,7 @@ public class ScoreboardManager implements Listener, QuestsHandler {
 			return;
 		removePlayerScoreboard(p);
 
-		Scoreboard scoreboard = new Scoreboard(p, this);
+		Scoreboard scoreboard = new Scoreboard(p, this, plugin.getQuesterManager(), plugin.getQuestsManager());
 		scoreboards.put(p, scoreboard);
 
 		Boolean forceHidden = forceHiddenState.remove(p.getUniqueId());
@@ -103,6 +113,8 @@ public class ScoreboardManager implements Listener, QuestsHandler {
 	public void load() {
 		if (!QuestsConfiguration.getConfig().getQuestsConfig().scoreboards())
 			return;
+		if (plugin.isUnitTesting())
+			return;
 
 		try {
 			new FastBoard(null); // trigger class initialization
@@ -110,7 +122,7 @@ public class ScoreboardManager implements Listener, QuestsHandler {
 			throw new IllegalStateException("The Scoreboard util cannot load, probably due to an incompatible server version.", ex);
 		}catch (NullPointerException ex) {} // as we pass a null player to initialize, it will throw NPE
 
-		YamlConfiguration config = YamlConfiguration.loadConfiguration(file);
+		YamlConfiguration config = YamlConfiguration.loadConfiguration(configFile);
 
 		ConfigurationSection questsSection = config.getConfigurationSection("quests");
 		changeTime = questsSection.getInt("changeTime", 11);
@@ -118,13 +130,15 @@ public class ScoreboardManager implements Listener, QuestsHandler {
 		refreshLines = questsSection.getBoolean("refreshLines", true);
 		hideUnknownQuestPlaceholders = questsSection.getBoolean("hide unknown quest placeholders");
 
+		autoHide = config.getInt("auto hide", -1);
+
 		worldsFilter = config.getStringList("worlds.filterList");
 		isWorldAllowList = config.getBoolean("worlds.isAllowList");
 
 		lines.clear();
 		for (Map<?, ?> map : config.getMapList("lines")) {
 			if (lines.size() == 15) {
-				QuestsPlugin.getPlugin().getLoggerExpanded().warning("Limit of 15 scoreboard lines reached - please delete some in scoreboard.yml");
+				LOGGER.warning("Limit of 15 scoreboard lines reached - please delete some in scoreboard.yml");
 				break;
 			}
 			try {
@@ -133,11 +147,11 @@ public class ScoreboardManager implements Listener, QuestsHandler {
 				ex.printStackTrace();
 			}
 		}
-		QuestsPlugin.getPlugin().getLoggerExpanded().debug("Registered " + lines.size() + " lines in scoreboard");
+		LOGGER.debug("Registered {0} lines in scoreboard", lines.size());
 
 		scoreboards = new HashMap<>();
 		forceHiddenState = new HashMap<>();
-		Bukkit.getPluginManager().registerEvents(this, BeautyQuests.getInstance());
+		Bukkit.getPluginManager().registerEvents(this, plugin);
 	}
 
 	@Override
@@ -145,8 +159,10 @@ public class ScoreboardManager implements Listener, QuestsHandler {
 		if (scoreboards == null)
 			return;
 		HandlerList.unregisterAll(this);
-		for (Scoreboard s : scoreboards.values()) s.cancel();
-		if (!scoreboards.isEmpty()) QuestsPlugin.getPlugin().getLoggerExpanded().info(scoreboards.size() + " scoreboards deleted.");
+		for (Scoreboard s : scoreboards.values())
+			s.stop();
+		if (!scoreboards.isEmpty())
+			LOGGER.debug("{0} scoreboards deleted.", scoreboards.size());
 		scoreboards.clear();
 		scoreboards = null;
 		forceHiddenState.clear();
@@ -154,12 +170,12 @@ public class ScoreboardManager implements Listener, QuestsHandler {
 	}
 
 	@EventHandler
-	public void onAccountJoin(PlayerAccountJoinEvent e) {
+	public void onAccountJoin(QuesterJoinEvent e) {
 		create(e.getPlayer());
 	}
 
 	@EventHandler (priority = EventPriority.LOW)
-	public void onAccountLeave(PlayerAccountLeaveEvent e) {
+	public void onAccountLeave(QuesterLeaveEvent e) {
 		removePlayerScoreboard(e.getPlayer());
 	}
 
@@ -190,32 +206,32 @@ public class ScoreboardManager implements Listener, QuestsHandler {
 	}
 
 	@Override
-	public void questFinish(PlayerAccount acc, Quest quest) {
+	public void questFinish(Quester quester, Quest quest) {
 		if (!quest.isScoreboardEnabled()) return;
-		questEvent(acc, x -> x.questRemove(quest));
+		questEvent(quester, x -> x.questRemove(quest, quester));
 	}
 
 	@Override
-	public void questReset(PlayerAccount acc, Quest quest) {
+	public void questReset(Quester quester, Quest quest) {
 		if (!quest.isScoreboardEnabled()) return;
-		questEvent(acc, x -> x.questRemove(quest));
+		questEvent(quester, x -> x.questRemove(quest, quester));
 	}
 
 	@Override
-	public void questUpdated(PlayerAccount acc, Quest quest) {
+	public void questUpdated(Quester quester, Quest quest) {
 		if (!quest.isScoreboardEnabled()) return;
-		questEvent(acc, x -> x.setShownQuest(quest, true));
+		questEvent(quester, x -> x.setShownQuest(quest, quester, true));
 	}
 
 	@Override
-	public void questStart(PlayerAccount acc, Quest quest) {
+	public void questStart(Quester quester, Quest quest) {
 		if (!quest.isScoreboardEnabled()) return;
-		questEvent(acc, x -> x.questAdd(quest));
+		questEvent(quester, x -> x.questAdd(quest, quester));
 	}
 
-	private void questEvent(PlayerAccount acc, Consumer<Scoreboard> consumer) {
-		if (acc.isCurrent()) {
-			Scoreboard scoreboard = scoreboards.get(acc.getPlayer());
+	private void questEvent(Quester quester, Consumer<Scoreboard> consumer) {
+		for (Player player : quester.getOnlinePlayers()) {
+			Scoreboard scoreboard = scoreboards.get(player);
 			if (scoreboard != null) consumer.accept(scoreboard);
 		}
 	}

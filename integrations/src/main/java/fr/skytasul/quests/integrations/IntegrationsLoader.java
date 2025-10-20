@@ -1,5 +1,6 @@
 package fr.skytasul.quests.integrations;
 
+import com.cryptomorin.xseries.XMaterial;
 import fr.skytasul.quests.api.AbstractHolograms;
 import fr.skytasul.quests.api.QuestsAPI;
 import fr.skytasul.quests.api.QuestsPlugin;
@@ -9,7 +10,6 @@ import fr.skytasul.quests.api.requirements.RequirementCreator;
 import fr.skytasul.quests.api.rewards.RewardCreator;
 import fr.skytasul.quests.api.utils.IntegrationManager;
 import fr.skytasul.quests.api.utils.IntegrationManager.BQDependency;
-import fr.skytasul.quests.api.utils.XMaterial;
 import fr.skytasul.quests.integrations.fabled.FabledClassRequirement;
 import fr.skytasul.quests.integrations.fabled.FabledLevelRequirement;
 import fr.skytasul.quests.integrations.fabled.FabledXpReward;
@@ -51,8 +51,7 @@ public class IntegrationsLoader {
 		IntegrationManager manager = QuestsPlugin.getPlugin().getIntegrationManager();
 
 		// NPCS
-		manager.addDependency(new BQDependency("ServersNPC",
-				() -> QuestsAPI.getAPI().addNpcFactory("znpcs", new BQServerNPCs()), null, this::isZnpcsVersionValid));
+		manager.addDependency(new BQDependency("ServersNPC", this::registerZNPCs, null, this::isZNPCsVersionValid));
 
 		manager.addDependency(new BQDependency("ZNPCsPlus", this::registerZnpcsPlus));
 
@@ -237,25 +236,21 @@ public class IntegrationsLoader {
 		}
 	}
 
-	private boolean isZnpcsVersionValid(Plugin plugin) {
+	private boolean isZNPCsVersionValid(Plugin plugin) {
 		if (plugin.getClass().getName().equals("io.github.gonalez.znpcs.ServersNPC")) // NOSONAR
 			return true;
 
-		QuestsPlugin.getPlugin().getLoggerExpanded().warning("Your version of znpcs ("
-				+ plugin.getDescription().getVersion() + ") is not supported by BeautyQuests.");
+		QuestsPlugin.getPlugin().getLoggerExpanded().warning("Your version of znpcs ({}) is not supported by BeautyQuests.",
+				plugin.getDescription().getVersion());
 		return false;
 	}
 
-	private void registerZnpcsPlus() {
-		try {
-			Class.forName("lol.pyr.znpcsplus.api.NpcApiProvider");
-			QuestsAPI.getAPI().addNpcFactory("znpcsplus", new BQZNPCsPlus());
-		} catch (ClassNotFoundException ex) {
-			QuestsAPI.getAPI().addNpcFactory("znpcsplus", new BQZNPCsPlusOld()); // TODO remove, old version of znpcs+
+	private void registerZNPCs() {
+		QuestsAPI.getAPI().addNpcFactory("znpcs", new BQServerNPCs());
+	}
 
-			QuestsPlugin.getPlugin().getLoggerExpanded()
-					.warning("Your version of ZNPCsPlus will soon not be supported by BeautyQuests.");
-		}
+	private void registerZnpcsPlus() {
+		QuestsAPI.getAPI().addNpcFactory("znpcsplus", new BQZNPCsPlus());
 	}
 
 	private void registerTooltips() {

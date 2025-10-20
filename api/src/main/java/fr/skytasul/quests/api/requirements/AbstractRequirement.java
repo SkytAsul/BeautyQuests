@@ -1,11 +1,5 @@
 package fr.skytasul.quests.api.requirements;
 
-import java.util.Map;
-import org.bukkit.configuration.ConfigurationSection;
-import org.bukkit.entity.Player;
-import org.bukkit.event.inventory.ClickType;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 import fr.skytasul.quests.api.QuestsAPI;
 import fr.skytasul.quests.api.editors.TextEditor;
 import fr.skytasul.quests.api.gui.LoreBuilder;
@@ -13,12 +7,17 @@ import fr.skytasul.quests.api.localization.Lang;
 import fr.skytasul.quests.api.objects.QuestObject;
 import fr.skytasul.quests.api.objects.QuestObjectClickEvent;
 import fr.skytasul.quests.api.serializable.SerializableObject;
-import fr.skytasul.quests.api.utils.messaging.MessageType;
 import fr.skytasul.quests.api.utils.messaging.MessageUtils;
 import fr.skytasul.quests.api.utils.messaging.PlaceholderRegistry;
+import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.entity.Player;
+import org.bukkit.event.inventory.ClickType;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+import java.util.Map;
 
 public abstract class AbstractRequirement extends QuestObject {
-	
+
 	protected static final String CUSTOM_REASON_KEY = "customReason";
 
 	private String customReason;
@@ -31,7 +30,7 @@ public abstract class AbstractRequirement extends QuestObject {
 		super(QuestsAPI.getAPI().getRequirements(), customDescription);
 		this.customReason = customReason;
 	}
-	
+
 	public @Nullable String getCustomReason() {
 		return customReason;
 	}
@@ -46,13 +45,15 @@ public abstract class AbstractRequirement extends QuestObject {
 	 * @return if the player fills conditions of this requirement
 	 */
 	public abstract boolean test(@NotNull Player p);
-	
+
 	/**
-	 * Called if the condition if not filled and if the plugin allows to send a message to the player
-	 * @param player Player to send the reason
+	 * Gets the reason the requirement has not matched for a player.
+	 *
+	 * @param player
+	 * @return a string explaining why {@link #test(Player)} returned <code>false</code>
 	 */
-	public final boolean sendReason(@NotNull Player player) {
-		String reason;
+	public @Nullable String getReason(@NotNull Player player) {
+		String reason = null;
 
 		if (!isValid())
 			reason = "§cerror: " + getInvalidReason();
@@ -61,18 +62,16 @@ public abstract class AbstractRequirement extends QuestObject {
 		else
 			reason = getDefaultReason(player);
 
-		if (reason != null && !reason.isEmpty() && !"none".equals(reason)) {
-			MessageUtils.sendMessage(player, reason, MessageType.DefaultMessageType.PREFIXED, getPlaceholdersRegistry());
-			return true;
-		}
+		if (reason != null && !reason.isEmpty() && !"none".equals(reason))
+			return MessageUtils.format(reason, getPlaceholdersRegistry());
 
-		return false;
+		return null;
 	}
 
 	/**
 	 * Gets the reason sent to the player in the chat if it does not meet the requirements and the user
 	 * has not set a particular requirement reason.
-	 * 
+	 *
 	 * @param player player to get the message for
 	 * @return the reason of the requirement (nullable)
 	 */
@@ -124,7 +123,7 @@ public abstract class AbstractRequirement extends QuestObject {
 
 	@Override
 	public abstract @NotNull AbstractRequirement clone();
-	
+
 	@Override
 	public void save(@NotNull ConfigurationSection section) {
 		super.save(section);
@@ -142,5 +141,5 @@ public abstract class AbstractRequirement extends QuestObject {
 	public static @NotNull AbstractRequirement deserialize(Map<String, Object> map) {
 		return SerializableObject.deserialize(map, QuestsAPI.getAPI().getRequirements());
 	}
-	
+
 }

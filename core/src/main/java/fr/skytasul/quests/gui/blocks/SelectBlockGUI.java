@@ -1,5 +1,6 @@
 package fr.skytasul.quests.gui.blocks;
 
+import com.cryptomorin.xseries.XMaterial;
 import fr.skytasul.quests.BeautyQuests;
 import fr.skytasul.quests.api.QuestsPlugin;
 import fr.skytasul.quests.api.blocks.BQBlock;
@@ -12,11 +13,9 @@ import fr.skytasul.quests.api.gui.layout.LayoutedClickEvent;
 import fr.skytasul.quests.api.gui.layout.LayoutedGUI;
 import fr.skytasul.quests.api.localization.Lang;
 import fr.skytasul.quests.api.options.QuestOption;
-import fr.skytasul.quests.api.utils.MinecraftVersion;
-import fr.skytasul.quests.api.utils.XMaterial;
 import fr.skytasul.quests.api.utils.messaging.PlaceholderRegistry;
-import fr.skytasul.quests.utils.compatibility.Post1_13;
 import fr.skytasul.quests.utils.nms.NMS;
+import net.kyori.adventure.key.Key;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
@@ -59,7 +58,7 @@ public class SelectBlockGUI extends LayoutedGUI.LayoutedRowsGUI {
 			@Override
 			public void place(@NotNull Inventory inventory, int slot) {
 				XMaterial mat = type;
-				if (MinecraftVersion.MAJOR >= 13 && !Post1_13.isItem(type.parseMaterial()))
+				if (!type.get().isItem())
 					mat = XMaterial.STONE;
 				placeInternal(inventory, slot, mat);
 
@@ -81,24 +80,22 @@ public class SelectBlockGUI extends LayoutedGUI.LayoutedRowsGUI {
 			}
 
 		});
-		if (MinecraftVersion.MAJOR >= 13) {
-			buttons.put(5, LayoutedButton.create(() -> {
-				ItemStack item = ItemUtils.item(XMaterial.COMMAND_BLOCK, Lang.blockData.toString(),
-						QuestOption.formatNullableValue(blockData, blockData == null));
-				if (blockData != null)
-					ItemUtils.setGlittering(item, true);
-				return item;
-			}, this::dataClick));
+		buttons.put(5, LayoutedButton.create(() -> {
+			ItemStack item = ItemUtils.item(XMaterial.COMMAND_BLOCK, Lang.blockData.toString(),
+					QuestOption.formatNullableValue(blockData, blockData == null));
+			if (blockData != null)
+				ItemUtils.setGlittering(item, true);
+			return item;
+		}, this::dataClick));
 
-			buttons.put(6, LayoutedButton.create(() -> {
-				ItemStack item = ItemUtils.item(XMaterial.FILLED_MAP, Lang.blockTag.toString(),
-						QuestOption.formatDescription(Lang.blockTagLore.toString()), "",
-						QuestOption.formatNullableValue(tag, tag == null));
-				if (tag != null)
-					ItemUtils.setGlittering(item, true);
-				return item;
-			}, this::tagClick));
-		}
+		buttons.put(6, LayoutedButton.create(() -> {
+			ItemStack item = ItemUtils.item(XMaterial.FILLED_MAP, Lang.blockTag.toString(),
+					QuestOption.formatDescription(Lang.blockTagLore.toString()), "",
+					QuestOption.formatNullableValue(tag, tag == null));
+			if (tag != null)
+				ItemUtils.setGlittering(item, true);
+			return item;
+		}, this::tagClick));
 
 		buttons.put(8, LayoutedButton.create(QuestsPlugin.getPlugin().getGuiManager().getItemFactory().getDone(), this::doneClick));
 	}
@@ -157,11 +154,10 @@ public class SelectBlockGUI extends LayoutedGUI.LayoutedRowsGUI {
 	}
 
 	private void tagClick(LayoutedClickEvent event) {
-		String tagList = NMS.getNMS().getAvailableBlockTags().stream().map(tag -> {
-			NamespacedKey key = NamespacedKey.fromString(tag);
-			if (key.getNamespace().equals(NamespacedKey.MINECRAFT))
-				return key.getKey();
-			return key.toString();
+		String tagList = NMS.getNMS().getAvailableBlockTags().stream().map(key -> {
+			if (key.namespace() == Key.MINECRAFT_NAMESPACE)
+				return key.value();
+			return key.asString();
 		}).sorted().collect(Collectors.joining(", "));
 		Lang.BLOCK_TAGS.quickSend(event.getPlayer(), "available_tags", tagList);
 

@@ -1,5 +1,6 @@
 package fr.skytasul.quests.stages;
 
+import com.cryptomorin.xseries.XMaterial;
 import fr.skytasul.quests.api.editors.WaitBlockClick;
 import fr.skytasul.quests.api.gui.ItemUtils;
 import fr.skytasul.quests.api.localization.Lang;
@@ -12,8 +13,6 @@ import fr.skytasul.quests.api.stages.creation.StageGuiLine;
 import fr.skytasul.quests.api.stages.types.Locatable;
 import fr.skytasul.quests.api.stages.types.Locatable.LocatableType;
 import fr.skytasul.quests.api.stages.types.Locatable.LocatedType;
-import fr.skytasul.quests.api.utils.MinecraftVersion;
-import fr.skytasul.quests.api.utils.XMaterial;
 import fr.skytasul.quests.api.utils.messaging.PlaceholderRegistry;
 import fr.skytasul.quests.utils.types.BQLocation;
 import org.bukkit.Location;
@@ -65,7 +64,8 @@ public class StageInteractLocation extends AbstractStage implements Locatable.Pr
 	@EventHandler
 	public void onInteract(PlayerInteractEvent e){
 		if (e.getClickedBlock() == null) return;
-		if (MinecraftVersion.MAJOR >= 9 && e.getHand() != EquipmentSlot.HAND) return;
+		if (e.getHand() != EquipmentSlot.HAND)
+			return;
 
 		if (left){
 			if (e.getAction() != Action.LEFT_CLICK_BLOCK) return;
@@ -75,9 +75,9 @@ public class StageInteractLocation extends AbstractStage implements Locatable.Pr
 			return;
 
 		Player p = e.getPlayer();
-		if (hasStarted(p) && canUpdate(p)) {
+		if (hasApplicableQuester(p) && matchesRequirements(p)) {
 			e.setCancelled(true);
-			finishStage(p);
+			controller.getApplicableQuesters(p).forEach(this::finishStage);
 		}
 	}
 

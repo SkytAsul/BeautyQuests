@@ -1,8 +1,5 @@
 package fr.skytasul.quests.utils;
 
-import fr.skytasul.quests.api.utils.MinecraftVersion;
-import fr.skytasul.quests.utils.compatibility.Post1_13;
-import fr.skytasul.quests.utils.nms.NMS;
 import org.apache.commons.lang.Validate;
 import org.bukkit.Color;
 import org.bukkit.Location;
@@ -12,7 +9,6 @@ import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Random;
 
@@ -34,7 +30,7 @@ public class ParticleEffect {
 		this.color = color;
 
 		if (type.dustColored) {
-			dustColor = Post1_13.getDustColor(color, 1);
+			dustColor = new Particle.DustOptions(color, 1);
 			colors = null;
 		}else if (type.colored && bukkitType != Particle.NOTE) {
 			dustColor = null;
@@ -67,7 +63,7 @@ public class ParticleEffect {
 	}
 
 	public void send(Entity entity, List<Player> players) {
-		send(entity.getLocation(), NMS.getNMS().entityNameplateHeight(entity), players);
+		send(entity.getLocation(), entity.getHeight(), players);
 	}
 
 	public void send(Location bottom, double height, List<Player> players) {
@@ -132,8 +128,7 @@ public class ParticleEffect {
 	}
 
 	public static boolean canHaveColor(Particle particle) {
-		if (MinecraftVersion.MAJOR >= 13) return particle.getDataType() == Post1_13.getDustOptionClass();
-		return Arrays.asList("REDSTONE", "SPELL_MOB", "SPELL_MOB_AMBIENT").contains(particle.name());
+		return particle.getDataType() == Particle.DustOptions.class;
 	}
 
 	public enum ParticleShape {
@@ -152,17 +147,14 @@ public class ParticleEffect {
 			if (particle == Particle.NOTE) {
 				colored = true;
 				dustColored = false;
-			}else if (MinecraftVersion.MAJOR >= 13) {
-				if (particle.getDataType() == Post1_13.getDustOptionClass()) {
+			} else {
+				if (particle.getDataType() == Particle.DustOptions.class) {
 					colored = true;
 					dustColored = true;
 				}else {
 					colored = false;
 					dustColored = false;
 				}
-			}else {
-				colored = canHaveColor(particle);
-				dustColored = false;
 			}
 
 			if (particle.getDataType() != Void.class && !dustColored) throw new IllegalArgumentException("Particle type " + particle.name() + " must have a " + particle.getDataType().getName() + " data");

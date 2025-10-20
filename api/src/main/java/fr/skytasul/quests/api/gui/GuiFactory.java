@@ -1,26 +1,25 @@
 package fr.skytasul.quests.api.gui;
 
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.List;
-import java.util.function.Consumer;
-import java.util.function.Predicate;
+import fr.skytasul.quests.api.blocks.BQBlock;
+import fr.skytasul.quests.api.comparison.ItemComparisonMap;
+import fr.skytasul.quests.api.npcs.BqNpc;
+import fr.skytasul.quests.api.quests.Quest;
+import fr.skytasul.quests.api.utils.CountableObject.MutableCountableObject;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import fr.skytasul.quests.api.blocks.BQBlock;
-import fr.skytasul.quests.api.comparison.ItemComparisonMap;
-import fr.skytasul.quests.api.npcs.BqNpc;
-import fr.skytasul.quests.api.players.PlayerAccount;
-import fr.skytasul.quests.api.quests.Quest;
-import fr.skytasul.quests.api.utils.CountableObject.MutableCountableObject;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.List;
+import java.util.function.Consumer;
+import java.util.function.Predicate;
 
 public interface GuiFactory {
 
 	@NotNull
-	Gui createPlayerQuestsMenu(@NotNull PlayerAccount account);
+	Gui createPlayerQuestsMenu(@NotNull Player player);
 
 	@NotNull
 	Gui createItemSelection(@NotNull Consumer<ItemStack> callback, boolean allowCancel);

@@ -1,14 +1,14 @@
 package fr.skytasul.quests.mobs;
 
+import com.cryptomorin.xseries.XMaterial;
 import fr.skytasul.quests.api.QuestsPlugin;
 import fr.skytasul.quests.api.gui.ItemUtils;
 import fr.skytasul.quests.api.localization.Lang;
 import fr.skytasul.quests.api.mobs.MobFactory;
 import fr.skytasul.quests.api.utils.MinecraftNames;
-import fr.skytasul.quests.api.utils.XMaterial;
+import fr.skytasul.quests.api.utils.Utils;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
-import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -69,9 +69,10 @@ public class BukkitEntityFactory implements MobFactory<EntityType>, Listener {
 
 	@EventHandler(priority = EventPriority.MONITOR)
 	public void onEntityKilled(EntityDeathEvent e) {
-		LivingEntity en = e.getEntity();
-		if (en.getKiller() == null) return;
-		callEvent(e, en.getType(), en, en.getKiller());
+		var killer = Utils.getEntityKiller(e.getEntity());
+		if (killer == null)
+			return;
+		callEvent(e, e.getEntity().getType(), e.getEntity(), killer);
 	}
 
 }

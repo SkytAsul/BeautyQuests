@@ -1,15 +1,6 @@
 package fr.skytasul.quests.integrations.worldguard;
 
-import org.apache.commons.lang.Validate;
-import org.bukkit.Bukkit;
-import org.bukkit.Location;
-import org.bukkit.World;
-import org.bukkit.configuration.ConfigurationSection;
-import org.bukkit.entity.Player;
-import org.bukkit.event.EventHandler;
-import org.bukkit.event.Listener;
-import org.bukkit.event.player.PlayerMoveEvent;
-import org.jetbrains.annotations.NotNull;
+import com.cryptomorin.xseries.XMaterial;
 import com.sk89q.worldedit.bukkit.BukkitAdapter;
 import com.sk89q.worldguard.protection.regions.GlobalProtectedRegion;
 import com.sk89q.worldguard.protection.regions.ProtectedRegion;
@@ -18,7 +9,7 @@ import fr.skytasul.quests.api.editors.TextEditor;
 import fr.skytasul.quests.api.gui.ItemUtils;
 import fr.skytasul.quests.api.localization.Lang;
 import fr.skytasul.quests.api.options.QuestOption;
-import fr.skytasul.quests.api.players.PlayerAccount;
+import fr.skytasul.quests.api.questers.Quester;
 import fr.skytasul.quests.api.stages.AbstractStage;
 import fr.skytasul.quests.api.stages.StageController;
 import fr.skytasul.quests.api.stages.StageDescriptionPlaceholdersContext;
@@ -28,10 +19,19 @@ import fr.skytasul.quests.api.stages.creation.StageGuiLine;
 import fr.skytasul.quests.api.stages.types.Locatable;
 import fr.skytasul.quests.api.stages.types.Locatable.LocatableType;
 import fr.skytasul.quests.api.stages.types.Locatable.LocatedType;
-import fr.skytasul.quests.api.utils.XMaterial;
 import fr.skytasul.quests.api.utils.messaging.MessageType;
 import fr.skytasul.quests.api.utils.messaging.MessageUtils;
 import fr.skytasul.quests.api.utils.messaging.PlaceholderRegistry;
+import org.apache.commons.lang.Validate;
+import org.bukkit.Bukkit;
+import org.bukkit.Location;
+import org.bukkit.World;
+import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.entity.Player;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.Listener;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 @LocatableType (types = LocatedType.OTHER)
 public class StageArea extends AbstractStage implements Locatable.PreciseLocatable, Listener {
@@ -60,31 +60,18 @@ public class StageArea extends AbstractStage implements Locatable.PreciseLocatab
 	}
 
 	@EventHandler
-	public void onPlayerMove(PlayerMoveEvent e) {
-		if (BQWorldGuard.getInstance().doHandleEntry())
-			return; // on WG 7.0 or higher
-		if (e.getFrom().getBlockX() == e.getTo().getBlockX() && e.getFrom().getBlockY() == e.getTo().getBlockY()
-				&& e.getFrom().getBlockZ() == e.getTo().getBlockZ())
-			return;
-		if (hasStarted(e.getPlayer()) && canUpdate(e.getPlayer())) {
-			if (world.equals(e.getTo().getWorld())
-					&& BQWorldGuard.getInstance().isInRegion(region, e.getTo(), false) == !exit) {
-				finishStage(e.getPlayer());
-			}
-		}
-	}
-
-	@EventHandler
 	public void onRegionEntry(WorldGuardEntryEvent e) {
 		if (exit)
 			return;
 		if (region == null) {
-			QuestsPlugin.getPlugin().getLoggerExpanded().warning("No region for " + toString(), this, 15);
+			QuestsPlugin.getPlugin().getLoggerExpanded().namedWarning("No region for " + toString(), this, 60);
 			return;
 		}
+
 		if (e.getPlayer().getWorld().equals(world) && e.getRegionsEntered().contains(region)) {
-			if (hasStarted(e.getPlayer()) && canUpdate(e.getPlayer()))
-				finishStage(e.getPlayer());
+			if (matchesRequirements(e.getPlayer()))
+				for (Quester quester : controller.getApplicableQuesters(e.getPlayer()))
+					testFinition(quester, e.getPlayer());
 		}
 	}
 
@@ -93,22 +80,32 @@ public class StageArea extends AbstractStage implements Locatable.PreciseLocatab
 		if (!exit)
 			return;
 		if (region == null) {
-			QuestsPlugin.getPlugin().getLoggerExpanded().warning("No region for " + toString(), this, 15);
+			QuestsPlugin.getPlugin().getLoggerExpanded().namedWarning("No region for " + toString(), this, 60);
 			return;
 		}
 		if (e.getPlayer().getWorld().equals(world) && e.getRegionsExited().contains(region)) {
-			if (hasStarted(e.getPlayer()) && canUpdate(e.getPlayer()))
-				finishStage(e.getPlayer());
+			if (matchesRequirements(e.getPlayer()))
+				for (Quester quester : controller.getApplicableQuesters(e.getPlayer()))
+					testFinition(quester, e.getPlayer());
 		}
 	}
 
 	@Override
-	public void started(@NotNull PlayerAccount acc) {
-		super.started(acc);
-		if (acc.isCurrent()) {
-			if (BQWorldGuard.getInstance().isInRegion(region, acc.getPlayer().getLocation(), false))
-				finishStage(acc.getPlayer());
+	public void started(@NotNull Quester quester) {
+		super.started(quester);
+		testFinition(quester, null);
+	}
+
+	private void testFinition(@NotNull Quester quester, @Nullable Player realPlayer) {
+		for (var questerPlayer : quester.getOnlinePlayers()) {
+			if (realPlayer != null && questerPlayer.equals(realPlayer))
+				continue;
+
+			if (BQWorldGuard.getInstance().isInRegion(region, questerPlayer.getLocation(), false) == exit)
+				return;
 		}
+		// if we arrive here, it means no player is outside the region: the stage is complete!
+		finishStage(quester);
 	}
 
 	@Override

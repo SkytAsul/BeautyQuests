@@ -1,0 +1,28 @@
+package fr.skytasul.quests.api.quests.events.questers;
+
+import fr.skytasul.quests.api.questers.Quester;
+import fr.skytasul.quests.api.quests.Quest;
+import org.bukkit.event.HandlerList;
+import org.jetbrains.annotations.NotNull;
+
+/**
+ * Called when a player starts a quest
+ */
+public class QuesterQuestLaunchEvent extends AbstractQuesterQuestEvent {
+
+	public QuesterQuestLaunchEvent(@NotNull Quester quester, @NotNull Quest quest) {
+		super(quester, quest);
+	}
+
+	@Override
+	public HandlerList getHandlers() {
+		return handlers;
+	}
+
+	public static HandlerList getHandlerList() {
+		return handlers;
+	}
+
+	private static final HandlerList handlers = new HandlerList();
+
+}

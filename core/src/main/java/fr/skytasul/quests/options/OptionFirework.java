@@ -1,20 +1,20 @@
 package fr.skytasul.quests.options;
 
-import java.util.ArrayList;
-import java.util.List;
-import org.bukkit.configuration.ConfigurationSection;
-import org.bukkit.event.inventory.ClickType;
-import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.FireworkMeta;
-import org.bukkit.inventory.meta.ItemMeta;
+import com.cryptomorin.xseries.XMaterial;
 import fr.skytasul.quests.api.QuestsConfiguration;
 import fr.skytasul.quests.api.gui.ItemUtils;
 import fr.skytasul.quests.api.localization.Lang;
 import fr.skytasul.quests.api.options.OptionSet;
 import fr.skytasul.quests.api.options.QuestOption;
 import fr.skytasul.quests.api.quests.creation.QuestCreationGuiClickEvent;
-import fr.skytasul.quests.api.utils.XMaterial;
 import fr.skytasul.quests.utils.QuestUtils;
+import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.event.inventory.ClickType;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.FireworkMeta;
+import org.bukkit.inventory.meta.ItemMeta;
+import java.util.ArrayList;
+import java.util.List;
 
 public class OptionFirework extends QuestOption<FireworkMeta> {
 	

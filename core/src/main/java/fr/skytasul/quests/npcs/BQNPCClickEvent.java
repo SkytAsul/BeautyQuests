@@ -1,12 +1,12 @@
 package fr.skytasul.quests.npcs;
 
+import fr.skytasul.quests.api.npcs.BqNpc;
+import fr.skytasul.quests.api.npcs.NpcClickType;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Cancellable;
 import org.bukkit.event.HandlerList;
 import org.bukkit.event.player.PlayerEvent;
 import org.jetbrains.annotations.NotNull;
-import fr.skytasul.quests.api.npcs.BqNpc;
-import fr.skytasul.quests.api.npcs.NpcClickType;
 
 public class BQNPCClickEvent extends PlayerEvent implements Cancellable {
 	

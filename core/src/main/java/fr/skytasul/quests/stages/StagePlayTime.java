@@ -1,5 +1,6 @@
 package fr.skytasul.quests.stages;
 
+import com.cryptomorin.xseries.XMaterial;
 import fr.skytasul.quests.BeautyQuests;
 import fr.skytasul.quests.api.QuestsPlugin;
 import fr.skytasul.quests.api.editors.TextEditor;
@@ -7,8 +8,8 @@ import fr.skytasul.quests.api.editors.parsers.DurationParser.MinecraftTimeUnit;
 import fr.skytasul.quests.api.gui.ItemUtils;
 import fr.skytasul.quests.api.localization.Lang;
 import fr.skytasul.quests.api.options.QuestOption;
-import fr.skytasul.quests.api.players.PlayerAccount;
-import fr.skytasul.quests.api.players.PlayersManager;
+import fr.skytasul.quests.api.players.PlayerManager;
+import fr.skytasul.quests.api.questers.Quester;
 import fr.skytasul.quests.api.requirements.RequirementList;
 import fr.skytasul.quests.api.stages.AbstractStage;
 import fr.skytasul.quests.api.stages.StageController;
@@ -16,11 +17,9 @@ import fr.skytasul.quests.api.stages.StageDescriptionPlaceholdersContext;
 import fr.skytasul.quests.api.stages.creation.StageCreation;
 import fr.skytasul.quests.api.stages.creation.StageCreationContext;
 import fr.skytasul.quests.api.stages.creation.StageGuiLine;
-import fr.skytasul.quests.api.utils.MinecraftVersion;
 import fr.skytasul.quests.api.utils.Utils;
-import fr.skytasul.quests.api.utils.XMaterial;
 import fr.skytasul.quests.api.utils.messaging.PlaceholderRegistry;
-import fr.skytasul.quests.api.utils.messaging.PlaceholdersContext.PlayerPlaceholdersContext;
+import fr.skytasul.quests.api.utils.messaging.PlaceholdersContext.QuesterPlaceholdersContext;
 import fr.skytasul.quests.api.utils.progress.HasProgress;
 import fr.skytasul.quests.api.utils.progress.ProgressPlaceholders;
 import org.bukkit.Bukkit;
@@ -58,12 +57,12 @@ public class StagePlayTime extends AbstractStage implements HasProgress {
 	@Override
 	protected void createdPlaceholdersRegistry(@NotNull PlaceholderRegistry placeholders) {
 		super.createdPlaceholdersRegistry(placeholders);
-		placeholders.registerIndexedContextual("time_remaining_human", PlayerPlaceholdersContext.class,
-				context -> Utils.millisToHumanString(getPlayerAmount(context.getPlayerAccount())));
+		placeholders.registerIndexedContextual("time_remaining_human", QuesterPlaceholdersContext.class,
+				context -> Utils.millisToHumanString(getRemainingAmount(context.getQuester())));
 		ProgressPlaceholders.registerProgress(placeholders, "time", this);
 	}
 
-	private long getRemaining(PlayerAccount acc) {
+	private long getRemaining(Quester acc) {
 		switch (timeMode) {
 			case ONLINE:
 				long remaining = getData(acc, "remainingTime", Long.class);
@@ -73,10 +72,9 @@ public class StagePlayTime extends AbstractStage implements HasProgress {
 			case OFFLINE:
 				World world = Bukkit.getWorld(getData(acc, "worldUuid", UUID.class));
 				if (world == null) {
-					QuestsPlugin.getPlugin().getLoggerExpanded().warning("Cannot get remaining time of " + acc.getNameAndID()
-							+ " for " + controller + " because the world has changed.",
-							acc.getNameAndID() + hashCode() + "time",
-							15);
+					QuestsPlugin.getPlugin().getLoggerExpanded().namedWarning(
+							"Cannot get remaining time of {} for {} because the world has changed.",
+							acc.getIdentifier() + hashCode() + "time", 15, acc.getFriendlyName(), controller);
 					return -1;
 				}
 
@@ -92,13 +90,15 @@ public class StagePlayTime extends AbstractStage implements HasProgress {
 	}
 
 	private void launchTask(Player p, long remaining) {
-		tasks.put(p, Bukkit.getScheduler().runTaskLater(BeautyQuests.getInstance(), () -> finishStage(p),
+		tasks.put(p,
+				Bukkit.getScheduler().runTaskLater(BeautyQuests.getInstance(),
+						() -> controller.getApplicableQuesters(p).forEach(this::finishStage),
 				remaining < 0 ? 0 : remaining));
 	}
 
 	@Override
-	public long getPlayerAmount(@NotNull PlayerAccount account) {
-		return getRemaining(account) * 50L;
+	public long getRemainingAmount(@NotNull Quester quester) {
+		return getRemaining(quester) * 50L;
 	}
 
 	@Override
@@ -107,16 +107,16 @@ public class StagePlayTime extends AbstractStage implements HasProgress {
 	}
 
 	@Override
-	public void joined(Player p) {
-		super.joined(p);
+	public void joined(Player p, Quester quester) {
+		super.joined(p, null);
 		if (timeMode == TimeMode.ONLINE)
-			updateObjective(p, "lastJoin", System.currentTimeMillis());
-		launchTask(p, getRemaining(PlayersManager.getPlayerAccount(p)));
+			updateObjective(quester, "lastJoin", System.currentTimeMillis());
+		launchTask(p, getRemaining(quester));
 	}
 
 	@Override
-	public void left(Player p) {
-		super.left(p);
+	public void left(Player p, Quester quester) {
+		super.left(p, null);
 		BukkitTask task = tasks.remove(p);
 		if (task != null) {
 			cancelTask(p, task);
@@ -128,28 +128,28 @@ public class StagePlayTime extends AbstractStage implements HasProgress {
 
 	private void cancelTask(Player p, BukkitTask task) {
 		task.cancel();
-		if (timeMode == TimeMode.ONLINE)
-			updateObjective(p, "remainingTime", getRemaining(PlayersManager.getPlayerAccount(p)));
+		if (timeMode == TimeMode.ONLINE) {
+			var quester = PlayerManager.getPlayerAccount(p);
+			updateObjective(quester, "remainingTime", getRemaining(quester));
+		}
 	}
 
 	@Override
-	public void started(PlayerAccount acc) {
-		super.started(acc);
+	public void started(Quester quester) {
+		super.started(quester);
 
-		if (acc.isCurrent())
-			launchTask(acc.getPlayer(), playTicks);
+		quester.getOnlinePlayers().forEach(p -> launchTask(p, playTicks));
 	}
 
 	@Override
-	public void ended(PlayerAccount acc) {
-		super.ended(acc);
+	public void ended(Quester quester) {
+		super.ended(quester);
 
-		if (acc.isCurrent())
-			tasks.remove(acc.getPlayer()).cancel();
+		quester.getOnlinePlayers().forEach(p -> tasks.remove(p).cancel());
 	}
 
 	@Override
-	public void initPlayerDatas(PlayerAccount acc, Map<String, Object> datas) {
+	public void initPlayerDatas(Quester acc, Map<String, Object> datas) {
 		super.initPlayerDatas(acc, datas);
 		switch (timeMode) {
 			case ONLINE:
@@ -196,13 +196,7 @@ public class StagePlayTime extends AbstractStage implements HasProgress {
 
 	public enum TimeMode {
 		ONLINE(Lang.stagePlayTimeModeOnline.toString()),
-		OFFLINE(Lang.stagePlayTimeModeOffline.toString()) {
-			@Override
-			public boolean isActive() {
-				// no way to get full world time before 1.16.5
-				return MinecraftVersion.MAJOR > 16 || (MinecraftVersion.MAJOR == 16 && MinecraftVersion.MINOR == 5);
-			}
-		},
+		OFFLINE(Lang.stagePlayTimeModeOffline.toString()),
 		REALTIME(Lang.stagePlayTimeModeRealtime.toString());
 
 		private final String description;

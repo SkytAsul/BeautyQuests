@@ -15,7 +15,7 @@ public interface BqInternalNpc {
 
 	public abstract @Nullable Entity getEntity();
 
-	public abstract @NotNull Location getLocation();
+	public abstract @Nullable Location getLocation();
 
 	/**
 	 * Sets the "paused" state of the NPC navigation

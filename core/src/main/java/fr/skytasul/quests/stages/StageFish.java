@@ -1,6 +1,14 @@
 package fr.skytasul.quests.stages;
 
-import java.util.List;
+import com.cryptomorin.xseries.XMaterial;
+import fr.skytasul.quests.api.comparison.ItemComparisonMap;
+import fr.skytasul.quests.api.gui.ItemUtils;
+import fr.skytasul.quests.api.localization.Lang;
+import fr.skytasul.quests.api.stages.StageController;
+import fr.skytasul.quests.api.stages.StageDescriptionPlaceholdersContext;
+import fr.skytasul.quests.api.stages.creation.StageCreationContext;
+import fr.skytasul.quests.api.stages.types.AbstractItemStage;
+import fr.skytasul.quests.api.utils.CountableObject;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Item;
 import org.bukkit.entity.Player;
@@ -11,15 +19,7 @@ import org.bukkit.event.player.PlayerFishEvent;
 import org.bukkit.event.player.PlayerFishEvent.State;
 import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;
-import fr.skytasul.quests.api.comparison.ItemComparisonMap;
-import fr.skytasul.quests.api.gui.ItemUtils;
-import fr.skytasul.quests.api.localization.Lang;
-import fr.skytasul.quests.api.stages.StageController;
-import fr.skytasul.quests.api.stages.StageDescriptionPlaceholdersContext;
-import fr.skytasul.quests.api.stages.creation.StageCreationContext;
-import fr.skytasul.quests.api.stages.types.AbstractItemStage;
-import fr.skytasul.quests.api.utils.CountableObject;
-import fr.skytasul.quests.api.utils.XMaterial;
+import java.util.List;
 
 public class StageFish extends AbstractItemStage implements Listener {
 

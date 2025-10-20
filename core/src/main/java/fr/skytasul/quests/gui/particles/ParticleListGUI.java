@@ -1,18 +1,18 @@
 package fr.skytasul.quests.gui.particles;
 
-import java.util.Map;
-import java.util.function.Consumer;
-import java.util.function.Function;
-import java.util.stream.Collectors;
-import org.bukkit.DyeColor;
-import org.bukkit.Particle;
-import org.bukkit.inventory.ItemStack;
+import com.cryptomorin.xseries.XMaterial;
 import fr.skytasul.quests.api.gui.ItemUtils;
 import fr.skytasul.quests.api.gui.templates.StaticPagedGUI;
 import fr.skytasul.quests.api.localization.Lang;
 import fr.skytasul.quests.api.options.QuestOption;
-import fr.skytasul.quests.api.utils.XMaterial;
 import fr.skytasul.quests.utils.ParticleEffect;
+import org.bukkit.DyeColor;
+import org.bukkit.Particle;
+import org.bukkit.inventory.ItemStack;
+import java.util.Map;
+import java.util.function.Consumer;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 public class ParticleListGUI extends StaticPagedGUI<Particle> {
 	

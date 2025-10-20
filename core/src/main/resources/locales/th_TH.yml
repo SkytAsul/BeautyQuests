@@ -11,6 +11,7 @@ msg:
     cancelling: '§cกระบวนการสร้างเควสถูกยกเลิก.'
     editCancelling: '§cการแก้ไขเควส ถูกยกเลิก.'
     invalidID: '§cภารกิจ id {quest_id} ไม่มีอยู่จริง.'
+    invalidPoolID:
     alreadyStarted: '§cคุณเริ่มภารกิจเรียบร้อยแล้ว!'
   quests:
     maxLaunched: '§cไม่สามารถรับได้มากกว่า {quests_max_amount} quest(s) ในเวลาเดียวกัน...'
@@ -108,8 +109,6 @@ msg:
     cancelQuest: '§6คุณได้ยกเลิกภารกิจ {quest}.'
     cancelQuestUnavailable: '§ภารกิจ {quest} ไม่สามารถยกเลิกได้'
     backupCreated: '§6คุณได้สร้างการสำรองข้อมูลของ ภารกิจ และข้อมูลผู้เล่นทั้งหมดเรียบร้อยแล้ว'
-    backupPlayersFailed: '§การสร้างข้อมูลสำรองสำหรับข้อมูลผู้เล่นทั้งหมดล้มเหลว'
-    backupQuestsFailed: '§การสร้างข้อมูลสำรองสำหรับเควสทั้งหมดล้มเหลว'
     adminModeEntered: '§คุณได้เข้าสู่โหมดผู้ดูแลระบบ'
     adminModeLeft: '§คุณออกจากโหมดผู้ดูแลระบบแล้ว'
     resetPlayerPool:

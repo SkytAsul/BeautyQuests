@@ -1,5 +1,7 @@
 package fr.skytasul.quests;
 
+import com.cryptomorin.xseries.XMaterial;
+import com.cryptomorin.xseries.XSound;
 import fr.skytasul.quests.api.QuestsConfiguration;
 import fr.skytasul.quests.api.QuestsPlugin;
 import fr.skytasul.quests.api.gui.ItemUtils;
@@ -7,8 +9,9 @@ import fr.skytasul.quests.api.localization.Lang;
 import fr.skytasul.quests.api.npcs.NpcClickType;
 import fr.skytasul.quests.api.options.description.DescriptionSource;
 import fr.skytasul.quests.api.options.description.QuestDescription;
-import fr.skytasul.quests.api.utils.*;
-import fr.skytasul.quests.players.BqAccountsHook;
+import fr.skytasul.quests.api.utils.MinecraftNames;
+import fr.skytasul.quests.api.utils.PlayerListCategory;
+import fr.skytasul.quests.api.utils.Utils;
 import fr.skytasul.quests.utils.ParticleEffect;
 import fr.skytasul.quests.utils.ParticleEffect.ParticleShape;
 import fr.skytasul.quests.utils.compatibility.InternalIntegrations;
@@ -48,10 +51,10 @@ public class QuestsConfigurationImplementation implements QuestsConfiguration {
 
 	boolean saveCycleMessage = true;
 	int saveCycle = 15;
-	int firstQuestID = -1; // TODO migration 0.19
 
 	private final FileConfiguration config;
 	private QuestsConfig quests;
+	private DatabaseConfig database;
 	private GuiConfig gui;
 	private DialogsConfig dialogs;
 	private QuestsSelectionConfig selection;
@@ -63,6 +66,7 @@ public class QuestsConfigurationImplementation implements QuestsConfiguration {
 		this.config = config;
 
 		quests = new QuestsConfig();
+		database = new DatabaseConfig(config.getConfigurationSection("database"));
 		gui = new GuiConfig(config.getConfigurationSection("gui"));
 		dialogs = new DialogsConfig(config.getConfigurationSection("dialogs"));
 		selection = new QuestsSelectionConfig(config.getConfigurationSection("questsSelection"));
@@ -73,6 +77,7 @@ public class QuestsConfigurationImplementation implements QuestsConfiguration {
 
 	boolean update() {
 		boolean result = false;
+		result |= database.update();
 		result |= gui.update();
 		result |= dialogs.update();
 		result |= selection.update();
@@ -89,6 +94,7 @@ public class QuestsConfigurationImplementation implements QuestsConfiguration {
 		if (isMinecraftTranslationsEnabled())
 			initializeTranslations();
 		quests.init();
+		database.init();
 		gui.init();
 		dialogs.init();
 		selection.init();
@@ -98,27 +104,20 @@ public class QuestsConfigurationImplementation implements QuestsConfiguration {
 
 		saveCycle = config.getInt("saveCycle");
 		saveCycleMessage = config.getBoolean("saveCycleMessage");
-		firstQuestID = config.getInt("firstQuest", -1);
 		enablePrefix = config.getBoolean("enablePrefix");
 		disableTextHologram = config.getBoolean("disableTextHologram");
 		showCustomHologramName = config.getBoolean("showCustomHologramName");
 		hologramsHeight = 0.28 + config.getDouble("hologramsHeight");
 		hookAcounts = config.getBoolean("accountsHook");
-		if (hookAcounts) {
-			Bukkit.getPluginManager().registerEvents(new BqAccountsHook(), BeautyQuests.getInstance());
-			QuestsPlugin.getPlugin().getLoggerExpanded().info("AccountsHook is now managing player datas for quests !");
-		}
 		usePlayerBlockTracker = config.getBoolean("usePlayerBlockTracker");
 
-		if (MinecraftVersion.MAJOR >= 9) {
-			particleStart = loadParticles("start", new ParticleEffect(Utils.valueOfEnum(Particle.class, "REDSTONE", "DUST"),
-					ParticleShape.POINT, Color.YELLOW));
-			particleTalk = loadParticles("talk", new ParticleEffect(
-					Utils.valueOfEnum(Particle.class, "VILLAGER_HAPPY", "HAPPY_VILLAGER"), ParticleShape.BAR, null));
-			particleNext =
-					loadParticles("next", new ParticleEffect(Utils.valueOfEnum(Particle.class, "SMOKE_NORMAL", "SMOKE"),
-							ParticleShape.SPOT, null));
-		}
+		particleStart = loadParticles("start", new ParticleEffect(Utils.valueOfEnum(Particle.class, "REDSTONE", "DUST"),
+				ParticleShape.POINT, Color.YELLOW));
+		particleTalk = loadParticles("talk", new ParticleEffect(
+				Utils.valueOfEnum(Particle.class, "VILLAGER_HAPPY", "HAPPY_VILLAGER"), ParticleShape.BAR, null));
+		particleNext =
+				loadParticles("next", new ParticleEffect(Utils.valueOfEnum(Particle.class, "SMOKE_NORMAL", "SMOKE"),
+						ParticleShape.SPOT, null));
 
 		holoLaunchItem = loadHologram("launchItem");
 		holoLaunchNoItem = loadHologram("nolaunchItem");
@@ -135,26 +134,20 @@ public class QuestsConfigurationImplementation implements QuestsConfiguration {
 	}
 
 	private void initializeTranslations() {
-		if (MinecraftVersion.MAJOR >= 13) {
-			String fileName = minecraftTranslationsFile;
-			Optional<String> extension = Utils.getFilenameExtension(minecraftTranslationsFile);
-			if (extension.isPresent()) {
-				if (extension.get().equalsIgnoreCase("json")) {
-					QuestsPlugin.getPlugin().getLoggerExpanded().warning("File " + fileName + " is not a JSON file.");
-					return;
-				}
-			} else {
-				fileName += ".json";
-			}
-
-			if (!MinecraftNames.intialize(QuestsPlugin.getPlugin().getDataFolder().toPath().resolve(fileName))) {
-				QuestsPlugin.getPlugin().getLoggerExpanded()
-						.warning("Cannot enable the \"minecraftTranslationsFile\" option : problem when initializing");
-				minecraftTranslationsFile = null;
+		String fileName = minecraftTranslationsFile;
+		Optional<String> extension = Utils.getFilenameExtension(minecraftTranslationsFile);
+		if (extension.isPresent()) {
+			if (extension.get().equalsIgnoreCase("json")) {
+				QuestsPlugin.getPlugin().getLoggerExpanded().warning("File " + fileName + " is not a JSON file.");
+				return;
 			}
 		} else {
-			QuestsPlugin.getPlugin().getLoggerExpanded().warning(
-					"Cannot enable the \"minecraftTranslationsFile\" option : only supported on Spigot 1.13 and higher");
+			fileName += ".json";
+		}
+
+		if (!MinecraftNames.intialize(QuestsPlugin.getPlugin().getDataFolder().toPath().resolve(fileName))) {
+			QuestsPlugin.getPlugin().getLoggerExpanded()
+					.warning("Cannot enable the \"minecraftTranslationsFile\" option : problem when initializing");
 			minecraftTranslationsFile = null;
 		}
 	}
@@ -168,7 +161,7 @@ public class QuestsConfigurationImplementation implements QuestsConfiguration {
 				QuestsPlugin.getPlugin().getLoggerExpanded().warning("Loading of " + name + " particles failed: Invalid particle, color or shape.", ex);
 			}
 			if (particle == null) particle = defaultParticle;
-			QuestsPlugin.getPlugin().getLoggerExpanded().info("Loaded " + name + " particles: " + particle.toString());
+			QuestsPlugin.getPlugin().getLoggerExpanded().debug("Loaded " + name + " particles: " + particle.toString());
 		}
 		return particle;
 	}
@@ -191,16 +184,12 @@ public class QuestsConfigurationImplementation implements QuestsConfiguration {
 
 	private String loadSound(String key) {
 		String sound = config.getString(key);
-		try {
-			Sound.valueOf(sound.toUpperCase());
-			sound = sound.toUpperCase();
-		}catch (IllegalArgumentException ex) {
+		if (XSound.of(sound).isEmpty())
 			QuestsPlugin.getPlugin().getLoggerExpanded().warning("Sound " + sound + " is not a valid Bukkit sound.");
-		}
 		return sound;
 	}
 
-	private boolean migrateEntry(ConfigurationSection oldConfig, String oldKey, ConfigurationSection newConfig,
+	private static boolean migrateEntry(ConfigurationSection oldConfig, String oldKey, ConfigurationSection newConfig,
 			String newKey) {
 		if (oldConfig.contains(oldKey)) {
 			newConfig.set(newKey, oldConfig.get(oldKey));
@@ -217,6 +206,10 @@ public class QuestsConfigurationImplementation implements QuestsConfiguration {
 	@Override
 	public @NotNull Quests getQuestsConfig() {
 		return quests;
+	}
+
+	public @NotNull DatabaseConfig getDatabaseConfig() {
+		return database;
 	}
 
 	@Override
@@ -464,6 +457,88 @@ public class QuestsConfigurationImplementation implements QuestsConfiguration {
 
 	}
 
+	public class DatabaseConfig implements QuestsConfiguration.Database {
+		private ConfigurationSection config;
+		private boolean enabled;
+		private String host;
+		private int port;
+		private String database;
+		private String username;
+		private String password;
+		private boolean ssl;
+		private String connectionString;
+		private Map<String, String> tables;
+
+		private DatabaseConfig(@NotNull ConfigurationSection config) {
+			this.config = config;
+		}
+
+		private boolean update() {
+			boolean result = false;
+			result |= migrateEntry(config, "tables.playerAccounts", config, "tables.questers");
+			result |= migrateEntry(config, "tables.playerQuests", config, "tables.questers quests");
+			result |= migrateEntry(config, "tables.playerPools", config, "tables.questers pools");
+			return result;
+		}
+
+		private void init() {
+			enabled = config.getBoolean("enabled");
+			host = config.getString("host");
+			port = config.getInt("port");
+			database = config.getString("database");
+			username = config.getString("username");
+			password = config.getString("password");
+			ssl = config.getBoolean("ssl");
+			connectionString = config.getString("connectionString");
+			tables = (Map) config.getConfigurationSection("tables").getValues(false);
+		}
+
+		@Override
+		public boolean enabled() {
+			return enabled;
+		}
+
+		@Override
+		public String host() {
+			return host;
+		}
+
+		@Override
+		public int port() {
+			return port;
+		}
+
+		@Override
+		public String databaseName() {
+			return database;
+		}
+
+		@Override
+		public String username() {
+			return username;
+		}
+
+		@Override
+		public String password() {
+			return password;
+		}
+
+		@Override
+		public boolean sslEnabled() {
+			return ssl;
+		}
+
+		@Override
+		public String connectionString() {
+			return connectionString;
+		}
+
+		@Override
+		public Map<String, String> tables() {
+			return tables;
+		}
+	}
+
 	public class DialogsConfig implements QuestsConfiguration.Dialogs {
 
 		private boolean inActionBar = false;
@@ -495,7 +570,7 @@ public class QuestsConfigurationImplementation implements QuestsConfiguration {
 		}
 
 		private void init() {
-			inActionBar = MinecraftVersion.MAJOR > 8 && config.getBoolean("inActionBar");
+			inActionBar = config.getBoolean("inActionBar");
 			defaultTime = config.getInt("defaultTime");
 			defaultSkippable = config.getBoolean("defaultSkippable");
 			disableClick = config.getBoolean("disableClick");
@@ -648,6 +723,7 @@ public class QuestsConfigurationImplementation implements QuestsConfiguration {
 		private Set<PlayerListCategory> tabs;
 		private boolean openNotStartedTabWhenEmpty = true;
 		private boolean allowPlayerCancelQuest = true;
+		private boolean keepMenuOpen = false;
 
 		private ConfigurationSection config;
 
@@ -689,6 +765,7 @@ public class QuestsConfigurationImplementation implements QuestsConfiguration {
 			}
 			openNotStartedTabWhenEmpty = config.getBoolean("openNotStartedTabWhenEmpty");
 			allowPlayerCancelQuest = config.getBoolean("allowPlayerCancelQuest");
+			keepMenuOpen = config.getBoolean("keep menu open");
 		}
 
 		@Override
@@ -704,6 +781,11 @@ public class QuestsConfigurationImplementation implements QuestsConfiguration {
 		@Override
 		public Set<PlayerListCategory> getEnabledTabs() {
 			return tabs;
+		}
+
+		@Override
+		public boolean keepMenuOpen() {
+			return keepMenuOpen;
 		}
 
 	}

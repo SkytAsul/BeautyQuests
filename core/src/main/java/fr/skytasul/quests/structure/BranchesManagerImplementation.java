@@ -1,20 +1,22 @@
 package fr.skytasul.quests.structure;
 
-import java.util.*;
-import java.util.Map.Entry;
+import fr.skytasul.quests.api.QuestsAPI;
+import fr.skytasul.quests.api.QuestsPlugin;
+import fr.skytasul.quests.api.data.DataLoadingException;
+import fr.skytasul.quests.api.data.DataSavingException;
+import fr.skytasul.quests.api.questers.Quester;
+import fr.skytasul.quests.api.questers.data.QuesterQuestData;
+import fr.skytasul.quests.api.quests.branches.QuestBranch;
+import fr.skytasul.quests.api.quests.branches.QuestBranchesManager;
+import fr.skytasul.quests.api.stages.StageController;
+import fr.skytasul.quests.api.stages.StageIndex;
 import org.apache.commons.lang.Validate;
 import org.bukkit.configuration.ConfigurationSection;
-import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.jetbrains.annotations.UnmodifiableView;
-import fr.skytasul.quests.api.QuestsAPI;
-import fr.skytasul.quests.api.QuestsPlugin;
-import fr.skytasul.quests.api.players.PlayerAccount;
-import fr.skytasul.quests.api.players.PlayerQuestDatas;
-import fr.skytasul.quests.api.players.PlayersManager;
-import fr.skytasul.quests.api.quests.branches.QuestBranch;
-import fr.skytasul.quests.api.quests.branches.QuestBranchesManager;
+import java.util.*;
+import java.util.Map.Entry;
 
 public class BranchesManagerImplementation implements QuestBranchesManager {
 
@@ -58,38 +60,53 @@ public class BranchesManagerImplementation implements QuestBranchesManager {
 	}
 
 	@Override
-	public @Nullable QuestBranchImplementation getPlayerBranch(@NotNull PlayerAccount acc) {
-		if (!acc.hasQuestDatas(quest)) return null;
-		return branches.get(acc.getQuestDatas(quest).getBranch());
+	public @Nullable QuestBranchImplementation getPlayerBranch(@NotNull Quester acc) {
+		return acc.getDataHolder().getQuestDataIfPresent(quest).map(x -> {
+			if (x.getBranch().isPresent())
+				return branches.get(x.getBranch().getAsInt());
+			else
+				return null;
+		}).orElse(null);
 	}
 
 	@Override
-	public boolean hasBranchStarted(@NotNull PlayerAccount acc, @NotNull QuestBranch branch) {
-		if (!acc.hasQuestDatas(quest)) return false;
-		return acc.getQuestDatas(quest).getBranch() == branch.getId();
+	public boolean hasBranchStarted(@NotNull Quester acc, @NotNull QuestBranch branch) {
+		return acc.getDataHolder().getQuestDataIfPresent(quest)
+				.filter(x -> x.getBranch().orElse(-1) == branch.getId())
+				.isPresent();
+	}
+
+	@Override
+	public @Nullable StageController getStageFromIndex(@NotNull StageIndex index)
+			throws IllegalArgumentException {
+		// TODO convert to switch in Java 21
+		if (index instanceof StageIndex.RegularStageIndex regularIndex)
+			return getBranch(regularIndex.branch()).getRegularStage(regularIndex.stageIndex());
+		else if (index instanceof StageIndex.EndingStageIndex endingIndex)
+			return getBranch(endingIndex.branch()).getEndingStage(endingIndex.stageId());
+		else
+			throw new UnsupportedOperationException();
 	}
 
 	/**
-	 * Called internally when the quest is updated for the player
+	 * Called internally when the quest is updated for the quester
 	 *
-	 * @param player Player
+	 * @param quester quester that got its quest updated
 	 */
-	public final void questUpdated(@NotNull Player player) {
-		PlayerAccount acc = PlayersManager.getPlayerAccount(player);
-		if (quest.hasStarted(acc)) {
-			QuestsAPI.getAPI().propagateQuestsHandlers(x -> x.questUpdated(acc, quest));
-		}
+	public final void questUpdated(@NotNull Quester quester) {
+		QuestsAPI.getAPI().propagateQuestsHandlers(x -> x.questUpdated(quester, quest));
 	}
 
-	public void startPlayer(@NotNull PlayerAccount acc) {
-		PlayerQuestDatas datas = acc.getQuestDatas(getQuest());
+	public void startPlayer(@NotNull Quester acc) {
+		QuesterQuestData datas = acc.getDataHolder().getQuestData(getQuest());
 		datas.resetQuestFlow();
-		datas.setStartingTime(System.currentTimeMillis());
+		datas.setStartingTime(OptionalLong.of(System.currentTimeMillis()));
 		branches.get(0).start(acc);
 	}
 
-	public void remove(@NotNull PlayerAccount acc) {
-		if (!acc.hasQuestDatas(quest)) return;
+	public void remove(@NotNull Quester acc) {
+		if (!acc.getDataHolder().hasQuestData(quest))
+			return;
 		QuestBranchImplementation branch = getPlayerBranch(acc);
 		if (branch != null) branch.remove(acc, true);
 	}
@@ -101,17 +118,18 @@ public class BranchesManagerImplementation implements QuestBranchesManager {
 		branches.clear();
 	}
 
-	public void save(@NotNull ConfigurationSection section) {
+	public void save(@NotNull ConfigurationSection section) throws DataSavingException {
 		ConfigurationSection branchesSection = section.createSection("branches");
-		branches.forEach((id, branch) -> {
+		for (Integer id : branches.keySet()) {
+			var branch = branches.get(id);
 			try {
 				branch.save(branchesSection.createSection(Integer.toString(id)));
-			}catch (Exception ex) {
-				QuestsPlugin.getPlugin().getLoggerExpanded()
-						.severe("Error when serializing the branch " + id + " for the quest " + quest.getId(), ex);
-				QuestsPlugin.getPlugin().notifySavingFailure();
+			} catch (DataSavingException ex) {
+				throw ex;
+			} catch (Exception ex) {
+				throw new DataSavingException("Error when serializing the branch " + id, ex);
 			}
-		});
+		}
 	}
 
 	@Override
@@ -119,28 +137,11 @@ public class BranchesManagerImplementation implements QuestBranchesManager {
 		return "BranchesManager{branches=" + branches.size() + "}";
 	}
 
-	public static @NotNull BranchesManagerImplementation deserialize(@NotNull ConfigurationSection section, @NotNull QuestImplementation qu) {
+	public static @NotNull BranchesManagerImplementation deserialize(@NotNull ConfigurationSection section,
+			@NotNull QuestImplementation qu) throws DataLoadingException {
 		BranchesManagerImplementation bm = new BranchesManagerImplementation(qu);
 
-		ConfigurationSection branchesSection;
-		if (section.isList("branches")) { // TODO migration 0.19.3
-			List<Map<?, ?>> branches = section.getMapList("branches");
-			section.set("branches", null);
-			branchesSection = section.createSection("branches");
-			branches.stream()
-					.sorted((x, y) -> {
-						int xid = (Integer) x.get("order");
-						int yid = (Integer) y.get("order");
-						if (xid < yid) return -1;
-						if (xid > yid) return 1;
-						throw new IllegalArgumentException("Two branches with same order " + xid);
-					}).forEach(branch -> {
-						int order = (Integer) branch.remove("order");
-						branchesSection.createSection(Integer.toString(order), branch);
-					});
-		}else {
-			branchesSection = section.getConfigurationSection("branches");
-		}
+		ConfigurationSection branchesSection = section.getConfigurationSection("branches");
 
 		// it is needed to first add all branches to branches manager
 		// in order for branching stages to be able to access all branches
@@ -153,26 +154,17 @@ public class BranchesManagerImplementation implements QuestBranchesManager {
 				bm.branches.put(id, branch);
 				tmpBranches.put(branch, branchesSection.getConfigurationSection(key));
 			}catch (NumberFormatException ex) {
-				QuestsPlugin.getPlugin().getLoggerExpanded()
-						.severe("Cannot parse branch ID " + key + " for quest " + qu.getId());
-				QuestsPlugin.getPlugin().notifyLoadingFailure();
-				return null;
+				throw new DataLoadingException("Cannot parse branch ID %s for quest %d".formatted(key, qu.getId()));
 			}
 		}
 
 		for (QuestBranchImplementation branch : tmpBranches.keySet()) {
 			try {
-				if (!branch.load(tmpBranches.get(branch))) {
-					QuestsPlugin.getPlugin().getLoggerExpanded().severe("Error when deserializing the branch "
-							+ branch.getId() + " for the quest " + qu.getId() + " (false return)");
-					QuestsPlugin.getPlugin().notifyLoadingFailure();
-					return null;
-				}
-			}catch (Exception ex) {
-				QuestsPlugin.getPlugin().getLoggerExpanded().severe(
-						"Error when deserializing the branch " + branch.getId() + " for the quest " + qu.getId(), ex);
-				QuestsPlugin.getPlugin().notifyLoadingFailure();
-				return null;
+				branch.load(tmpBranches.get(branch));
+			} catch (DataLoadingException ex) {
+				throw ex;
+			} catch (Exception ex) {
+				throw new DataLoadingException("Error when deserializing the branch " + branch.getId());
 			}
 		}
 

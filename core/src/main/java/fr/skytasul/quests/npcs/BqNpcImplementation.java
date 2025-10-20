@@ -9,9 +9,9 @@ import fr.skytasul.quests.api.QuestsPlugin;
 import fr.skytasul.quests.api.localization.Lang;
 import fr.skytasul.quests.api.npcs.BqInternalNpc;
 import fr.skytasul.quests.api.npcs.BqNpc;
-import fr.skytasul.quests.api.players.PlayerAccount;
-import fr.skytasul.quests.api.players.PlayersManager;
+import fr.skytasul.quests.api.players.PlayerManager;
 import fr.skytasul.quests.api.pools.QuestPool;
+import fr.skytasul.quests.api.questers.Quester;
 import fr.skytasul.quests.api.quests.Quest;
 import fr.skytasul.quests.api.stages.types.Locatable.Located;
 import fr.skytasul.quests.api.utils.messaging.PlaceholderRegistry;
@@ -103,7 +103,7 @@ public class BqNpcImplementation implements Located.LocatedEntity, BqNpc {
 
 	@Override
 	public @NotNull Location getLocation() {
-		return getNpc().getLocation();
+		return Objects.requireNonNull(getNpc().getLocation());
 	}
 
 	@Override
@@ -137,7 +137,7 @@ public class BqNpcImplementation implements Located.LocatedEntity, BqNpc {
 				Set<Player> playersInRadius = new HashSet<>();
 				Location lc = en.getLocation();
 				for (Player p : lc.getWorld().getPlayers()) {
-					PlayerAccount acc = PlayersManager.getPlayerAccount(p);
+					Quester acc = PlayerManager.getPlayerAccount(p);
 					if (acc == null) continue;
 					if (lc.distanceSquared(p.getLocation()) > Math
 							.pow(QuestsConfiguration.getConfig().getQuestsConfig().startParticleDistance(), 2))
@@ -160,7 +160,7 @@ public class BqNpcImplementation implements Located.LocatedEntity, BqNpc {
 					for (Player p : playersInRadius) {
 						boolean visible = false;
 						for (QuestPool pool : pools) {
-							if (pool.canGive(p)) {
+							if (pool.canGive(p).result()) {
 								visible = true;
 								break;
 							}
@@ -177,7 +177,7 @@ public class BqNpcImplementation implements Located.LocatedEntity, BqNpc {
 							iterator.remove();
 							continue;
 						}
-						PlayerAccount acc = PlayersManager.getPlayerAccount(player);
+						Quester acc = PlayerManager.getPlayerAccount(player);
 						boolean launchYes = false;
 						boolean launchNo = false;
 						for (Entry<Quest, List<Player>> qu : quests.entrySet()) {
@@ -276,7 +276,7 @@ public class BqNpcImplementation implements Located.LocatedEntity, BqNpc {
 
 	@Override
 	public boolean hasQuestStarted(Player p) {
-		PlayerAccount acc = PlayersManager.getPlayerAccount(p);
+		Quester acc = PlayerManager.getPlayerAccount(p);
 		return quests.keySet().stream().anyMatch(quest -> quest.hasStarted(acc));
 	}
 
@@ -288,7 +288,7 @@ public class BqNpcImplementation implements Located.LocatedEntity, BqNpc {
 	public void addPool(QuestPool pool) {
 		if (!pools.add(pool)) return;
 		if (hologramPool.enabled && (pool.getHologram() != null)) hologramPool.setText(pool.getHologram());
-		addStartablePredicate(pool::canGive, pool);
+		addStartablePredicate((p) -> pool.canGive(p).result(), pool);
 		updatedObjects();
 	}
 

@@ -1,36 +1,39 @@
 package fr.skytasul.quests.utils;
 
+import com.zaxxer.hikari.HikariConfig;
+import com.zaxxer.hikari.HikariDataSource;
+import fr.skytasul.quests.api.QuestsConfiguration;
+import fr.skytasul.quests.api.utils.logger.LoggerExpanded;
+import org.jetbrains.annotations.NotNull;
 import java.io.Closeable;
 import java.io.IOException;
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.util.Properties;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import javax.sql.DataSource;
-import org.bukkit.configuration.ConfigurationSection;
-import com.zaxxer.hikari.HikariConfig;
-import com.zaxxer.hikari.HikariDataSource;
-import fr.skytasul.quests.BeautyQuests;
-import fr.skytasul.quests.api.QuestsPlugin;
 
 public class Database implements Closeable {
 
-	private final ConfigurationSection config;
-	private final String databaseName;
+	private static final LoggerExpanded LOGGER = LoggerExpanded.get("BeautyQuests.Database");
+
+	private final @NotNull QuestsConfiguration.Database config;
 
 	private final DbType type;
 
 	private final DataSource source;
 
-	public Database(ConfigurationSection config) {
+	public Database(@NotNull QuestsConfiguration.Database config) throws IOException {
 		this.config = config;
-		this.databaseName = config.getString("database");
 
-		HikariConfig hikariConfig = new HikariConfig("/hikari.properties");
+		var properties = new Properties();
+		properties.load(getClass().getResourceAsStream("/hikari.properties"));
+		HikariConfig hikariConfig = new HikariConfig(properties);
 
-		String connectionString = config.getString("connectionString", "");
+		String connectionString = config.connectionString();
 		if (connectionString == null || connectionString.isEmpty())
-			connectionString = "jdbc:mysql://" + config.getString("host") + ":" + config.getInt("port") + "/" + databaseName;
+			connectionString = "jdbc:mysql://" + config.host() + ":" + config.port() + "/" + config.databaseName();
 
 		Matcher matcher = Pattern.compile("^jdbc:(\\w+):\\/\\/").matcher(connectionString);
 		if (matcher.find()) {
@@ -42,27 +45,27 @@ public class Database implements Closeable {
 					type = DbType.PostgreSQL;
 					break;
 				default:
-					QuestsPlugin.getPlugin().getLogger().warning("Unsupported database provider: " + matcher.group(1));
+					LOGGER.warning("Unsupported database provider: " + matcher.group(1));
 					type = DbType.MySQL;
 					break;
 			}
 		} else {
-			QuestsPlugin.getPlugin().getLogger().warning("Malformed database connection string!");
+			LOGGER.warning("Malformed database connection string!");
 			type = DbType.MySQL;
 		}
 
 		hikariConfig.setJdbcUrl(connectionString);
-		hikariConfig.setUsername(config.getString("username"));
-		hikariConfig.setPassword(config.getString("password"));
+		hikariConfig.setUsername(config.username());
+		hikariConfig.setPassword(config.password());
 		hikariConfig.setPoolName("BeautyQuests-SQL-pool");
 		hikariConfig.setConnectionTimeout(20_000);
 
-		boolean ssl = config.getBoolean("ssl");
+		boolean ssl = config.sslEnabled();
 		hikariConfig.addDataSourceProperty("verifyServerCertificate", ssl);
 		hikariConfig.addDataSourceProperty("useSSL", ssl);
 
 		source = new HikariDataSource(hikariConfig);
-		QuestsPlugin.getPlugin().getLoggerExpanded().debug("Initialized database source. Type: " + type.name());
+		LOGGER.debug("Initialized database source. Type: " + type.name());
 	}
 
 	public void testConnection() throws SQLException {
@@ -72,11 +75,7 @@ public class Database implements Closeable {
 		}
 	}
 
-	public String getDatabase() {
-		return databaseName;
-	}
-
-	public ConfigurationSection getConfig() {
+	public @NotNull QuestsConfiguration.Database getConfig() {
 		return config;
 	}
 
@@ -86,20 +85,16 @@ public class Database implements Closeable {
 
 	@Override
 	public void close() {
-		QuestsPlugin.getPlugin().getLoggerExpanded().info("Closing database pool...");
+		LOGGER.info("Closing database pool...");
 		try {
 			((Closeable) source).close();
 		}catch (IOException ex) {
-			QuestsPlugin.getPlugin().getLoggerExpanded().severe("An error occurred while closing database pool.", ex);
+			LOGGER.severe("An error occurred while closing database pool.", ex);
 		}
 	}
 
 	public Connection getConnection() throws SQLException {
 		return source.getConnection();
-	}
-
-	public static Database getInstance(){
-		return BeautyQuests.getInstance().getBQDatabase();
 	}
 
 	public enum DbType {

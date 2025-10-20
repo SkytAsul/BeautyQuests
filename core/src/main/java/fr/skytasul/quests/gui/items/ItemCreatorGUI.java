@@ -1,5 +1,6 @@
 package fr.skytasul.quests.gui.items;
 
+import com.cryptomorin.xseries.XMaterial;
 import fr.skytasul.quests.api.QuestsPlugin;
 import fr.skytasul.quests.api.editors.TextEditor;
 import fr.skytasul.quests.api.editors.TextListEditor;
@@ -8,7 +9,6 @@ import fr.skytasul.quests.api.gui.AbstractGui;
 import fr.skytasul.quests.api.gui.GuiClickEvent;
 import fr.skytasul.quests.api.gui.ItemUtils;
 import fr.skytasul.quests.api.localization.Lang;
-import fr.skytasul.quests.api.utils.XMaterial;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
@@ -79,11 +79,11 @@ public class ItemCreatorGUI extends AbstractGui {
 			case 1:
 				Lang.CHOOSE_ITEM_AMOUNT.send(event.getPlayer());
 				new TextEditor<>(event.getPlayer(), event::reopen, obj -> {
-					amount = /* Math.min(obj, 64) */ obj;
+					amount = obj;
 					ItemUtils.name(event.getClicked(), Lang.Amount.quickFormat("amount", amount));
 					event.reopen();
 					refresh();
-				}, NumberParser.INTEGER_PARSER_STRICT_POSITIVE).start();
+				}, new NumberParser<>(Integer.class, 1, 64)).start();
 				break;
 
 			case 2:
@@ -134,7 +134,7 @@ public class ItemCreatorGUI extends AbstractGui {
 
 			case 13: // GIVE
 				if (type != null)
-					event.getPlayer().getOpenInventory().setCursor(build());
+					event.getPlayer().setItemOnCursor(build());
 				break;
 
 		}

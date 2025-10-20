@@ -1,18 +1,15 @@
 package fr.skytasul.quests;
 
 import static fr.skytasul.quests.api.gui.ItemUtils.item;
-import java.util.Arrays;
-import java.util.Objects;
-import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.ItemMeta;
-import org.bukkit.inventory.meta.Repairable;
-import org.jetbrains.annotations.NotNull;
+import com.cryptomorin.xseries.XMaterial;
 import fr.skytasul.quests.api.QuestsAPI;
 import fr.skytasul.quests.api.QuestsConfiguration;
+import fr.skytasul.quests.api.QuestsPlugin;
 import fr.skytasul.quests.api.comparison.ItemComparison;
 import fr.skytasul.quests.api.localization.Lang;
 import fr.skytasul.quests.api.objects.QuestObjectLocation;
 import fr.skytasul.quests.api.options.QuestOptionCreator;
+import fr.skytasul.quests.api.quests.quester.QuestQuesterStrategyCreator;
 import fr.skytasul.quests.api.requirements.RequirementCreator;
 import fr.skytasul.quests.api.requirements.RequirementList;
 import fr.skytasul.quests.api.rewards.RewardCreator;
@@ -22,9 +19,7 @@ import fr.skytasul.quests.api.stages.StageType;
 import fr.skytasul.quests.api.stages.StageTypeRegistry;
 import fr.skytasul.quests.api.stages.options.StageOptionAutoRegister;
 import fr.skytasul.quests.api.stages.options.StageOptionCreator;
-import fr.skytasul.quests.api.utils.MinecraftVersion;
 import fr.skytasul.quests.api.utils.QuestVisibilityLocation;
-import fr.skytasul.quests.api.utils.XMaterial;
 import fr.skytasul.quests.api.utils.messaging.MessageProcessor;
 import fr.skytasul.quests.api.utils.messaging.MessageType;
 import fr.skytasul.quests.api.utils.messaging.PlaceholderRegistry;
@@ -32,14 +27,22 @@ import fr.skytasul.quests.api.utils.messaging.PlaceholdersContext;
 import fr.skytasul.quests.api.utils.progress.HasProgress;
 import fr.skytasul.quests.mobs.BukkitEntityFactory;
 import fr.skytasul.quests.options.*;
+import fr.skytasul.quests.quests.questers.PlayerQuesterStrategy;
 import fr.skytasul.quests.requirements.*;
 import fr.skytasul.quests.requirements.logical.LogicalOrRequirement;
 import fr.skytasul.quests.rewards.*;
 import fr.skytasul.quests.stages.*;
 import fr.skytasul.quests.stages.options.StageOptionProgressBar;
 import fr.skytasul.quests.utils.QuestUtils;
-import fr.skytasul.quests.utils.compatibility.BQBossBarImplementation;
+import net.kyori.adventure.identity.Identity;
 import net.md_5.bungee.api.ChatColor;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
+import org.bukkit.inventory.meta.Repairable;
+import org.jetbrains.annotations.NotNull;
+import java.util.Arrays;
+import java.util.Objects;
+import java.util.OptionalInt;
 
 public final class DefaultQuestFeatures {
 
@@ -128,6 +131,8 @@ public final class DefaultQuestFeatures {
 	}
 
 	public static void registerQuestOptions() {
+		QuestsAPI.getAPI().registerQuestOption(new QuestOptionCreator<>("customOrder", 8, OptionCustomOrder.class,
+				OptionCustomOrder::new, OptionalInt.empty()));
 		QuestsAPI.getAPI()
 				.registerQuestOption(new QuestOptionCreator<>("pool", 9, OptionQuestPool.class, OptionQuestPool::new, null));
 		QuestsAPI.getAPI()
@@ -212,9 +217,8 @@ public final class DefaultQuestFeatures {
 				.register(new RewardCreator("wait", WaitReward.class,
 						item(XMaterial.CLOCK, Lang.rewardWait.toString()), WaitReward::new, true)
 								.setCanBeAsync(true));
-		if (MinecraftVersion.MAJOR >= 9)
-			QuestsAPI.getAPI().getRewards().register(new RewardCreator("titleReward", TitleReward.class,
-					item(XMaterial.NAME_TAG, Lang.rewardTitle.toString()), TitleReward::new, false));
+		QuestsAPI.getAPI().getRewards().register(new RewardCreator("titleReward", TitleReward.class,
+				item(XMaterial.NAME_TAG, Lang.rewardTitle.toString()), TitleReward::new, false));
 	}
 
 	public static void registerRequirements() {
@@ -230,11 +234,9 @@ public final class DefaultQuestFeatures {
 		QuestsAPI.getAPI().getRequirements()
 				.register(new RequirementCreator("scoreboardRequired", ScoreboardRequirement.class,
 						item(XMaterial.COMMAND_BLOCK, Lang.RScoreboard.toString()), ScoreboardRequirement::new));
-		if (MinecraftVersion.MAJOR >= 9)
-			QuestsAPI.getAPI().getRequirements()
-					.register(new RequirementCreator("equipmentRequired", EquipmentRequirement.class,
-							item(XMaterial.CHAINMAIL_HELMET, Lang.REquipment.toString()),
-							EquipmentRequirement::new));
+		QuestsAPI.getAPI().getRequirements()
+				.register(new RequirementCreator("equipmentRequired", EquipmentRequirement.class,
+						item(XMaterial.CHAINMAIL_HELMET, Lang.REquipment.toString()), EquipmentRequirement::new));
 	}
 
 	public static void registerItemComparisons() {
@@ -243,13 +245,7 @@ public final class DefaultQuestFeatures {
 		QuestsAPI.getAPI().registerItemComparison(new ItemComparison("customBukkit", Lang.comparisonCustomBukkit.toString(),
 				Lang.comparisonCustomBukkitLore.toString(), QuestUtils::isSimilar));
 		QuestsAPI.getAPI().registerItemComparison(new ItemComparison("material", Lang.comparisonMaterial.toString(),
-				Lang.comparisonMaterialLore.toString(), (item1, item2) -> {
-					if (item2.getType() != item1.getType())
-						return false;
-					if (item1.getType().getMaxDurability() > 0 || MinecraftVersion.MAJOR >= 13)
-						return true;
-					return item2.getDurability() == item1.getDurability();
-				}));
+				Lang.comparisonMaterialLore.toString(), (item1, item2) -> item2.getType().equals(item1.getType())));
 		QuestsAPI.getAPI().registerItemComparison(new ItemComparison("name", Lang.comparisonName.toString(),
 				Lang.comparisonNameLore.toString(), (item1, item2) -> {
 					ItemMeta meta1 = item1.getItemMeta();
@@ -284,14 +280,23 @@ public final class DefaultQuestFeatures {
 
 	public static void registerMisc() {
 		QuestsAPI.getAPI().registerMobFactory(new BukkitEntityFactory());
-		if (MinecraftVersion.MAJOR >= 9)
-			QuestsAPI.getAPI().setBossBarManager(new BQBossBarImplementation());
+
+		QuestQuesterStrategyCreator playerStrategyCreator = new QuestQuesterStrategyCreator("player",
+				PlayerQuesterStrategy.class, () -> new PlayerQuesterStrategy(QuestsPlugin.getPlugin().getPlayersManager()),
+				Lang.PlayerQuesterName.toString(), Lang.PlayerQuesterDescription.toString());
+		QuestsAPI.getAPI().getQuestQuesterStrategyRegistry().register(playerStrategyCreator);
+
+		QuestsAPI.getAPI().registerQuestOption(new QuestOptionCreator<>("questerStrategy", 37, OptionQuesterStrategy.class,
+				OptionQuesterStrategy::new, playerStrategyCreator.newObject()));
+
 	}
 
 	public static void registerMessageProcessors() {
 		PlaceholderRegistry defaultPlaceholders = new PlaceholderRegistry()
-				.registerContextual("player", PlaceholdersContext.class, context -> context.getActor().getName())
-				.registerContextual("PLAYER", PlaceholdersContext.class, context -> context.getActor().getName())
+				.registerContextual("player", PlaceholdersContext.class,
+						context -> context.getAudience().get(Identity.NAME).orElse(null))
+				.registerContextual("PLAYER", PlaceholdersContext.class,
+						context -> context.getAudience().get(Identity.NAME).orElse(null))
 				.register("prefix", () -> BeautyQuests.getInstance().getPrefix())
 				.register("nl", "\n");
 

@@ -37,18 +37,34 @@
 
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-		<maven.compiler.source>1.8</maven.compiler.source>
-		<maven.compiler.target>1.8</maven.compiler.target>
-		<maven.compiler.release>8</maven.compiler.release>
-		<maven.javadoc.skip>true</maven.javadoc.skip>
-		
+		<maven.compiler.source>17</maven.compiler.source>
+		<maven.compiler.target>17</maven.compiler.target>
+		<maven.compiler.release>17</maven.compiler.release>
+
 		<build.number>unknown</build.number>
-		<revision.raw>1.0.5</revision.raw>		
-		
-		<minecraft.version>1.20.6-R0.1-SNAPSHOT</minecraft.version>
-		<!-- Going for 1.21 breaks backward compatibility at compile time thanks to a change in InventoryView -->
+		<revision.raw>2.0.0</revision.raw>
+
+		<minecraft.version>1.21.7-R0.1-SNAPSHOT</minecraft.version>
+
+		<junit.version>5.13.3</junit.version>
+		<mockbukkit.version.minecraft>1.21</mockbukkit.version.minecraft>
+		<mockbukkit.version>4.68.0</mockbukkit.version>
+
+		<lamp.version>4.0.0-rc.13</lamp.version>
+		<xseries.version>13.5.0</xseries.version>
+		<hikaricp.version>6.0.0</hikaricp.version>
+		<fastboard.version>2.1.5</fastboard.version>
+		<commons-lang.version>2.6</commons-lang.version>
+
+		<!--
+			Version of Adventure included in Paper 1.17.1.
+			Since we cannot load a different Adventure version,
+			we've got to comply with this one.
+		-->
+		<adventure.version>4.9.3</adventure.version>
+		<adventure.bukkit.version>4.0.1</adventure.bukkit.version>
 	</properties>
-	
+
 	<profiles>
 		<profile>
 			<id>devbuild</id>
@@ -86,14 +102,8 @@
 	<modules>
 		<module>api</module>
 		<module>core</module>
+		<module>paper</module>
 		<module>integrations</module>
-		<module>v1_9_R1</module>
-		<module>v1_9_R2</module>
-		<module>v1_12_R1</module>
-		<module>v1_15_R1</module>
-		<module>v1_16_R1</module>
-		<module>v1_16_R2</module>
-		<module>v1_16_R3</module>
 		<module>v1_17_R1</module>
 		<module>v1_18_R1</module>
 		<module>v1_18_R2</module>
@@ -107,6 +117,8 @@
 		<module>v1_21_R1</module>
 		<module>v1_21_R3</module>
 		<module>v1_21_R4</module>
+		<module>v1_21_R5</module>
+		<module>v1_21_R6</module>
 		<module>dist</module>
 	</modules>
 

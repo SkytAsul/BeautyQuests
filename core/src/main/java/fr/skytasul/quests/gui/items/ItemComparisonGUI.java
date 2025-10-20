@@ -1,8 +1,5 @@
 package fr.skytasul.quests.gui.items;
 
-import org.bukkit.DyeColor;
-import org.bukkit.event.inventory.ClickType;
-import org.bukkit.inventory.ItemStack;
 import fr.skytasul.quests.api.QuestsAPI;
 import fr.skytasul.quests.api.comparison.ItemComparison;
 import fr.skytasul.quests.api.comparison.ItemComparisonMap;
@@ -10,6 +7,9 @@ import fr.skytasul.quests.api.gui.ItemUtils;
 import fr.skytasul.quests.api.gui.templates.PagedGUI;
 import fr.skytasul.quests.api.localization.Lang;
 import fr.skytasul.quests.api.options.QuestOption;
+import org.bukkit.DyeColor;
+import org.bukkit.event.inventory.ClickType;
+import org.bukkit.inventory.ItemStack;
 
 public class ItemComparisonGUI extends PagedGUI<ItemComparison> {
 

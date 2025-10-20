@@ -10,6 +10,7 @@ jobs:
   build:
     name: Build
     runs-on: ubuntu-latest
+    if: ${{ !github.event.pull_request || github.event.pull_request.draft == false }}
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -31,6 +32,13 @@ jobs:
       - name: Install private dependencies
         run: "./integrations/libs.sh mvn ./jars"
 
+      - name: Install missing dependencies
+        run: |
+          curl -s https://skytasul.fr/SpigotUpdateChecker-3.0.3-offline.jar -o ./jars/SpigotUpdateChecker-3.0.3-offline.jar
+          mvn org.apache.maven.plugins:maven-install-plugin:2.5.2:install-file -Dfile=./jars/SpigotUpdateChecker-3.0.3-offline.jar
+          curl -s https://skytasul.fr/ConfigUpdater-2.2-SNAPSHOT-offline.jar -o ./jars/ConfigUpdater-2.2-SNAPSHOT-offline.jar
+          mvn org.apache.maven.plugins:maven-install-plugin:2.5.2:install-file -Dfile=./jars/ConfigUpdater-2.2-SNAPSHOT-offline.jar
+
       - name: Build and package with Maven
         run: |
           profile=$([ "${{ github.ref_name }}" == "${{ github.event.repository.default_branch }}" ] && echo "release" || echo "devbuild")
@@ -44,15 +52,35 @@ jobs:
       #     path: |
       #       target/*.jar
 
-      - name: Prepare a release
+      - name: Prepare a pre-release
         uses: softprops/action-gh-release@v2
-        if: github.event_name == 'push'
+        if: github.event_name == 'push' && github.ref_name != github.event.repository.default_branch
         with:
-          prerelease: ${{ github.ref_name != github.event.repository.default_branch }}
+          prerelease: true
           draft: true
           name: "${{ github.ref_name }} - build ${{ github.run_number }}"
           tag_name: "build/${{ github.run_number }}"
           target_commitish: ${{ github.sha }}
-          generate_release_notes: ${{ github.ref_name == github.event.repository.default_branch }}
+          body: |-
+            ### Note
+            This is a **dev build** and not a release. Please use with care!
+            - Backup your prior data before installing: both the `/plugins/BeautyQuests` directory AND your database (if using one).
+            - Test beforehand on a separate server than your production one.
+            
+            ---
+            // pretty changelog here
+          files: |
+            target/*.jar
+
+      - name: Prepare a release
+        uses: softprops/action-gh-release@v2
+        if: github.event_name == 'push' && github.ref_name == github.event.repository.default_branch
+        with:
+          prerelease: false
+          draft: true
+          name: "${{ github.ref_name }}"
+          tag_name: "${{ github.ref_name }}"
+          target_commitish: ${{ github.sha }}
+          generate_release_notes: true
           files: |
             target/*.jar

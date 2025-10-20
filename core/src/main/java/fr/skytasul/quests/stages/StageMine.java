@@ -1,7 +1,24 @@
 package fr.skytasul.quests.stages;
 
-import java.util.*;
-import java.util.stream.Collectors;
+import com.cryptomorin.xseries.XMaterial;
+import com.gestankbratwurst.playerblocktracker.PlayerBlockTracker;
+import fr.skytasul.quests.BeautyQuests;
+import fr.skytasul.quests.QuestsConfigurationImplementation;
+import fr.skytasul.quests.api.QuestsAPI;
+import fr.skytasul.quests.api.blocks.BQBlock;
+import fr.skytasul.quests.api.events.internal.BQBlockBreakEvent;
+import fr.skytasul.quests.api.gui.ItemUtils;
+import fr.skytasul.quests.api.localization.Lang;
+import fr.skytasul.quests.api.players.PlayerManager;
+import fr.skytasul.quests.api.stages.StageController;
+import fr.skytasul.quests.api.stages.StageDescriptionPlaceholdersContext;
+import fr.skytasul.quests.api.stages.creation.StageCreationContext;
+import fr.skytasul.quests.api.stages.creation.StageGuiLine;
+import fr.skytasul.quests.api.stages.types.AbstractCountableBlockStage;
+import fr.skytasul.quests.api.stages.types.Locatable;
+import fr.skytasul.quests.api.stages.types.Locatable.LocatableType;
+import fr.skytasul.quests.api.stages.types.Locatable.LocatedType;
+import fr.skytasul.quests.api.utils.CountableObject;
 import org.bukkit.block.Block;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
@@ -12,25 +29,8 @@ import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.metadata.FixedMetadataValue;
 import org.jetbrains.annotations.NotNull;
-import com.gestankbratwurst.playerblocktracker.PlayerBlockTracker;
-import fr.skytasul.quests.BeautyQuests;
-import fr.skytasul.quests.QuestsConfigurationImplementation;
-import fr.skytasul.quests.api.QuestsAPI;
-import fr.skytasul.quests.api.blocks.BQBlock;
-import fr.skytasul.quests.api.events.internal.BQBlockBreakEvent;
-import fr.skytasul.quests.api.gui.ItemUtils;
-import fr.skytasul.quests.api.localization.Lang;
-import fr.skytasul.quests.api.players.PlayersManager;
-import fr.skytasul.quests.api.stages.StageController;
-import fr.skytasul.quests.api.stages.StageDescriptionPlaceholdersContext;
-import fr.skytasul.quests.api.stages.creation.StageCreationContext;
-import fr.skytasul.quests.api.stages.creation.StageGuiLine;
-import fr.skytasul.quests.api.stages.types.AbstractCountableBlockStage;
-import fr.skytasul.quests.api.stages.types.Locatable;
-import fr.skytasul.quests.api.stages.types.Locatable.LocatableType;
-import fr.skytasul.quests.api.stages.types.Locatable.LocatedType;
-import fr.skytasul.quests.api.utils.CountableObject;
-import fr.skytasul.quests.api.utils.XMaterial;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @LocatableType (types = LocatedType.BLOCK)
 public class StageMine extends AbstractCountableBlockStage implements Locatable.MultipleLocatable, Listener {
@@ -57,7 +57,7 @@ public class StageMine extends AbstractCountableBlockStage implements Locatable.
 	@EventHandler (priority = EventPriority.MONITOR)
 	public void onMine(BQBlockBreakEvent e) {
 		Player p = e.getPlayer();
-		if (!hasStarted(p))
+		if (!hasApplicableQuester(p) || !matchesRequirements(p))
 			return;
 
 		for (Block block : e.getBlocks()) {
@@ -85,10 +85,10 @@ public class StageMine extends AbstractCountableBlockStage implements Locatable.
 			return;
 
 		Player p = e.getPlayer();
-		if (!hasStarted(p))
+		if (!hasApplicableQuester(p))
 			return;
 
-		Map<UUID, Integer> playerBlocks = getPlayerRemainings(PlayersManager.getPlayerAccount(p), true);
+		Map<UUID, Integer> playerBlocks = getRawRemainingAmounts(PlayerManager.getPlayerAccount(p), true);
 		if (playerBlocks == null) return;
 		for (UUID id : playerBlocks.keySet()) {
 			Optional<CountableObject<BQBlock>> object = getObject(id);

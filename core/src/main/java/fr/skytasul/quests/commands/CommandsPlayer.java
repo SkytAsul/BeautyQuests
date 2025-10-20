@@ -1,46 +1,41 @@
 package fr.skytasul.quests.commands;
 
-import java.util.Objects;
-import java.util.Optional;
-import org.bukkit.entity.Player;
 import fr.skytasul.quests.api.QuestsPlugin;
-import fr.skytasul.quests.api.commands.revxrsal.annotation.Default;
-import fr.skytasul.quests.api.commands.revxrsal.annotation.Subcommand;
-import fr.skytasul.quests.api.commands.revxrsal.bukkit.BukkitCommandActor;
-import fr.skytasul.quests.api.commands.revxrsal.bukkit.annotation.CommandPermission;
-import fr.skytasul.quests.api.commands.revxrsal.command.ExecutableCommand;
-import fr.skytasul.quests.api.commands.revxrsal.exception.CommandErrorException;
-import fr.skytasul.quests.api.commands.revxrsal.exception.InvalidSubcommandException;
-import fr.skytasul.quests.api.commands.revxrsal.orphan.OrphanCommand;
 import fr.skytasul.quests.api.localization.Lang;
-import fr.skytasul.quests.api.players.PlayerAccount;
-import fr.skytasul.quests.api.players.PlayerQuestDatas;
-import fr.skytasul.quests.api.players.PlayersManager;
+import fr.skytasul.quests.api.players.PlayerManager;
+import fr.skytasul.quests.api.questers.Quester;
+import fr.skytasul.quests.api.questers.data.QuesterQuestData;
 import fr.skytasul.quests.api.quests.Quest;
 import fr.skytasul.quests.rewards.CheckpointReward;
+import org.bukkit.entity.Player;
+import revxrsal.commands.annotation.CommandPlaceholder;
+import revxrsal.commands.annotation.CommandPriority;
+import revxrsal.commands.annotation.Subcommand;
+import revxrsal.commands.bukkit.actor.BukkitCommandActor;
+import revxrsal.commands.bukkit.annotation.CommandPermission;
+import revxrsal.commands.exception.UnknownCommandException;
+import revxrsal.commands.orphan.OrphanCommand;
+import java.util.Objects;
+import java.util.Optional;
 
 public class CommandsPlayer implements OrphanCommand {
 
-	@Default
+	@CommandPlaceholder
+	@CommandPriority.Low
 	@CommandPermission ("beautyquests.command.listPlayer")
-	public void menu(BukkitCommandActor actor, ExecutableCommand command,
-			@fr.skytasul.quests.api.commands.revxrsal.annotation.Optional String subcommand) {
+	public void menu(BukkitCommandActor actor, @revxrsal.commands.annotation.Optional String subcommand) {
 		if (subcommand != null)
-			throw new InvalidSubcommandException(command.getPath(), subcommand);
-		PlayerAccount acc = PlayersManager.getPlayerAccount(actor.requirePlayer());
-		if (acc == null) {
-			QuestsPlugin.getPlugin().getLoggerExpanded().severe("Player " + actor.getName() + " has got no account. This is a CRITICAL issue.");
-			throw new CommandErrorException("no player datas");
-		} else
-			QuestsPlugin.getPlugin().getGuiManager().getFactory().createPlayerQuestsMenu(acc).open(actor.getAsPlayer());
+			throw new UnknownCommandException(subcommand);
+		Player player = actor.requirePlayer();
+		QuestsPlugin.getPlugin().getGuiManager().getFactory().createPlayerQuestsMenu(player).open(player);
 	}
 
 	@Subcommand ("checkpoint")
 	@CommandPermission ("beautyquests.command.checkpoint")
 	public void checkpoint(Player player, Quest quest) {
-		PlayerAccount account = PlayersManager.getPlayerAccount(player);
-		if (account.hasQuestDatas(quest)) {
-			PlayerQuestDatas datas = account.getQuestDatas(quest);
+		Quester account = PlayerManager.getPlayerAccount(player);
+		if (account.getDataHolder().hasQuestData(quest)) {
+			QuesterQuestData datas = account.getDataHolder().getQuestData(quest);
 
 			Optional<CheckpointReward> optionalCheckpoint = datas.getQuestFlowStages()
 					.map(controller -> controller.getStage().getRewards().stream()
@@ -50,7 +45,7 @@ public class CommandsPlayer implements OrphanCommand {
 					.reduce((left, right) -> right);
 
 			if (optionalCheckpoint.isPresent())
-				optionalCheckpoint.get().applies(player);
+				optionalCheckpoint.get().apply(player);
 			else
 				Lang.COMMAND_CHECKPOINT_NO.send(player, quest.getPlaceholdersRegistry());
 

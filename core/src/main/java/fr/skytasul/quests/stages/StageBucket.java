@@ -1,21 +1,19 @@
 package fr.skytasul.quests.stages;
 
+import com.cryptomorin.xseries.XMaterial;
 import fr.skytasul.quests.api.QuestsConfiguration;
 import fr.skytasul.quests.api.editors.TextEditor;
 import fr.skytasul.quests.api.editors.parsers.NumberParser;
 import fr.skytasul.quests.api.gui.ItemUtils;
 import fr.skytasul.quests.api.localization.Lang;
 import fr.skytasul.quests.api.options.QuestOption;
-import fr.skytasul.quests.api.players.PlayerAccount;
-import fr.skytasul.quests.api.players.PlayersManager;
+import fr.skytasul.quests.api.questers.Quester;
 import fr.skytasul.quests.api.stages.AbstractStage;
 import fr.skytasul.quests.api.stages.StageController;
 import fr.skytasul.quests.api.stages.StageDescriptionPlaceholdersContext;
 import fr.skytasul.quests.api.stages.creation.StageCreation;
 import fr.skytasul.quests.api.stages.creation.StageCreationContext;
 import fr.skytasul.quests.api.stages.creation.StageGuiLine;
-import fr.skytasul.quests.api.utils.MinecraftVersion;
-import fr.skytasul.quests.api.utils.XMaterial;
 import fr.skytasul.quests.api.utils.messaging.PlaceholderRegistry;
 import fr.skytasul.quests.api.utils.progress.ProgressPlaceholders;
 import fr.skytasul.quests.api.utils.progress.itemdescription.HasItemsDescriptionConfiguration.HasSingleObject;
@@ -68,25 +66,27 @@ public class StageBucket extends AbstractStage implements HasSingleObject, Liste
 	@EventHandler (priority = EventPriority.MONITOR)
 	public void onBucketFill(PlayerBucketFillEvent e) {
 		Player p = e.getPlayer();
-		if (hasStarted(p) && canUpdate(p)) {
-			if (BucketType.fromMaterial(XMaterial.matchXMaterial(e.getItemStack())) == bucket) {
-				long amount = getPlayerAmount(PlayersManager.getPlayerAccount(p));
-				if (amount <= 1) {
-					finishStage(p);
-				}else {
-					updateObjective(p, "amount", --amount);
+		if (BucketType.fromMaterial(XMaterial.matchXMaterial(e.getItemStack())) == bucket) {
+			if (matchesRequirements(p)) {
+				for (Quester quester : controller.getApplicableQuesters(p)) {
+					long amount = getRemainingAmount(quester);
+					if (amount <= 1) {
+						finishStage(quester);
+					} else {
+						updateObjective(quester, "amount", --amount);
+					}
 				}
 			}
 		}
 	}
 
 	@Override
-	public long getPlayerAmount(PlayerAccount acc) {
+	public long getRemainingAmount(Quester acc) {
 		return getData(acc, "amount", Long.class);
 	}
 
 	@Override
-	public void initPlayerDatas(PlayerAccount acc, Map<String, Object> datas) {
+	public void initPlayerDatas(Quester acc, Map<String, Object> datas) {
 		datas.put("amount", amount);
 	}
 
@@ -119,8 +119,6 @@ public class StageBucket extends AbstractStage implements HasSingleObject, Liste
 		SNOW(Lang.BucketSnow, XMaterial.POWDER_SNOW_BUCKET)
 		;
 
-		private static BucketType[] AVAILABLE;
-
 		private Lang name;
 		private XMaterial type;
 
@@ -145,12 +143,8 @@ public class StageBucket extends AbstractStage implements HasSingleObject, Liste
 		}
 
 		public static BucketType[] getAvailable() {
-			if (AVAILABLE == null) {
-				AVAILABLE = MinecraftVersion.MAJOR >= 17 ? values() : new BucketType[] {WATER, LAVA, MILK};
-				// inefficient? yes. But it's christmas and I don't want to work on this anymore, plus there will
-				// probably not be more bucket types in the future
-			}
-			return AVAILABLE;
+			// if new bucket types are added in the future, this will be different
+			return BucketType.values();
 		}
 	}
 

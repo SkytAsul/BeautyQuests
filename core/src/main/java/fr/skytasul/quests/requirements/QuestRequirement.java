@@ -1,18 +1,19 @@
 package fr.skytasul.quests.requirements;
 
-import org.bukkit.configuration.ConfigurationSection;
-import org.bukkit.entity.Player;
-import org.jetbrains.annotations.NotNull;
 import fr.skytasul.quests.api.QuestsAPI;
 import fr.skytasul.quests.api.QuestsPlugin;
 import fr.skytasul.quests.api.gui.LoreBuilder;
 import fr.skytasul.quests.api.localization.Lang;
 import fr.skytasul.quests.api.objects.QuestObjectClickEvent;
 import fr.skytasul.quests.api.options.QuestOption;
-import fr.skytasul.quests.api.players.PlayersManager;
+import fr.skytasul.quests.api.players.PlayerManager;
 import fr.skytasul.quests.api.quests.Quest;
 import fr.skytasul.quests.api.requirements.AbstractRequirement;
 import fr.skytasul.quests.api.utils.messaging.PlaceholderRegistry;
+import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.entity.Player;
+import org.jetbrains.annotations.NotNull;
+import java.util.List;
 
 public class QuestRequirement extends AbstractRequirement {
 
@@ -30,7 +31,7 @@ public class QuestRequirement extends AbstractRequirement {
 
 	@Override
 	public boolean test(Player p) {
-		if (exists()) return cached.hasFinished(PlayersManager.getPlayerAccount(p));
+		if (exists()) return cached.hasFinished(PlayerManager.getPlayerAccount(p));
 		return true;
 	}
 
@@ -62,12 +63,13 @@ public class QuestRequirement extends AbstractRequirement {
 		loreBuilder.addDescription(QuestOption.formatNullableValue(exists() ? cached.getName() : null));
 	}
 
+	@SuppressWarnings("rawtypes")
 	@Override
 	public void itemClick(QuestObjectClickEvent event) {
 		QuestsPlugin.getPlugin().getGuiManager().getFactory().createQuestSelection(quest -> {
 			this.questId = quest.getId();
 			event.reopenGUI();
-		}, event::remove, QuestsAPI.getAPI().getQuestsManager().getQuests()).open(event.getPlayer());
+		}, event::remove, (List) QuestsAPI.getAPI().getQuestsManager().getQuests()).open(event.getPlayer());
 	}
 
 	@Override

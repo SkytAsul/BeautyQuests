@@ -1,9 +1,9 @@
 package fr.skytasul.quests.scoreboards;
 
-import java.util.Map;
-import org.apache.commons.lang.Validate;
 import fr.skytasul.quests.api.utils.ChatColorUtils;
 import net.md_5.bungee.api.ChatColor;
+import org.apache.commons.lang.Validate;
+import java.util.Map;
 
 public class ScoreboardLine {
 

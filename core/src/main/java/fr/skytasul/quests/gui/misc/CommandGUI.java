@@ -1,10 +1,6 @@
 package fr.skytasul.quests.gui.misc;
 
-import java.util.HashMap;
-import java.util.function.Consumer;
-import org.bukkit.inventory.ItemStack;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
+import com.cryptomorin.xseries.XMaterial;
 import fr.skytasul.quests.api.QuestsPlugin;
 import fr.skytasul.quests.api.editors.TextEditor;
 import fr.skytasul.quests.api.editors.parsers.NumberParser;
@@ -14,8 +10,12 @@ import fr.skytasul.quests.api.gui.layout.LayoutedButton;
 import fr.skytasul.quests.api.gui.layout.LayoutedClickEvent;
 import fr.skytasul.quests.api.gui.layout.LayoutedGUI;
 import fr.skytasul.quests.api.localization.Lang;
-import fr.skytasul.quests.api.utils.XMaterial;
 import fr.skytasul.quests.utils.types.Command;
+import org.bukkit.inventory.ItemStack;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+import java.util.HashMap;
+import java.util.function.Consumer;
 
 public class CommandGUI extends LayoutedGUI.LayoutedRowsGUI {
 

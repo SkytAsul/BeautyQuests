@@ -1,22 +1,22 @@
 package fr.skytasul.quests.api.stages.types;
 
-import java.util.*;
-import java.util.stream.Collectors;
-import org.bukkit.configuration.ConfigurationSection;
-import org.bukkit.entity.Player;
-import org.bukkit.inventory.ItemStack;
-import org.jetbrains.annotations.NotNull;
 import com.cryptomorin.xseries.XMaterial;
 import fr.skytasul.quests.api.QuestsPlugin;
 import fr.skytasul.quests.api.comparison.ItemComparisonMap;
 import fr.skytasul.quests.api.gui.ItemUtils;
 import fr.skytasul.quests.api.localization.Lang;
+import fr.skytasul.quests.api.options.QuestOption;
 import fr.skytasul.quests.api.stages.StageController;
 import fr.skytasul.quests.api.stages.creation.StageCreation;
 import fr.skytasul.quests.api.stages.creation.StageCreationContext;
 import fr.skytasul.quests.api.stages.creation.StageGuiLine;
 import fr.skytasul.quests.api.utils.CountableObject;
-import fr.skytasul.quests.api.utils.Utils;
+import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemStack;
+import org.jetbrains.annotations.NotNull;
+import java.util.*;
+import java.util.stream.Collectors;
 
 public abstract class AbstractItemStage extends AbstractCountableStage<ItemStack> {
 
@@ -107,8 +107,9 @@ public abstract class AbstractItemStage extends AbstractCountableStage<ItemStack
 		protected abstract @NotNull ItemStack getEditItem();
 
 		public void setItems(List<ItemStack> items) {
-			this.items = Utils.combineItems(items);
-			getLine().refreshItemLoreOptionValue(6, Lang.AmountItems.quickFormat("items_amount", this.items.size()));
+			this.items = items;
+			getLine().refreshItem(6, ItemUtils.loreAdd(getEditItem(),
+					QuestOption.formatNullableValue(Lang.AmountItems.quickFormat("items_amount", this.items.size()))));
 		}
 
 		public void setComparisons(ItemComparisonMap comparisons) {
@@ -139,14 +140,22 @@ public abstract class AbstractItemStage extends AbstractCountableStage<ItemStack
 
 		@Override
 		public final T finishStage(StageController controller) {
-			List<CountableObject<ItemStack>> itemsMap = new ArrayList<>();
-			for (int i = 0; i < items.size(); i++) {
+			List<CountableObject.MutableCountableObject<ItemStack>> itemsMap = new ArrayList<>();
+			itemsLoop: for (int i = 0; i < items.size(); i++) {
 				ItemStack item = items.get(i);
 				int amount = item.getAmount();
 				item.setAmount(1);
-				itemsMap.add(CountableObject.create(new UUID(item.hashCode(), 2478), item, amount));
+
+				for (var countable : itemsMap) {
+					if (countable.getObject().equals(item)) {
+						countable.setAmount(countable.getAmount() + amount);
+						continue itemsLoop;
+					}
+				}
+
+				itemsMap.add(CountableObject.createMutable(new UUID(item.hashCode(), 2478), item, amount));
 			}
-			return finishStage(controller, itemsMap, comparisons);
+			return (T) finishStage(controller, (List) itemsMap, comparisons);
 		}
 
 		protected abstract T finishStage(@NotNull StageController controller,

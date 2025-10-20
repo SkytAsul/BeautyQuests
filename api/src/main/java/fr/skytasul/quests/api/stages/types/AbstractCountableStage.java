@@ -1,8 +1,7 @@
 package fr.skytasul.quests.api.stages.types;
 
 import fr.skytasul.quests.api.QuestsPlugin;
-import fr.skytasul.quests.api.players.PlayerAccount;
-import fr.skytasul.quests.api.players.PlayersManager;
+import fr.skytasul.quests.api.questers.Quester;
 import fr.skytasul.quests.api.stages.AbstractStage;
 import fr.skytasul.quests.api.stages.StageController;
 import fr.skytasul.quests.api.utils.CountableObject;
@@ -53,17 +52,18 @@ public abstract class AbstractCountableStage<T> extends AbstractStage implements
 		return map;
 	}
 
-	public @NotNull Map<@NotNull UUID, @NotNull Integer> getPlayerRemainings(@NotNull PlayerAccount acc, boolean warnNull) {
-		Map<?, Integer> remaining = getData(acc, "remaining");
+	protected @NotNull Map<@NotNull UUID, @NotNull Integer> getRawRemainingAmounts(@NotNull Quester quester,
+			boolean warnNull) {
+		Map<?, Integer> remaining = getData(quester, "remaining", Map.class);
 		if (warnNull && remaining == null) {
-			QuestsPlugin.getPlugin().getLoggerExpanded().warning(
-					"Cannot retrieve remaining amounts for " + acc.getNameAndID() + " on " + controller.toString(),
-					"datas" + acc.getNameAndID() + controller.toString(), 10);
+			QuestsPlugin.getPlugin().getLoggerExpanded().namedWarning("Cannot retrieve remaining amounts for {} on {}",
+					"data" + quester.getIdentifier() + controller.toString(), 10, quester.getDetailedName(), controller);
 		}
 
 		if (remaining == null || remaining.isEmpty())
 			return Collections.emptyMap();
 
+		// TODO remove migration code (introduced in 1.0)
 		Object object = remaining.keySet().iterator().next();
 		if (object instanceof Integer) {
 			// datas before migration
@@ -72,14 +72,14 @@ public abstract class AbstractCountableStage<T> extends AbstractStage implements
 			remaining.forEach((key, amount) -> {
 				UUID uuid = uuidFromLegacyIndex((Integer) key);
 				if (!getObject(uuid).isPresent()) {
-					QuestsPlugin.getPlugin().getLoggerExpanded().warning("Cannot migrate " + acc.getNameAndID() + " data for stage " + toString()
-							+ " as there is no migrated data for object " + key);
+					QuestsPlugin.getPlugin().getLoggerExpanded().warning(
+							"Cannot migrate {} data for stage {} as there is no migrated data for object {}",
+									quester.getDetailedName(), toString(), key);
 				}
 				newRemaining.put(uuid, amount);
 				dataMap.put(uuid.toString(), amount);
 			});
-			if (acc.isCurrent())
-				updateObjective(acc.getPlayer(), "remaining", dataMap);
+			updateObjective(quester, "remaining", dataMap);
 			return newRemaining;
 		} else if (object instanceof String) {
 			// datas stored as string
@@ -90,8 +90,8 @@ public abstract class AbstractCountableStage<T> extends AbstractStage implements
 	}
 
 	@Override
-	public @NotNull Map<CountableObject<T>, Integer> getPlayerAmounts(@NotNull PlayerAccount account) {
-		Map<@NotNull UUID, @NotNull Integer> remainings = getPlayerRemainings(account, false);
+	public @NotNull Map<CountableObject<T>, Integer> getRemainingAmounts(@NotNull Quester quester) {
+		Map<@NotNull UUID, @NotNull Integer> remainings = getRawRemainingAmounts(quester, false);
 		Map<CountableObject<T>, Integer> amounts = new HashMap<>(remainings.size());
 
 		remainings.forEach((uuid, remaining) -> {
@@ -112,16 +112,16 @@ public abstract class AbstractCountableStage<T> extends AbstractStage implements
 	}
 
 	@Override
-	public long getPlayerAmount(@NotNull PlayerAccount account, CountableObject<T> object) {
+	public long getRemainingAmount(@NotNull Quester quester, CountableObject<T> object) {
 		// we do not use default implementation in HasMultipleObjects to avoid conversion from UUID to
 		// CountableObject
-		return getPlayerRemainings(account, false).get(object.getUUID());
+		return getRawRemainingAmounts(quester, false).get(object.getUUID());
 	}
 
 	@Override
-	public long getPlayerAmount(@NotNull PlayerAccount account) {
+	public long getRemainingAmount(@NotNull Quester quester) {
 		// same as in getPlayerAmount
-		return getPlayerRemainings(account, false).values().stream().mapToInt(Integer::intValue).sum();
+		return getRawRemainingAmounts(quester, false).values().stream().mapToInt(Integer::intValue).sum();
 	}
 
 	@Override
@@ -134,8 +134,8 @@ public abstract class AbstractCountableStage<T> extends AbstractStage implements
 		return getName(object.getObject());
 	}
 
-	protected void updatePlayerRemaining(@NotNull Player player, @NotNull Map<@NotNull UUID, @NotNull Integer> remaining) {
-		updateObjective(player, "remaining", remaining.entrySet().stream()
+	protected void updateRemaining(@NotNull Quester quester, @NotNull Map<@NotNull UUID, @NotNull Integer> remaining) {
+		updateObjective(quester, "remaining", remaining.entrySet().stream()
 				.collect(Collectors.toMap(entry -> entry.getKey().toString(), Entry::getValue)));
 	}
 
@@ -146,7 +146,7 @@ public abstract class AbstractCountableStage<T> extends AbstractStage implements
 	}
 
 	@Override
-	public void initPlayerDatas(@NotNull PlayerAccount acc, @NotNull Map<@NotNull String, @Nullable Object> datas) {
+	public void initPlayerDatas(@NotNull Quester acc, @NotNull Map<@NotNull String, @Nullable Object> datas) {
 		super.initPlayerDatas(acc, datas);
 		datas.put("remaining", objects.stream()
 				.collect(Collectors.toMap(object -> object.getUUID().toString(), CountableObject::getAmount)));
@@ -160,17 +160,22 @@ public abstract class AbstractCountableStage<T> extends AbstractStage implements
 	 * @param p player
 	 * @param object object of the event
 	 * @param amount amount completed
-	 * @return <code>true</code> if there is no need to call this method again in the same game tick.
+	 * @return <code>true</code> if the stage has been completed for all questers, thus making any
+	 *         subsequent call to this method useless in the same game tick.
 	 */
 	public boolean event(@NotNull Player p, @UnknownNullability Object object, int amount) {
 		if (amount < 0) throw new IllegalArgumentException("Event amount must be positive (" + amount + ")");
-		if (!canUpdate(p) || !hasStarted(p))
+		if (!matchesRequirements(p) || !hasApplicableQuester(p))
 			return true;
 
-		PlayerAccount acc = PlayersManager.getPlayerAccount(p);
+		var questers = controller.getApplicableQuesters(p);
 		for (CountableObject<T> countableObject : objects) {
-			if (objectApplies(countableObject.getObject(), object)) {
-				Map<UUID, Integer> playerAmounts = getPlayerRemainings(acc, true);
+			if (!objectApplies(countableObject.getObject(), object))
+				continue;
+
+			for (var iterator = questers.iterator(); iterator.hasNext();) {
+				Quester quester = iterator.next();
+				Map<UUID, Integer> playerAmounts = getRawRemainingAmounts(quester, true);
 				if (playerAmounts.containsKey(countableObject.getUUID())) {
 					int playerAmount = playerAmounts.remove(countableObject.getUUID());
 					if (playerAmount <= amount) {
@@ -182,15 +187,14 @@ public abstract class AbstractCountableStage<T> extends AbstractStage implements
 					continue;
 
 				if (playerAmounts.isEmpty()) {
-					finishStage(p);
-					return true;
-				}else {
-					updatePlayerRemaining(p, playerAmounts);
-					return false;
+					finishStage(quester);
+					iterator.remove();
+				} else {
+					updateRemaining(quester, playerAmounts);
 				}
 			}
 		}
-		return false;
+		return questers.isEmpty();
 	}
 
 	protected boolean objectApplies(@NotNull T object, @UnknownNullability Object other) {

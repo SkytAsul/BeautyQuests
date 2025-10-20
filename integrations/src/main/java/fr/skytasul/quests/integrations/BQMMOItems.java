@@ -1,11 +1,11 @@
 package fr.skytasul.quests.integrations;
 
-import org.bukkit.inventory.ItemStack;
 import fr.skytasul.quests.api.QuestsAPI;
 import fr.skytasul.quests.api.comparison.ItemComparison;
 import fr.skytasul.quests.api.localization.Lang;
 import net.Indyuce.mmoitems.MMOItems;
 import net.Indyuce.mmoitems.api.Type;
+import org.bukkit.inventory.ItemStack;
 
 public final class BQMMOItems {
 

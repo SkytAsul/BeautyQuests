@@ -1,12 +1,15 @@
 package fr.skytasul.quests.integrations.mobs;
 
-import java.util.Arrays;
-import java.util.List;
-import java.util.function.Consumer;
+import com.cryptomorin.xseries.XMaterial;
+import fr.skytasul.quests.api.gui.ItemUtils;
+import fr.skytasul.quests.api.gui.templates.PagedGUI;
+import fr.skytasul.quests.api.localization.Lang;
+import fr.skytasul.quests.api.mobs.MobFactory;
+import fr.skytasul.quests.api.utils.MinecraftNames;
+import fr.skytasul.quests.api.utils.Utils;
 import org.bukkit.DyeColor;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
-import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -15,13 +18,9 @@ import org.bukkit.inventory.ItemStack;
 import org.mineacademy.boss.api.BossAPI;
 import org.mineacademy.boss.api.event.BossDeathEvent;
 import org.mineacademy.boss.model.Boss;
-import fr.skytasul.quests.api.gui.ItemUtils;
-import fr.skytasul.quests.api.gui.templates.PagedGUI;
-import fr.skytasul.quests.api.localization.Lang;
-import fr.skytasul.quests.api.mobs.MobFactory;
-import fr.skytasul.quests.api.utils.MinecraftNames;
-import fr.skytasul.quests.api.utils.Utils;
-import fr.skytasul.quests.api.utils.XMaterial;
+import java.util.Arrays;
+import java.util.List;
+import java.util.function.Consumer;
 
 public class BQBoss implements MobFactory<Boss>, Listener {
 
@@ -56,7 +55,7 @@ public class BQBoss implements MobFactory<Boss>, Listener {
 	public Boss fromValue(String value) {
 		return org.mineacademy.boss.api.BossAPI.getBoss(value);
 	}
-	
+
 	@Override
 	public boolean bukkitMobApplies(Boss first, Entity entity) {
 		return BossAPI.getBoss(entity).getBoss().equals(first);
@@ -86,9 +85,8 @@ public class BQBoss implements MobFactory<Boss>, Listener {
 
 	@EventHandler
 	public void onBossDeath(BossDeathEvent e){
-		LivingEntity en = e.getEntity();
-		Player killer = en.getKiller();
+		var killer = Utils.getEntityKiller(e.getEntity());
 		if (killer == null) return;
-		callEvent(e, e.getBoss(), en, en.getKiller());
+		callEvent(e, e.getBoss(), e.getEntity(), killer);
 	}
 }

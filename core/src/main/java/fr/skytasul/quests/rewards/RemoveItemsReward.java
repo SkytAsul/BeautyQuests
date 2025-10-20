@@ -5,6 +5,7 @@ import fr.skytasul.quests.api.gui.LoreBuilder;
 import fr.skytasul.quests.api.localization.Lang;
 import fr.skytasul.quests.api.objects.QuestObjectClickEvent;
 import fr.skytasul.quests.api.rewards.AbstractReward;
+import fr.skytasul.quests.api.rewards.RewardGiveContext;
 import fr.skytasul.quests.api.utils.Utils;
 import fr.skytasul.quests.api.utils.messaging.PlaceholderRegistry;
 import fr.skytasul.quests.gui.items.ItemComparisonGUI;
@@ -35,14 +36,10 @@ public class RemoveItemsReward extends AbstractReward {
 	}
 
 	@Override
-	public List<String> give(Player p) {
-		int amount = 0;
-		Inventory inventory = p.getInventory();
-		for (ItemStack item : items) {
-			comparisons.removeItems(inventory, item);
-			amount += item.getAmount();
-		}
-		return amount == 0 ? null : Arrays.asList(Integer.toString(amount));
+	public void give(RewardGiveContext context) {
+		for (Player player : context.getQuester().getOnlinePlayers())
+			for (ItemStack item : items)
+				comparisons.removeItems(player.getInventory(), item);
 	}
 
 	@Override

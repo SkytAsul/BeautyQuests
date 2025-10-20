@@ -1,7 +1,7 @@
 # - General configuration -
 # Chosen lang (file name) Available by default: fr_FR, en_US, zh_CN, zh_HK, de_DE, it_IT, es_ES, pt_PT, pt_BR, sv_SE, hu_HU, ru_RU, pl_PL, th_TH, lt_LT, vi_VN
 lang: en_US
-# (1.13 and above) Minecraft vanilla translations (JSON file name). Some can be found on SkytAsul's Discord server
+# Minecraft vanilla translations (JSON file name). You can download them using '/quests downloadTranslations'.
 minecraftTranslationsFile: ''
 # Enable or disable update checking on the loading
 checkUpdates: true
@@ -23,9 +23,9 @@ database:
   # (FOR ADVANCED USERS ONLY) Keep empty for default value based on host/port/database
   connectionString: ""
   tables:
-    playerAccounts: "player_accounts"
-    playerQuests: "player_quests"
-    playerPools: "player_pools"
+    questers: "questers"
+    questers quests: "questers_quests"
+    questers pools: "questers_pools"
 
 # - Quests behaviors -
 # Number of minutes before the quest can be redone
@@ -135,6 +135,8 @@ questsMenu:
   openNotStartedTabWhenEmpty: true
   # Allows player to cancel quests they have started with the GUI
   allowPlayerCancelQuest: true
+  # Keep menu open after accepting or cancelling a quest
+  keep menu open: true
 
 # - Integrations -
 # Enable or disable AccountsHook managing player accounts
@@ -170,6 +172,10 @@ dynmap:
   markerIcon: "bookshelf"
   # Minimum zoom level for markers to be displayed
   minZoom: 0
+# MythicMobs integration options
+mythicmobs:
+  # If true, an entity killed by a MythicMob that has an owner will be counted for quests of the owner
+  count kill for pet owner: true
 
 # - Stage descriptions -
 # Describes the way stage with multiple objects are described

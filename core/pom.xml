@@ -28,33 +28,30 @@
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-shade-plugin</artifactId>
-				<version>3.2.1</version>
+				<version>3.6.0</version>
 				<configuration>
         			<createDependencyReducedPom>false</createDependencyReducedPom>
 					<relocations>
 						<relocation>
-							<pattern>org.bstats</pattern>
-							<shadedPattern>fr.skytasul.quests.utils.bstats</shadedPattern>
-						</relocation>
-						<relocation>
-							<pattern>fr.mrmicky.fastboard</pattern>
-							<shadedPattern>fr.skytasul.quests.scoreboards</shadedPattern>
+							<pattern>com.jeff_media.updatechecker</pattern>
+							<shadedPattern>fr.skytasul.quests.utils.updatechecker</shadedPattern>
 						</relocation>
 						<relocation>
 							<pattern>com.tchristofferson.configupdater</pattern>
-							<shadedPattern>
-								fr.skytasul.quests.utils.configupdater</shadedPattern>
+							<shadedPattern>fr.skytasul.quests.utils.configupdater</shadedPattern>
 						</relocation>
 						<relocation>
-							<pattern>com.jeff_media.updatechecker</pattern>
-							<shadedPattern>
-								fr.skytasul.quests.utils.updatechecker</shadedPattern>
-						</relocation>
-						<relocation>
-							<pattern>com.zaxxer.hikari</pattern>
-							<shadedPattern>fr.skytasul.quests.utils.hikari</shadedPattern>
+							<pattern>org.bstats</pattern>
+							<shadedPattern>fr.skytasul.quests.utils.bstats</shadedPattern>
 						</relocation>
 					</relocations>
+					<artifactSet>
+						<includes>
+							<include>org.bstats:*</include>
+							<include>com.tchristofferson:ConfigUpdater</include>
+							<include>com.jeff_media:SpigotUpdateChecker</include>
+						</includes>
+					</artifactSet>
 				</configuration>
 				<executions>
 					<execution>
@@ -76,21 +73,24 @@
 	</build>
 
 	<repositories>
-		<repository>
-			<id>papermc</id>
-			<url>https://repo.papermc.io/repository/maven-public/</url>
-		</repository>
-		<repository>
+		<!-- <repository>
 			<id>jeff-media-public</id>
 			<url>https://repo.jeff-media.com/public/</url>
-		</repository>
-		<repository>
-			<id>codemc-repo</id>
-			<url>https://repo.codemc.io/repository/maven-public/</url>
-		</repository>
-		<repository>
+		</repository> -->
+		<repository> <!-- For PlayerBlockTracker -->
 			<id>jitpack.io</id>
 			<url>https://jitpack.io</url>
+		</repository>
+		<repository>
+			<name>Central Portal Snapshots</name>
+			<id>central-portal-snapshots</id>
+			<url>https://central.sonatype.com/repository/maven-snapshots/</url>
+			<releases>
+				<enabled>false</enabled>
+			</releases>
+			<snapshots>
+				<enabled>true</enabled>
+			</snapshots>
 		</repository>
 	</repositories>
 
@@ -99,7 +99,7 @@
 			<groupId>fr.skytasul</groupId>
 			<artifactId>beautyquests-api</artifactId>
 			<version>${revision}</version>
-			<scope>provided</scope>
+			<scope>compile</scope>
 		</dependency>
 
 		<!-- Development dependencies -->
@@ -112,12 +112,12 @@
 		<dependency>
 			<groupId>commons-lang</groupId>
 			<artifactId>commons-lang</artifactId>
-			<version>2.6</version>
+			<version>${commons-lang.version}</version>
 			<scope>provided</scope>
 		</dependency>
 		<dependency>
-			<groupId>io.papermc.paper</groupId>
-			<artifactId>paper-api</artifactId>
+			<groupId>org.spigotmc</groupId>
+			<artifactId>spigot-api</artifactId>
 			<version>${minecraft.version}</version>
 			<scope>provided</scope>
 		</dependency>
@@ -127,12 +127,12 @@
 			<version>4.1.68.Final</version>
 			<scope>provided</scope>
 		</dependency>
-		
+
 		<!-- Integrations that must be in core -->
 		<dependency>
 			<groupId>fr.skytasul</groupId>
 			<artifactId>accountshook</artifactId>
-			<version>1.4.0</version>
+			<version>2.0.0</version>
 			<scope>provided</scope>
 		</dependency>
 		<dependency>
@@ -142,35 +142,48 @@
 			<scope>provided</scope>
 		</dependency>
 
+		<!-- To resolve dependencies at runtime and avoid weird issues
+		with package relocation when developing. -->
+		<!-- <dependency>
+		    <groupId>net.byteflux</groupId>
+		    <artifactId>libby-bukkit</artifactId>
+		    <version>1.3.1</version>
+		</dependency>
+		<dependency>
+		    <groupId>net.byteflux</groupId>
+		    <artifactId>libby-paper</artifactId>
+		    <version>1.3.1</version>
+		</dependency> -->
+
 		<!-- Included libraries -->
 		<dependency>
 			<groupId>com.zaxxer</groupId>
 			<artifactId>HikariCP</artifactId>
-			<version>4.0.3</version> <!-- For Java 8 compatibility -->
+			<version>${hikaricp.version}</version>
 			<scope>compile</scope>
 		</dependency>
 		<dependency>
 			<groupId>org.bstats</groupId>
 			<artifactId>bstats-bukkit</artifactId>
-			<version>3.0.2</version>
+			<version>3.1.0</version>
 			<scope>compile</scope>
 		</dependency>
 		<dependency>
 			<groupId>fr.mrmicky</groupId>
 			<artifactId>fastboard</artifactId>
-			<version>2.1.4</version>
+			<version>${fastboard.version}</version>
 			<scope>compile</scope>
 		</dependency>
 		<dependency>
 			<groupId>com.tchristofferson</groupId>
 			<artifactId>ConfigUpdater</artifactId>
-			<version>2.0-SNAPSHOT</version>
+			<version>2.2-SNAPSHOT</version>
 			<scope>compile</scope>
 		</dependency>
 		<dependency>
 			<groupId>com.jeff_media</groupId>
 			<artifactId>SpigotUpdateChecker</artifactId>
-			<version>3.0.3</version>
+			<version>3.0.3-offline</version>
 			<scope>compile</scope>
 		</dependency>
 	</dependencies>

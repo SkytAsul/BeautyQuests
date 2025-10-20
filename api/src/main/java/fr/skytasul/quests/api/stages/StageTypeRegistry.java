@@ -1,15 +1,17 @@
 package fr.skytasul.quests.api.stages;
 
+import fr.skytasul.quests.api.stages.options.StageOptionAutoRegister;
+import fr.skytasul.quests.api.utils.logger.LoggerExpanded;
+import org.apache.commons.lang.Validate;
+import org.jetbrains.annotations.NotNull;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Optional;
-import org.apache.commons.lang.Validate;
-import org.jetbrains.annotations.NotNull;
-import fr.skytasul.quests.api.QuestsPlugin;
-import fr.skytasul.quests.api.stages.options.StageOptionAutoRegister;
 
 public class StageTypeRegistry implements Iterable<StageType<?>> {
+
+	private static final LoggerExpanded LOGGER = LoggerExpanded.get("BeautyQuests.Stages");
 
 	private final @NotNull List<@NotNull StageType<?>> types = new ArrayList<>();
 	private final @NotNull List<@NotNull StageOptionAutoRegister> autoRegisteringOptions = new ArrayList<>(2);
@@ -21,7 +23,7 @@ public class StageTypeRegistry implements Iterable<StageType<?>> {
 	public void register(@NotNull StageType<? extends AbstractStage> type) {
 		Validate.notNull(type);
 		types.add(type);
-		QuestsPlugin.getPlugin().getLoggerExpanded().debug("Stage registered (" + type.getName() + ", " + (types.size() - 1) + ")");
+		LOGGER.debug("Registered ({0}, {1})", type.getName(), types.indexOf(type));
 
 		for (StageOptionAutoRegister autoRegister : autoRegisteringOptions)
 			applyAutoregisteringOptions(type, autoRegister);

@@ -1,8 +1,6 @@
 package fr.skytasul.quests.options;
 
-import org.bukkit.configuration.ConfigurationSection;
-import org.bukkit.configuration.MemoryConfiguration;
-import org.bukkit.inventory.ItemStack;
+import com.cryptomorin.xseries.XMaterial;
 import fr.skytasul.quests.api.editors.DialogEditor;
 import fr.skytasul.quests.api.gui.ItemUtils;
 import fr.skytasul.quests.api.localization.Lang;
@@ -13,8 +11,10 @@ import fr.skytasul.quests.api.options.OptionSet;
 import fr.skytasul.quests.api.options.QuestOption;
 import fr.skytasul.quests.api.quests.creation.QuestCreationGuiClickEvent;
 import fr.skytasul.quests.api.stages.types.Dialogable;
-import fr.skytasul.quests.api.utils.XMaterial;
 import fr.skytasul.quests.utils.types.DialogRunnerImplementation;
+import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.configuration.MemoryConfiguration;
+import org.bukkit.inventory.ItemStack;
 
 public class OptionStartDialog extends QuestOption<Dialog> implements Dialogable {
 	

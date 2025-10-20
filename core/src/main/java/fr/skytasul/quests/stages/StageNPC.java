@@ -1,5 +1,6 @@
 package fr.skytasul.quests.stages;
 
+import com.cryptomorin.xseries.XMaterial;
 import fr.skytasul.quests.BeautyQuests;
 import fr.skytasul.quests.QuestsConfigurationImplementation;
 import fr.skytasul.quests.api.AbstractHolograms;
@@ -13,7 +14,7 @@ import fr.skytasul.quests.api.npcs.BqNpc;
 import fr.skytasul.quests.api.npcs.dialogs.Dialog;
 import fr.skytasul.quests.api.npcs.dialogs.DialogRunner;
 import fr.skytasul.quests.api.options.QuestOption;
-import fr.skytasul.quests.api.players.PlayerAccount;
+import fr.skytasul.quests.api.questers.Quester;
 import fr.skytasul.quests.api.stages.AbstractStage;
 import fr.skytasul.quests.api.stages.StageController;
 import fr.skytasul.quests.api.stages.StageDescriptionPlaceholdersContext;
@@ -24,7 +25,6 @@ import fr.skytasul.quests.api.stages.types.Dialogable;
 import fr.skytasul.quests.api.stages.types.Locatable;
 import fr.skytasul.quests.api.stages.types.Locatable.LocatableType;
 import fr.skytasul.quests.api.stages.types.Locatable.LocatedType;
-import fr.skytasul.quests.api.utils.XMaterial;
 import fr.skytasul.quests.api.utils.messaging.PlaceholderRegistry;
 import fr.skytasul.quests.npcs.BQNPCClickEvent;
 import fr.skytasul.quests.utils.QuestUtils;
@@ -171,7 +171,7 @@ public class StageNPC extends AbstractStage implements Locatable.PreciseLocatabl
 
 	@Override
 	public Located getLocated() {
-		return npc;
+		return npc.getNpc().getLocation() == null ? null : npc;
 	}
 
 	@Override
@@ -191,10 +191,10 @@ public class StageNPC extends AbstractStage implements Locatable.PreciseLocatabl
 			throw new IllegalStateException("Dialog runner already initialized");
 
 		dialogRunner = new DialogRunnerImplementation(dialog, npc);
-		dialogRunner.addTest(super::hasStarted);
-		dialogRunner.addTestCancelling(p -> canUpdate(p, true));
+		dialogRunner.addTest(super::hasApplicableQuester);
+		dialogRunner.addTestCancelling(p -> matchesRequirements(p, true));
 
-		dialogRunner.addEndAction(this::finishStage);
+		dialogRunner.addEndAction(p -> controller.getApplicableQuesters(p).forEach(this::finishStage));
 	}
 
 	@EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
@@ -220,8 +220,8 @@ public class StageNPC extends AbstractStage implements Locatable.PreciseLocatabl
 	}
 
 	@Override
-	public void joined(Player p) {
-		super.joined(p);
+	public void joined(Player p, Quester quester) {
+		super.joined(p, null);
 		cachePlayer(p);
 	}
 
@@ -243,31 +243,27 @@ public class StageNPC extends AbstractStage implements Locatable.PreciseLocatabl
 	}
 
 	@Override
-	public void left(Player p) {
-		super.left(p);
+	public void left(Player p, Quester quester) {
+		super.left(p, null);
 		uncachePlayer(p);
 		if (dialogRunner != null)
 			dialogRunner.removePlayer(p);
 	}
 
 	@Override
-	public void started(PlayerAccount acc) {
+	public void started(Quester acc) {
 		super.started(acc);
-		if (acc.isCurrent()) {
-			Player p = acc.getPlayer();
-			cachePlayer(p);
-		}
+		acc.getOnlinePlayers().forEach(this::cachePlayer);
 	}
 
 	@Override
-	public void ended(PlayerAccount acc) {
+	public void ended(Quester acc) {
 		super.ended(acc);
-		if (acc.isCurrent()) {
-			Player p = acc.getPlayer();
+		acc.getOnlinePlayers().forEach(p -> {
+			uncachePlayer(p);
 			if (dialogRunner != null)
 				dialogRunner.removePlayer(p);
-			uncachePlayer(p);
-		}
+		});
 	}
 
 	@Override

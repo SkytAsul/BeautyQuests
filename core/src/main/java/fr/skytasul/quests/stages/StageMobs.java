@@ -1,11 +1,12 @@
 package fr.skytasul.quests.stages;
 
+import com.cryptomorin.xseries.XMaterial;
 import fr.skytasul.quests.api.QuestsPlugin;
 import fr.skytasul.quests.api.events.internal.BQMobDeathEvent;
 import fr.skytasul.quests.api.gui.ItemUtils;
 import fr.skytasul.quests.api.localization.Lang;
 import fr.skytasul.quests.api.options.description.DescriptionSource;
-import fr.skytasul.quests.api.players.PlayerAccount;
+import fr.skytasul.quests.api.questers.Quester;
 import fr.skytasul.quests.api.stages.StageController;
 import fr.skytasul.quests.api.stages.StageDescriptionPlaceholdersContext;
 import fr.skytasul.quests.api.stages.creation.StageCreation;
@@ -17,7 +18,6 @@ import fr.skytasul.quests.api.stages.types.Locatable.LocatableType;
 import fr.skytasul.quests.api.stages.types.Locatable.LocatedType;
 import fr.skytasul.quests.api.utils.CountableObject;
 import fr.skytasul.quests.api.utils.CountableObject.MutableCountableObject;
-import fr.skytasul.quests.api.utils.XMaterial;
 import fr.skytasul.quests.api.utils.messaging.MessageType;
 import fr.skytasul.quests.api.utils.messaging.MessageUtils;
 import fr.skytasul.quests.gui.mobs.MobsListGUI;
@@ -26,7 +26,9 @@ import fr.skytasul.quests.mobs.Mob;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
+import org.bukkit.entity.Projectile;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
 import org.jetbrains.annotations.NotNull;
@@ -52,15 +54,21 @@ public class StageMobs extends AbstractCountableStage<Mob<?>> implements Locatab
 		this.shoot = shoot;
 	}
 
-	@EventHandler
+	@EventHandler(priority = EventPriority.MONITOR)
 	public void onMobKilled(BQMobDeathEvent e){
 		if (shoot && e.getBukkitEntity() != null && e.getBukkitEntity().getLastDamageCause() != null
 				&& e.getBukkitEntity().getLastDamageCause().getCause() != DamageCause.PROJECTILE)
 			return;
 
-		Player p = e.getKiller();
-		if (p == e.getBukkitEntity()) return; // player suicidal
-		event(p, new KilledMob(e.getPluginMob(), e.getBukkitEntity()), e.getAmount());
+		Entity killerEntity = e.getKiller();
+		if (killerEntity instanceof Projectile projectile && projectile.getShooter() instanceof Entity shooter)
+			killerEntity = shooter;
+		if (!(killerEntity instanceof Player killer))
+			return;
+		if (killer == e.getBukkitEntity())
+			return; // player suicidal
+
+		event(killer, new KilledMob(e.getPluginMob(), e.getBukkitEntity()), e.getAmount());
 	}
 
 	@Override
@@ -97,10 +105,10 @@ public class StageMobs extends AbstractCountableStage<Mob<?>> implements Locatab
 	}
 
 	@Override
-	public void started(PlayerAccount acc) {
+	public void started(Quester acc) {
 		super.started(acc);
-		if (acc.isCurrent() && sendStartMessage()) {
-			MessageUtils.sendRawMessage(acc.getPlayer(), Lang.STAGE_MOBSLIST.toString(), getPlaceholdersRegistry(),
+		if (sendStartMessage()) {
+			MessageUtils.sendRawMessage(acc, Lang.STAGE_MOBSLIST.toString(), getPlaceholdersRegistry(),
 					StageDescriptionPlaceholdersContext.of(true, acc, DescriptionSource.FORCELINE, MessageType.DefaultMessageType.PREFIXED));
 		}
 	}

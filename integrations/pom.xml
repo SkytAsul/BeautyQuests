@@ -128,13 +128,7 @@
 		<dependency>
 			<groupId>io.github.gonalez</groupId>
 			<artifactId>znpcs</artifactId>
-			<version>4.2</version>
-			<scope>provided</scope>
-		</dependency>
-		<dependency>
-			<groupId>com.github.Pyrbu</groupId>
-			<artifactId>ZNPCsPlus</artifactId>
-			<version>1.0.8</version>
+			<version>5.2</version>
 			<scope>provided</scope>
 		</dependency>
 		<dependency>
@@ -188,7 +182,7 @@
 		<dependency>
 			<groupId>io.lumine</groupId>
 			<artifactId>Mythic-Dist</artifactId>
-			<version>5.7.2</version>
+			<version>5.9.5</version>
 			<scope>provided</scope>
 		</dependency>
 		<dependency>

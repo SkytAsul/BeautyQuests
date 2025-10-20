@@ -1,5 +1,6 @@
-![GitHub release (latest SemVer)](https://img.shields.io/github/v/release/SkytAsul/BeautyQuests?color=green)
-[![Jenkins](https://ci.codemc.org/job/SkytAsul/job/BeautyQuests/badge/icon)](https://ci.codemc.org/job/SkytAsul/job/BeautyQuests)
+[![GitHub release](https://img.shields.io/github/v/release/SkytAsul/BeautyQuests?color=green)](https://github.com/SkytAsul/BeautyQuests/releases/latest)
+[![GitHub pre-release](https://img.shields.io/github/v/release/SkytAsul/BeautyQuests?include_prereleases&color=green)](https://github.com/SkytAsul/BeautyQuests/releases)
+[![GitHub Actions](https://img.shields.io/github/actions/workflow/status/SkytAsul/BeautyQuests/build.yml)](https://github.com/SkytAsul/BeautyQuests/actions)
 [![Crowdin](https://d322cqt584bo4o.cloudfront.net/beautyquests/localized.svg)](https://crowdin.com/project/beautyquests)
 [![Spiget Downloads](https://img.shields.io/spiget/downloads/39255)](https://www.spigotmc.org/resources/beautyquests.39255/)
 ![bStats Servers](https://img.shields.io/bstats/servers/7460)
@@ -19,7 +20,7 @@ What is **BeautyQuests**?
 ## Downloads
 Plugin releases can be downloaded from **[SpigotMC](https://www.spigotmc.org/resources/beautyquests.39255)**.
 
-Development builds are available on **[Jenkins](https://ci.codemc.org/job/SkytAsul/job/BeautyQuests/)**.
+Development builds are available in the **[releases section](https://github.com/SkytAsul/BeautyQuests/releases)**.
 
 ## Wiki
 You can find the **wiki [here](https://github.com/SkytAsul/BeautyQuests/wiki)**. It contains a lot of useful informations.
@@ -29,23 +30,3 @@ If you want to help us translate BeautyQuests into your native language, join th
 
 ## Discord
 If you need help, found a bug, or want to share an idea, you can join the official [Plugin Support Discord server by SkytAsul](https://discord.gg/H8fXrkD).
-
-***
-
-## Maven
-In *pom.xml*, add this to the `repositories` section:
-```xml
-<repository>
-  <id>codemc</id>
-  <url>https://repo.codemc.org/repository/skytasul</url>
-</repository>
-```
-And add this to the `dependencies` section: (replace VERSION by whatever version you want, i.e. `1.0-SNAPSHOT`)
-```xml
-<dependency>
-  <groupId>fr.skytasul</groupId>
-  <artifactId>beautyquests-api</artifactId>
-  <version>VERSION</version>
-  <scope>provided</scope>
-</dependency>
-```

@@ -1,15 +1,16 @@
 package fr.skytasul.quests.api.data;
 
+import com.google.common.collect.ImmutableMap;
+import fr.skytasul.quests.api.utils.CustomizedObjectTypeAdapter;
+import org.jetbrains.annotations.NotNull;
 import java.sql.*;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
-import com.google.common.collect.ImmutableMap;
-import fr.skytasul.quests.api.utils.CustomizedObjectTypeAdapter;
 
 public class SQLDataSaver<T> {
-	
+
 	private static final SQLType<Date> TYPE_DATE = new SQLType<Date>(Types.TIMESTAMP, "TIMESTAMP", (resultSet, column) -> new Date(resultSet.getTimestamp(column).getTime())) {
 		@Override
 		public Object convert(Date obj) {
@@ -51,87 +52,69 @@ public class SQLDataSaver<T> {
 			.put(String.class, TYPE_STRING)
 			.put(Date.class, TYPE_DATE)
 			.build());
-	
-	private final SavableData<T> wrappedData;
-	private final SQLType<T> sqlType;
-	private final String updateStatement;
-	private final String columnDefinition;
-	private final String defaultValueString;
-	
-	public SQLDataSaver(SavableData<T> wrappedData, String updateStatement) {
-		this.wrappedData = wrappedData;
-		this.updateStatement = updateStatement;
-		
-		sqlType = (SQLType<T>) SQL_TYPES.computeIfAbsent(wrappedData.getDataType(), JsonSQLType::new);
-		
-		String length = "";
-		if (!sqlType.omitLength) {
-			if (wrappedData.getMaxLength().isPresent()) {
-				length = "(" + wrappedData.getMaxLength().getAsInt() + ")";
-			}else {
-				if (sqlType.requiresLength)
-					throw new IllegalArgumentException("Column " + wrappedData.getColumnName() + " requires a max length.");
-			}
-		}
-		
-		defaultValueString = Objects.toString(wrappedData.getDefaultValue());
-		columnDefinition = String.format("`%s` %s%s DEFAULT %s", wrappedData.getColumnName(), sqlType.sqlTypeName, length, defaultValueString);
+
+	private SQLDataSaver() {}
+
+	private static <T> @NotNull SQLType<T> getSqlType(@NotNull SavableData<T> data) {
+		return (SQLType<T>) SQL_TYPES.computeIfAbsent(data.getDataType(), JsonSQLType::new);
 	}
-	
-	public SavableData<T> getWrappedData() {
-		return wrappedData;
+
+	private static @NotNull String getLength(@NotNull SavableData<?> data) {
+		SQLType<?> sqlType = getSqlType(data);
+		if (sqlType.omitLength)
+			return "";
+		if (data.getMaxLength().isPresent())
+			return "(%d)".formatted(data.getMaxLength().getAsInt());
+		if (sqlType.requiresLength)
+			throw new IllegalArgumentException("Column " + data.getColumnName() + " requires a max length.");
+		return "";
 	}
-	
-	public String getUpdateStatement() {
-		return updateStatement;
+
+	public static @NotNull String getColumnDefinition(@NotNull SavableData<?> data) {
+		return "`%s` %s%s DEFAULT %s".formatted(data.getColumnName(), getSqlType(data).sqlTypeName, getLength(data),
+				Objects.toString(data.getDefaultValue()));
 	}
-	
-	public String getColumnDefinition() {
-		return columnDefinition;
-	}
-	
-	public String getDefaultValueString() {
-		return defaultValueString;
-	}
-	
-	public void setInStatement(PreparedStatement statement, int index, T value) throws SQLException {
+
+	public static <T> void setInStatement(@NotNull SavableData<T> data, @NotNull PreparedStatement statement, int index,
+			T value) throws SQLException {
+		SQLType<T> sqlType = getSqlType(data);
 		statement.setObject(index, sqlType.convert(value), sqlType.jdbcTypeCode);
 	}
-	
-	public T getFromResultSet(ResultSet resultSet) throws SQLException {
-		return sqlType.getter.get(resultSet, wrappedData.getColumnName());
+
+	public static <T> T getFromResultSet(@NotNull SavableData<T> data, @NotNull ResultSet resultSet) throws SQLException {
+		return getSqlType(data).getter.get(resultSet, data.getColumnName());
 	}
-	
+
 	private static class SQLType<T> {
 		private final int jdbcTypeCode;
 		private final String sqlTypeName;
 		private final ResultSetProcessor<T> getter;
-		
+
 		private boolean requiresLength = false;
 		private boolean omitLength = false;
-		
+
 		private SQLType(int jdbcTypeCode, String sqlTypeName, ResultSetProcessor<T> getter) {
 			this.jdbcTypeCode = jdbcTypeCode;
 			this.sqlTypeName = sqlTypeName;
 			this.getter = getter;
 		}
-		
+
 		public SQLType<T> requiresLength() {
 			requiresLength = true;
 			return this;
 		}
-		
+
 		public SQLType<T> omitLength() {
 			omitLength = true;
 			return this;
 		}
-		
+
 		public Object convert(T obj) {
 			return obj;
 		}
-		
+
 	}
-	
+
 	private static class JsonSQLType<T> extends SQLType<T> {
 		private JsonSQLType(Class<T> type) {
 			super(Types.VARCHAR, "JSON", (resultSet, column) -> {
@@ -139,16 +122,16 @@ public class SQLDataSaver<T> {
 				return CustomizedObjectTypeAdapter.GSON.fromJson(json, type);
 			});
 		}
-		
+
 		@Override
 		public Object convert(T obj) {
 			return CustomizedObjectTypeAdapter.GSON.toJson(obj);
 		}
 	}
-	
+
 	@FunctionalInterface
 	public static interface ResultSetProcessor<T> {
 		T get(ResultSet resultSet, String column) throws SQLException;
 	}
-	
+
 }

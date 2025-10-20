@@ -1,6 +1,13 @@
 package fr.skytasul.quests.api.options;
 
-import java.util.Objects;
+import fr.skytasul.quests.api.QuestsAPI;
+import fr.skytasul.quests.api.QuestsPlugin;
+import fr.skytasul.quests.api.localization.Lang;
+import fr.skytasul.quests.api.options.description.QuestDescriptionProvider;
+import fr.skytasul.quests.api.quests.Quest;
+import fr.skytasul.quests.api.quests.creation.QuestCreationGuiClickEvent;
+import fr.skytasul.quests.api.utils.AutoRegistered;
+import fr.skytasul.quests.api.utils.messaging.PlaceholderRegistry;
 import org.apache.commons.lang.Validate;
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.ConfigurationSection;
@@ -9,13 +16,8 @@ import org.bukkit.event.Listener;
 import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import fr.skytasul.quests.api.QuestsPlugin;
-import fr.skytasul.quests.api.localization.Lang;
-import fr.skytasul.quests.api.options.description.QuestDescriptionProvider;
-import fr.skytasul.quests.api.quests.Quest;
-import fr.skytasul.quests.api.quests.creation.QuestCreationGuiClickEvent;
-import fr.skytasul.quests.api.utils.AutoRegistered;
-import fr.skytasul.quests.api.utils.messaging.PlaceholderRegistry;
+import java.util.Objects;
+import java.util.Optional;
 
 @AutoRegistered
 public abstract class QuestOption<T> implements Cloneable {
@@ -31,8 +33,9 @@ public abstract class QuestOption<T> implements Cloneable {
 	protected QuestOption(@NotNull Class<? extends QuestOption<?>> @NotNull... requiredQuestOptions) {
 		this.requiredQuestOptions = requiredQuestOptions;
 
-		this.creator = (QuestOptionCreator<T, QuestOption<T>>) QuestOptionCreator.creators.get(getClass());
-		if (creator == null) throw new IllegalArgumentException(getClass().getName() + " has not been registered as a quest option via the API.");
+		Optional<QuestOptionCreator> creatorOpt = QuestsAPI.getAPI().getQuestOption(getClass());
+		this.creator = creatorOpt.orElseThrow(() -> new IllegalArgumentException(
+				getClass().getName() + " has not been registered as a quest option via the API."));
 
 		setValue(creator.defaultValue == null ? null : cloneValue(creator.defaultValue));
 	}

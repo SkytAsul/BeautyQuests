@@ -79,6 +79,7 @@ public enum Lang implements Locale {
 	CONFIRM_MESSAGE("msg.writeConfirmMessage"),
 	QUEST_DESCRIPTION("msg.writeQuestDescription"),
 	QUEST_MATERIAL("msg.writeQuestMaterial"),
+	QUEST_CUSTOM_ORDER("msg.writeQuestCustomOrder", EditorPrefix),
 
 	REQUIREMENT_QUEST("msg.requirements.quest"),
 	REQUIREMENT_LEVEL("msg.requirements.level"),
@@ -126,8 +127,7 @@ public enum Lang implements Locale {
 	CANCEL_QUEST("msg.command.cancelQuest"),
 	CANCEL_QUEST_UNAVAILABLE("msg.command.cancelQuestUnavailable"),
 	BACKUP_CREATED("msg.command.backupCreated"),
-	BACKUP_PLAYERS_FAILED("msg.command.backupPlayersFailed"),
-	BACKUP_QUESTS_FAILED("msg.command.backupQuestsFailed"),
+	BACKUP_FAILED("msg.command.backupFailed", ErrorPrefix),
 	ADMIN_MODE_ENTERED("msg.command.adminModeEntered"),
 	ADMIN_MODE_LEFT("msg.command.adminModeLeft"),
 	POOL_RESET_TIMER("msg.command.resetPlayerPool.timer"), // 0: pool ID, 1: player
@@ -322,10 +322,13 @@ public enum Lang implements Locale {
 	Not_Started("advancement.notStarted"),
 
 	/* Inventories */
+	// Generic actions
 	done("inv.validate"),
 	cancel("inv.cancel"),
 	search("inv.search"),
 	addObject("inv.addObject"),
+	pickAnother("inv.pickAnother"),
+	edit("inv.edit"),
 
 	INVENTORY_CONFIRM("inv.confirm.name"),
 	confirmYes("inv.confirm.yes"),
@@ -381,6 +384,7 @@ public enum Lang implements Locale {
 	leftClick("inv.create.leftClick"),
 	editFishes("inv.create.editFishes"),
 	editItemsToMelt("inv.create.editItemsToMelt"),
+	editItemsToMeltLore("inv.create.editItemsToMeltLore"),
 	editItemsToEnchant("inv.create.editItemsToEnchant"),
 	editItem("inv.create.editItem"),
 	editBucketType("inv.create.editBucketType"),
@@ -453,7 +457,7 @@ public enum Lang implements Locale {
 	questStarterSelectPool("inv.details.selectStarterNPCPool"),
 	create("inv.details.createQuestName"),
 	createLore("inv.details.createQuestLore"),
-	edit("inv.details.editQuestName"),
+	editQuestName("inv.details.editQuestName"),
 	endMessage("inv.details.endMessage"),
 	endMessageLore("inv.details.endMessageLore"),
 	endSound("inv.details.endSound"),
@@ -495,6 +499,9 @@ public enum Lang implements Locale {
 	optionFireworkDrop("inv.details.fireworkLoreDrop"),
 	optionVisibility("inv.details.visibility"),
 	optionVisibilityLore("inv.details.visibilityLore"),
+	optionQuesterStrategy("inv.details.questerStrategy"),
+	optionCustomOrder("inv.details.customOrder"),
+	optionCustomOrderLore("inv.details.customOrderLore"),
 	keepDatas("inv.details.keepDatas"),
 	keepDatasLore("inv.details.keepDatasLore"),
 	resetLore("inv.details.loreReset"),
@@ -561,6 +568,8 @@ public enum Lang implements Locale {
 	inProgress("inv.listQuests.inProgress"),
 	dialogsHistoryLore("inv.listQuests.loreDialogsHistoryClick"),
 	cancelLore("inv.listQuests.loreCancelClick"),
+	scoreboardPinLore("inv.listQuests.loreScoreboardPinClick"),
+	scoreboardUnpinLore("inv.listQuests.loreScoreboardUnpinClick"),
 	startLore("inv.listQuests.loreStart"),
 	startImpossibleLore("inv.listQuests.loreStartUnavailable"),
 	timeWait("inv.listQuests.timeToWaitRedo"),
@@ -764,6 +773,9 @@ public enum Lang implements Locale {
 	TimeHours("misc.time.hours"),
 	TimeMinutes("misc.time.minutes"),
 	TimeLessMinute("misc.time.lessThanAMinute"),
+
+	PlayerQuesterName("misc.playerQuester.name"),
+	PlayerQuesterDescription("misc.playerQuester.description"),
 
 	Find("misc.stageType.region"),
 	Talk("misc.stageType.npc"),

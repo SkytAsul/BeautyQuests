@@ -1,5 +1,10 @@
 package fr.skytasul.quests.stages;
 
+import fr.skytasul.quests.api.localization.Lang;
+import fr.skytasul.quests.api.stages.StageController;
+import fr.skytasul.quests.api.stages.StageDescriptionPlaceholdersContext;
+import fr.skytasul.quests.api.stages.creation.StageCreationContext;
+import fr.skytasul.quests.api.stages.types.AbstractEntityStage;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
@@ -8,11 +13,6 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityTameEvent;
 import org.jetbrains.annotations.NotNull;
-import fr.skytasul.quests.api.localization.Lang;
-import fr.skytasul.quests.api.stages.StageController;
-import fr.skytasul.quests.api.stages.StageDescriptionPlaceholdersContext;
-import fr.skytasul.quests.api.stages.creation.StageCreationContext;
-import fr.skytasul.quests.api.stages.types.AbstractEntityStage;
 
 public class StageTame extends AbstractEntityStage implements Listener {
 

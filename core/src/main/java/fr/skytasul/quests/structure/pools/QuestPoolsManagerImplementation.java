@@ -1,30 +1,32 @@
 package fr.skytasul.quests.structure.pools;
 
+import fr.skytasul.quests.BeautyQuests;
+import fr.skytasul.quests.api.pools.QuestPool;
+import fr.skytasul.quests.api.pools.QuestPoolsManager;
+import fr.skytasul.quests.api.requirements.RequirementList;
+import fr.skytasul.quests.options.OptionQuestPool;
+import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.configuration.file.YamlConfiguration;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+import org.jetbrains.annotations.UnmodifiableView;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
-import org.bukkit.configuration.ConfigurationSection;
-import org.bukkit.configuration.file.YamlConfiguration;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
-import org.jetbrains.annotations.UnmodifiableView;
-import fr.skytasul.quests.api.QuestsPlugin;
-import fr.skytasul.quests.api.pools.QuestPool;
-import fr.skytasul.quests.api.pools.QuestPoolsManager;
-import fr.skytasul.quests.api.requirements.RequirementList;
-import fr.skytasul.quests.options.OptionQuestPool;
 
 public class QuestPoolsManagerImplementation implements QuestPoolsManager {
 
-	private File file;
-	private YamlConfiguration config;
+	private final @NotNull BeautyQuests plugin;
+	private final @NotNull File file;
+	private final @NotNull YamlConfiguration config;
 
 	private Map<Integer, QuestPoolImplementation> pools = new HashMap<>();
 
-	public QuestPoolsManagerImplementation(File file) throws IOException {
+	public QuestPoolsManagerImplementation(@NotNull BeautyQuests plugin, @NotNull File file) throws IOException {
+		this.plugin = plugin;
 		this.file = file;
 		if (!file.exists()) {
 			config = new YamlConfiguration();
@@ -39,10 +41,11 @@ public class QuestPoolsManagerImplementation implements QuestPoolsManager {
 					QuestPoolImplementation pool = QuestPoolImplementation.deserialize(id, config.getConfigurationSection(key));
 					pools.put(id, pool);
 				} catch (Exception ex) {
-					QuestsPlugin.getPlugin().getLoggerExpanded().severe("An exception ocurred while loading quest pool " + key, ex);
+					plugin.getLoggerExpanded().severe("An exception ocurred while loading quest pool {0}", ex, key);
 					continue;
 				}
 			}
+			plugin.getLoggerExpanded().debug("Loaded {0} pools.", pools.size());
 		}
 	}
 

@@ -1,9 +1,9 @@
 package fr.skytasul.quests.gui.creation.quest;
 
+import com.cryptomorin.xseries.XMaterial;
 import fr.skytasul.quests.BeautyQuests;
 import fr.skytasul.quests.api.QuestsAPI;
 import fr.skytasul.quests.api.QuestsPlugin;
-import fr.skytasul.quests.api.events.QuestCreateEvent;
 import fr.skytasul.quests.api.gui.ItemUtils;
 import fr.skytasul.quests.api.gui.close.StandardCloseBehavior;
 import fr.skytasul.quests.api.gui.layout.LayoutedButton;
@@ -15,22 +15,24 @@ import fr.skytasul.quests.api.options.OptionSet;
 import fr.skytasul.quests.api.options.QuestOption;
 import fr.skytasul.quests.api.options.QuestOptionCreator;
 import fr.skytasul.quests.api.options.UpdatableOptionSet;
+import fr.skytasul.quests.api.questers.Quester;
+import fr.skytasul.quests.api.questers.data.QuesterQuestData;
+import fr.skytasul.quests.api.questers.events.QuesterJoinEvent;
+import fr.skytasul.quests.api.quests.branches.EndingStage;
 import fr.skytasul.quests.api.quests.creation.QuestCreationGui;
 import fr.skytasul.quests.api.quests.creation.QuestCreationGuiClickEvent;
+import fr.skytasul.quests.api.quests.events.QuestCreateEvent;
 import fr.skytasul.quests.api.stages.AbstractStage;
 import fr.skytasul.quests.api.stages.creation.StageCreationContext;
-import fr.skytasul.quests.api.utils.MinecraftVersion;
-import fr.skytasul.quests.api.utils.XMaterial;
 import fr.skytasul.quests.api.utils.messaging.DefaultErrors;
 import fr.skytasul.quests.api.utils.messaging.PlaceholderRegistry;
 import fr.skytasul.quests.gui.creation.QuestCreationSession;
 import fr.skytasul.quests.gui.creation.stages.StageCreationContextImplementation;
 import fr.skytasul.quests.gui.creation.stages.StagesGUI;
 import fr.skytasul.quests.options.OptionName;
-import fr.skytasul.quests.players.PlayerAccountImplementation;
-import fr.skytasul.quests.players.PlayerQuestDatasImplementation;
 import fr.skytasul.quests.structure.QuestBranchImplementation;
 import fr.skytasul.quests.structure.QuestImplementation;
+import fr.skytasul.quests.structure.QuestsManagerImplementation;
 import fr.skytasul.quests.structure.StageControllerImplementation;
 import fr.skytasul.quests.utils.QuestUtils;
 import net.md_5.bungee.api.ChatColor;
@@ -40,27 +42,62 @@ import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
+import java.util.*;
 
 public class QuestCreationGuiImplementation extends LayoutedGUI implements QuestCreationGui {
 
 	private final QuestCreationSession session;
 	private final UpdatableOptionSet options;
 
-	private final int doneButtonSlot;
+	private final int doneButtonSlot = 5;
+	private final Map<QuestOptionCreator, LayoutedButton> optionButtons = new HashMap<>();
 
 	private boolean keepPlayerDatas = true;
 
 	public QuestCreationGuiImplementation(QuestCreationSession session) {
-		super(null, new HashMap<>(), StandardCloseBehavior.CONFIRM);
-		// null name because it is computed in #instanciate
+		super(new HashMap<>(), StandardCloseBehavior.CONFIRM);
+		// name will be computed in #instanciate
 		this.session = session;
 		this.options = new UpdatableOptionSet();
 
-		for (QuestOptionCreator<?, ?> creator : QuestOptionCreator.creators.values()) {
+		buttons.put(3,
+				LayoutedButton.create(QuestsPlugin.getPlugin().getGuiManager().getItemFactory().getPreviousPage(),
+						event -> session.openStagesGUI(event.getPlayer())));
+
+		buttons.put(doneButtonSlot, LayoutedButton.create(() -> {
+			boolean finishable = isFinishable();
+			XMaterial type = finishable ? XMaterial.GOLD_INGOT : XMaterial.NETHER_BRICK;
+			String itemName = (finishable ? ChatColor.GOLD : ChatColor.DARK_PURPLE).toString()
+					+ (session.isEdition() ? Lang.editQuestName : Lang.create).toString();
+			List<String> lore = new ArrayList<>(3);
+			lore.add(QuestOption.formatDescription(Lang.createLore.toString()) + (finishable ? " §a✔" : " §c✖"));
+			if (Boolean.FALSE.equals(keepPlayerDatas)) {
+				lore.add("");
+				lore.add(Lang.resetLore.toString());
+			}
+			return ItemUtils.item(type, itemName, lore);
+		}, event -> {
+			if (isFinishable())
+				finish();
+		}));
+
+		if (session.isEdition()) {
+			keepPlayerDatas = true;
+			buttons.put(6, LayoutedButton.createSwitch(() -> keepPlayerDatas, Lang.keepDatas.toString(),
+					Arrays.asList(QuestOption.formatDescription(Lang.keepDatasLore.toString())),
+					event -> {
+						keepPlayerDatas = ItemUtils.toggleSwitch(event.getClicked());
+						refresh(doneButtonSlot);
+					}));
+		}
+
+		addOptionsButtons();
+		options.getWrapper(OptionName.class).dependent.add(() -> super.refresh(doneButtonSlot));
+	}
+
+	private void addOptionsButtons() {
+		int availableSlot = QuestsAPI.getAPI().getQuestOptions().stream().mapToInt(x -> x.preferedSlot).max().orElse(0) + 1;
+		for (QuestOptionCreator<?, ?> creator : QuestsAPI.getAPI().getQuestOptions()) {
 			QuestOption<?> option;
 			if (session.isEdition() && session.getQuestEdited().hasOption(creator.optionClass)) {
 				option = session.getQuestEdited().getOption(creator.optionClass).clone();
@@ -87,7 +124,13 @@ public class QuestCreationGuiImplementation extends LayoutedGUI implements Quest
 				}
 
 			};
-			buttons.put(creator.slot, optionButton);
+
+			int slot = creator.preferedSlot;
+			if (buttons.containsKey(slot))
+				slot = availableSlot++;
+			buttons.put(slot, optionButton);
+			optionButtons.put(creator, optionButton);
+
 			options.addOption(option, () -> {
 				option.onDependenciesUpdated(options);
 				refresh(optionButton);
@@ -95,51 +138,18 @@ public class QuestCreationGuiImplementation extends LayoutedGUI implements Quest
 		}
 
 		options.calculateDependencies();
-
-		buttons.put(QuestOptionCreator.calculateSlot(3),
-				LayoutedButton.create(QuestsPlugin.getPlugin().getGuiManager().getItemFactory().getPreviousPage(), event -> session.openStagesGUI(event.getPlayer())));
-
-		doneButtonSlot = QuestOptionCreator.calculateSlot(5);
-		buttons.put(doneButtonSlot, LayoutedButton.create(() -> {
-			boolean finishable = isFinishable();
-			XMaterial type = finishable ? XMaterial.GOLD_INGOT : XMaterial.NETHER_BRICK;
-			String itemName = (finishable ? ChatColor.GOLD : ChatColor.DARK_PURPLE).toString()
-					+ (session.isEdition() ? Lang.edit : Lang.create).toString();
-			List<String> lore = new ArrayList<>(3);
-			lore.add(QuestOption.formatDescription(Lang.createLore.toString()) + (finishable ? " §a✔" : " §c✖"));
-			if (Boolean.FALSE.equals(keepPlayerDatas)) {
-				lore.add("");
-				lore.add(Lang.resetLore.toString());
-			}
-			return ItemUtils.item(type, itemName, lore);
-		}, event -> {
-			if (isFinishable())
-				finish(event.getPlayer());
-		}));
-		options.getWrapper(OptionName.class).dependent.add(() -> super.refresh(doneButtonSlot));
-
-		if (session.isEdition()) {
-			keepPlayerDatas = true;
-			int resetSlot = QuestOptionCreator.calculateSlot(6);
-			buttons.put(resetSlot, LayoutedButton.createSwitch(() -> keepPlayerDatas, Lang.keepDatas.toString(),
-					Arrays.asList(QuestOption.formatDescription(Lang.keepDatasLore.toString())),
-					event -> {
-						keepPlayerDatas = ItemUtils.toggleSwitch(event.getClicked());
-						refresh(doneButtonSlot);
-					}));
-		}
 	}
 
 	@Override
 	protected Inventory instanciate(@NotNull Player player) {
 		String invName = Lang.INVENTORY_DETAILS.toString();
-		if (session.isEdition()) {
-			invName = invName + " #" + session.getQuestEdited().getId();
-			if (MinecraftVersion.MAJOR <= 8 && invName.length() > 32)
-				invName = Lang.INVENTORY_DETAILS.toString(); // 32 characters limit in 1.8
-		}
+		if (session.isEdition())
+			invName += " #" + session.getQuestEdited().getId();
 
-		return Bukkit.createInventory(null, (int) Math.ceil((QuestOptionCreator.getLastSlot() + 1) / 9D) * 9, invName);
+		int maxSlot = buttons.keySet().stream().mapToInt(Integer::intValue).max().orElse(0);
+		int rows = (int) (Math.floor(maxSlot / 9D) + 1);
+
+		return Bukkit.createInventory(null, rows * 9, invName);
 	}
 
 	private boolean isFinishable() {
@@ -153,30 +163,19 @@ public class QuestCreationGuiImplementation extends LayoutedGUI implements Quest
 
 	@Override
 	public void updateOptionItem(@NotNull QuestOption<?> option) {
-		refresh(option.getOptionCreator().slot);
+		refresh(optionButtons.get(option.getOptionCreator()));
 	}
 
-	private void finish(Player p) {
+	private void finish() {
 		QuestImplementation qu;
+		QuestsManagerImplementation manager = BeautyQuests.getInstance().getQuestsManager();
 		if (session.isEdition()) {
 			QuestsPlugin.getPlugin().getLoggerExpanded().debug(
 					"Editing quest " + session.getQuestEdited().getId() + " with keep datas: " + keepPlayerDatas);
 			session.getQuestEdited().delete(true, true);
-			qu = new QuestImplementation(session.getQuestEdited().getId(), session.getQuestEdited().getFile());
+			qu = new QuestImplementation(manager, session.getQuestEdited().getId(), session.getQuestEdited().getFile());
 		}else {
-			int id = -1;
-			if (session.hasCustomID()) {
-				if (QuestsAPI.getAPI().getQuestsManager().getQuests().stream()
-						.anyMatch(x -> x.getId() == session.getCustomID())) {
-					QuestsPlugin.getPlugin().getLoggerExpanded().warning("Cannot create quest with custom ID " + session.getCustomID() + " because another quest with this ID already exists.");
-				}else {
-					id = session.getCustomID();
-					QuestsPlugin.getPlugin().getLoggerExpanded().warning("A quest will be created with custom ID " + id + ".");
-				}
-			}
-			if (id == -1)
-				id = BeautyQuests.getInstance().getQuestsManager().getFreeQuestID();
-			qu = new QuestImplementation(id);
+			qu = manager.createQuest(session.hasCustomID() ? OptionalInt.of(session.getCustomID()) : OptionalInt.empty());
 		}
 
 		for (QuestOption<?> option : options) {
@@ -185,29 +184,33 @@ public class QuestCreationGuiImplementation extends LayoutedGUI implements Quest
 
 		QuestBranchImplementation mainBranch = new QuestBranchImplementation(qu.getBranchesManager());
 		qu.getBranchesManager().addBranch(mainBranch);
-		boolean failure = loadBranch(p, mainBranch, session.getStagesGUI());
+		boolean failure = loadBranch(mainBranch, session.getStagesGUI());
 
-		QuestCreateEvent event = new QuestCreateEvent(p, qu, session.isEdition());
+		QuestCreateEvent event = new QuestCreateEvent(qu, session.isEdition(), session.getPlayer());
 		Bukkit.getPluginManager().callEvent(event);
 		if (event.isCancelled()){
 			qu.delete(true, false);
-			Lang.CANCELLED.send(p);
+			Lang.CANCELLED.send(session.getPlayer());
 		}else {
 			if (session.areStagesEdited()) {
 				if (keepPlayerDatas) {
 					QuestsPlugin.getPlugin().getLoggerExpanded().warning("Players quests datas will be kept for quest #" + qu.getId()
 							+ " - this may cause datas issues.");
 				} else
-					BeautyQuests.getInstance().getPlayersManager().removeQuestDatas(session.getQuestEdited())
+					BeautyQuests.getInstance().getQuesterManager().getDataManager()
+							.resetQuestData(session.getQuestEdited().getId())
 							.whenComplete(QuestsPlugin.getPlugin().getLoggerExpanded()
-									.logError("An error occurred while removing player datas after quest edition", p));
+									.logError("An error occurred while removing player datas after quest edition",
+											session.getPlayerAudience()));
 			}
 
 			QuestsAPI.getAPI().getQuestsManager().addQuest(qu);
 			Lang msg = session.isEdition() ? Lang.SUCCESFULLY_EDITED : Lang.SUCCESFULLY_CREATED;
-			msg.send(p, qu, PlaceholderRegistry.of("quest_branches", qu.getBranchesManager().getBranches().size()));
-			QuestUtils.playPluginSound(p, "ENTITY_VILLAGER_YES", 1);
-			QuestsPlugin.getPlugin().getLoggerExpanded().info("New quest created: " + qu.getName() + ", ID " + qu.getId() + ", by " + p.getName());
+			msg.send(session.getPlayer(), qu,
+					PlaceholderRegistry.of("quest_branches", qu.getBranchesManager().getBranches().size()));
+			QuestUtils.playPluginSound(session.getPlayerAudience(), "ENTITY_VILLAGER_YES", 1);
+			QuestsPlugin.getPlugin().getLoggerExpanded().info("New quest created: {}, ID {}, by {}", qu.getName(),
+					qu.getId(), session.getPlayer().getName());
 			if (session.isEdition()) {
 				QuestsPlugin.getPlugin().getLoggerExpanded().info("Quest " + qu.getName() + " has been edited");
 				if (failure) BeautyQuests.getInstance().createQuestBackup(qu.getFile().toPath(), "Error occurred while editing");
@@ -215,7 +218,7 @@ public class QuestCreationGuiImplementation extends LayoutedGUI implements Quest
 			try {
 				qu.saveToFile();
 			}catch (Exception e) {
-				DefaultErrors.sendGeneric(p, "initial quest save");
+				DefaultErrors.sendGeneric(session.getPlayerAudience(), "initial quest save");
 				QuestsPlugin.getPlugin().getLoggerExpanded().severe("Error when trying to save newly created quest.", e);
 			}
 
@@ -229,26 +232,28 @@ public class QuestCreationGuiImplementation extends LayoutedGUI implements Quest
 			});
 		}
 
-		close(p);
+		close(session.getPlayer());
 	}
 
 	private void keepDatas(QuestImplementation qu) {
-		for (Player p : Bukkit.getOnlinePlayers()) {
-			PlayerAccountImplementation account = BeautyQuests.getInstance().getPlayersManager().getAccount(p);
-			if (account != null && account.hasQuestDatas(qu)) {
-				PlayerQuestDatasImplementation datas = account.getQuestDatas(qu);
-				datas.questEdited();
-				if (datas.getBranch() == -1) continue;
-				QuestBranchImplementation branch = qu.getBranchesManager().getBranch(datas.getBranch());
-				if (datas.isInEndingStages()) {
-					branch.getEndingStages().forEach(stage -> stage.getStage().getStage().joined(p));
-				} else
-					branch.getRegularStage(datas.getStage()).getStage().joined(p);
-			}
+		for (Quester quester : QuestsAPI.getAPI().getQuesterManager().getLoadedQuesters()) {
+			quester.getDataHolder().getQuestDataIfPresent(qu).filter(QuesterQuestData::hasStarted).ifPresent(data -> {
+				var branch = qu.getBranchesManager().getBranch(data.getBranch().getAsInt());
+				for (Player player : quester.getOnlinePlayers()) {
+					var joinEvent = new QuesterJoinEvent(quester, player, false);
+					if (data.getState() == QuesterQuestData.State.IN_ENDING_STAGES) {
+						for (EndingStage endingStage : branch.getEndingStages()) {
+							((StageControllerImplementation<?>) endingStage.getStage()).onJoin(joinEvent);
+						}
+					} else if (data.getState() == QuesterQuestData.State.IN_REGULAR_STAGE) {
+						branch.getRegularStage(data.getStage().getAsInt()).onJoin(joinEvent);
+					}
+				}
+			});
 		}
 	}
 
-	private boolean loadBranch(Player p, QuestBranchImplementation branch, StagesGUI stagesGui) {
+	private boolean loadBranch(QuestBranchImplementation branch, StagesGUI stagesGui) {
 		boolean failure = false;
 		for (StageCreationContextImplementation context : stagesGui.getStageCreations()) {
 			try{
@@ -259,13 +264,13 @@ public class QuestCreationGuiImplementation extends LayoutedGUI implements Quest
 					if (!newGUI.isEmpty()){
 						newBranch = new QuestBranchImplementation(branch.getManager());
 						branch.getManager().addBranch(newBranch);
-						failure |= loadBranch(p, newBranch, newGUI);
+						failure |= loadBranch(newBranch, newGUI);
 					}
 					branch.addEndStage(stage, newBranch);
 				}else branch.addRegularStage(stage);
 			}catch (Exception ex) {
 				failure = true;
-				DefaultErrors.sendGeneric(p, " lineToStage");
+				DefaultErrors.sendGeneric(session.getPlayerAudience(), " lineToStage");
 				QuestsPlugin.getPlugin().getLoggerExpanded().severe("An error occurred wheh creating branch from GUI.", ex);
 			}
 		}

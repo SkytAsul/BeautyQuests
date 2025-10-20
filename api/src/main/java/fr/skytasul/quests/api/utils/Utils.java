@@ -8,12 +8,16 @@ import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.MemoryConfiguration;
+import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
+import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
+import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.inventory.ClickType;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -155,8 +159,8 @@ public class Utils{
 	}
 
 	public static Map<String, Object> mapFromConfigurationSection(ConfigurationSection section){
-		Map<String, Object> map = section.getValues(true);
-		for (Entry<String, Object> entry : section.getValues(true).entrySet()) {
+		Map<String, Object> map = new LinkedHashMap<>();
+		for (Entry<String, Object> entry : section.getValues(false).entrySet()) {
 			if (entry.getValue() instanceof ConfigurationSection) {
 				map.put(entry.getKey(), mapFromConfigurationSection((ConfigurationSection) entry.getValue()));
 			}else map.put(entry.getKey(), entry.getValue());
@@ -180,19 +184,11 @@ public class Utils{
 		});
 	}
 
-	public static List<ItemStack> combineItems(List<ItemStack> items) {
-		ArrayList<ItemStack> newItems = new ArrayList<>(items.size());
-		items: for (ItemStack original : items) {
-			for (ItemStack newItem : newItems) {
-				if (newItem.isSimilar(original)) {
-					newItem.setAmount(newItem.getAmount() + original.getAmount());
-					continue items;
-				}
-			}
-			newItems.add(original.clone());
-		}
-		newItems.trimToSize();
-		return newItems;
+	public static void copyConfigValue(ConfigurationSection from, String fromKey, ConfigurationSection to, String toKey) {
+		if (from.isConfigurationSection(fromKey))
+			to.createSection(toKey, mapFromConfigurationSection(from.getConfigurationSection(fromKey)));
+		else
+			to.set(toKey, from.get(fromKey));
 	}
 
 	public static List<ItemStack> extractItems(List<ItemStack> items) {
@@ -314,6 +310,12 @@ public class Utils{
 			default:
 				return click.name().toLowerCase();
 		}
+	}
+
+	public static @Nullable Entity getEntityKiller(@NotNull LivingEntity entity) {
+		if (entity.getLastDamageCause() instanceof EntityDamageByEntityEvent event)
+			return event.getDamager();
+		return entity.getKiller();
 	}
 
 }

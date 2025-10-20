@@ -1,20 +1,19 @@
 package fr.skytasul.quests.stages;
 
+import com.cryptomorin.xseries.XMaterial;
 import fr.skytasul.quests.api.editors.TextEditor;
 import fr.skytasul.quests.api.editors.parsers.NumberParser;
 import fr.skytasul.quests.api.gui.ItemUtils;
 import fr.skytasul.quests.api.gui.templates.ListGUI;
 import fr.skytasul.quests.api.localization.Lang;
 import fr.skytasul.quests.api.options.QuestOption;
-import fr.skytasul.quests.api.players.PlayerAccount;
-import fr.skytasul.quests.api.players.PlayersManager;
+import fr.skytasul.quests.api.questers.Quester;
 import fr.skytasul.quests.api.stages.AbstractStage;
 import fr.skytasul.quests.api.stages.StageController;
 import fr.skytasul.quests.api.stages.StageDescriptionPlaceholdersContext;
 import fr.skytasul.quests.api.stages.creation.StageCreation;
 import fr.skytasul.quests.api.stages.creation.StageCreationContext;
 import fr.skytasul.quests.api.stages.creation.StageGuiLine;
-import fr.skytasul.quests.api.utils.XMaterial;
 import fr.skytasul.quests.api.utils.messaging.PlaceholderRegistry;
 import fr.skytasul.quests.api.utils.progress.HasProgress;
 import fr.skytasul.quests.api.utils.progress.ProgressPlaceholders;
@@ -50,7 +49,7 @@ public class StageDealDamage extends AbstractStage implements HasProgress, Liste
 	}
 
 	@Override
-	public void initPlayerDatas(PlayerAccount acc, Map<String, Object> datas) {
+	public void initPlayerDatas(Quester acc, Map<String, Object> datas) {
 		super.initPlayerDatas(acc, datas);
 		datas.put("amount", damage);
 	}
@@ -72,27 +71,27 @@ public class StageDealDamage extends AbstractStage implements HasProgress, Liste
 		if (targetMobs != null && !targetMobs.isEmpty()
 				&& targetMobs.stream().noneMatch(mob -> mob.appliesEntity(event.getEntity()))) return;
 
-		PlayerAccount account = PlayersManager.getPlayerAccount(player);
-
-		if (!hasStarted(player) || !canUpdate(player))
+		if (!matchesRequirements(player))
 			return;
 
-		double amount = getData(account, "amount");
-		amount -= event.getFinalDamage();
-		if (amount <= 0) {
-			finishStage(player);
-		}else {
-			updateObjective(player, "amount", amount);
+		for (Quester quester : controller.getApplicableQuesters(player)) {
+			double amount = getData(quester, "amount", Double.class);
+			amount -= event.getFinalDamage();
+			if (amount <= 0) {
+				finishStage(quester);
+			} else {
+				updateObjective(quester, "amount", amount);
+			}
 		}
 	}
 
-	public double getPlayerAmountDouble(@NotNull PlayerAccount account) {
+	public double getPlayerAmountDouble(@NotNull Quester account) {
 		return getData(account, "amount", Double.class);
 	}
 
 	@Override
-	public long getPlayerAmount(@NotNull PlayerAccount account) {
-		return (long) Math.ceil(getPlayerAmountDouble(account));
+	public long getRemainingAmount(@NotNull Quester quester) {
+		return (long) Math.ceil(getPlayerAmountDouble(quester));
 	}
 
 	@Override
@@ -105,7 +104,7 @@ public class StageDealDamage extends AbstractStage implements HasProgress, Liste
 		super.createdPlaceholdersRegistry(placeholders);
 		ProgressPlaceholders.registerProgress(placeholders, "damage", this);
 		placeholders.registerIndexedContextual("damage_remaining", StageDescriptionPlaceholdersContext.class,
-				context -> Long.toString(getPlayerAmount(context.getPlayerAccount())));
+				context -> Long.toString(getRemainingAmount(context.getQuester())));
 		placeholders.registerIndexed("target_mobs", getTargetMobsString(targetMobs));
 	}
 

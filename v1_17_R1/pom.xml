@@ -13,6 +13,7 @@
 
 	<properties>
 		<maven.deploy.skip>true</maven.deploy.skip>
+		<maven.javadoc.skip>true</maven.javadoc.skip>
 		<maven.compiler.source>16</maven.compiler.source>
 		<maven.compiler.target>16</maven.compiler.target>
 		<maven.compiler.release>16</maven.compiler.release>

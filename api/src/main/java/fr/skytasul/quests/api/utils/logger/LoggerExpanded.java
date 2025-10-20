@@ -1,49 +1,64 @@
 package fr.skytasul.quests.api.utils.logger;
 
+import fr.skytasul.quests.api.utils.messaging.DefaultErrors;
+import net.kyori.adventure.audience.Audience;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.CompletionException;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 import java.util.logging.Level;
+import java.util.logging.LogRecord;
 import java.util.logging.Logger;
-import org.bukkit.command.CommandSender;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
-import fr.skytasul.quests.api.utils.messaging.DefaultErrors;
 
 public class LoggerExpanded {
-	
+
+	public static final @NotNull Level DEBUG_LEVEL = new Level("DEBUG", 450) {
+		private static final long serialVersionUID = 4081184158724594L;
+	};
+
 	private final @NotNull Logger logger;
-	private final @NotNull ILoggerHandler handler;
-	
+
 	private final Map<Object, Long> times = new HashMap<>();
 
-	public LoggerExpanded(@NotNull Logger logger, @Nullable ILoggerHandler handler) {
+	public LoggerExpanded(@NotNull Logger logger) {
 		this.logger = logger;
-		this.handler = handler == null ? ILoggerHandler.EMPTY_LOGGER : handler;
 	}
 
-	public @NotNull ILoggerHandler getHandler() {
-		return handler;
-	}
-	
 	public void info(@Nullable String msg) {
 		logger.info(msg);
 	}
-	
+
+	public void info(@Nullable String msg, Object... args) {
+		logger.log(Level.INFO, msg, args);
+	}
+
 	public void warning(@Nullable String msg) {
 		logger.log(Level.WARNING, msg);
 	}
-	
+
 	public void warning(@Nullable String msg, @Nullable Throwable throwable) {
 		logger.log(Level.WARNING, msg, throwable);
 	}
-	
-	public void warning(@Nullable String msg, @NotNull Object type, int seconds) {
+
+	public void warning(@Nullable String msg, Object... args) {
+		logger.log(Level.WARNING, msg, args);
+	}
+
+	public void warning(@Nullable String msg, Throwable cause, Object... args) {
+		var log = new LogRecord(Level.WARNING, msg);
+		log.setParameters(args);
+		log.setThrown(cause);
+		log.setLoggerName(logger.getName());
+		logger.log(log);
+	}
+
+	public void namedWarning(@Nullable String msg, @NotNull Object type, int seconds, Object... args) {
 		Long time = times.get(type);
 		if (time == null || time.longValue() + seconds * 1000 < System.currentTimeMillis()) {
-			logger.warning(msg);
+			logger.log(Level.WARNING, msg, args);
 			times.put(type, System.currentTimeMillis());
 		}
 	}
@@ -51,21 +66,51 @@ public class LoggerExpanded {
 	public void severe(@Nullable String msg) {
 		logger.log(Level.SEVERE, msg);
 	}
-	
+
 	public void severe(@Nullable String msg, @Nullable Throwable throwable) {
 		logger.log(Level.SEVERE, msg, throwable);
 	}
 
+	public void severe(@Nullable String msg, Object... args) {
+		logger.log(Level.SEVERE, msg, args);
+	}
+
+	public void severe(@Nullable String msg, Throwable cause, Object... args) {
+		var log = new LogRecord(Level.SEVERE, msg);
+		log.setParameters(args);
+		log.setThrown(cause);
+		log.setLoggerName(logger.getName());
+		logger.log(log);
+	}
+
 	public void debug(@Nullable String msg) {
-		handler.write(msg, "DEBUG");
+		logger.log(DEBUG_LEVEL, msg);
+	}
+
+	public void debug(@Nullable String msg, Object... args) {
+		logger.log(DEBUG_LEVEL, msg, args);
+	}
+
+	public void debug(@Nullable String msg, Throwable cause, Object... args) {
+		var log = new LogRecord(DEBUG_LEVEL, msg);
+		log.setParameters(args);
+		log.setThrown(cause);
+		log.setLoggerName(logger.getName());
+		logger.log(log);
 	}
 
 	public <T> BiConsumer<T, Throwable> logError(@Nullable Consumer<T> consumer, @Nullable String friendlyErrorMessage,
-			@Nullable CommandSender sender) {
+			@Nullable Audience sender, Object... parameters) {
 		return (object, ex) -> {
 			if (ex == null) {
-				if (consumer != null)
-					consumer.accept(object);
+				if (consumer != null) {
+					try {
+						consumer.accept(object);
+					} catch (Throwable consumerEx) {
+						severe(friendlyErrorMessage, consumerEx, parameters);
+						throw consumerEx;
+					}
+				}
 			} else {
 				if (ex instanceof CompletionException) {
 					CompletionException exCompl = (CompletionException) ex;
@@ -75,21 +120,26 @@ public class LoggerExpanded {
 
 				if (sender != null)
 					DefaultErrors.sendGeneric(sender, friendlyErrorMessage);
-				severe(friendlyErrorMessage, ex);
+				severe(friendlyErrorMessage, ex, parameters);
 			}
 		};
 	}
 
-	public <T> BiConsumer<T, Throwable> logError(@Nullable String friendlyErrorMessage, @Nullable CommandSender sender) {
-		return logError(null, friendlyErrorMessage, sender);
+	public <T> BiConsumer<T, Throwable> logError(@Nullable String friendlyErrorMessage, @Nullable Audience sender,
+			Object... parameters) {
+		return logError(null, friendlyErrorMessage, sender, parameters);
 	}
 
-	public <T> BiConsumer<T, Throwable> logError(@Nullable String friendlyErrorMessage) {
-		return logError(null, friendlyErrorMessage, null);
+	public <T> BiConsumer<T, Throwable> logError(@Nullable String friendlyErrorMessage, Object... parameters) {
+		return logError(null, friendlyErrorMessage, null, parameters);
 	}
 
 	public <T> BiConsumer<T, Throwable> logError() {
-		return logError(null, null, null);
+		return logError(null, null, null, new Object[0]);
+	}
+
+	public static @NotNull LoggerExpanded get(@NotNull String name) {
+		return new LoggerExpanded(Logger.getLogger(name));
 	}
 
 }

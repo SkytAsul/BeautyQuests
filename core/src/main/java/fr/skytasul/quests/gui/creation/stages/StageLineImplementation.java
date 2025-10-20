@@ -1,13 +1,13 @@
 package fr.skytasul.quests.gui.creation.stages;
 
-import java.util.HashMap;
-import java.util.Map;
-import org.bukkit.inventory.ItemStack;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 import fr.skytasul.quests.api.QuestsPlugin;
 import fr.skytasul.quests.api.stages.creation.StageGuiClickHandler;
 import fr.skytasul.quests.api.stages.creation.StageGuiLine;
+import org.bukkit.inventory.ItemStack;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+import java.util.HashMap;
+import java.util.Map;
 
 public class StageLineImplementation implements StageGuiLine {
 

@@ -19,6 +19,10 @@ worlds:
   # If true, the list above will be treated as an "allow list" and not a "block list"
   isAllowList: false
 
+# Automatically hide the scoreboard after this amount of seconds.
+# If set to -1, the scoreboard will never hide itself.
+auto hide: -1
+  
 # Lines contained in the scoreboard
 #  Available parameters are:
 #  * value: the value of line, surrounded by quotes (')

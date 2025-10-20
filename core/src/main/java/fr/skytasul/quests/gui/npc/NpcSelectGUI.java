@@ -1,10 +1,6 @@
 package fr.skytasul.quests.gui.npc;
 
-import java.util.function.Consumer;
-import java.util.stream.Collectors;
-import org.bukkit.event.inventory.InventoryType;
-import org.bukkit.inventory.ItemStack;
-import org.jetbrains.annotations.NotNull;
+import com.cryptomorin.xseries.XMaterial;
 import fr.skytasul.quests.BeautyQuests;
 import fr.skytasul.quests.api.QuestsPlugin;
 import fr.skytasul.quests.api.gui.AbstractGui;
@@ -16,7 +12,11 @@ import fr.skytasul.quests.api.gui.layout.LayoutedGUI.Builder;
 import fr.skytasul.quests.api.localization.Lang;
 import fr.skytasul.quests.api.npcs.BqInternalNpcFactory.BqInternalNpcFactoryCreatable;
 import fr.skytasul.quests.api.npcs.BqNpc;
-import fr.skytasul.quests.api.utils.XMaterial;
+import org.bukkit.event.inventory.InventoryType;
+import org.bukkit.inventory.ItemStack;
+import org.jetbrains.annotations.NotNull;
+import java.util.function.Consumer;
+import java.util.stream.Collectors;
 
 public final class NpcSelectGUI {
 

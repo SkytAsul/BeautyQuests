@@ -1,5 +1,6 @@
 package fr.skytasul.quests.stages;
 
+import com.cryptomorin.xseries.XMaterial;
 import fr.skytasul.quests.api.QuestsConfiguration;
 import fr.skytasul.quests.api.comparison.ItemComparisonMap;
 import fr.skytasul.quests.api.editors.TextEditor;
@@ -12,14 +13,12 @@ import fr.skytasul.quests.api.npcs.dialogs.Message;
 import fr.skytasul.quests.api.npcs.dialogs.Message.Sender;
 import fr.skytasul.quests.api.options.QuestOption;
 import fr.skytasul.quests.api.options.description.DescriptionSource;
-import fr.skytasul.quests.api.players.PlayerAccount;
-import fr.skytasul.quests.api.players.PlayersManager;
+import fr.skytasul.quests.api.players.PlayerManager;
+import fr.skytasul.quests.api.questers.Quester;
 import fr.skytasul.quests.api.stages.StageController;
 import fr.skytasul.quests.api.stages.StageDescriptionPlaceholdersContext;
 import fr.skytasul.quests.api.stages.creation.StageCreationContext;
 import fr.skytasul.quests.api.stages.creation.StageGuiLine;
-import fr.skytasul.quests.api.utils.Utils;
-import fr.skytasul.quests.api.utils.XMaterial;
 import fr.skytasul.quests.api.utils.messaging.MessageUtils;
 import fr.skytasul.quests.api.utils.messaging.PlaceholderRegistry;
 import fr.skytasul.quests.api.utils.progress.ProgressPlaceholders;
@@ -50,7 +49,10 @@ public class StageBringBack extends StageNPC{
 
 		this.items = items;
 		for (ItemStack item : items) {
-			int amount = (amountsMap.containsKey(item) ? amountsMap.get(item) : 0) + item.getAmount();
+			int amount = item.getAmount();
+			item = item.clone();
+			item.setAmount(1);
+			amount += amountsMap.getOrDefault(item, 0);
 			amountsMap.put(item, amount);
 		}
 	}
@@ -74,7 +76,7 @@ public class StageBringBack extends StageNPC{
 			return;
 
 		Message msg = new Message(MessageUtils.format(text, getPlaceholdersRegistry(), StageDescriptionPlaceholdersContext
-				.of(true, PlayersManager.getPlayerAccount(p), DescriptionSource.FORCELINE, null)), Sender.NPC);
+				.of(true, PlayerManager.getPlayerAccount(p), DescriptionSource.FORCELINE, null)), Sender.NPC);
 		Dialog fakeDialog = new Dialog(Arrays.asList(msg));
 		DialogRunner fakeDialogRunner = new DialogRunnerImplementation(fakeDialog, getNPC());
 		fakeDialogRunner.handleNext(p, DialogNextReason.PLUGIN);
@@ -111,21 +113,21 @@ public class StageBringBack extends StageNPC{
 					// Therefore, we initialize itemsDescription the first time we actually use it: now.
 					if (itemsDescriptions == null) {
 						itemsDescriptions =
-								Arrays.stream(items).map(item -> ProgressPlaceholders.formatObject(new HasSingleObject() {
+								amountsMap.entrySet().stream().map(item -> ProgressPlaceholders.formatObject(new HasSingleObject() {
 
 									@Override
-									public long getPlayerAmount(@NotNull PlayerAccount account) {
-										return item.getAmount();
+									public long getRemainingAmount(@NotNull Quester quester) {
+										return item.getValue();
 									}
 
 									@Override
 									public @NotNull String getObjectName() {
-										return ItemUtils.getName(item, true);
+										return ItemUtils.getName(item.getKey(), true);
 									}
 
 									@Override
 									public long getObjectAmount() {
-										return item.getAmount();
+										return item.getValue();
 									}
 								}, context)).toArray(String[]::new);
 					}
@@ -136,10 +138,10 @@ public class StageBringBack extends StageNPC{
 	}
 
 	@Override
-	public void started(PlayerAccount acc) {
+	public void started(Quester acc) {
 		super.started(acc);
-		if (acc.isCurrent() && sendStartMessage())
-			sendNeedMessage(acc.getPlayer());
+		if (sendStartMessage())
+			acc.getOnlinePlayers().forEach(this::sendNeedMessage);
 	}
 
 	@Override
@@ -147,7 +149,7 @@ public class StageBringBack extends StageNPC{
 		super.initDialogRunner();
 
 		getNPC().addStartablePredicate(p -> {
-			return canUpdate(p, false) && checkItems(p, false);
+			return matchesRequirements(p, false) && checkItems(p, false);
 		}, this);
 
 		dialogRunner.addTest(p -> {
@@ -157,7 +159,7 @@ public class StageBringBack extends StageNPC{
 				// the click will not be handled by this stage
 				// to let the plugin handle the NPC event (and give
 				// another quest/complete something else to the player).
-				if (!canUpdate(p, true) || !checkItems(p, false)) return false;
+				if (!matchesRequirements(p, true) || !checkItems(p, false)) return false;
 			}
 			return true;
 		});
@@ -231,7 +233,7 @@ public class StageBringBack extends StageNPC{
 		}
 
 		public void setItems(List<ItemStack> items) {
-			this.items = Utils.combineItems(items);
+			this.items = items;
 			getLine().refreshItemLore(5,
 					QuestOption.formatNullableValue(Lang.AmountItems.quickFormat("items_amount", this.items.size())));
 		}

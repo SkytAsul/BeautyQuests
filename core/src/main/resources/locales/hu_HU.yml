@@ -28,6 +28,7 @@ msg:
     drop: '§cKüldetés tárgyat nem dobhatsz el!'
     craft: '§cNem barkácsolhatsz küldetés tárggyal!'
     eat: '§cNem ehetsz meg egy küldetés tárgyat!'
+    place: '§cNem rakhatsz le küldetés tárgyat!'
   stageMobs:
     listMobs: '§aMeg kell ölnöd {mobs} mobot.'
   writeNPCText: '§aÍrd be a dialógust, amelyet az NPC a játékosnak fog mondani: (Használd a "help" paramétert a segítés kéréséhez.)'
@@ -119,13 +120,13 @@ msg:
     cancelQuest: '§6Félbeszakítottad a(z) {quest} küldetést!'
     cancelQuestUnavailable: '§cA(z) {quest} küldetés nem utasítható el.'
     backupCreated: '§6Sikeres mentést készítettél az összes küldetés és játékos információról.'
-    backupPlayersFailed: '§cA játékos informáicó mentése sikertelen.'
-    backupQuestsFailed: '§cA küldetés információ mentése sikertelen.'
+    backupFailed: Sikertelen mentés.
     adminModeEntered: '§aBeléptél az Admin Módba.'
     adminModeLeft: '§aKiléptél az Admin Módból.'
     resetPlayerPool:
       timer: '§aVisszaállítottad {player} játékos időzítőjét a {pool} küldetés gyűjteménynél.'
       full: '§aVisszaállítottad {player} játékos adatait a(z) {pool} küldetés gyüjteménynél!'
+    resetPool: '{player_amount} gyűjtemény adatai törölve.'
     startPlayerPool:
       error: 'A(z) {pool} küldetés gyűjtemény elindítása sikertelen {player} játékosnál.'
       success: 'Elindítottad a(z) {pool} küldetés gyűjteményt {player} játékosnál. Eredménye: {result}.'
@@ -302,6 +303,7 @@ inv:
   cancel: '§c§lElutasítás'
   search: '§e§lKeresés'
   addObject: '§aAdj meg egy object-et'
+  pickAnother: Válassz másikat
   confirm:
     name: Biztos vagy benne?
     'yes': '§aElfogadás'
@@ -474,6 +476,7 @@ inv:
     fireworkLoreDrop: Tedd az egyedi tüzijátékodat ide
     visibility: '§bKüldetés láthatósága'
     visibilityLore: Válaszd ki, melyik fülön legyen látható a küldetés a menün, vagy dynamic map-en belül.
+    questerStrategy: Résztvevők kiválasztása
     keepDatas: Játékos adatok megőrzése
     keepDatasLore: |-
       A játékos adatok kényszerített megörzése, akkor is, ha az adott állomás módosítva lett.
@@ -751,6 +754,9 @@ misc:
     hours: '{hours_amount} óra'
     minutes: '{minutes_amount} perc'
     lessThanAMinute: 'néhány másodperc'
+  playerQuester:
+    name: játékos
+    description: Játékosra lebontott küldetés adatok
   stageType:
     region: Találd meg a helyet
     npc: Találd meg az NPC-t
