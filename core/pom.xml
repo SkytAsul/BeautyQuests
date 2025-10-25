@@ -77,6 +77,10 @@
 			<id>jeff-media-public</id>
 			<url>https://repo.jeff-media.com/public/</url>
 		</repository> -->
+		<repository> <!-- For brigadier -->
+			<id>minecraft-repo</id>
+			<url>https://libraries.minecraft.net/</url>
+		</repository>
 		<repository> <!-- For PlayerBlockTracker -->
 			<id>jitpack.io</id>
 			<url>https://jitpack.io</url>
@@ -125,6 +129,19 @@
 			<groupId>io.netty</groupId>
 			<artifactId>netty-all</artifactId>
 			<version>4.1.68.Final</version>
+			<scope>provided</scope>
+		</dependency>
+
+		<dependency>
+			<groupId>io.github.revxrsal</groupId>
+			<artifactId>lamp.brigadier</artifactId>
+			<version>${lamp.version}</version>
+			<scope>compile</scope>
+		</dependency>
+		<dependency>
+			<groupId>com.mojang</groupId>
+			<artifactId>brigadier</artifactId>
+			<version>1.0.18</version>
 			<scope>provided</scope>
 		</dependency>
 

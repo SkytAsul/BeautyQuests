@@ -42,7 +42,7 @@
 		<maven.compiler.release>17</maven.compiler.release>
 
 		<build.number>unknown</build.number>
-		<revision.raw>2.0.0</revision.raw>
+		<revision.raw>2.1.0</revision.raw>
 
 		<minecraft.version>1.21.7-R0.1-SNAPSHOT</minecraft.version>
 
