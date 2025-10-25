@@ -208,6 +208,10 @@ public abstract class PagedGUI<T> extends AbstractGui {
 		} else if (!QuestsConfiguration.getConfig().getGuiConfig().showVerticalSeparator() || column != 7) {
 			int line = (int) Math.floor(event.getSlot() * 1D / 9D);
 			int objectSlot = event.getSlot() - line * (9 - columns) + page * dataSlots;
+
+			if (objectSlot >= objects.size())
+				return; // player clicked on an empty slot
+
 			click(objects.get(objectSlot), event.getClicked(), event.getClick());
 			// inv.setItem(slot, getItemStack(objects.get(objectSlot)));
 		}
