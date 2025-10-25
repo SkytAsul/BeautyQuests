@@ -1,5 +1,5 @@
 [![GitHub release](https://img.shields.io/github/v/release/SkytAsul/BeautyQuests?color=green)](https://github.com/SkytAsul/BeautyQuests/releases/latest)
-[![GitHub pre-release](https://img.shields.io/github/v/release/SkytAsul/BeautyQuests?include_prereleases&color=green)](https://github.com/SkytAsul/BeautyQuests/releases)
+[![GitHub pre-release](https://img.shields.io/github/v/release/SkytAsul/BeautyQuests?include_prereleases&color=green&label=pre-release)](https://github.com/SkytAsul/BeautyQuests/releases)
 [![GitHub Actions](https://img.shields.io/github/actions/workflow/status/SkytAsul/BeautyQuests/build.yml)](https://github.com/SkytAsul/BeautyQuests/actions)
 [![Crowdin](https://d322cqt584bo4o.cloudfront.net/beautyquests/localized.svg)](https://crowdin.com/project/beautyquests)
 [![Spiget Downloads](https://img.shields.io/spiget/downloads/39255)](https://www.spigotmc.org/resources/beautyquests.39255/)

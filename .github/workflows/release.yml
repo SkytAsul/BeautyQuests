@@ -45,6 +45,7 @@ jobs:
   publish:
     name: Publish version on platforms
     if: ${{ !github.event.release.prerelease }}
+    # TODO: prerelease too
     runs-on: ubuntu-latest
     steps:
       - name: Download artifact
@@ -57,30 +58,39 @@ jobs:
         with:
           token: ${{ secrets.MODRINTH_TOKEN }}
           project: ZbvwkXKZ
-          featured: true
-          name: ${{ github.event.release.name }}
-          version: ${{ github.event.release.tag_name }}
-          changelog: ${{ github.event.release.body }}
-          game-versions: |- # It is necessary to put game versions but we will change them manually
+          name: "${{ github.event.release.name }}"
+          version: "${{ github.event.release.tag_name }}"
+          changelog: "${{ github.event.release.body }}"
+          game-versions: |-
+            1.17.x
+            1.18.x
+            1.19.x
+            1.20.x
             1.21.x
-          requested-status: "draft"
+          status: "draft"
+          channel: "release"
           loaders: |-
             paper
             spigot
-          files: ${{ github.event.release.assets[0].name }}
+          files: "${{ github.event.release.assets[0].name }}"
 
       - name: Upload to Hangar
-        uses: benwoo1110/hangar-upload-action@v1
+        uses: milkdrinkers/Hangar-Publish@v2
         continue-on-error: true
         with:
           api_token: ${{ secrets.HANGAR_TOKEN }}
           slug: 'BeautyQuests'
-          version: ${{ github.event.release.tag_name }}
+          version: "${{ github.event.release.tag_name }}"
           channel: release
+          description: "${{ github.event.release.body }}"
+          platform_dependencies: |
+            {
+              "PAPER": [">=1.17"],
+            }
           files: |
             [
               {
-                "path": "${{ github.event.release.assets[0].url }}",
+                "externalUrl": "${{ github.event.release.assets[0].browser_download_url }}",
                 "url": true,
                 "platforms": ["PAPER"]
               }
