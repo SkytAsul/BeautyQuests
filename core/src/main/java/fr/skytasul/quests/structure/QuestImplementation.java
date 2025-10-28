@@ -50,6 +50,8 @@ import java.util.regex.Pattern;
 
 public class QuestImplementation implements Quest, QuestDescriptionProvider, Comparable<Quest> {
 
+	private static final String NULL_OPTION_VALUE = "null-option-value";
+
 	private static final Pattern PERMISSION_PATTERN = Pattern.compile("^beautyquests\\.start\\.(\\d+)$");
 
 	private final @NotNull QuestsManagerImplementation questsManager;
@@ -640,7 +642,12 @@ public class QuestImplementation implements Quest, QuestDescriptionProvider, Com
 	private void save(@NotNull ConfigurationSection section) throws DataSavingException {
 		for (QuestOption<?> option : options) {
 			try {
-				if (option.hasCustomValue()) section.set(option.getOptionCreator().id, option.save());
+				if (option.hasCustomValue()) {
+					var optionObject = option.save();
+					if (optionObject == null)
+						optionObject = NULL_OPTION_VALUE;
+					section.set(option.getOptionCreator().id, option.save());
+				}
 			}catch (Exception ex) {
 				throw new DataSavingException("Failed to save option " + option.getOptionCreator().id, ex);
 			}
@@ -677,7 +684,10 @@ public class QuestImplementation implements Quest, QuestDescriptionProvider, Com
 				if (creator.applies(key)) {
 					try {
 						QuestOption<?> option = creator.optionSupplier.get();
-						option.load(map, key);
+						if (NULL_OPTION_VALUE.equals(map.get(key)))
+							option.setValue(null);
+						else
+							option.load(map, key);
 						qu.addOption(option);
 						iterator.remove();
 					}catch (Exception ex) {
