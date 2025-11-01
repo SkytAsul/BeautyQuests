@@ -16,11 +16,12 @@ import java.util.ArrayList;
 import java.util.function.Consumer;
 
 public class QuestsListGUI extends PagedGUI<Quest> {
-	
+
 	public Consumer<Quest> run;
 
 	public QuestsListGUI(Consumer<Quest> run, Quester acc, boolean started, boolean notStarted, boolean finished){
-		super(Lang.INVENTORY_QUESTS_LIST.toString(), DyeColor.CYAN, new ArrayList<>(), null, Quest::getName);
+		super(Lang.INVENTORY_QUESTS_LIST.toString(), DyeColor.CYAN, new ArrayList<>());
+		addSearchButton(3, Quest::getName);
 		if (acc != null){
 			if (started) super.objects.addAll(QuestsAPI.getAPI().getQuestsManager().getQuestsStarted(acc));
 			if (notStarted) super.objects.addAll(QuestsAPI.getAPI().getQuestsManager().getQuestsNotStarted(acc, false, true));
@@ -39,7 +40,7 @@ public class QuestsListGUI extends PagedGUI<Quest> {
 		close(player);
 		run.accept(existing);
 	}
-	
+
 	@Override
 	public CloseBehavior onClose(Player p) {
 		return StandardCloseBehavior.REMOVE;

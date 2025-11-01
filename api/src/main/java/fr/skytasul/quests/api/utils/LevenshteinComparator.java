@@ -1,24 +1,17 @@
 package fr.skytasul.quests.api.utils;
 
+import org.jetbrains.annotations.NotNull;
 import java.util.Comparator;
 import java.util.function.Function;
 
 public class LevenshteinComparator<T> implements Comparator<T> {
 
-	private Function<T, String> function;
-	private String reference;
+	private final Function<T, String> function;
+	private final String reference;
 
-	public LevenshteinComparator(Function<T, String> function) {
+	public LevenshteinComparator(@NotNull Function<T, String> function, @NotNull String reference) {
 		this.function = function;
-	}
-
-	public LevenshteinComparator<T> setReference(String reference) {
 		this.reference = reference;
-		return this;
-	}
-	
-	public Function<T, String> getFunction() {
-		return function;
 	}
 
 	@Override

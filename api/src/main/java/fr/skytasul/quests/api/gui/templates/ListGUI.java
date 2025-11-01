@@ -32,10 +32,10 @@ public abstract class ListGUI<T> extends PagedGUI<T> {
 			throw new IllegalArgumentException("Object cannot be null in a list GUI");
 
 		super.objects.add(null);
-		super.validate = list -> {
+		addValidateButton(2, list -> {
 			list.remove(null);
 			finish(list);
-		};
+		});
 	}
 
 	@Override

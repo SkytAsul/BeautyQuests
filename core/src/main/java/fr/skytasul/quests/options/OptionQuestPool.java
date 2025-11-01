@@ -21,34 +21,34 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class OptionQuestPool extends QuestOption<QuestPool> {
-	
+
 	@Override
 	public void attach(Quest quest) {
 		super.attach(quest);
 		if (getValue() != null) getValue().addQuest(quest);
 	}
-	
+
 	@Override
 	public void detach() {
 		if (getValue() != null) getValue().removeQuest(getAttachedQuest());
 		super.detach();
 	}
-	
+
 	@Override
 	public Object save() {
 		return getValue().getId();
 	}
-	
+
 	@Override
 	public void load(ConfigurationSection config, String key) {
 		setValue(BeautyQuests.getInstance().getPoolsManager().getPool(config.getInt(key)));
 	}
-	
+
 	@Override
 	public QuestPool cloneValue(QuestPool value) {
 		return value;
 	}
-	
+
 	private List<String> getLore() {
 		List<String> lore = new ArrayList<>(5);
 		lore.add(formatDescription(Lang.questPoolLore.toString()));
@@ -65,7 +65,7 @@ public class OptionQuestPool extends QuestOption<QuestPool> {
 	public ItemStack getItemStack(OptionSet options) {
 		return ItemUtils.item(XMaterial.CHEST, Lang.questPool.toString(), getLore());
 	}
-	
+
 	@Override
 	public void click(QuestCreationGuiClickEvent event) {
 		if (event.getClick() == ClickType.SHIFT_RIGHT) {
@@ -73,26 +73,26 @@ public class OptionQuestPool extends QuestOption<QuestPool> {
 			ItemUtils.lore(event.getClicked(), getLore());
 		}else {
 			new PagedGUI<QuestPool>(Lang.INVENTORY_POOLS_LIST.toString(), DyeColor.CYAN,
-					BeautyQuests.getInstance().getPoolsManager().getPools(), list -> event.reopen(), null) {
-				
+					BeautyQuests.getInstance().getPoolsManager().getPools()) {
+
 				@Override
 				public ItemStack getItemStack(QuestPool object) {
 					return object.getItemStack(Lang.poolChoose.toString());
 				}
-				
+
 				@Override
 				public void click(QuestPool existing, ItemStack poolItem, ClickType click) {
 					setValue(existing);
 					ItemUtils.lore(event.getClicked(), getLore());
 					event.reopen();
 				}
-				
+
 				@Override
 				public CloseBehavior onClose(Player p) {
 					return new OpenCloseBehavior(event.getGui());
 				}
-			}.open(event.getPlayer());
+			}.addValidateButton(2, __ -> event.reopen()).open(event.getPlayer());
 		}
 	}
-	
+
 }

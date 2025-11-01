@@ -76,6 +76,8 @@ gui:
   next page item: ARROW
   # Show a vertical separator made of glass pane between the items pane and the arrow buttons
   vertical separator: true
+  # Should the category folder be hidden if there is only one category in the GUI
+  hide folder if single category: true
 
 # - Dialogs -
 # Various options related to dialogs 
@@ -137,6 +139,8 @@ questsMenu:
   allowPlayerCancelQuest: true
   # Keep menu open after accepting or cancelling a quest
   keep menu open: true
+  # Should the quests be categorized by quest pools as expandable folders
+  categorize quests by pools: true
 
 # - Integrations -
 # Enable or disable AccountsHook managing player accounts

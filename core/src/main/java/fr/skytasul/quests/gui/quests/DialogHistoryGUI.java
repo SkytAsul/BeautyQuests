@@ -38,8 +38,10 @@ public class DialogHistoryGUI extends PagedGUI<WrappedDialogable> {
 	private final Runnable end;
 
 	public DialogHistoryGUI(@NotNull Quester quester, Quest quest, Runnable end) {
-		super(quest.getName(), DyeColor.LIGHT_BLUE, Collections.emptyList(), x -> end.run(), null);
+		super(quest.getName(), DyeColor.LIGHT_BLUE, Collections.emptyList());
 		this.end = end;
+
+		addValidateButton(2, (__) -> end.run());
 
 		Validate.isTrue(quester.getDataHolder().hasQuestData(quest), "Quester must have started the quest");
 

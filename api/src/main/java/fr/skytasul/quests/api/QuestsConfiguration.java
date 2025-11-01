@@ -85,6 +85,8 @@ public interface QuestsConfiguration {
 
 		boolean showVerticalSeparator();
 
+		boolean hideFolderIfSingleCategory();
+
 	}
 
 	interface Dialogs {
@@ -128,6 +130,8 @@ public interface QuestsConfiguration {
 		Set<PlayerListCategory> getEnabledTabs();
 
 		boolean keepMenuOpen();
+
+		boolean categorizeQuestsByPools();
 
 	}
 

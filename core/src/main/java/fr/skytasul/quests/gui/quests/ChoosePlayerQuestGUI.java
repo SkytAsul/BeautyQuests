@@ -37,10 +37,10 @@ public class ChoosePlayerQuestGUI extends PagedGUI<Quest> {
 
 		Collections.sort(super.objects);
 
-		setValidate(__ -> {
-			new PlayerListGUI(QuestsAPI.getAPI().getQuesterManager(), player, false).open(player);
-		}, ItemUtils.item(XMaterial.BOOKSHELF, Lang.questMenu.toString(),
-				QuestOption.formatDescription(Lang.questMenuLore.toString())));
+		setBarButton(2, new BarButton(ItemUtils.item(XMaterial.BOOKSHELF, Lang.questMenu.toString(),
+				QuestOption.formatDescription(Lang.questMenuLore.toString())), event -> {
+					new PlayerListGUI(QuestsAPI.getAPI().getQuesterManager(), player, false).open(getViewer());
+				}));
 	}
 
 	@Override

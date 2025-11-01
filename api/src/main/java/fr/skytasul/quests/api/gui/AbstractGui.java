@@ -29,13 +29,17 @@ public abstract class AbstractGui implements Gui {
 	}
 
 	@Override
-	public final void reopen(@NotNull Player player, boolean refresh) {
-		if (refresh)
-			inventory = null;
-		open(player);
+	public final void refresh(@NotNull Player player) {
+		if (inventory == null)
+			return;
+		refresh(player, inventory);
 	}
 
-	public final void repopulate(@NotNull Player player) {
+	protected abstract Inventory instanciate(@NotNull Player player);
+
+	protected abstract void populate(@NotNull Player player, @NotNull Inventory inventory);
+
+	protected void refresh(@NotNull Player player, @NotNull Inventory inventory) {
 		if (inventory == null)
 			inventory = instanciate(player);
 		else
@@ -43,12 +47,6 @@ public abstract class AbstractGui implements Gui {
 
 		populate(player, inventory);
 	}
-
-	protected abstract Inventory instanciate(@NotNull Player player);
-
-	protected abstract void populate(@NotNull Player player, @NotNull Inventory inventory);
-
-	protected void refresh(@NotNull Player player, @NotNull Inventory inventory) {}
 
 	@Override
 	public @NotNull CloseBehavior onClose(@NotNull Player player) {

@@ -5,19 +5,21 @@ import fr.skytasul.quests.BeautyQuests;
 import fr.skytasul.quests.api.QuestsAPI;
 import fr.skytasul.quests.api.QuestsConfiguration;
 import fr.skytasul.quests.api.QuestsPlugin;
-import fr.skytasul.quests.api.gui.GuiClickEvent;
 import fr.skytasul.quests.api.gui.ItemUtils;
 import fr.skytasul.quests.api.gui.close.CloseBehavior;
 import fr.skytasul.quests.api.gui.close.StandardCloseBehavior;
-import fr.skytasul.quests.api.gui.templates.PagedGUI;
+import fr.skytasul.quests.api.gui.templates.CategorizedPagedGUI;
+import fr.skytasul.quests.api.gui.templates.PagedGUI.BarButton;
 import fr.skytasul.quests.api.localization.Lang;
 import fr.skytasul.quests.api.options.description.DescriptionSource;
 import fr.skytasul.quests.api.options.description.QuestDescriptionContext;
+import fr.skytasul.quests.api.pools.QuestPool;
 import fr.skytasul.quests.api.questers.Quester;
 import fr.skytasul.quests.api.questers.QuesterManager;
 import fr.skytasul.quests.api.quests.Quest;
 import fr.skytasul.quests.api.utils.PlayerListCategory;
 import fr.skytasul.quests.api.utils.logger.LoggerExpanded;
+import fr.skytasul.quests.options.OptionQuestPool;
 import fr.skytasul.quests.options.OptionStartDialog;
 import fr.skytasul.quests.options.OptionStartable;
 import fr.skytasul.quests.scoreboards.Scoreboard;
@@ -25,14 +27,13 @@ import fr.skytasul.quests.utils.QuestUtils;
 import org.bukkit.DyeColor;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.ClickType;
-import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import java.util.*;
 import java.util.stream.Collectors;
 
-public class PlayerListGUI extends PagedGUI<Quest> {
+public class PlayerListGUI extends CategorizedPagedGUI<Quest> {
 
 	private static final LoggerExpanded LOGGER = LoggerExpanded.get("BeautyQuests.PlayerListGUI");
 
@@ -53,38 +54,41 @@ public class PlayerListGUI extends PagedGUI<Quest> {
 		this.player = player;
 		this.showHidden = showHidden;
 		this.questers = questerManager.getPlayerQuesters(player);
+
+		if (PlayerListCategory.IN_PROGRESS.isEnabled()) {
+			selectCategory(PlayerListCategory.IN_PROGRESS);
+			if (quests.isEmpty() && QuestsConfiguration.getConfig().getQuestsMenuConfig().isNotStartedTabOpenedWhenEmpty()
+					&& PlayerListCategory.NOT_STARTED.isEnabled())
+				selectCategory(PlayerListCategory.NOT_STARTED);
+		}else if (PlayerListCategory.NOT_STARTED.isEnabled()) {
+			selectCategory(PlayerListCategory.NOT_STARTED);
+		} else
+			selectCategory(PlayerListCategory.FINISHED);
+
+		for (PlayerListCategory enabledCat : QuestsConfiguration.getConfig().getQuestsMenuConfig().getEnabledTabs()) {
+			if (cat != enabledCat)
+				setCategoryItem(enabledCat, false);
+		}
 	}
 
 	@Override
-	protected void populate(@NotNull Player player, @NotNull Inventory inventory) {
-		setObjects(Collections.emptyList());
-		super.populate(player, inventory);
-
-		for (PlayerListCategory enabledCat : QuestsConfiguration.getConfig().getQuestsMenuConfig().getEnabledTabs()) {
-			setBarItem(enabledCat.getSlot(),
-					ItemUtils.name(enabledCat.getIcon(), UNSELECTED_PREFIX + enabledCat.getName()));
-		}
-
-		if (PlayerListCategory.IN_PROGRESS.isEnabled()) {
-			setCategory(PlayerListCategory.IN_PROGRESS);
-			if (objects.isEmpty() && QuestsConfiguration.getConfig().getQuestsMenuConfig().isNotStartedTabOpenedWhenEmpty()
-					&& PlayerListCategory.NOT_STARTED.isEnabled())
-				setCategory(PlayerListCategory.NOT_STARTED);
-		}else if (PlayerListCategory.NOT_STARTED.isEnabled()) {
-			setCategory(PlayerListCategory.NOT_STARTED);
-		}else setCategory(PlayerListCategory.FINISHED);
+	public void refresh(@NotNull Player player) {
+		refreshShownQuests(); // will internally refresh the delegate
 	}
 
-	private void setCategory(PlayerListCategory category){
-		if (cat == category)
-			return;
+	private void selectCategory(PlayerListCategory category) {
+		if (cat == category) return;
 		if (cat != null)
-			setCategorySelected(false);
+			setCategoryItem(cat, false);
 		cat = category;
-		setCategorySelected(true);
+		setCategoryItem(cat, true);
 
-		setSeparatorColor(cat.getColor());
+		getDelegate().setSeparatorColor(cat.getColor());
 
+		refreshShownQuests();
+	}
+
+	private void refreshShownQuests() {
 		quests = new HashMap<>();
 		for (var quester : questers) {
 			List<? extends Quest> questerQuests = switch (cat) {
@@ -100,7 +104,22 @@ public class PlayerListGUI extends PagedGUI<Quest> {
 				quests.put(quest, quester);
 		}
 
-		setObjects(quests.keySet().stream().sorted().toList());
+		var groupedQuests = new HashMap<QuestPool, Category<Quest>>();
+		for (Quest quest : quests.keySet()) {
+			var pool = quest.getOptionValueOrDef(OptionQuestPool.class);
+			var group = groupedQuests.computeIfAbsent(pool, __ -> {
+				String categoryId = pool == null ? "other" : Integer.toString(pool.getId());
+				return new Category<>(categoryId, new ArrayList<>(), getCategoryItem(pool));
+			});
+			group.objects().add(quest);
+		}
+		setCategories(groupedQuests.values());
+	}
+
+	private @NotNull ItemStack getCategoryItem(@Nullable QuestPool pool) {
+		if (pool == null)
+			return ItemUtils.item(XMaterial.CHEST, "Other quests");
+		return ItemUtils.item(XMaterial.CHEST, "Pool #%d".formatted(pool.getId()));
 	}
 
 	@Override
@@ -163,17 +182,6 @@ public class PlayerListGUI extends PagedGUI<Quest> {
 	}
 
 	@Override
-	protected void barClick(GuiClickEvent event, int barSlot) {
-		Optional<PlayerListCategory> clickedCat =
-				Arrays.stream(PlayerListCategory.values()).filter(cat -> cat.getSlot() == barSlot).findAny();
-		if (clickedCat.isPresent()) {
-			if (clickedCat.get().isEnabled())
-				setCategory(clickedCat.get());
-		} else
-			super.barClick(event, barSlot);
-	}
-
-	@Override
 	public void click(@NotNull Quest qu, @NotNull ItemStack item, @NotNull ClickType clickType) {
 		var quester = quests.get(qu);
 
@@ -183,7 +191,7 @@ public class PlayerListGUI extends PagedGUI<Quest> {
 			if (!quester.isActive())
 				return;
 			if (qu.canStart(player, true)) {
-				close();
+				getDelegate().close();
 				qu.attemptStart(player).whenComplete(LOGGER.logError(result -> {
 					if (result && QuestsConfiguration.getConfig().getQuestsMenuConfig().keepMenuOpen()) {
 						reopen(getViewer(), true);
@@ -201,14 +209,14 @@ public class PlayerListGUI extends PagedGUI<Quest> {
 									if (QuestsConfiguration.getConfig().getQuestsMenuConfig().keepMenuOpen()) {
 										reopen(getViewer(), true);
 									}
-								}, this::reopen, Lang.INDICATION_CANCEL.format(qu)).open(player);
+								}, () -> reopen(getViewer()), Lang.INDICATION_CANCEL.format(qu)).open(player);
 					}
 					break;
 				case RIGHT:
 					if (QuestsConfiguration.getConfig().getDialogsConfig().isHistoryEnabled() && hadDialog(qu, quester)) {
 						QuestUtils.playPluginSound(QuestsPlugin.getPlugin().getAudiences().player(getViewer()),
 								"ITEM_BOOK_PAGE_TURN", 0.5f, 1.4f);
-						new DialogHistoryGUI(quester, qu, this::reopen).open(getViewer());
+						new DialogHistoryGUI(quester, qu, () -> reopen(getViewer())).open(getViewer());
 					}
 					break;
 				case SHIFT_LEFT:
@@ -218,7 +226,7 @@ public class PlayerListGUI extends PagedGUI<Quest> {
 						if (sb != null) {
 							sb.getEntry(qu, quester).ifPresent(entry -> {
 								entry.setPinned(!entry.isPinned());
-								setItems(); // refresh the glittering effect
+								getDelegate().setItems(); // refresh the glittering effect
 							});
 						}
 					}
@@ -243,17 +251,17 @@ public class PlayerListGUI extends PagedGUI<Quest> {
 		return !DialogHistoryGUI.getDialogable(data.get(), true).isEmpty();
 	}
 
-	private void setCategorySelected(boolean selected) {
-		ItemStack is = getInventory().getItem(cat.getSlot() * 9 + 8);
-		String name;
+	private void setCategoryItem(PlayerListCategory category, boolean selected) {
+		var item = category.getIcon().clone();
+
 		if (selected) {
-			ItemUtils.setGlittering(is, true);
-			name = SELECTED_PREFIX + cat.getName();
+			ItemUtils.setGlittering(item, true);
+			ItemUtils.name(item, SELECTED_PREFIX + cat.getName());
 		} else {
-			ItemUtils.setGlittering(is, false);
-			name = UNSELECTED_PREFIX + cat.getName();
+			ItemUtils.setGlittering(item, false);
+			ItemUtils.name(item, UNSELECTED_PREFIX + cat.getName());
 		}
-		ItemUtils.name(is, name);
+		getDelegate().setBarButton(category.getSlot(), new BarButton(item, event -> selectCategory(category)));
 	}
 
 	@Override

@@ -640,6 +640,7 @@ public class QuestsConfigurationImplementation implements QuestsConfiguration {
 		private ItemStack previousPageItem;
 		private ItemStack nextPageItem;
 		private boolean verticalSeparator;
+		private boolean hideFolderIfSingleCategory;
 
 		private final ConfigurationSection config;
 
@@ -662,6 +663,7 @@ public class QuestsConfigurationImplementation implements QuestsConfiguration {
 			previousPageItem = loadItem(config, "previous page item", XMaterial.ARROW.parseItem());
 			nextPageItem = loadItem(config, "next page item", XMaterial.ARROW.parseItem());
 			verticalSeparator = config.getBoolean("vertical separator");
+			hideFolderIfSingleCategory = config.getBoolean("hide folder if single category");
 		}
 
 		@Override
@@ -677,6 +679,11 @@ public class QuestsConfigurationImplementation implements QuestsConfiguration {
 		@Override
 		public boolean showVerticalSeparator() {
 			return verticalSeparator;
+		}
+
+		@Override
+		public boolean hideFolderIfSingleCategory() {
+			return hideFolderIfSingleCategory;
 		}
 
 	}
@@ -724,6 +731,7 @@ public class QuestsConfigurationImplementation implements QuestsConfiguration {
 		private boolean openNotStartedTabWhenEmpty = true;
 		private boolean allowPlayerCancelQuest = true;
 		private boolean keepMenuOpen = false;
+		private boolean categorizeQuestsByPools = true;
 
 		private ConfigurationSection config;
 
@@ -766,6 +774,7 @@ public class QuestsConfigurationImplementation implements QuestsConfiguration {
 			openNotStartedTabWhenEmpty = config.getBoolean("openNotStartedTabWhenEmpty");
 			allowPlayerCancelQuest = config.getBoolean("allowPlayerCancelQuest");
 			keepMenuOpen = config.getBoolean("keep menu open");
+			categorizeQuestsByPools = config.getBoolean("categorize quests by pools");
 		}
 
 		@Override
@@ -786,6 +795,11 @@ public class QuestsConfigurationImplementation implements QuestsConfiguration {
 		@Override
 		public boolean keepMenuOpen() {
 			return keepMenuOpen;
+		}
+
+		@Override
+		public boolean categorizeQuestsByPools() {
+			return categorizeQuestsByPools;
 		}
 
 	}

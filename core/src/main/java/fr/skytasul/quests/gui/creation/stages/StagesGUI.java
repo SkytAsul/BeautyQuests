@@ -285,7 +285,7 @@ public class StagesGUI extends AbstractGui {
 			StageCreation creation = setStageCreation(stage.getStageType());
 
 			if (branch != null) {
-				context.getEndingBranch().repopulate(session.getPlayer());
+				context.getEndingBranch().refresh(session.getPlayer());
 				context.getEndingBranch().editBranch((QuestBranchImplementation) branch);
 			}
 
