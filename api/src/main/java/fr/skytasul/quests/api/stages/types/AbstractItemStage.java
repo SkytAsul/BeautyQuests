@@ -108,7 +108,7 @@ public abstract class AbstractItemStage extends AbstractCountableStage<ItemStack
 
 		public void setItems(List<ItemStack> items) {
 			this.items = items;
-			getLine().refreshItem(6, ItemUtils.loreAdd(getEditItem(),
+			getLine().refreshItem(6, ItemUtils.loreAdd(getEditItem().clone(),
 					QuestOption.formatNullableValue(Lang.AmountItems.quickFormat("items_amount", this.items.size()))));
 		}
 

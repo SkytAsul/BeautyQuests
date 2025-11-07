@@ -269,7 +269,7 @@ public class QuestBranchImplementation implements QuestBranch {
 								.forEach((player, earnings) -> Lang.FINISHED_OBTAIN.quickSend(player, "rewards",
 										MessageUtils.itemsToFormattedString(earnings.toArray(new String[0]))));
 
-					runAfter.run();
+					QuestUtils.runOrSync(runAfter);
 				}, "failed to give rewards", quester));
 	}
 
