@@ -50,6 +50,7 @@ public abstract class AbstractQuesterImplementation implements Quester {
 				.register("quester_detailed_name", this::getDetailedName);
 
 		// TODO eventually remove: for backward compatibility (2.0)
+		// since some system message may still use player-related placeholders in quester contexts
 		placeholders
 				.register("player_name", this::getFriendlyName)
 				.register("player", this::getDetailedName);
