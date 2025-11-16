@@ -151,7 +151,7 @@ public class PlayerListGUI extends PagedGUI<Quest> {
 
 			}
 			item = ItemUtils.nameAndLore(qu.getQuestItem().clone(),
-					player.hasPermission("beautyquests.seeId") ? Lang.formatId.format(qu) : Lang.formatNormal.format(qu),
+					getViewer().hasPermission("beautyquests.seeId") ? Lang.formatId.format(qu) : Lang.formatNormal.format(qu),
 					lore);
 			ItemUtils.setGlittering(item, glittering);
 		} catch (Exception ex) {
