@@ -44,7 +44,7 @@ public class PlayerManagerAccountsHookImplementation extends PlayerManagerImplem
 					.warning("Cannot fetch player identifier of an offline player with AccountsHook");
 			return Optional.empty();
 		}
-		return Optional.of(getAccountsProvider().getCurrentAccount(p.getPlayer()).getIdentifier().toString());
+		return getAccountsProvider().getCurrentAccount(p.getPlayer()).map(acc -> acc.getIdentifier().toString());
 	}
 
 	@Override
