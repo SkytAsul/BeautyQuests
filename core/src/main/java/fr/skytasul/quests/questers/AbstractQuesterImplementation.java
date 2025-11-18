@@ -59,8 +59,7 @@ public abstract class AbstractQuesterImplementation implements Quester {
 	protected void createdPointers(@NotNull Pointers.Builder builder) {
 		builder
 				.withDynamic(Identity.NAME, this::getDetailedName)
-				.withDynamic(Identity.DISPLAY_NAME, () -> Component.text(getFriendlyName()))
-				.build();
+				.withDynamic(Identity.DISPLAY_NAME, () -> Component.text(getFriendlyName()));
 	}
 
 	@Override

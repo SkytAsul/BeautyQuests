@@ -35,6 +35,7 @@ import fr.skytasul.quests.stages.*;
 import fr.skytasul.quests.stages.options.StageOptionProgressBar;
 import fr.skytasul.quests.utils.QuestUtils;
 import net.kyori.adventure.identity.Identity;
+import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 import net.md_5.bungee.api.ChatColor;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
@@ -294,9 +295,11 @@ public final class DefaultQuestFeatures {
 	public static void registerMessageProcessors() {
 		PlaceholderRegistry defaultPlaceholders = new PlaceholderRegistry()
 				.registerContextual("player", PlaceholdersContext.class,
-						context -> context.getAudience().get(Identity.NAME).orElse(null))
+						context -> context.getAudience().get(Identity.DISPLAY_NAME)
+								.map(LegacyComponentSerializer.legacySection()::serialize).orElse(null))
 				.registerContextual("PLAYER", PlaceholdersContext.class,
-						context -> context.getAudience().get(Identity.NAME).orElse(null))
+						context -> context.getAudience().get(Identity.DISPLAY_NAME)
+								.map(LegacyComponentSerializer.legacySection()::serialize).orElse(null))
 				.register("prefix", () -> BeautyQuests.getInstance().getPrefix())
 				.register("nl", "\n");
 
