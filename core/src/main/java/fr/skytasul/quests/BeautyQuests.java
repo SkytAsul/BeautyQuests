@@ -158,13 +158,12 @@ public class BeautyQuests extends JavaPlugin implements QuestsPlugin {
 			if (!saveFolder.exists()) saveFolder.mkdirs();
 			loadDataFile();
 			checkLastVersion();
+			loadDefaultIntegrations(); // used later in full initialization
 			loadConfigParameters(true);
 
 			registerCommands();
 
 			try {
-				loadDefaultIntegrations();
-				integrations.testCompatibilities();
 				Bukkit.getPluginManager().registerEvents(integrations, this);
 
 				integrations.initializeCompatibilities();
@@ -496,6 +495,7 @@ public class BeautyQuests extends JavaPlugin implements QuestsPlugin {
 			logger.severe("Cannot load default integrations.", ex);
 		}
 		InternalIntegrations.AccountsHook.isEnabled(); // to initialize the class
+		integrations.testCompatibilities();
 	}
 
 	private void loadLang() throws LoadingException {

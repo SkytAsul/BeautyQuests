@@ -20,7 +20,7 @@ import java.util.Optional;
 
 public class PlayerManagerAccountsHookImplementation extends PlayerManagerImplementation {
 
-	private static final @NotNull Key KEY = Key.key("BeautyQuests", "players-accounts-hook");
+	private static final @NotNull Key KEY = Key.key("beautyquests", "players-accounts-hook");
 
 	public PlayerManagerAccountsHookImplementation(@NotNull QuestsPlugin plugin) {
 		super(plugin);
