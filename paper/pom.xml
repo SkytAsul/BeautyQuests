@@ -112,4 +112,15 @@
 			</plugin>
 		</plugins>
 	</build>
+
+	<dependencyManagement>
+		<dependencies>
+			<dependency>
+				<groupId>net.kyori</groupId>
+				<artifactId>adventure-platform-facet</artifactId>
+				<version>4.0.1</version>
+				<!-- Overriden by MockBukkit -->
+			</dependency>
+		</dependencies>
+	</dependencyManagement>
 </project>

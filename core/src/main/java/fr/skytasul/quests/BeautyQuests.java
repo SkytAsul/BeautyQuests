@@ -242,7 +242,10 @@ public class BeautyQuests extends JavaPlugin implements QuestsPlugin {
 
 			getServer().getScheduler().cancelTasks(this);
 		}finally {
-			if (loggerHandler != null) loggerHandler.close();
+			if (loggerHandler != null)
+				loggerHandler.close();
+			if (audiences != null)
+				audiences.close();
 		}
 	}
 

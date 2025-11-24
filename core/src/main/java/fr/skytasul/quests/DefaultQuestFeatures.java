@@ -24,6 +24,7 @@ import fr.skytasul.quests.api.utils.messaging.MessageProcessor;
 import fr.skytasul.quests.api.utils.messaging.MessageType;
 import fr.skytasul.quests.api.utils.messaging.PlaceholderRegistry;
 import fr.skytasul.quests.api.utils.messaging.PlaceholdersContext;
+import fr.skytasul.quests.api.utils.messaging.PlaceholdersContext.QuesterPlaceholdersContext;
 import fr.skytasul.quests.api.utils.progress.HasProgress;
 import fr.skytasul.quests.mobs.BukkitEntityFactory;
 import fr.skytasul.quests.options.*;
@@ -293,16 +294,6 @@ public final class DefaultQuestFeatures {
 	}
 
 	public static void registerMessageProcessors() {
-		PlaceholderRegistry defaultPlaceholders = new PlaceholderRegistry()
-				.registerContextual("player", PlaceholdersContext.class,
-						context -> context.getAudience().get(Identity.DISPLAY_NAME)
-								.map(LegacyComponentSerializer.legacySection()::serialize).orElse(null))
-				.registerContextual("PLAYER", PlaceholdersContext.class,
-						context -> context.getAudience().get(Identity.DISPLAY_NAME)
-								.map(LegacyComponentSerializer.legacySection()::serialize).orElse(null))
-				.register("prefix", () -> BeautyQuests.getInstance().getPrefix())
-				.register("nl", "\n");
-
 		QuestsAPI.getAPI().registerMessageProcessor("default_message_type", 1, new MessageProcessor() {
 			@Override
 			public String processString(String string, PlaceholdersContext context) {
@@ -316,13 +307,47 @@ public final class DefaultQuestFeatures {
 			}
 		});
 
-		QuestsAPI.getAPI().registerMessageProcessor("default_placeholders", 2, new MessageProcessor() {
+		QuestsAPI.getAPI().registerMessageProcessor("default_placeholders", 1, new MessageProcessor() {
+			final PlaceholderRegistry defaultPlaceholders = new PlaceholderRegistry()
+					.register("prefix", () -> BeautyQuests.getInstance().getPrefix())
+					.register("nl", "\n");
+
 			@Override
 			public PlaceholderRegistry processPlaceholders(PlaceholderRegistry placeholders, PlaceholdersContext context) {
 				if (context.replacePluginPlaceholders())
 					return placeholders == null ? defaultPlaceholders : placeholders.with(defaultPlaceholders);
 				else
 					return placeholders;
+			}
+		});
+
+		QuestsAPI.getAPI().registerMessageProcessor("quester_placeholders", 2, new MessageProcessor() {
+			@Override
+			public PlaceholderRegistry processPlaceholders(PlaceholderRegistry placeholders, PlaceholdersContext context) {
+				if (!(context instanceof QuesterPlaceholdersContext questerContext) || !context.replacePluginPlaceholders())
+					return placeholders;
+
+				return placeholders == null ? questerContext.getQuester().getPlaceholdersRegistry()
+						: placeholders.with(questerContext.getQuester());
+			}
+		});
+
+		QuestsAPI.getAPI().registerMessageProcessor("audience_placeholders", 5, new MessageProcessor() {
+			final PlaceholderRegistry audienceRegistry = new PlaceholderRegistry()
+					.registerContextual("player", PlaceholdersContext.class,
+							context -> context.getAudience().get(Identity.NAME).orElse(null))
+					.registerContextual("PLAYER", PlaceholdersContext.class,
+							context -> context.getAudience().get(Identity.NAME).orElse(null))
+					.registerContextual("player_display_name", PlaceholdersContext.class,
+							context -> context.getAudience().get(Identity.DISPLAY_NAME)
+									.map(LegacyComponentSerializer.legacySection()::serialize).orElse(null));
+
+			@Override
+			public PlaceholderRegistry processPlaceholders(PlaceholderRegistry placeholders, PlaceholdersContext context) {
+				if (!context.replacePluginPlaceholders())
+					return placeholders;
+
+				return placeholders == null ? audienceRegistry : placeholders.with(audienceRegistry);
 			}
 		});
 
