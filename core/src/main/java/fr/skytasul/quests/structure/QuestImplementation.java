@@ -646,7 +646,7 @@ public class QuestImplementation implements Quest, QuestDescriptionProvider, Com
 					var optionObject = option.save();
 					if (optionObject == null)
 						optionObject = NULL_OPTION_VALUE;
-					section.set(option.getOptionCreator().id, option.save());
+					section.set(option.getOptionCreator().id, optionObject);
 				}
 			}catch (Exception ex) {
 				throw new DataSavingException("Failed to save option " + option.getOptionCreator().id, ex);
