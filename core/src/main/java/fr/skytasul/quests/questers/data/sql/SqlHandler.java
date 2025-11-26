@@ -123,7 +123,7 @@ public class SqlHandler {
 								ADD PRIMARY KEY (provider, identifier)
 							""".formatted(QUESTERS_TABLE));
 					statement.execute("UPDATE %s SET provider = '%s'".formatted(QUESTERS_TABLE,
-							PlayerManagerImplementation.KEY.asString()));
+							PlayerManagerImplementation.PLAYERS_KEY.asString()));
 
 					LOGGER
 							.info("Updated database by changing layout of the questers table.");
@@ -148,7 +148,7 @@ public class SqlHandler {
 					statement.execute("UPDATE %s SET state = NULL".formatted(QUESTS_DATAS_TABLE));
 					statement.execute("UPDATE %s SET quester_identifier = '_migration'".formatted(QUESTS_DATAS_TABLE));
 					statement.execute("UPDATE %s SET quester_provider = '%s'".formatted(QUESTS_DATAS_TABLE,
-							PlayerManagerImplementation.KEY.asString()));
+							PlayerManagerImplementation.PLAYERS_KEY.asString()));
 					statement.execute("""
 							UPDATE %1$s AS quests
 								INNER JOIN %2$s AS questers ON quests.account_id = questers.id
@@ -183,7 +183,7 @@ public class SqlHandler {
 								ADD COLUMN quester_identifier VARCHAR(255) NOT NULL
 							""".formatted(POOLS_DATAS_TABLE));
 					statement.execute("UPDATE %s SET quester_identifier = '_migration', quester_provider = '%s'"
-							.formatted(POOLS_DATAS_TABLE, PlayerManagerImplementation.KEY.asString()));
+							.formatted(POOLS_DATAS_TABLE, PlayerManagerImplementation.PLAYERS_KEY.asString()));
 					statement.execute("""
 							UPDATE %1$s AS pools
 								INNER JOIN %2$s AS questers ON pools.account_id = questers.id

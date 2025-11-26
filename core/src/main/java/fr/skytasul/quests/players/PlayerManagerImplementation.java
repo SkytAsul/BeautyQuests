@@ -31,7 +31,7 @@ import java.util.*;
 public class PlayerManagerImplementation implements PlayerManager, Listener {
 
 	private static final LoggerExpanded LOGGER = LoggerExpanded.get("BeautyQuests.PlayerManager");
-	public static final @NotNull Key KEY = Key.key("beautyquests", "players");
+	public static final @NotNull Key PLAYERS_KEY = Key.key("beautyquests", "players");
 
 	private final @NotNull Map<@NotNull Player, @NotNull AbstractPlayerQuesterImplementation> cachedQuesters =
 			new HashMap<>();
@@ -47,7 +47,7 @@ public class PlayerManagerImplementation implements PlayerManager, Listener {
 
 	@Override
 	public @NotNull Key key() {
-		return KEY;
+		return PLAYERS_KEY;
 	}
 
 	@Override
@@ -103,7 +103,7 @@ public class PlayerManagerImplementation implements PlayerManager, Listener {
 
 		LOGGER.debug("Loading quester for {} (identifier: {})", player.getName(), identifier);
 
-		questerManager.getDataManager().fetchQuester(new QuesterFetchRequest(KEY, identifier, true, true))
+		questerManager.getDataManager().fetchQuester(new QuesterFetchRequest(key(), identifier, true, true))
 				.whenComplete(LOGGER.logError(result -> {
 					if (!result.type().isSuccess()) {
 						LOGGER.severe("Failed to load {}'s quester instance", player.getName());
