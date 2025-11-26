@@ -30,7 +30,6 @@ import fr.skytasul.quests.api.utils.messaging.*;
 import fr.skytasul.quests.npcs.BqNpcImplementation;
 import fr.skytasul.quests.options.*;
 import fr.skytasul.quests.players.AdminMode;
-import fr.skytasul.quests.structure.pools.QuestPoolImplementation;
 import fr.skytasul.quests.utils.QuestUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.ConfigurationSection;
@@ -563,7 +562,7 @@ public class QuestImplementation implements Quest, QuestDescriptionProvider, Com
 				questDatas.incrementFinished();
 				questDatas.setStartingTime(OptionalLong.empty());
 				if (hasOption(OptionQuestPool.class))
-					((QuestPoolImplementation) getOptionValueOrDef(OptionQuestPool.class)).questCompleted(quester, this);
+					getOptionValueOrDef(OptionQuestPool.class).questCompleted(quester, this);
 				if (isRepeatable()) {
 					Calendar cal = Calendar.getInstance();
 					cal.add(Calendar.MINUTE, Math.max(0, getOptionValueOrDef(OptionTimer.class)));

@@ -2,7 +2,7 @@ package fr.skytasul.quests.api.questers.data;
 
 import fr.skytasul.quests.api.data.DataSavingException;
 import fr.skytasul.quests.api.data.SavableData;
-import fr.skytasul.quests.api.pools.QuestPool;
+import fr.skytasul.quests.api.pools.QuestPoolController;
 import fr.skytasul.quests.api.quests.Quest;
 import net.kyori.adventure.key.Key;
 import org.jetbrains.annotations.NotNull;
@@ -66,13 +66,13 @@ public interface QuesterData {
 	 */
 	public @UnmodifiableView @NotNull Collection<@NotNull ? extends QuesterQuestData> getAllQuestsData();
 
-	public boolean hasPoolData(@NotNull QuestPool pool);
+	public boolean hasPoolData(@NotNull QuestPoolController pool);
 
-	public @NotNull Optional<QuesterPoolData> getPoolDataIfPresent(@NotNull QuestPool pool);
+	public @NotNull Optional<QuesterPoolData> getPoolDataIfPresent(@NotNull QuestPoolController pool);
 
-	public @NotNull QuesterPoolData getPoolData(@NotNull QuestPool pool);
+	public @NotNull QuesterPoolData getPoolData(@NotNull QuestPoolController pool);
 
-	public @NotNull CompletableFuture<QuesterPoolData> removePoolData(@NotNull QuestPool pool);
+	public @NotNull CompletableFuture<QuesterPoolData> removePoolData(@NotNull QuestPoolController pool);
 
 	public @NotNull CompletableFuture<QuesterPoolData> removePoolData(int id);
 

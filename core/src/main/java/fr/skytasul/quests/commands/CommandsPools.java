@@ -1,10 +1,11 @@
 package fr.skytasul.quests.commands;
 
 import fr.skytasul.quests.BeautyQuests;
+import fr.skytasul.quests.api.QuestsAPI;
 import fr.skytasul.quests.api.QuestsPlugin;
 import fr.skytasul.quests.api.localization.Lang;
 import fr.skytasul.quests.api.players.PlayerManager;
-import fr.skytasul.quests.api.pools.QuestPool;
+import fr.skytasul.quests.api.pools.QuestPoolController;
 import fr.skytasul.quests.api.questers.Quester;
 import fr.skytasul.quests.api.utils.messaging.PlaceholderRegistry;
 import fr.skytasul.quests.gui.pools.PoolsManageGUI;
@@ -27,12 +28,12 @@ public class CommandsPools implements OrphanCommand {
 	@CommandPlaceholder
 	@CommandPermission("beautyquests.command.pools")
 	public void pools(Player player) {
-		PoolsManageGUI.get().open(player);
+		new PoolsManageGUI(QuestsAPI.getAPI().getPoolsManager()).open(player);
 	}
 
 	@Subcommand("resetPlayer")
 	@CommandPermission("beautyquests.command.resetPlayer")
-	public void resetPlayerPool(BukkitCommandActor actor, Player player, QuestPool pool, @Switch boolean timer) {
+	public void resetPlayerPool(BukkitCommandActor actor, Player player, QuestPoolController pool, @Switch boolean timer) {
 		Quester acc = PlayerManager.getPlayerAccount(player);
 		if (timer) {
 			pool.resetPlayerTimer(acc);
@@ -47,7 +48,7 @@ public class CommandsPools implements OrphanCommand {
 
 	@Subcommand("reset")
 	@CommandPermission("beautyquests.command.resetQuest")
-	public void resetPool(BukkitCommandActor actor, QuestPool pool) {
+	public void resetPool(BukkitCommandActor actor, QuestPoolController pool) {
 		List<CompletableFuture<Boolean>> futures = new ArrayList<>(Bukkit.getOnlinePlayers().size());
 
 		for (Player p : Bukkit.getOnlinePlayers()) {
@@ -83,7 +84,7 @@ public class CommandsPools implements OrphanCommand {
 
 	@Subcommand("start")
 	@CommandPermission("beautyquests.command.pools.start")
-	public void start(BukkitCommandActor actor, EntitySelector<Player> players, QuestPool pool) {
+	public void start(BukkitCommandActor actor, EntitySelector<Player> players, QuestPoolController pool) {
 		for (Player player : players) {
 			Quester acc = PlayerManager.getPlayerAccount(player);
 			if (!pool.canGive(player).result()) {

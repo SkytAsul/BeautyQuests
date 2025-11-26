@@ -13,7 +13,7 @@ import fr.skytasul.quests.api.gui.templates.PagedGUI.BarButton;
 import fr.skytasul.quests.api.localization.Lang;
 import fr.skytasul.quests.api.options.description.DescriptionSource;
 import fr.skytasul.quests.api.options.description.QuestDescriptionContext;
-import fr.skytasul.quests.api.pools.QuestPool;
+import fr.skytasul.quests.api.pools.QuestPoolController;
 import fr.skytasul.quests.api.questers.Quester;
 import fr.skytasul.quests.api.questers.QuesterManager;
 import fr.skytasul.quests.api.quests.Quest;
@@ -104,7 +104,7 @@ public class PlayerListGUI extends CategorizedPagedGUI<Quest> {
 				quests.put(quest, quester);
 		}
 
-		var groupedQuests = new HashMap<QuestPool, Category<Quest>>();
+		var groupedQuests = new HashMap<QuestPoolController, Category<Quest>>();
 		for (Quest quest : quests.keySet()) {
 			var pool = quest.getOptionValueOrDef(OptionQuestPool.class);
 			var group = groupedQuests.computeIfAbsent(pool, __ -> {
@@ -116,10 +116,15 @@ public class PlayerListGUI extends CategorizedPagedGUI<Quest> {
 		setCategories(groupedQuests.values());
 	}
 
-	private @NotNull ItemStack getCategoryItem(@Nullable QuestPool pool) {
+	private @NotNull ItemStack getCategoryItem(@Nullable QuestPoolController pool) {
 		if (pool == null)
 			return ItemUtils.item(XMaterial.CHEST, "Other quests");
-		return ItemUtils.item(XMaterial.CHEST, "Pool #%d".formatted(pool.getId()));
+
+		String itemName = pool.getPoolData().name();
+		if (itemName == null)
+			itemName = "Pool #%d".formatted(pool.getId());
+
+		return ItemUtils.item(XMaterial.CHEST, itemName);
 	}
 
 	@Override

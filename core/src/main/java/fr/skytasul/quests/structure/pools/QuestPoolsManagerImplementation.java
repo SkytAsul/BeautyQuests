@@ -1,9 +1,9 @@
 package fr.skytasul.quests.structure.pools;
 
 import fr.skytasul.quests.BeautyQuests;
-import fr.skytasul.quests.api.pools.QuestPool;
+import fr.skytasul.quests.api.pools.QuestPoolController;
+import fr.skytasul.quests.api.pools.QuestPoolData;
 import fr.skytasul.quests.api.pools.QuestPoolsManager;
-import fr.skytasul.quests.api.requirements.RequirementList;
 import fr.skytasul.quests.options.OptionQuestPool;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
@@ -12,10 +12,7 @@ import org.jetbrains.annotations.Nullable;
 import org.jetbrains.annotations.UnmodifiableView;
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 public class QuestPoolsManagerImplementation implements QuestPoolsManager {
 
@@ -23,7 +20,7 @@ public class QuestPoolsManagerImplementation implements QuestPoolsManager {
 	private final @NotNull File file;
 	private final @NotNull YamlConfiguration config;
 
-	private Map<Integer, QuestPoolImplementation> pools = new HashMap<>();
+	private Map<Integer, QuestPoolControllerImplementation> pools = new HashMap<>();
 
 	public QuestPoolsManagerImplementation(@NotNull BeautyQuests plugin, @NotNull File file) throws IOException {
 		this.plugin = plugin;
@@ -38,8 +35,8 @@ public class QuestPoolsManagerImplementation implements QuestPoolsManager {
 			for (String key : config.getKeys(false)) {
 				try {
 					int id = Integer.parseInt(key);
-					QuestPoolImplementation pool = QuestPoolImplementation.deserialize(id, config.getConfigurationSection(key));
-					pools.put(id, pool);
+					var poolData = QuestPoolData.deserialize(config.getConfigurationSection(key));
+					pools.put(id, new QuestPoolControllerImplementation(id, poolData));
 				} catch (Exception ex) {
 					plugin.getLoggerExpanded().severe("An exception ocurred while loading quest pool {0}", ex, key);
 					continue;
@@ -49,9 +46,9 @@ public class QuestPoolsManagerImplementation implements QuestPoolsManager {
 		}
 	}
 
-	public void save(@NotNull QuestPoolImplementation pool) {
+	private void save(@NotNull QuestPoolControllerImplementation pool) {
 		ConfigurationSection section = config.createSection(Integer.toString(pool.getId()));
-		pool.save(section);
+		pool.getPoolData().save(section);
 		try {
 			config.save(file);
 		} catch (IOException e) {
@@ -60,35 +57,41 @@ public class QuestPoolsManagerImplementation implements QuestPoolsManager {
 	}
 
 	public void updateAll() throws IOException {
-		for (QuestPoolImplementation pool : pools.values()) {
-			pool.save(config.createSection(Integer.toString(pool.getId())));
+		for (var pool : pools.values()) {
+			pool.getPoolData().save(config.createSection(Integer.toString(pool.getId())));
 		}
 		config.save(file);
 	}
 
 	@Override
-	public @NotNull QuestPoolImplementation createPool(@Nullable QuestPool editing, @Nullable String npcID,
-			@Nullable String hologram, int maxQuests, int questsPerLaunch, boolean redoAllowed, long timeDiff,
-			boolean avoidDuplicates, @NotNull RequirementList requirements) {
+	public @NotNull QuestPoolController registerPool(@NotNull QuestPoolData pool) {
+		int id = pools.keySet().stream().mapToInt(Integer::intValue).max().orElse(-1) + 1;
 
-		if (editing != null)
-			((QuestPoolImplementation) editing).unload();
+		var controller = new QuestPoolControllerImplementation(id, pool);
+		save(controller);
+		pools.put(id, controller);
 
-		QuestPoolImplementation pool = new QuestPoolImplementation(
-				editing == null ? pools.keySet().stream().mapToInt(Integer::intValue).max().orElse(-1) + 1 : editing.getId(),
-				npcID, hologram, maxQuests, questsPerLaunch, redoAllowed, timeDiff, avoidDuplicates, requirements);
-		save(pool);
-		pools.put(pool.getId(), pool);
-		if (editing != null) {
-			pool.quests = editing.getQuests();
-			pool.quests.forEach(quest -> quest.getOption(OptionQuestPool.class).setValue(pool));
-		}
-		return pool;
+		return controller;
+	}
+
+	@Override
+	public @NotNull QuestPoolController editPool(int id, @NotNull QuestPoolData newPool) {
+		var existing = Objects.requireNonNull(pools.get(id));
+		existing.unload();
+
+		var controller = new QuestPoolControllerImplementation(id, newPool);
+		save(controller);
+		pools.put(id, controller);
+
+		controller.quests = existing.quests;
+		controller.quests.forEach(quest -> quest.getOption(OptionQuestPool.class).setValue(controller));
+
+		return controller;
 	}
 
 	@Override
 	public void removePool(int id) {
-		QuestPoolImplementation pool = pools.remove(id);
+		var pool = pools.remove(id);
 		if (pool == null)
 			return;
 		pool.unload();
@@ -102,14 +105,14 @@ public class QuestPoolsManagerImplementation implements QuestPoolsManager {
 	}
 
 	@Override
-	public @Nullable QuestPoolImplementation getPool(int id) {
+	public @Nullable QuestPoolControllerImplementation getPool(int id) {
 		return pools.get(id);
 	}
 
 	@SuppressWarnings("rawtypes")
 	@Override
-	public @NotNull @UnmodifiableView Collection<QuestPool> getPools() {
-		return (Collection) pools.values();
+	public @NotNull @UnmodifiableView Collection<QuestPoolControllerImplementation> getPools() {
+		return pools.values();
 	}
 
 }

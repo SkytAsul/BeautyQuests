@@ -311,6 +311,7 @@ msg:
     comparisonTypeDefault: '§aChoose the comparison type you want among {available}. Default comparison is: §e§l{default}§r§a. Type §onull§r§a to use it.'
     scoreboardObjectiveNotFound: '§cUnknown scoreboard objective.'
     pool:
+	  name: 'Write the name of the quests pool.'
       hologramText: 'Write the custom hologram text for this pool (or "null" if you want the default one).'
       maxQuests: 'Write the maximum amount of quests launcheable from this pool.'
       questsPerLaunch: 'Write the amount of quests given when players click on the NPC.'
@@ -670,7 +671,7 @@ inv:
   poolsManage:
     name: Quest Pools
     itemName: '§aPool {pool}'
-    poolNPC: '§8NPC: §7{pool_npc_id}'
+    poolNPC: '§8NPC: §7{pool_npc_name} ({pool_npc_id})'
     poolMaxQuests: '§8Max quests: §7{pool_max_quests}'
     poolQuestsPerLaunch: '§8Quests given per launch: §7{pool_quests_per_launch}'
     poolRedo: '§8Can redo completed quests: §7{pool_redo}'
@@ -679,10 +680,10 @@ inv:
     poolAvoidDuplicates: '§8Avoid duplicates: §7{pool_duplicates}'
     poolQuestsList: '§7{pool_quests_amount} §8quest(s): §7{pool_quests}'
     create: §aCreate a quest pool
-    edit: §e> §6§oEdit the pool... §e<
     choose: §e> §6§oChoose this pool §e<
   poolCreation:
     name: Quest pool creation
+	poolName: Pool name
     hologramText: §ePool custom hologram
     maxQuests: §aMax quests
     questsPerLaunch: §aQuests started per launch

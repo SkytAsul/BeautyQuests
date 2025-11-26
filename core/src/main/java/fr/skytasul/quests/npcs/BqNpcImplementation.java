@@ -10,7 +10,7 @@ import fr.skytasul.quests.api.localization.Lang;
 import fr.skytasul.quests.api.npcs.BqInternalNpc;
 import fr.skytasul.quests.api.npcs.BqNpc;
 import fr.skytasul.quests.api.players.PlayerManager;
-import fr.skytasul.quests.api.pools.QuestPool;
+import fr.skytasul.quests.api.pools.QuestPoolController;
 import fr.skytasul.quests.api.questers.Quester;
 import fr.skytasul.quests.api.quests.Quest;
 import fr.skytasul.quests.api.stages.types.Locatable.Located;
@@ -20,7 +20,7 @@ import fr.skytasul.quests.options.OptionHologramLaunch;
 import fr.skytasul.quests.options.OptionHologramLaunchNo;
 import fr.skytasul.quests.options.OptionHologramText;
 import fr.skytasul.quests.options.OptionStarterNPC;
-import fr.skytasul.quests.structure.pools.QuestPoolImplementation;
+import fr.skytasul.quests.structure.pools.QuestPoolControllerImplementation;
 import fr.skytasul.quests.utils.QuestUtils;
 import org.apache.commons.lang.StringUtils;
 import org.bukkit.Location;
@@ -39,7 +39,7 @@ import java.util.function.Predicate;
 public class BqNpcImplementation implements Located.LocatedEntity, BqNpc {
 
 	private Map<Quest, List<Player>> quests = new TreeMap<>();
-	private Set<QuestPool> pools = new TreeSet<>();
+	private Set<QuestPoolControllerImplementation> pools = new TreeSet<>();
 
 	private List<Entry<Player, Object>> hiddenTickets = new ArrayList<>();
 	private Map<Object, Predicate<Player>> startable = new HashMap<>();
@@ -159,7 +159,7 @@ public class BqNpcImplementation implements Located.LocatedEntity, BqNpc {
 				if (hologramPool.canAppear) {
 					for (Player p : playersInRadius) {
 						boolean visible = false;
-						for (QuestPool pool : pools) {
+						for (var pool : pools) {
 							if (pool.canGive(p).result()) {
 								visible = true;
 								break;
@@ -281,18 +281,19 @@ public class BqNpcImplementation implements Located.LocatedEntity, BqNpc {
 	}
 
 	@Override
-	public Set<QuestPool> getPools() {
+	public Set<QuestPoolControllerImplementation> getPools() {
 		return pools;
 	}
 
-	public void addPool(QuestPool pool) {
+	public void addPool(QuestPoolControllerImplementation pool) {
 		if (!pools.add(pool)) return;
-		if (hologramPool.enabled && (pool.getHologram() != null)) hologramPool.setText(pool.getHologram());
+		if (hologramPool.enabled && (pool.getPoolData().hologram() != null))
+			hologramPool.setText(pool.getPoolData().hologram());
 		addStartablePredicate((p) -> pool.canGive(p).result(), pool);
 		updatedObjects();
 	}
 
-	public boolean removePool(QuestPool pool) {
+	public boolean removePool(QuestPoolController pool) {
 		boolean b = pools.remove(pool);
 		removeStartablePredicate(pool);
 		updatedObjects();
@@ -373,10 +374,10 @@ public class BqNpcImplementation implements Located.LocatedEntity, BqNpc {
 			qu.removeOption(OptionStarterNPC.class);
 		}
 		quests = null;
-		for (QuestPool pool : pools) {
+		for (var pool : pools) {
 			QuestsPlugin.getPlugin().getLoggerExpanded()
 					.warning("NPC " + getId() + " has been removed from pool " + pool.getId() + ". Reason: " + cause);
-			((QuestPoolImplementation) pool).unloadStarter();
+			pool.unloadStarter();
 		}
 		unload();
 	}

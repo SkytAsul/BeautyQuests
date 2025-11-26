@@ -1,7 +1,6 @@
 package fr.skytasul.quests.gui.pools;
 
 import com.cryptomorin.xseries.XMaterial;
-import fr.skytasul.quests.BeautyQuests;
 import fr.skytasul.quests.api.QuestsAPI;
 import fr.skytasul.quests.api.QuestsPlugin;
 import fr.skytasul.quests.api.editors.TextEditor;
@@ -14,7 +13,7 @@ import fr.skytasul.quests.api.gui.ItemUtils;
 import fr.skytasul.quests.api.localization.Lang;
 import fr.skytasul.quests.api.objects.QuestObjectLocation;
 import fr.skytasul.quests.api.options.QuestOption;
-import fr.skytasul.quests.api.pools.QuestPool;
+import fr.skytasul.quests.api.pools.QuestPoolData;
 import fr.skytasul.quests.api.requirements.RequirementList;
 import fr.skytasul.quests.api.utils.Utils;
 import org.bukkit.Bukkit;
@@ -22,22 +21,26 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 import org.jetbrains.annotations.NotNull;
 import java.util.concurrent.TimeUnit;
+import java.util.function.Consumer;
 
 public class PoolEditGUI extends AbstractGui {
 
-	private static final int SLOT_NPC = 1;
-	private static final int SLOT_HOLOGRAM = 2;
+	private static final int SLOT_NAME = 0;
+	private static final int SLOT_HOLOGRAM = 1;
+	private static final int SLOT_NPC = 2;
 	private static final int SLOT_MAX_QUESTS = 3;
 	private static final int SLOT_QUESTS_PER_LAUNCH = 4;
-	private static final int SLOT_TIME = 5;
-	private static final int SLOT_REDO = 6;
-	private static final int SLOT_DUPLICATE = 7;
-	private static final int SLOT_REQUIREMENTS = 8;
-	private static final int SLOT_CANCEL = 12;
-	private static final int SLOT_CREATE = 14;
+	private static final int SLOT_REQUIREMENTS = 9;
+	private static final int SLOT_TIME = 10;
+	private static final int SLOT_REDO = 11;
+	private static final int SLOT_DUPLICATE = 12;
+	private static final int SLOT_CANCEL = 16;
+	private static final int SLOT_CREATE = 17;
 
-	private final Runnable end;
+	private final Runnable cancel;
+	private final Consumer<QuestPoolData> end;
 
+	private String name;
 	private String hologram;
 	private int maxQuests = 1;
 	private int questsPerLaunch = 1;
@@ -47,26 +50,31 @@ public class PoolEditGUI extends AbstractGui {
 	private boolean avoidDuplicates = true;
 	private RequirementList requirements = new RequirementList();
 
-	private QuestPool editing;
-
-	public PoolEditGUI(Runnable end, QuestPool editing) {
+	public PoolEditGUI(Runnable cancel, Consumer<QuestPoolData> end) {
+		this.cancel = cancel;
 		this.end = end;
-		this.editing = editing;
-		if (editing != null) {
-			hologram = editing.getHologram();
-			maxQuests = editing.getMaxQuests();
-			questsPerLaunch = editing.getQuestsPerLaunch();
-			redoAllowed = editing.isRedoAllowed();
-			timeDiff = editing.getTimeDiff();
-			npcID = editing.getNpcId();
-			avoidDuplicates = editing.doAvoidDuplicates();
-			requirements = editing.getRequirements();
-		}
+	}
+
+	public PoolEditGUI fillFrom(QuestPoolData editing) {
+		name = editing.name();
+		hologram = editing.hologram();
+		maxQuests = editing.maxQuests();
+		questsPerLaunch = editing.questsPerLaunch();
+		redoAllowed = editing.redoAllowed();
+		timeDiff = editing.timeDiff();
+		npcID = editing.npcId();
+		avoidDuplicates = editing.avoidDuplicates();
+		requirements = editing.requirements();
+
+		return this;
+	}
+
+	private String[] getNameLore() {
+		return new String[] {"", QuestOption.formatNullableValue(name, null)};
 	}
 
 	private String[] getNPCLore() {
-		return new String[] {"§8> " + Lang.requiredParameter.toString(), "",
-				QuestOption.formatNullableValue("NPC " + npcID)};
+		return new String[] {"", QuestOption.formatNullableValue("NPC " + npcID)};
 	}
 
 	private String[] getHologramLore() {
@@ -96,6 +104,7 @@ public class PoolEditGUI extends AbstractGui {
 
 	@Override
 	protected void populate(@NotNull Player player, @NotNull Inventory inv) {
+		inv.setItem(SLOT_NAME, ItemUtils.item(XMaterial.NAME_TAG, "§e" + Lang.poolEditName.toString(), getNameLore()));
 		if (QuestsPlugin.getPlugin().getNpcManager().isEnabled())
 			inv.setItem(SLOT_NPC,
 					ItemUtils.item(XMaterial.VILLAGER_SPAWN_EGG, Lang.stageNPCSelect.toString(), getNPCLore()));
@@ -114,6 +123,14 @@ public class PoolEditGUI extends AbstractGui {
 	@Override
 	public void onClick(GuiClickEvent event) {
 		switch (event.getSlot()) {
+			case SLOT_NAME:
+				Lang.POOL_NAME.send(event.getPlayer());
+				new TextEditor<String>(event.getPlayer(), event::reopen, msg -> {
+					name = msg;
+					ItemUtils.lore(event.getClicked(), getNameLore());
+					reopen(event.getPlayer());
+				}).passNullIntoEndConsumer().start();
+				break;
 		case SLOT_NPC:
 			QuestsPlugin.getPlugin().getGuiManager().getFactory().createNpcSelection(event::reopen, npc -> {
 				npcID = npc.getId();
@@ -168,12 +185,12 @@ public class PoolEditGUI extends AbstractGui {
 			break;
 
 		case SLOT_CANCEL:
-			end.run();
+			cancel.run();
 			break;
 		case SLOT_CREATE:
-			BeautyQuests.getInstance().getPoolsManager().createPool(editing, npcID, hologram, maxQuests, questsPerLaunch,
-					redoAllowed, timeDiff, avoidDuplicates, requirements);
-			end.run();
+			var poolData = new QuestPoolData(name, npcID, hologram, maxQuests, questsPerLaunch, redoAllowed, timeDiff,
+					avoidDuplicates, requirements);
+			end.accept(poolData);
 			break;
 		}
 	}

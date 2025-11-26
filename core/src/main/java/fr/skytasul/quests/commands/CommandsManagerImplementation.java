@@ -7,7 +7,7 @@ import fr.skytasul.quests.api.commands.OutsideEditor;
 import fr.skytasul.quests.api.commands.QuesterSelector;
 import fr.skytasul.quests.api.localization.Lang;
 import fr.skytasul.quests.api.npcs.BqNpc;
-import fr.skytasul.quests.api.pools.QuestPool;
+import fr.skytasul.quests.api.pools.QuestPoolController;
 import fr.skytasul.quests.api.questers.Quester;
 import fr.skytasul.quests.api.quests.Quest;
 import fr.skytasul.quests.api.utils.messaging.MessageType;
@@ -51,7 +51,7 @@ public class CommandsManagerImplementation implements CommandsManager {
 
 		builder.parameterTypes(parameters -> {
 			parameters.addParameterType(Quest.class, new QuestParameter());
-			parameters.addParameterType(QuestPool.class, new QuestPoolParameter());
+			parameters.addParameterType(QuestPoolController.class, new QuestPoolParameter());
 			parameters.addParameterType(BqNpc.class, new BqNpcParameter());
 			parameters.addParameterType(Quester.class,
 					new QuesterParameter(plugin.getQuesterManager(), plugin.getPlayersManager()));

@@ -7,17 +7,16 @@ import fr.skytasul.quests.api.gui.ItemUtils;
 import fr.skytasul.quests.api.localization.Lang;
 import fr.skytasul.quests.api.options.QuestOption;
 import fr.skytasul.quests.api.players.PlayerManager;
-import fr.skytasul.quests.api.pools.QuestPool;
+import fr.skytasul.quests.api.pools.QuestPoolController;
+import fr.skytasul.quests.api.pools.QuestPoolData;
 import fr.skytasul.quests.api.questers.Quester;
 import fr.skytasul.quests.api.questers.data.QuesterPoolData;
 import fr.skytasul.quests.api.quests.Quest;
-import fr.skytasul.quests.api.requirements.RequirementList;
 import fr.skytasul.quests.api.utils.Utils;
 import fr.skytasul.quests.api.utils.messaging.MessageUtils;
 import fr.skytasul.quests.api.utils.messaging.PlaceholderRegistry;
 import fr.skytasul.quests.npcs.BqNpcImplementation;
 import fr.skytasul.quests.utils.QuestUtils;
-import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;
@@ -32,45 +31,27 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.stream.Collectors;
 
-public class QuestPoolImplementation implements Comparable<QuestPoolImplementation>, QuestPool {
+public class QuestPoolControllerImplementation implements QuestPoolController, Comparable<QuestPoolController> {
 
 	private final int id;
-
-	private String npcId;
-	private final String hologram;
-	private final int maxQuests;
-	private final int questsPerLaunch;
-	private final boolean redoAllowed;
-	private final long timeDiff;
-	private final boolean avoidDuplicates;
-	private final RequirementList requirements;
+	private QuestPoolData data;
 
 	BqNpcImplementation npc;
 	List<Quest> quests = new ArrayList<>();
 
 	private @Nullable PlaceholderRegistry placeholders;
 
-	QuestPoolImplementation(int id, String npcID, String hologram, int maxQuests, int questsPerLaunch, boolean redoAllowed,
-			long timeDiff, boolean avoidDuplicates, RequirementList requirements) {
+	protected QuestPoolControllerImplementation(int id, QuestPoolData data) {
 		this.id = id;
-		this.npcId = npcID;
-		this.hologram = hologram;
-		this.maxQuests = maxQuests;
-		this.questsPerLaunch = questsPerLaunch;
-		this.redoAllowed = redoAllowed;
-		this.timeDiff = timeDiff;
-		this.avoidDuplicates = avoidDuplicates;
-		this.requirements = requirements;
+		this.data = data;
 
-		if (npcID != null) {
-			npc = BeautyQuests.getInstance().getNpcManager().getById(npcID);
-			if (npc != null) {
-				this.npcId = npc.getId(); // TODO migration 1.0
+		if (data.npcId() != null) {
+			npc = BeautyQuests.getInstance().getNpcManager().getById(data.npcId());
+			if (npc != null)
 				npc.addPool(this);
-				return;
-			}
+			else
+				QuestsPlugin.getPlugin().getLoggerExpanded().warning("Unknown NPC {} for quest pool #{}", data.npcId(), id);
 		}
-		QuestsPlugin.getPlugin().getLoggerExpanded().warning("Unknown NPC " + npcID + " for quest pool #" + id);
 	}
 
 	@Override
@@ -79,43 +60,8 @@ public class QuestPoolImplementation implements Comparable<QuestPoolImplementati
 	}
 
 	@Override
-	public String getNpcId() {
-		return npcId;
-	}
-
-	@Override
-	public String getHologram() {
-		return hologram;
-	}
-
-	@Override
-	public int getMaxQuests() {
-		return maxQuests;
-	}
-
-	@Override
-	public int getQuestsPerLaunch() {
-		return questsPerLaunch;
-	}
-
-	@Override
-	public boolean isRedoAllowed() {
-		return redoAllowed;
-	}
-
-	@Override
-	public long getTimeDiff() {
-		return timeDiff;
-	}
-
-	@Override
-	public boolean doAvoidDuplicates() {
-		return avoidDuplicates;
-	}
-
-	@Override
-	public RequirementList getRequirements() {
-		return requirements;
+	public QuestPoolData getPoolData() {
+		return data;
 	}
 
 	@Override
@@ -123,34 +69,36 @@ public class QuestPoolImplementation implements Comparable<QuestPoolImplementati
 		return quests;
 	}
 
-	@Override
 	public void addQuest(Quest quest) {
 		quests.add(quest);
 	}
 
-	@Override
 	public void removeQuest(Quest quest) {
 		quests.remove(quest);
 	}
 
 	@Override
-	public int compareTo(QuestPoolImplementation o) {
-		return Integer.compare(id, o.id);
+	public int compareTo(QuestPoolController o) {
+		return Integer.compare(id, o.getId());
 	}
 
 	@Override
 	public @NotNull PlaceholderRegistry getPlaceholdersRegistry() {
 		if (placeholders == null) {
 			placeholders = new PlaceholderRegistry()
-					.registerIndexed("pool", "#" + id)
+					.registerIndexed("pool", "%s #%d".formatted(data.name() == null ? "no name" : data.name(), id))
 					.register("pool_id", id)
-					.register("pool_npc", () -> npcId + " (" + (npc == null ? "unknown" : npc.getNpc().getName()) + ")")
-					.register("pool_max_quests", maxQuests)
-					.register("pool_quests_per_launch", questsPerLaunch)
-					.register("pool_redo", MessageUtils.getYesNo(redoAllowed))
-					.register("pool_duplicates", MessageUtils.getYesNo(avoidDuplicates))
-					.register("pool_time", Utils.millisToHumanString(timeDiff))
-					.register("pool_hologram", QuestOption.formatNullableValue(hologram, Lang.PoolHologramText))
+					.register("pool_name", data.name() == null ? Lang.NotSet : data.name())
+					.register("pool_npc_id", data.npcId() == null ? Lang.NotSet : data.npcId())
+					.register("pool_npc_name",
+							() -> data.npcId() == null ? Lang.NotSet.toString()
+									: (npc == null ? "unknown" : npc.getNpc().getName()))
+					.register("pool_max_quests", data.maxQuests())
+					.register("pool_quests_per_launch", data.questsPerLaunch())
+					.register("pool_redo", MessageUtils.getYesNo(data.redoAllowed()))
+					.register("pool_duplicates", MessageUtils.getYesNo(data.avoidDuplicates()))
+					.register("pool_time", Utils.millisToHumanString(data.timeDiff()))
+					.register("pool_hologram", QuestOption.formatNullableValue(data.hologram(), Lang.PoolHologramText))
 					.register("pool_quests",
 							() -> quests.stream().map(x -> "#" + x.getId()).collect(Collectors.joining(", ")))
 					.register("pool_quests_amount", () -> Integer.toString(quests.size()));
@@ -159,7 +107,7 @@ public class QuestPoolImplementation implements Comparable<QuestPoolImplementati
 	}
 
 	@Override
-	public ItemStack getItemStack(String action) {
+	public ItemStack getItemStack() {
 		return ItemUtils.item(XMaterial.CHEST, Lang.poolItemName.format(this),
 				Lang.poolItemNPC.format(this),
 				Lang.poolItemMaxQuests.format(this),
@@ -168,9 +116,8 @@ public class QuestPoolImplementation implements Comparable<QuestPoolImplementati
 				Lang.poolItemTime.format(this),
 				Lang.poolItemHologram.format(this),
 				Lang.poolItemAvoidDuplicates.format(this),
-				"§7" + requirements.getSizeString(),
-				Lang.poolItemQuestsList.format(this),
-				"", action);
+				"§7" + data.requirements().getSizeString(),
+				Lang.poolItemQuestsList.format(this));
 	}
 
 	@Override
@@ -184,7 +131,7 @@ public class QuestPoolImplementation implements Comparable<QuestPoolImplementati
 	}
 
 	public void questCompleted(Quester acc, Quest quest) {
-		if (!avoidDuplicates)
+		if (!data.avoidDuplicates())
 			return;
 		var poolDatas = acc.getDataHolder().getPoolData(this);
 
@@ -197,28 +144,29 @@ public class QuestPoolImplementation implements Comparable<QuestPoolImplementati
 	public @NotNull CanGiveResult canGive(Player p) {
 		Quester quester = PlayerManager.getPlayerAccount(p);
 
-		Optional<QuesterPoolData> data = quester.getDataHolder().getPoolDataIfPresent(this);
+		Optional<QuesterPoolData> questerData = quester.getDataHolder().getPoolDataIfPresent(this);
 
-		if (data.isPresent()) {
-			long time = (data.get().getLastGive() + timeDiff) - System.currentTimeMillis();
+		if (questerData.isPresent()) {
+			long time = (questerData.get().getLastGive() + data.timeDiff()) - System.currentTimeMillis();
 			if (time > 0)
 				return new CanGiveResult(false, Lang.POOL_NO_TIME.quickFormat("time_left", Utils.millisToHumanString(time)));
 		}
 
-		var requirementsMatch = requirements.allMatch(p);
+		var requirementsMatch = data.requirements().allMatch(p);
 		if (!requirementsMatch.result())
 			return new CanGiveResult(false, requirementsMatch.reason());
 
-		List<Quest> notDoneQuests = avoidDuplicates && data.isPresent() ? quests.stream()
-				.filter(quest -> !data.get().getCompletedQuests().contains(quest.getId())).collect(Collectors.toList())
+		List<Quest> notDoneQuests = data.avoidDuplicates() && questerData.isPresent() ? quests.stream()
+				.filter(quest -> !questerData.get().getCompletedQuests().contains(quest.getId()))
+				.collect(Collectors.toList())
 				: quests;
 
 		if (notDoneQuests.isEmpty()) { // all quests completed
-			if (!redoAllowed || quests.stream().noneMatch(quest -> quest.isRepeatable() && quest.canStart(p, false)))
+			if (!data.redoAllowed() || quests.stream().noneMatch(quest -> quest.isRepeatable() && quest.canStart(p, false)))
 				return new CanGiveResult(false, Lang.POOL_ALL_COMPLETED.toString());
 		} else if (quester.getDataHolder().getAllQuestsData().stream()
 				.filter(quest -> quest.hasStarted() && quests.contains(quest.getQuest()))
-				.count() >= maxQuests)
+				.count() >= data.maxQuests())
 			return new CanGiveResult(false, Lang.POOL_MAX_QUESTS.format(this));
 
 		if (notDoneQuests.stream().noneMatch(quest -> quest.canStart(p, false)))
@@ -230,21 +178,21 @@ public class QuestPoolImplementation implements Comparable<QuestPoolImplementati
 	@Override
 	public CompletableFuture<String> give(Player p) {
 		Quester quester = PlayerManager.getPlayerAccount(p);
-		QuesterPoolData data = quester.getDataHolder().getPoolData(this);
+		QuesterPoolData questerData = quester.getDataHolder().getPoolData(this);
 
-		long time = (data.getLastGive() + timeDiff) - System.currentTimeMillis();
+		long time = (questerData.getLastGive() + data.timeDiff()) - System.currentTimeMillis();
 		if (time > 0)
 			return CompletableFuture
 					.completedFuture(Lang.POOL_NO_TIME.quickFormat("time_left", Utils.millisToHumanString(time)));
 
 		return CompletableFuture.supplyAsync(() -> {
-			List<Quest> started = new ArrayList<>(questsPerLaunch);
+			List<Quest> started = new ArrayList<>(data.questsPerLaunch());
 			try {
-				for (int i = 0; i < questsPerLaunch; i++) {
-					PoolGiveResult result = giveOne(p, quester, data, !started.isEmpty()).get();
+				for (int i = 0; i < data.questsPerLaunch(); i++) {
+					PoolGiveResult result = giveOne(p, quester, questerData, !started.isEmpty()).get();
 					if (result.quest != null) {
 						started.add(result.quest);
-						data.setLastGive(System.currentTimeMillis());
+						questerData.setLastGive(System.currentTimeMillis());
 					} else if (!result.forceContinue) {
 						if (started.isEmpty())
 							return result.reason;
@@ -265,10 +213,10 @@ public class QuestPoolImplementation implements Comparable<QuestPoolImplementati
 
 	private CompletableFuture<PoolGiveResult> giveOne(Player p, Quester acc, QuesterPoolData datas,
 			boolean hadOne) {
-		if (!requirements.allMatch(p, !hadOne))
+		if (!data.requirements().allMatch(p, !hadOne))
 			return CompletableFuture.completedFuture(new PoolGiveResult(""));
 
-		List<Quest> notCompleted = avoidDuplicates ? quests.stream()
+		List<Quest> notCompleted = data.avoidDuplicates() ? quests.stream()
 				.filter(quest -> !datas.getCompletedQuests().contains(quest.getId())).collect(Collectors.toList()) : quests;
 		if (notCompleted.isEmpty()) {
 			// all quests completed: we check if the player can redo some of them
@@ -277,7 +225,7 @@ public class QuestPoolImplementation implements Comparable<QuestPoolImplementati
 				return CompletableFuture.completedFuture(new PoolGiveResult(Lang.POOL_ALL_COMPLETED.toString()));
 		} else if (acc.getDataHolder().getAllQuestsData().stream()
 				.filter(quest -> quest.hasStarted() && quests.contains(quest.getQuest()))
-				.count() >= maxQuests) {
+				.count() >= data.maxQuests()) {
 			// player has too much quests in this pool to be able to start one more
 			return CompletableFuture.completedFuture(new PoolGiveResult(Lang.POOL_MAX_QUESTS.format(this)));
 		}
@@ -312,7 +260,8 @@ public class QuestPoolImplementation implements Comparable<QuestPoolImplementati
 	}
 
 	private List<Quest> replenishQuests(@NotNull Quester quester, @NotNull QuesterPoolData datas) {
-		if (!redoAllowed) return Collections.emptyList();
+		if (!data.redoAllowed())
+			return Collections.emptyList();
 		List<Quest> notDoneQuests = quests.stream()
 				.filter(Quest::isRepeatable)
 				.filter(quest -> !quest.hasStarted(quester))
@@ -335,25 +284,6 @@ public class QuestPoolImplementation implements Comparable<QuestPoolImplementati
 
 	public void unloadStarter() {
 		npc = null;
-	}
-
-	public void save(ConfigurationSection config) {
-		config.set("hologram", hologram);
-		config.set("maxQuests", maxQuests);
-		if (questsPerLaunch != 1) config.set("questsPerLaunch", questsPerLaunch);
-		config.set("redoAllowed", redoAllowed);
-		config.set("timeDiff", timeDiff);
-		config.set("npcID", npcId);
-		config.set("avoidDuplicates", avoidDuplicates);
-		if (!requirements.isEmpty())
-			config.set("requirements", requirements.serialize());
-	}
-
-	public static QuestPoolImplementation deserialize(int id, ConfigurationSection config) {
-		return new QuestPoolImplementation(id, config.getString("npcID"), config.getString("hologram"),
-				config.getInt("maxQuests"), config.getInt("questsPerLaunch", 1), config.getBoolean("redoAllowed"),
-				config.getLong("timeDiff"), config.getBoolean("avoidDuplicates", true),
-				RequirementList.deserialize(config.getMapList("requirements")));
 	}
 
 	private static class PoolGiveResult {

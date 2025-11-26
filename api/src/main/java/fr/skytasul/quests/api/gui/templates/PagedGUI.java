@@ -49,7 +49,7 @@ public abstract class PagedGUI<T> extends AbstractGui {
 	private DyeColor color;
 	protected List<T> objects;
 
-	protected PagedGUI(@NotNull String name, @Nullable DyeColor color, @NotNull Collection<T> objects) {
+	protected PagedGUI(@NotNull String name, @Nullable DyeColor color, @NotNull Collection<? extends T> objects) {
 		this.name = name;
 		this.color = color;
 		this.objects = new ArrayList<>(objects);

@@ -217,6 +217,7 @@ public enum Lang implements Locale {
 
 	SCOREBOARD_OBJECTIVE_NOT_FOUND("msg.editor.scoreboardObjectiveNotFound"),
 
+	POOL_NAME("msg.editor.pool.name", EditorPrefix),
 	POOL_HOLOGRAM_TEXT("msg.editor.pool.hologramText", EditorPrefix),
 	POOL_MAXQUESTS("msg.editor.pool.maxQuests", EditorPrefix),
 	POOL_QUESTS_PER_LAUNCH("msg.editor.pool.questsPerLaunch", EditorPrefix),
@@ -640,11 +641,11 @@ public enum Lang implements Locale {
 	poolItemHologram("inv.poolsManage.poolHologram"),
 	poolItemAvoidDuplicates("inv.poolsManage.poolAvoidDuplicates"),
 	poolItemQuestsList("inv.poolsManage.poolQuestsList"), // 0: size, 1: quests
-	poolEdit("inv.poolsManage.edit"),
 	poolChoose("inv.poolsManage.choose"),
 	poolCreate("inv.poolsManage.create"),
 
 	INVENTORY_POOL_CREATE("inv.poolCreation.name"),
+	poolEditName("inv.poolCreation.poolName"),
 	poolEditHologramText("inv.poolCreation.hologramText"),
 	poolMaxQuests("inv.poolCreation.maxQuests"),
 	poolQuestsPerLaunch("inv.poolCreation.questsPerLaunch"),

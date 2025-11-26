@@ -2,7 +2,7 @@ package fr.skytasul.quests.commands.parameters;
 
 import fr.skytasul.quests.api.QuestsAPI;
 import fr.skytasul.quests.api.localization.Lang;
-import fr.skytasul.quests.api.pools.QuestPool;
+import fr.skytasul.quests.api.pools.QuestPoolController;
 import org.jetbrains.annotations.NotNull;
 import revxrsal.commands.autocomplete.SuggestionProvider;
 import revxrsal.commands.command.CommandActor;
@@ -11,15 +11,16 @@ import revxrsal.commands.node.ExecutionContext;
 import revxrsal.commands.parameter.ParameterType;
 import revxrsal.commands.stream.MutableStringStream;
 
-public class QuestPoolParameter implements ParameterType<CommandActor, QuestPool> {
+public class QuestPoolParameter implements ParameterType<CommandActor, QuestPoolController> {
 
 	@Override
-	public QuestPool parse(@NotNull MutableStringStream input, @NotNull ExecutionContext<@NotNull CommandActor> context) {
+	public QuestPoolController parse(@NotNull MutableStringStream input,
+			@NotNull ExecutionContext<@NotNull CommandActor> context) {
 		int id = input.readInt();
-		QuestPool QuestPool = QuestsAPI.getAPI().getPoolsManager().getPool(id);
-		if (QuestPool == null)
+		var questPool = QuestsAPI.getAPI().getPoolsManager().getPool(id);
+		if (questPool == null)
 			throw new CommandErrorException(Lang.POOL_INVALID.quickFormat("pool_id", id));
-		return QuestPool;
+		return questPool;
 	}
 
 	@Override

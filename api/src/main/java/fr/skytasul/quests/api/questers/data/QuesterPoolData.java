@@ -1,6 +1,6 @@
 package fr.skytasul.quests.api.questers.data;
 
-import fr.skytasul.quests.api.pools.QuestPool;
+import fr.skytasul.quests.api.pools.QuestPoolController;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.jetbrains.annotations.UnmodifiableView;
@@ -12,7 +12,7 @@ public interface QuesterPoolData {
 	int getPoolId();
 
 	@Nullable
-	QuestPool getPool();
+	QuestPoolController getPool();
 
 	long getLastGive();
 

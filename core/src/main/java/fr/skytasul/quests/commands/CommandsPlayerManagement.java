@@ -9,7 +9,6 @@ import fr.skytasul.quests.api.npcs.dialogs.DialogRunner;
 import fr.skytasul.quests.api.npcs.dialogs.DialogRunner.DialogNextReason;
 import fr.skytasul.quests.api.players.PlayerManager;
 import fr.skytasul.quests.api.players.PlayerQuester;
-import fr.skytasul.quests.api.pools.QuestPool;
 import fr.skytasul.quests.api.questers.Quester;
 import fr.skytasul.quests.api.questers.data.QuesterQuestData;
 import fr.skytasul.quests.api.questers.data.QuesterQuestData.State;
@@ -198,7 +197,7 @@ public class CommandsPlayerManagement implements OrphanCommand {
 			}
 			for (var poolDatas : new ArrayList<>(quester.getDataHolder().getAllPoolsData())) {
 				@Nullable
-				QuestPool pool = poolDatas.getPool();
+				var pool = poolDatas.getPool();
 				CompletableFuture<?> future =
 						pool == null ? quester.getDataHolder().removePoolData(poolDatas.getPoolId())
 								: pool.resetPlayer(quester);

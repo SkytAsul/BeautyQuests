@@ -9,7 +9,7 @@ import fr.skytasul.quests.api.events.internal.BQCraftEvent;
 import fr.skytasul.quests.api.localization.Lang;
 import fr.skytasul.quests.api.npcs.BqNpc;
 import fr.skytasul.quests.api.players.PlayerQuester;
-import fr.skytasul.quests.api.pools.QuestPool;
+import fr.skytasul.quests.api.pools.QuestPoolController;
 import fr.skytasul.quests.api.questers.events.QuesterJoinEvent;
 import fr.skytasul.quests.api.questers.events.QuesterLeaveEvent;
 import fr.skytasul.quests.api.quests.Quest;
@@ -40,7 +40,7 @@ import java.util.stream.Collectors;
 
 public class QuestsListener implements Listener{
 
-	private List<QuestPool> lockedPools = Collections.synchronizedList(new ArrayList<>());
+	private List<QuestPoolController> lockedPools = Collections.synchronizedList(new ArrayList<>());
 
 	@EventHandler (priority = EventPriority.HIGHEST, ignoreCancelled = true)
 	public void onNPCClick(BQNPCClickEvent e) {
@@ -83,7 +83,7 @@ public class QuestsListener implements Listener{
 			}
 		}
 
-		Set<QuestPool> startablePools = npc.getPools().stream().filter(pool -> {
+		Set<QuestPoolController> startablePools = npc.getPools().stream().filter(pool -> {
 			try {
 				if (lockedPools.contains(pool)) {
 					QuestsPlugin.getPlugin().getLoggerExpanded().warning("{} tried to start the pool {} too fast",
@@ -116,7 +116,7 @@ public class QuestsListener implements Listener{
 						.open(p);
 			}
 		}else if (!startablePools.isEmpty()) {
-			QuestPool pool = startablePools.iterator().next();
+			QuestPoolController pool = startablePools.iterator().next();
 			lockedPools.add(pool);
 			pool.give(p).whenComplete((result, ex) -> {
 				lockedPools.remove(pool);

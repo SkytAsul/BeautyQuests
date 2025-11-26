@@ -2,7 +2,7 @@ package fr.skytasul.quests.questers;
 
 import fr.skytasul.quests.BeautyQuests;
 import fr.skytasul.quests.api.questers.data.QuesterPoolData;
-import fr.skytasul.quests.structure.pools.QuestPoolImplementation;
+import fr.skytasul.quests.structure.pools.QuestPoolControllerImplementation;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -23,7 +23,7 @@ public abstract class AbstractQuesterPoolDataImplementation implements QuesterPo
 	}
 
 	@Override
-	public QuestPoolImplementation getPool() {
+	public QuestPoolControllerImplementation getPool() {
 		return BeautyQuests.getInstance().getPoolsManager().getPool(poolId);
 	}
 

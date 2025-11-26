@@ -2,7 +2,7 @@ package fr.skytasul.quests.questers;
 
 import fr.skytasul.quests.api.QuestsAPI;
 import fr.skytasul.quests.api.data.SavableData;
-import fr.skytasul.quests.api.pools.QuestPool;
+import fr.skytasul.quests.api.pools.QuestPoolController;
 import fr.skytasul.quests.api.questers.data.QuesterData;
 import fr.skytasul.quests.api.questers.data.QuesterPoolData;
 import fr.skytasul.quests.api.questers.data.QuesterQuestData;
@@ -64,12 +64,12 @@ public abstract class AbstractQuesterDataImplementation implements QuesterData {
 	}
 
 	@Override
-	public boolean hasPoolData(@NotNull QuestPool pool) {
+	public boolean hasPoolData(@NotNull QuestPoolController pool) {
 		return poolData.containsKey(pool.getId());
 	}
 
 	@Override
-	public @NotNull QuesterPoolData getPoolData(@NotNull QuestPool pool) {
+	public @NotNull QuesterPoolData getPoolData(@NotNull QuestPoolController pool) {
 		QuesterPoolData datas = poolData.get(pool.getId());
 		if (datas == null) {
 			datas = createPoolData(pool);
@@ -79,14 +79,14 @@ public abstract class AbstractQuesterDataImplementation implements QuesterData {
 	}
 
 	@Override
-	public @NotNull Optional<QuesterPoolData> getPoolDataIfPresent(@NotNull QuestPool pool) {
+	public @NotNull Optional<QuesterPoolData> getPoolDataIfPresent(@NotNull QuestPoolController pool) {
 		return Optional.ofNullable(poolData.get(pool.getId()));
 	}
 
-	protected abstract @NotNull QuesterPoolData createPoolData(@NotNull QuestPool pool);
+	protected abstract @NotNull QuesterPoolData createPoolData(@NotNull QuestPoolController pool);
 
 	@Override
-	public @NotNull CompletableFuture<QuesterPoolData> removePoolData(@NotNull QuestPool pool) {
+	public @NotNull CompletableFuture<QuesterPoolData> removePoolData(@NotNull QuestPoolController pool) {
 		return removePoolData(pool.getId());
 	}
 

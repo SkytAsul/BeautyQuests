@@ -2,7 +2,7 @@ package fr.skytasul.quests.questers;
 
 import fr.skytasul.quests.api.data.DataSavingException;
 import fr.skytasul.quests.api.data.SavableData;
-import fr.skytasul.quests.api.pools.QuestPool;
+import fr.skytasul.quests.api.pools.QuestPoolController;
 import fr.skytasul.quests.api.questers.data.QuesterPoolData;
 import fr.skytasul.quests.api.questers.data.QuesterQuestData;
 import fr.skytasul.quests.api.quests.Quest;
@@ -48,7 +48,7 @@ public class QuesterDataStub extends AbstractQuesterDataImplementation {
 	}
 
 	@Override
-	protected @NotNull QuesterPoolData createPoolData(@NotNull QuestPool pool) {
+	protected @NotNull QuesterPoolData createPoolData(@NotNull QuestPoolController pool) {
 		return null;
 	}
 

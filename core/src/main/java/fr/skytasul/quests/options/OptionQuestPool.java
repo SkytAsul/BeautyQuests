@@ -9,9 +9,9 @@ import fr.skytasul.quests.api.gui.templates.PagedGUI;
 import fr.skytasul.quests.api.localization.Lang;
 import fr.skytasul.quests.api.options.OptionSet;
 import fr.skytasul.quests.api.options.QuestOption;
-import fr.skytasul.quests.api.pools.QuestPool;
 import fr.skytasul.quests.api.quests.Quest;
 import fr.skytasul.quests.api.quests.creation.QuestCreationGuiClickEvent;
+import fr.skytasul.quests.structure.pools.QuestPoolControllerImplementation;
 import org.bukkit.DyeColor;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
@@ -20,7 +20,7 @@ import org.bukkit.inventory.ItemStack;
 import java.util.ArrayList;
 import java.util.List;
 
-public class OptionQuestPool extends QuestOption<QuestPool> {
+public class OptionQuestPool extends QuestOption<QuestPoolControllerImplementation> {
 
 	@Override
 	public void attach(Quest quest) {
@@ -45,7 +45,7 @@ public class OptionQuestPool extends QuestOption<QuestPool> {
 	}
 
 	@Override
-	public QuestPool cloneValue(QuestPool value) {
+	public QuestPoolControllerImplementation cloneValue(QuestPoolControllerImplementation value) {
 		return value;
 	}
 
@@ -53,10 +53,14 @@ public class OptionQuestPool extends QuestOption<QuestPool> {
 		List<String> lore = new ArrayList<>(5);
 		lore.add(formatDescription(Lang.questPoolLore.toString()));
 		lore.add("");
-		lore.add(formatValue(getValue() == null ? null : "#" + getValue().getId()));
 		if (hasCustomValue()) {
+			String poolName = getValue().getPoolData().name();
+			String poolId = "#" + getValue().getId();
+			lore.add(formatValue(poolName == null ? poolId : poolName + " " + poolId));
 			lore.add("");
 			lore.add("§8" + Lang.ClickShiftRight.toString() + " > §d" + Lang.Reset.toString());
+		} else {
+			lore.add(formatNullableValue(null, true));
 		}
 		return lore;
 	}
@@ -72,16 +76,16 @@ public class OptionQuestPool extends QuestOption<QuestPool> {
 			setValue(null);
 			ItemUtils.lore(event.getClicked(), getLore());
 		}else {
-			new PagedGUI<QuestPool>(Lang.INVENTORY_POOLS_LIST.toString(), DyeColor.CYAN,
+			new PagedGUI<QuestPoolControllerImplementation>(Lang.INVENTORY_POOLS_LIST.toString(), DyeColor.CYAN,
 					BeautyQuests.getInstance().getPoolsManager().getPools()) {
 
 				@Override
-				public ItemStack getItemStack(QuestPool object) {
-					return object.getItemStack(Lang.poolChoose.toString());
+				public ItemStack getItemStack(QuestPoolControllerImplementation object) {
+					return ItemUtils.loreAdd(object.getItemStack(), "", Lang.poolChoose.toString());
 				}
 
 				@Override
-				public void click(QuestPool existing, ItemStack poolItem, ClickType click) {
+				public void click(QuestPoolControllerImplementation existing, ItemStack poolItem, ClickType click) {
 					setValue(existing);
 					ItemUtils.lore(event.getClicked(), getLore());
 					event.reopen();

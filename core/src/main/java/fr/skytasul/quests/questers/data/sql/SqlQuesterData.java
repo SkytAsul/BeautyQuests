@@ -5,7 +5,7 @@ import fr.skytasul.quests.api.data.DataLoadingException;
 import fr.skytasul.quests.api.data.DataSavingException;
 import fr.skytasul.quests.api.data.SQLDataSaver;
 import fr.skytasul.quests.api.data.SavableData;
-import fr.skytasul.quests.api.pools.QuestPool;
+import fr.skytasul.quests.api.pools.QuestPoolController;
 import fr.skytasul.quests.api.questers.data.QuesterPoolData;
 import fr.skytasul.quests.api.questers.data.QuesterQuestData;
 import fr.skytasul.quests.api.quests.Quest;
@@ -119,7 +119,7 @@ public class SqlQuesterData extends AbstractQuesterDataImplementation {
 	}
 
 	@Override
-	protected QuesterPoolData createPoolData(@NotNull QuestPool pool) {
+	protected QuesterPoolData createPoolData(@NotNull QuestPoolController pool) {
 		dataManager.getDataExecutor().execute(() -> {
 			try (var connection = dataManager.getDbConnection();
 					var statement = connection.prepareStatement(dataManager.getSqlHandler().insertPoolData)) {
