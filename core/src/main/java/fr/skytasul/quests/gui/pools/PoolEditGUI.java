@@ -34,6 +34,7 @@ public class PoolEditGUI extends AbstractGui {
 	private static final int SLOT_TIME = 10;
 	private static final int SLOT_REDO = 11;
 	private static final int SLOT_DUPLICATE = 12;
+	private static final int SLOT_CATEGORY = 13;
 	private static final int SLOT_CANCEL = 16;
 	private static final int SLOT_CREATE = 17;
 
@@ -49,6 +50,7 @@ public class PoolEditGUI extends AbstractGui {
 	private String npcID = null;
 	private boolean avoidDuplicates = true;
 	private RequirementList requirements = new RequirementList();
+	private boolean showAsCategory = true;
 
 	public PoolEditGUI(Runnable cancel, Consumer<QuestPoolData> end) {
 		this.cancel = cancel;
@@ -65,6 +67,7 @@ public class PoolEditGUI extends AbstractGui {
 		npcID = editing.npcId();
 		avoidDuplicates = editing.avoidDuplicates();
 		requirements = editing.requirements();
+		showAsCategory = editing.showAsCategory();
 
 		return this;
 	}
@@ -114,6 +117,7 @@ public class PoolEditGUI extends AbstractGui {
 		inv.setItem(SLOT_TIME, ItemUtils.item(XMaterial.CLOCK, Lang.poolTime.toString(), getTimeLore()));
 		inv.setItem(SLOT_REDO, ItemUtils.itemSwitch(Lang.poolRedo.toString(), redoAllowed));
 		inv.setItem(SLOT_DUPLICATE, ItemUtils.itemSwitch(Lang.poolAvoidDuplicates.toString(), avoidDuplicates, Lang.poolAvoidDuplicatesLore.toString()));
+		inv.setItem(SLOT_CATEGORY, ItemUtils.itemSwitch(Lang.poolShowAsCategory.toString(), showAsCategory));
 		inv.setItem(SLOT_REQUIREMENTS, ItemUtils.item(XMaterial.NETHER_STAR, Lang.poolRequirements.toString(), getRequirementsLore()));
 
 		inv.setItem(SLOT_CANCEL, QuestsPlugin.getPlugin().getGuiManager().getItemFactory().getCancel());
@@ -176,6 +180,9 @@ public class PoolEditGUI extends AbstractGui {
 		case SLOT_DUPLICATE:
 			avoidDuplicates = ItemUtils.toggleSwitch(event.getClicked());
 			break;
+		case SLOT_CATEGORY:
+			showAsCategory = ItemUtils.toggleSwitch(event.getClicked());
+			break;
 		case SLOT_REQUIREMENTS:
 			QuestsAPI.getAPI().getRequirements().createGUI(QuestObjectLocation.POOL, newRequirements -> {
 				requirements = new RequirementList(newRequirements);
@@ -189,7 +196,7 @@ public class PoolEditGUI extends AbstractGui {
 			break;
 		case SLOT_CREATE:
 			var poolData = new QuestPoolData(name, npcID, hologram, maxQuests, questsPerLaunch, redoAllowed, timeDiff,
-					avoidDuplicates, requirements);
+					avoidDuplicates, requirements, showAsCategory);
 			end.accept(poolData);
 			break;
 		}

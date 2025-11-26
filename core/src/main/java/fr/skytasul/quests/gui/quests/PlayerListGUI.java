@@ -107,9 +107,15 @@ public class PlayerListGUI extends CategorizedPagedGUI<Quest> {
 		var groupedQuests = new HashMap<QuestPoolController, Category<Quest>>();
 		for (Quest quest : quests.keySet()) {
 			var pool = quest.getOptionValueOrDef(OptionQuestPool.class);
-			var group = groupedQuests.computeIfAbsent(pool, __ -> {
-				String categoryId = pool == null ? "other" : Integer.toString(pool.getId());
-				return new Category<>(categoryId, new ArrayList<>(), getCategoryItem(pool));
+			if (pool != null && !pool.getPoolData().showAsCategory())
+				pool = null;
+			var group = groupedQuests.computeIfAbsent(pool, p -> {
+				String categoryId;
+				if (p == null)
+					categoryId = "other";
+				else
+					categoryId = Integer.toString(p.getId());
+				return new Category<>(categoryId, new ArrayList<>(), getCategoryItem(p));
 			});
 			group.objects().add(quest);
 		}
@@ -118,13 +124,13 @@ public class PlayerListGUI extends CategorizedPagedGUI<Quest> {
 
 	private @NotNull ItemStack getCategoryItem(@Nullable QuestPoolController pool) {
 		if (pool == null)
-			return ItemUtils.item(XMaterial.CHEST, "Other quests");
+			return ItemUtils.item(XMaterial.CHEST, "§e" + Lang.categoryOtherQuests.toString());
 
 		String itemName = pool.getPoolData().name();
 		if (itemName == null)
-			itemName = "Pool #%d".formatted(pool.getId());
+			itemName = "Category #%d".formatted(pool.getId());
 
-		return ItemUtils.item(XMaterial.CHEST, itemName);
+		return ItemUtils.item(XMaterial.CHEST, "§e" + itemName);
 	}
 
 	@Override

@@ -46,7 +46,7 @@ public class PoolsManageGUI extends PagedGUI<QuestPoolController> {
 		return object == null ? CREATE_POOL
 				: ItemUtils.loreAdd(object.getItemStack(),
 						"",
-						"§8" + Lang.ClickLeft + " > §7" + Lang.edit,
+						"§8" + Lang.ClickLeft + " > §e§l" + Lang.edit,
 						"§8" + Lang.ClickShiftLeft + " > §c" + Lang.Remove);
 	}
 

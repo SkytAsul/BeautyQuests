@@ -14,7 +14,8 @@ public record QuestPoolData(
 		boolean redoAllowed,
 		long timeDiff,
 		boolean avoidDuplicates,
-		@NotNull RequirementList requirements) {
+		@NotNull RequirementList requirements,
+		boolean showAsCategory) {
 
 	public void save(ConfigurationSection config) {
 		config.set("name", name);
@@ -25,6 +26,7 @@ public record QuestPoolData(
 		config.set("timeDiff", timeDiff);
 		config.set("npcID", npcId);
 		config.set("avoidDuplicates", avoidDuplicates);
+		config.set("showAsCategory", showAsCategory);
 		if (!requirements.isEmpty())
 			config.set("requirements", requirements.serialize());
 	}
@@ -39,7 +41,9 @@ public record QuestPoolData(
 				config.getBoolean("redoAllowed"),
 				config.getLong("timeDiff"),
 				config.getBoolean("avoidDuplicates", true),
-				RequirementList.deserialize(config.getMapList("requirements")));
+				RequirementList.deserialize(config.getMapList("requirements")),
+				config.getBoolean("showAsCategory", false) // false for migration from 2.0
+		);
 	}
 
 }

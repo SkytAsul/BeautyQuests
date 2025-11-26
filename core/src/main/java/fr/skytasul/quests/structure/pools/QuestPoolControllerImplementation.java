@@ -97,6 +97,7 @@ public class QuestPoolControllerImplementation implements QuestPoolController, C
 					.register("pool_quests_per_launch", data.questsPerLaunch())
 					.register("pool_redo", MessageUtils.getYesNo(data.redoAllowed()))
 					.register("pool_duplicates", MessageUtils.getYesNo(data.avoidDuplicates()))
+					.register("pool_show_as_category", MessageUtils.getYesNo(data.showAsCategory()))
 					.register("pool_time", Utils.millisToHumanString(data.timeDiff()))
 					.register("pool_hologram", QuestOption.formatNullableValue(data.hologram(), Lang.PoolHologramText))
 					.register("pool_quests",
@@ -109,6 +110,7 @@ public class QuestPoolControllerImplementation implements QuestPoolController, C
 	@Override
 	public ItemStack getItemStack() {
 		return ItemUtils.item(XMaterial.CHEST, Lang.poolItemName.format(this),
+				Lang.poolItemShowAsCategory.format(this),
 				Lang.poolItemNPC.format(this),
 				Lang.poolItemMaxQuests.format(this),
 				Lang.poolItemQuestsPerLaunch.format(this),
