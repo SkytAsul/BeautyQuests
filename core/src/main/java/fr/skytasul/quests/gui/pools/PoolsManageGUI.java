@@ -30,15 +30,15 @@ public class PoolsManageGUI extends PagedGUI<QuestPoolController> {
 		refreshContents();
 	}
 
+	@Override
+	protected void populate(@NotNull Player player, @NotNull Inventory inventory) {
+		refreshContents();
+		super.populate(player, inventory);
+	}
+
 	private void refreshContents() {
 		objects = new ArrayList<>(poolsManager.getPools());
 		objects.add(null); // for the creation item
-	}
-
-	@Override
-	protected void refresh(@NotNull Player player, @NotNull Inventory inventory) {
-		refreshContents();
-		super.refresh(player, inventory);
 	}
 
 	@Override

@@ -20,10 +20,9 @@ public abstract class AbstractGui implements Gui {
 	@Override
 	public final void showInternal(Player player) {
 		if (inventory == null) {
-			inventory = instanciate(player);
-			populate(player, inventory);
+			createInventory(player);
 		} else {
-			refresh(player, inventory);
+			refreshInternal(player);
 		}
 		inventory = XInventoryView.of(player.openInventory(inventory)).getTopInventory();
 	}
@@ -32,14 +31,19 @@ public abstract class AbstractGui implements Gui {
 	public final void refresh(@NotNull Player player) {
 		if (inventory == null)
 			return;
-		refresh(player, inventory);
+		refreshInternal(player);
+	}
+
+	protected void createInventory(Player player) {
+		inventory = instanciate(player);
+		populate(player, inventory);
 	}
 
 	protected abstract Inventory instanciate(@NotNull Player player);
 
 	protected abstract void populate(@NotNull Player player, @NotNull Inventory inventory);
 
-	protected void refresh(@NotNull Player player, @NotNull Inventory inventory) {
+	protected void refreshInternal(@NotNull Player player) {
 		if (inventory == null)
 			inventory = instanciate(player);
 		else

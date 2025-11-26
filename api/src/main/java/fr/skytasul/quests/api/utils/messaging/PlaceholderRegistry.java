@@ -31,8 +31,10 @@ public final class PlaceholderRegistry implements HasPlaceholders {
 		try {
 			int index = Integer.parseInt(key);
 			if (index < indexed.size()) {
-				LOGGER.warning(
-						"Use of indexed placeholder detected: \\{{0}\\}. This is deprecated and will be deleted in the future.",
+				LOGGER.namedWarning(
+						"Use of indexed placeholder detected: '{'{0}'}'. This is deprecated and will be deleted in the future.",
+						"indexedPlaceholder" + index,
+						30,
 						index);
 				return indexed.get(index);
 			}
