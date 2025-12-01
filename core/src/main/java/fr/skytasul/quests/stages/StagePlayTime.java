@@ -28,9 +28,7 @@ import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitTask;
 import org.jetbrains.annotations.NotNull;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 
 public class StagePlayTime extends AbstractStage implements HasProgress {
 
@@ -38,6 +36,9 @@ public class StagePlayTime extends AbstractStage implements HasProgress {
 	private final TimeMode timeMode;
 
 	private Map<Player, BukkitTask> tasks = new HashMap<>();
+
+	private Set<Quester> runningQuesters = new HashSet<>();
+	private BukkitTask refreshTask;
 
 	public StagePlayTime(StageController controller, long ticks, TimeMode timeMode) {
 		super(controller);
@@ -89,13 +90,6 @@ public class StagePlayTime extends AbstractStage implements HasProgress {
 		throw new UnsupportedOperationException();
 	}
 
-	private void launchTask(Player p, long remaining) {
-		tasks.put(p,
-				Bukkit.getScheduler().runTaskLater(BeautyQuests.getInstance(),
-						() -> controller.getApplicableQuesters(p).forEach(this::finishStage),
-				remaining < 0 ? 0 : remaining));
-	}
-
 	@Override
 	public long getRemainingAmount(@NotNull Quester quester) {
 		return getRemaining(quester) * 50L;
@@ -106,11 +100,47 @@ public class StagePlayTime extends AbstractStage implements HasProgress {
 		return playTicks * 50L;
 	}
 
+	private void cancelTask(Player p, BukkitTask task) {
+		task.cancel();
+		if (timeMode == TimeMode.ONLINE) {
+			var quester = PlayerManager.getPlayerAccount(p);
+			updateObjective(quester, "remainingTime", getRemaining(quester));
+		}
+	}
+
+	private void launchTask(Player p, long remaining) {
+		tasks.put(p,
+				Bukkit.getScheduler().runTaskLater(BeautyQuests.getInstance(),
+						() -> controller.getApplicableQuesters(p).forEach(this::finishStage),
+						remaining < 0 ? 0 : remaining));
+	}
+
+	private void launchRefresh(Quester quester) {
+		runningQuesters.add(quester);
+
+		if (refreshTask != null)
+			return;
+
+		refreshTask = Bukkit.getScheduler().runTaskTimerAsynchronously(BeautyQuests.getInstance(), () -> {
+			runningQuesters.forEach(controller::notifyQuesterUpdate);
+		}, 20L, 20L);
+	}
+
+	private void cancelRefresh(Quester quester) {
+		runningQuesters.remove(quester);
+
+		if (runningQuesters.isEmpty() && refreshTask != null) {
+			refreshTask.cancel();
+			refreshTask = null;
+		}
+	}
+
 	@Override
 	public void joined(Player p, Quester quester) {
 		super.joined(p, null);
 		if (timeMode == TimeMode.ONLINE)
 			updateObjective(quester, "lastJoin", System.currentTimeMillis());
+		launchRefresh(quester);
 		launchTask(p, getRemaining(quester));
 	}
 
@@ -124,20 +154,15 @@ public class StagePlayTime extends AbstractStage implements HasProgress {
 			QuestsPlugin.getPlugin().getLoggerExpanded()
 					.warning("Unavailable task in \"Play Time\" stage " + toString() + " for player " + p.getName());
 		}
-	}
-
-	private void cancelTask(Player p, BukkitTask task) {
-		task.cancel();
-		if (timeMode == TimeMode.ONLINE) {
-			var quester = PlayerManager.getPlayerAccount(p);
-			updateObjective(quester, "remainingTime", getRemaining(quester));
-		}
+		if (quester.getOnlinePlayers().isEmpty())
+			cancelRefresh(quester);
 	}
 
 	@Override
 	public void started(Quester quester) {
 		super.started(quester);
 
+		launchRefresh(quester);
 		quester.getOnlinePlayers().forEach(p -> launchTask(p, playTicks));
 	}
 
@@ -145,6 +170,7 @@ public class StagePlayTime extends AbstractStage implements HasProgress {
 	public void ended(Quester quester) {
 		super.ended(quester);
 
+		cancelRefresh(quester);
 		quester.getOnlinePlayers().forEach(p -> tasks.remove(p).cancel());
 	}
 
@@ -172,6 +198,10 @@ public class StagePlayTime extends AbstractStage implements HasProgress {
 		super.unload();
 		tasks.forEach(this::cancelTask);
 		tasks.clear();
+		if (refreshTask != null) {
+			refreshTask.cancel();
+			refreshTask = null;
+		}
 	}
 
 	@Override

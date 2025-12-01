@@ -90,6 +90,7 @@ public class StageOptionProgressBar<T extends AbstractStage & HasProgress> exten
 
 	@Override
 	public void stageUnload(@NotNull StageController stage) {
+		super.stageUnload(stage);
 		bars.values().forEach(ProgressBar::remove);
 		bars.clear();
 	}

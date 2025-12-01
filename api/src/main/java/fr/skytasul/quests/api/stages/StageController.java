@@ -44,6 +44,15 @@ public interface StageController {
 
 	public void updateObjective(@NotNull Quester quester, @NotNull String dataKey, @Nullable Object dataValue);
 
+	/**
+	 * Notify that the stage has been updated for the quester.
+	 * <p>
+	 * This is similar to {@link #updateObjective(Quester, String, Object)} but with no data change.
+	 *
+	 * @param quester quester that got updated
+	 */
+	public void notifyQuesterUpdate(@NotNull Quester quester);
+
 	public @Nullable String getDescriptionLine(@NotNull Quester quester, @NotNull DescriptionSource source);
 
 	public <T> @Nullable T getData(@NotNull Quester quester, @NotNull String dataKey, @Nullable Class<T> dataType);

@@ -115,6 +115,11 @@ public class StageControllerImplementation<T extends AbstractStage> implements S
 		datas.put(dataKey, dataValue);
 		questData.setStageData(getStorageId(), datas);
 
+		notifyQuesterUpdate(quester);
+	}
+
+	@Override
+	public void notifyQuesterUpdate(@NotNull Quester quester) {
 		propagateStageHandlers(handler -> handler.stageUpdated(quester, this));
 		branch.getManager().questUpdated(quester);
 	}
