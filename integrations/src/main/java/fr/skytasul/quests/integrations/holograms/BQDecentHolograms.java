@@ -1,8 +1,9 @@
-package fr.skytasul.quests.integrations;
+package fr.skytasul.quests.integrations.holograms;
 
 import eu.decentsoftware.holograms.api.DHAPI;
 import eu.decentsoftware.holograms.api.holograms.Hologram;
-import fr.skytasul.quests.api.AbstractHolograms;
+import fr.skytasul.quests.api.holograms.BqHologram;
+import fr.skytasul.quests.api.holograms.BqHologramManager;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
@@ -13,7 +14,7 @@ import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.ThreadLocalRandom;
 
-public class BQDecentHolograms extends AbstractHolograms<Hologram> {
+public class BQDecentHolograms implements BqHologramManager {
 
 	private int counter = Integer.MIN_VALUE + ThreadLocalRandom.current().nextInt(1000000);
 
@@ -21,12 +22,12 @@ public class BQDecentHolograms extends AbstractHolograms<Hologram> {
 	public boolean supportPerPlayerVisibility() {
 		return true;
 	}
-	
+
 	@Override
 	public boolean supportItems() {
 		return true;
 	}
-	
+
 	@Override
 	public DecentHologram createHologram(Location lc, boolean defaultVisible) {
 		Hologram hologram = DHAPI.createHologram("BQ_holo_" + counter++, lc, false);
@@ -34,18 +35,20 @@ public class BQDecentHolograms extends AbstractHolograms<Hologram> {
 		hologram.enable();
 		return new DecentHologram(hologram);
 	}
-	
-	public class DecentHologram extends BQHologram {
-		
+
+	public class DecentHologram implements BqHologram {
+
+		private final Hologram hologram;
+
 		protected DecentHologram(Hologram hologram) {
-			super(hologram);
+			this.hologram = hologram;
 		}
-		
+
 		@Override
 		public void appendTextLine(String text) {
 			DHAPI.addHologramLine(hologram, text);
 		}
-		
+
 		@Override
 		public void appendItem(ItemStack item) {
 			DHAPI.addHologramLine(hologram, item);
@@ -61,7 +64,7 @@ public class BQDecentHolograms extends AbstractHolograms<Hologram> {
 				hologram.hide(p);
 			}
 		}
-		
+
 		@Override
 		public void setPlayersVisible(List<Player> players) {
 			List<Player> leftover = new ArrayList<>(players);
@@ -89,17 +92,17 @@ public class BQDecentHolograms extends AbstractHolograms<Hologram> {
 				hologram.show(invisible, 0);
 			}
 		}
-		
+
 		@Override
 		public void teleport(Location lc) {
 			DHAPI.moveHologram(hologram, lc);
 		}
-		
+
 		@Override
 		public void delete() {
 			hologram.delete();
 		}
-		
+
 	}
-	
+
 }

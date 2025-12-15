@@ -28,6 +28,7 @@ softdepend:
 - ServersNPC
 - Citizens
 - FancyNpcs
+- FancyHolograms
 - ZNPCsPlus
 - BlueMap
 - Sentinel

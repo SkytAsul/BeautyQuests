@@ -1,6 +1,7 @@
-package fr.skytasul.quests.integrations;
+package fr.skytasul.quests.integrations.holograms;
 
-import fr.skytasul.quests.api.AbstractHolograms;
+import fr.skytasul.quests.api.holograms.BqHologram;
+import fr.skytasul.quests.api.holograms.BqHologramManager;
 import me.filoghost.holographicdisplays.api.HolographicDisplaysAPI;
 import me.filoghost.holographicdisplays.api.hologram.Hologram;
 import me.filoghost.holographicdisplays.api.hologram.VisibilitySettings;
@@ -17,45 +18,47 @@ import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
-public class BQHolographicDisplays3 extends AbstractHolograms<Hologram> {
+public class BQHolographicDisplays3 implements BqHologramManager {
 
 	private final HolographicDisplaysAPI api = HolographicDisplaysAPI.get(Bukkit.getPluginManager().getPlugin("HolographicDisplays"));
-	
+
 	private Field visibilitiesField;
-	
+
 	@Override
 	public boolean supportPerPlayerVisibility() {
 		return true;
 	}
-	
+
 	@Override
 	public boolean supportItems() {
 		return true;
 	}
-	
+
 	@Override
 	public HD3Hologram createHologram(Location lc, boolean visible) {
 		Hologram holo = api.createHologram(lc);
 		holo.getVisibilitySettings().setGlobalVisibility(booleanToVisibility(visible));
 		return new HD3Hologram(holo);
 	}
-	
+
 	private Visibility booleanToVisibility(boolean visible) {
 		return visible ? Visibility.VISIBLE : Visibility.HIDDEN;
 	}
-	
-	public class HD3Hologram extends BQHologram {
-		
+
+	public class HD3Hologram implements BqHologram {
+
+		private final Hologram hologram;
+
 		protected HD3Hologram(Hologram hologram) {
-			super(hologram);
+			this.hologram = hologram;
 		}
-		
+
 		@Override
 		public void setPlayersVisible(List<Player> players) {
 			try {
 				List<UUID> all = players.stream().map(Player::getUniqueId).collect(Collectors.toList());
 				VisibilitySettings visibility = hologram.getVisibilitySettings();
-				
+
 				if (visibilitiesField == null) {
 					visibilitiesField = visibility.getClass().getDeclaredField("individualVisibilities");
 					visibilitiesField.setAccessible(true);
@@ -65,7 +68,7 @@ public class BQHolographicDisplays3 extends AbstractHolograms<Hologram> {
 					map = new ConcurrentHashMap<>();
 					visibilitiesField.set(visibility, map);
 				}
-				
+
 				for (Entry<UUID, Visibility> en : map.entrySet()) {
 					if (all.remove(en.getKey())) {
 						if (en.getValue() == Visibility.HIDDEN) en.setValue(Visibility.VISIBLE);
@@ -80,32 +83,32 @@ public class BQHolographicDisplays3 extends AbstractHolograms<Hologram> {
 				ex.printStackTrace();
 			}
 		}
-		
+
 		@Override
 		public void setPlayerVisibility(Player p, boolean visible) {
 			hologram.getVisibilitySettings().setIndividualVisibility(p, booleanToVisibility(visible));
 		}
-		
+
 		@Override
 		public void appendItem(ItemStack item) {
 			hologram.getLines().appendItem(item);
 		}
-		
+
 		@Override
 		public void appendTextLine(String text) {
 			hologram.getLines().appendText(text);
 		}
-		
+
 		@Override
 		public void teleport(Location lc) {
 			hologram.setPosition(lc);
 		}
-		
+
 		@Override
 		public void delete() {
 			hologram.delete();
 		}
-		
+
 	}
-	
+
 }

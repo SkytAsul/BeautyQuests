@@ -1,7 +1,11 @@
 package fr.skytasul.quests;
 
-import fr.skytasul.quests.api.*;
+import fr.skytasul.quests.api.QuestsAPI;
+import fr.skytasul.quests.api.QuestsConfiguration;
+import fr.skytasul.quests.api.QuestsHandler;
+import fr.skytasul.quests.api.QuestsPlugin;
 import fr.skytasul.quests.api.comparison.ItemComparison;
+import fr.skytasul.quests.api.holograms.BqHologramManager;
 import fr.skytasul.quests.api.localization.Lang;
 import fr.skytasul.quests.api.mobs.MobFactory;
 import fr.skytasul.quests.api.mobs.MobStacker;
@@ -48,7 +52,7 @@ public class QuestsAPIImplementation implements QuestsAPI {
 	private QuestObjectsRegistry<AbstractReward, RewardCreator> rewards;
 	private SerializableRegistry<QuestQuesterStrategy, QuestQuesterStrategyCreator> questerStrategies;
 
-	private AbstractHolograms<?> hologramsManager = null;
+	private BqHologramManager hologramsManager = null;
 	private BQBlocksManagerImplementation blocksManager = new BQBlocksManagerImplementation();
 	private MessageSender messageSender;
 
@@ -162,12 +166,12 @@ public class QuestsAPIImplementation implements QuestsAPI {
 	}
 
 	@Override
-	public @Nullable AbstractHolograms<?> getHologramsManager() {
+	public @Nullable BqHologramManager getHologramsManager() {
 		return hologramsManager;
 	}
 
 	@Override
-	public void setHologramsManager(@NotNull AbstractHolograms<?> newHologramsManager) {
+	public void setHologramsManager(@NotNull BqHologramManager newHologramsManager) {
 		Validate.notNull(newHologramsManager);
 		if (hologramsManager != null)
 			LOGGER.warning(newHologramsManager.getClass().getSimpleName()

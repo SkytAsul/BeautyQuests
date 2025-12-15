@@ -2,10 +2,10 @@ package fr.skytasul.quests.npcs;
 
 import fr.skytasul.quests.BeautyQuests;
 import fr.skytasul.quests.QuestsConfigurationImplementation;
-import fr.skytasul.quests.api.AbstractHolograms;
 import fr.skytasul.quests.api.QuestsAPI;
 import fr.skytasul.quests.api.QuestsConfiguration;
 import fr.skytasul.quests.api.QuestsPlugin;
+import fr.skytasul.quests.api.holograms.BqHologram;
 import fr.skytasul.quests.api.localization.Lang;
 import fr.skytasul.quests.api.npcs.BqInternalNpc;
 import fr.skytasul.quests.api.npcs.BqNpc;
@@ -410,7 +410,7 @@ public class BqNpcImplementation implements Located.LocatedEntity, BqNpc {
 		final boolean enabled;
 		boolean visible;
 		boolean canAppear;
-		AbstractHolograms<?>.BQHologram hologram;
+		BqHologram hologram;
 
 		String text;
 		ItemStack item;

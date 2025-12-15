@@ -3,12 +3,12 @@ package fr.skytasul.quests.stages;
 import com.cryptomorin.xseries.XMaterial;
 import fr.skytasul.quests.BeautyQuests;
 import fr.skytasul.quests.QuestsConfigurationImplementation;
-import fr.skytasul.quests.api.AbstractHolograms;
 import fr.skytasul.quests.api.QuestsAPI;
 import fr.skytasul.quests.api.QuestsConfiguration;
 import fr.skytasul.quests.api.QuestsPlugin;
 import fr.skytasul.quests.api.editors.DialogEditor;
 import fr.skytasul.quests.api.gui.ItemUtils;
+import fr.skytasul.quests.api.holograms.BqHologram;
 import fr.skytasul.quests.api.localization.Lang;
 import fr.skytasul.quests.api.npcs.BqNpc;
 import fr.skytasul.quests.api.npcs.dialogs.Dialog;
@@ -56,7 +56,7 @@ public class StageNPC extends AbstractStage implements Locatable.PreciseLocatabl
 	private BukkitTask task;
 
 	private List<Player> cached = new ArrayList<>();
-	protected AbstractHolograms<?>.BQHologram hologram;
+	protected BqHologram hologram;
 
 	public StageNPC(StageController controller) {
 		super(controller);
