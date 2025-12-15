@@ -19,6 +19,7 @@ import fr.skytasul.quests.api.stages.StageController;
 import fr.skytasul.quests.api.stages.StageDescriptionPlaceholdersContext;
 import fr.skytasul.quests.api.stages.creation.StageCreationContext;
 import fr.skytasul.quests.api.stages.creation.StageGuiLine;
+import fr.skytasul.quests.api.utils.Utils;
 import fr.skytasul.quests.api.utils.messaging.MessageUtils;
 import fr.skytasul.quests.api.utils.messaging.PlaceholderRegistry;
 import fr.skytasul.quests.api.utils.progress.ProgressPlaceholders;
@@ -35,14 +36,15 @@ import java.util.Map.Entry;
 
 public class StageBringBack extends StageNPC{
 
-	protected final ItemStack[] items;
+	protected final List<ItemStack> items;
 	protected final String customMessage;
 	protected final ItemComparisonMap comparisons;
 
 	protected final Map<ItemStack, Integer> amountsMap = new HashMap<>();
 	protected String[] itemsDescriptions;
 
-	public StageBringBack(StageController controller, ItemStack[] items, String customMessage, ItemComparisonMap comparisons) {
+	public StageBringBack(StageController controller, List<ItemStack> items, String customMessage,
+			ItemComparisonMap comparisons) {
 		super(controller);
 		this.customMessage = customMessage;
 		this.comparisons = comparisons;
@@ -87,10 +89,6 @@ public class StageBringBack extends StageNPC{
 			comparisons.removeItems(p.getInventory(), is);
 		}
 		p.updateInventory();
-	}
-
-	public ItemStack[] getItems(){
-		return items;
 	}
 
 	protected String getMessage() {
@@ -177,13 +175,18 @@ public class StageBringBack extends StageNPC{
 	@Override
 	public void serialize(ConfigurationSection section) {
 		super.serialize(section);
-		section.set("items", items);
+
+		// We do the following to split the too big item stacks into stacks
+		// containing at most the max stack size because Paper cannot handle
+		// big item stacks.
+		section.set("items", Utils.extractItems(items));
+
 		if (customMessage != null) section.set("customMessage", customMessage);
 		if (!comparisons.getNotDefault().isEmpty()) section.createSection("itemComparisons", comparisons.getNotDefault());
 	}
 
 	public static StageBringBack deserialize(ConfigurationSection section, StageController controller) {
-		ItemStack[] items = section.getList("items").toArray(new ItemStack[0]);
+		List<ItemStack> items = (List<ItemStack>) section.getList("items");
 		String customMessage = section.getString("customMessage", null);
 		ItemComparisonMap comparisons;
 		if (section.contains("itemComparisons")) {
@@ -262,7 +265,7 @@ public class StageBringBack extends StageNPC{
 		@Override
 		public void edit(T stage) {
 			super.edit(stage);
-			setItems(Arrays.asList(stage.items));
+			setItems(stage.items);
 			setMessage(stage.customMessage);
 			setComparisons(stage.comparisons.clone());
 		}
@@ -277,7 +280,7 @@ public class StageBringBack extends StageNPC{
 
 		@Override
 		protected StageBringBack createStage(StageController controller) {
-			return new StageBringBack(controller, items.toArray(new ItemStack[0]), message, comparisons);
+			return new StageBringBack(controller, items, message, comparisons);
 		}
 
 	}
