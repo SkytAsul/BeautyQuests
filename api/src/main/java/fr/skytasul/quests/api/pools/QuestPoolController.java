@@ -37,6 +37,36 @@ public interface QuestPoolController extends HasPlaceholders {
 	CompletableFuture<String> give(@NotNull Player p);
 
 	/**
+	 * Get all quests that the player has not started nor completed yet.
+	 *
+	 * @param quester
+	 * @return a list of quests
+	 */
+	Collection<Quest> getQuestsRemaining(@NotNull Quester quester);
+
+	/**
+	 * Get all quests that the player is currently doing.
+	 * <p>
+	 * This list contains quests whether or not they have been started specifically for this pool or
+	 * independently.
+	 *
+	 * @param quester
+	 * @return a list of quests
+	 */
+	Collection<Quest> getQuestsInProgress(@NotNull Quester quester);
+
+	/**
+	 * Get all quests that the player has completed.
+	 * <p>
+	 * This list contains quests whether or not they have been started specifically for this pool or
+	 * independently.
+	 *
+	 * @param quester
+	 * @return a list of quests
+	 */
+	Collection<Quest> getQuestsCompleted(@NotNull Quester quester);
+
+	/**
 	 * The result of a {@link QuestPoolController#canGive(Player)} operation.
 	 *
 	 * @param result <code>true</code> if a quest can be given from this pool

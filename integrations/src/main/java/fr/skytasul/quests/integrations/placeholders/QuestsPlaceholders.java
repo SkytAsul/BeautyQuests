@@ -5,6 +5,7 @@ import fr.skytasul.quests.api.QuestsPlugin;
 import fr.skytasul.quests.api.localization.Lang;
 import fr.skytasul.quests.api.options.description.DescriptionSource;
 import fr.skytasul.quests.api.players.PlayerManager;
+import fr.skytasul.quests.api.pools.QuestPoolController;
 import fr.skytasul.quests.api.questers.Quester;
 import fr.skytasul.quests.api.questers.data.QuesterQuestData;
 import fr.skytasul.quests.api.quests.Quest;
@@ -22,11 +23,15 @@ import java.util.*;
 import java.util.Map.Entry;
 import java.util.concurrent.locks.ReentrantLock;
 import java.util.function.Consumer;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 public class QuestsPlaceholders extends PlaceholderExpansion implements Listener {
 
 	private static QuestsPlaceholders placeholders;
+
+	private static final Pattern POOl_PLACEHOLDER_PATTERN =
+			Pattern.compile("pool_(\\d+)_(can_start|remaining|in_progress|completed)");
 
 	private final int lineLength;
 	private final int changeTime;
@@ -73,6 +78,7 @@ public class QuestsPlaceholders extends PlaceholderExpansion implements Listener
 	}
 
 	@Override
+
 	public boolean persist() {
 		return true;
 	}
@@ -86,7 +92,8 @@ public class QuestsPlaceholders extends PlaceholderExpansion implements Listener
 	public List<String> getPlaceholders() {
 		return Arrays.asList("total_amount", "quest_restartable_ID", "player_inprogress_amount", "player_finished_amount",
 				"player_finished_total_amount", "started", "started_ordered", "started_ordered_X", "advancement_ID",
-				"advancement_ID_raw", "player_quest_finished_ID", "started_id_list");
+				"advancement_ID_raw", "player_quest_finished_ID", "started_id_list",
+				"pool_ID_can_start", "pool_ID_remaining", "pool_ID_in_progress", "pool_ID_completed");
 	}
 
 	@Override
@@ -237,6 +244,22 @@ public class QuestsPlaceholders extends PlaceholderExpansion implements Listener
 				return "§c§lError: §o" + sid;
 			}
 		}
+
+		var poolMatcher = POOl_PLACEHOLDER_PATTERN.matcher(identifier);
+		if (poolMatcher.matches()) {
+			int poolId = Integer.parseInt(poolMatcher.group(1));
+			QuestPoolController pool = QuestsAPI.getAPI().getPoolsManager().getPool(poolId);
+			if (pool == null)
+				return "error: unknown pool %d".formatted(poolId);
+
+			return switch (poolMatcher.group(2)) {
+				case "can_start" -> pool.canGive(p).result() ? "true" : "false";
+				case "remaining" -> Integer.toString(pool.getQuestsRemaining(quester).size());
+				case "in_progress" -> Integer.toString(pool.getQuestsInProgress(quester).size());
+				case "completed" -> Integer.toString(pool.getQuestsCompleted(quester).size());
+				default -> throw new UnsupportedOperationException();
+			};
+		}
 		return null;
 	}
 
@@ -261,7 +284,8 @@ public class QuestsPlaceholders extends PlaceholderExpansion implements Listener
 
 	@EventHandler
 	public void onExpansionRegister(ExpansionRegisterEvent e) {
-		for (Iterator<Entry<String, Consumer<PlaceholderExpansion>>> iterator = waitingExpansions.iterator(); iterator.hasNext();) {
+		for (Iterator<Entry<String, Consumer<PlaceholderExpansion>>> iterator = waitingExpansions.iterator(); iterator
+				.hasNext();) {
 			Entry<String, Consumer<PlaceholderExpansion>> entry = iterator.next();
 			if (entry.getKey().equalsIgnoreCase(e.getExpansion().getIdentifier())) {
 				entry.getValue().accept(e.getExpansion());

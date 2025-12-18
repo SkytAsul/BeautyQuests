@@ -2,6 +2,7 @@ package fr.skytasul.quests.structure.pools;
 
 import com.cryptomorin.xseries.XMaterial;
 import fr.skytasul.quests.BeautyQuests;
+import fr.skytasul.quests.api.QuestsAPI;
 import fr.skytasul.quests.api.QuestsPlugin;
 import fr.skytasul.quests.api.gui.ItemUtils;
 import fr.skytasul.quests.api.localization.Lang;
@@ -21,10 +22,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionException;
 import java.util.concurrent.ExecutionException;
@@ -278,6 +276,33 @@ public class QuestPoolControllerImplementation implements QuestPoolController, C
 		QuestsPlugin.getPlugin().getLoggerExpanded().debug("Replenished available quests of {} for pool {}",
 				quester.getDetailedName(), id);
 		return notDoneQuests;
+	}
+
+	@Override
+	public Collection<Quest> getQuestsRemaining(@NotNull Quester quester) {
+		if (!quester.getDataHolder().hasPoolData(this))
+			return quests;
+
+		var questerData = quester.getDataHolder().getPoolData(this);
+
+		return quests.stream()
+				.filter(quest -> !quest.hasStarted(quester) && !questerData.getCompletedQuests().contains(quest.getId()))
+				.toList();
+	}
+
+	@Override
+	public Collection<Quest> getQuestsInProgress(@NotNull Quester quester) {
+		return quests.stream().filter(quest -> quest.hasStarted(quester)).toList();
+	}
+
+	@Override
+	public Collection<Quest> getQuestsCompleted(@NotNull Quester quester) {
+		if (!quester.getDataHolder().hasPoolData(this))
+			return Collections.emptyList();
+
+		var questerData = quester.getDataHolder().getPoolData(this);
+
+		return questerData.getCompletedQuests().stream().map(QuestsAPI.getAPI().getQuestsManager()::getQuest).toList();
 	}
 
 	void unload() {
