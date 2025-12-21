@@ -161,7 +161,8 @@ public class BeautyQuests extends JavaPlugin implements QuestsPlugin {
 			loadDefaultIntegrations(); // used later in full initialization
 			loadConfigParameters(true);
 
-			registerCommands();
+			if (!unitTesting)
+				registerCommands();
 
 			try {
 				Bukkit.getPluginManager().registerEvents(integrations, this);

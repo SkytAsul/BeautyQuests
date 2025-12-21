@@ -182,7 +182,7 @@ public class GuiManagerImplementation implements GuiManager, Listener {
 					event.getSlot(), event.getClick());
 			gui.onClick(guiEvent);
 			event.setCancelled(guiEvent.isCancelled());
-		} catch (Exception ex) {
+		} catch (Throwable ex) {
 			event.setCancelled(true);
 			DefaultErrors.sendGeneric(QuestsPlugin.getPlugin().getAudiences().player(player),
 					ex.getMessage() + " in " + gui.getClass().getSimpleName());
