@@ -267,10 +267,10 @@ public class PlayerListGUI extends CategorizedPagedGUI<Quest> {
 
 		if (selected) {
 			ItemUtils.setGlittering(item, true);
-			ItemUtils.name(item, SELECTED_PREFIX + cat.getName());
+			ItemUtils.name(item, SELECTED_PREFIX + category.getName());
 		} else {
 			ItemUtils.setGlittering(item, false);
-			ItemUtils.name(item, UNSELECTED_PREFIX + cat.getName());
+			ItemUtils.name(item, UNSELECTED_PREFIX + category.getName());
 		}
 		getDelegate().setBarButton(category.getSlot(), new BarButton(item, event -> selectCategory(category)));
 	}
