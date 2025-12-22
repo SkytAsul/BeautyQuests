@@ -72,7 +72,10 @@ public class BQFancyHolograms implements BqHologramManager {
 			data.setItemStack(item);
 			data.setVisibility(defaultVisible ? Visibility.ALL : Visibility.MANUAL);
 			data.setPersistent(false);
-			data.setScale(new Vector3f(0.25f));
+
+			// A block item model in its "ground" state has a scale of 0.25.
+			// We use this value to mimmick the appearance of a dropped item.
+			data.setScale(new Vector3f(item.getType().isBlock() ? 0.25f : 0.5f));
 
 			var holo = hologramsManager.create(data);
 			hologramsManager.addHologram(holo);
