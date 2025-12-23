@@ -9,6 +9,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.jetbrains.annotations.UnmodifiableView;
 import java.util.Collection;
+import java.util.OptionalLong;
 import java.util.concurrent.CompletableFuture;
 
 public interface QuestPoolController extends HasPlaceholders {
@@ -35,6 +36,15 @@ public interface QuestPoolController extends HasPlaceholders {
 
 	@NotNull
 	CompletableFuture<String> give(@NotNull Player p);
+
+	/**
+	 * Get remaining time before the quester can get new quests from this pool.
+	 *
+	 * @param quester
+	 * @return time in milliseconds or empty optional if the cooldown is over
+	 */
+	@NotNull
+	OptionalLong getRemainingCooldown(@NotNull Quester quester);
 
 	/**
 	 * Get all quests that the player has not started nor completed yet.

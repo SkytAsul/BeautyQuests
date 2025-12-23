@@ -10,6 +10,7 @@ import fr.skytasul.quests.api.questers.Quester;
 import fr.skytasul.quests.api.questers.data.QuesterQuestData;
 import fr.skytasul.quests.api.quests.Quest;
 import fr.skytasul.quests.api.utils.ChatColorUtils;
+import fr.skytasul.quests.api.utils.Utils;
 import me.clip.placeholderapi.events.ExpansionRegisterEvent;
 import me.clip.placeholderapi.expansion.PlaceholderExpansion;
 import org.bukkit.Bukkit;
@@ -31,7 +32,7 @@ public class QuestsPlaceholders extends PlaceholderExpansion implements Listener
 	private static QuestsPlaceholders placeholders;
 
 	private static final Pattern POOl_PLACEHOLDER_PATTERN =
-			Pattern.compile("pool_(\\d+)_(can_start|remaining|in_progress|completed)");
+			Pattern.compile("pool_(\\d+)_(can_start|remaining|in_progress|completed|cooldown)");
 
 	private final int lineLength;
 	private final int changeTime;
@@ -93,7 +94,7 @@ public class QuestsPlaceholders extends PlaceholderExpansion implements Listener
 		return Arrays.asList("total_amount", "quest_restartable_ID", "player_inprogress_amount", "player_finished_amount",
 				"player_finished_total_amount", "started", "started_ordered", "started_ordered_X", "advancement_ID",
 				"advancement_ID_raw", "player_quest_finished_ID", "started_id_list",
-				"pool_ID_can_start", "pool_ID_remaining", "pool_ID_in_progress", "pool_ID_completed");
+				"pool_ID_can_start", "pool_ID_remaining", "pool_ID_in_progress", "pool_ID_completed", "pool_ID_cooldown");
 	}
 
 	@Override
@@ -257,6 +258,7 @@ public class QuestsPlaceholders extends PlaceholderExpansion implements Listener
 				case "remaining" -> Integer.toString(pool.getQuestsRemaining(quester).size());
 				case "in_progress" -> Integer.toString(pool.getQuestsInProgress(quester).size());
 				case "completed" -> Integer.toString(pool.getQuestsCompleted(quester).size());
+				case "cooldown" -> Utils.millisToHumanString(pool.getRemainingCooldown(quester).orElse(0));
 				default -> throw new UnsupportedOperationException();
 			};
 		}

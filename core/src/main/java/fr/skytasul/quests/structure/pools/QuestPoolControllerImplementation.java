@@ -279,6 +279,17 @@ public class QuestPoolControllerImplementation implements QuestPoolController, C
 	}
 
 	@Override
+	public @NotNull OptionalLong getRemainingCooldown(@NotNull Quester quester) {
+		Optional<QuesterPoolData> questerData = quester.getDataHolder().getPoolDataIfPresent(this);
+
+		if (questerData.isEmpty())
+			return OptionalLong.empty();
+
+		long time = (questerData.get().getLastGive() + data.timeDiff()) - System.currentTimeMillis();
+		return time > 0 ? OptionalLong.of(time) : OptionalLong.empty();
+	}
+
+	@Override
 	public Collection<Quest> getQuestsRemaining(@NotNull Quester quester) {
 		if (!quester.getDataHolder().hasPoolData(this))
 			return quests;
