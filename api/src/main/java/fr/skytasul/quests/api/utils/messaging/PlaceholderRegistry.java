@@ -27,6 +27,11 @@ public final class PlaceholderRegistry implements HasPlaceholders {
 		this.placeholders = new ArrayList<>(Arrays.asList(placeholders));
 	}
 
+	@Override
+	public String toString() {
+		return "{placeholders=%s,indexed=%d}".formatted(placeholders, indexed.size());
+	}
+
 	public @Nullable Placeholder getPlaceholder(@NotNull String key) {
 		try {
 			int index = Integer.parseInt(key);

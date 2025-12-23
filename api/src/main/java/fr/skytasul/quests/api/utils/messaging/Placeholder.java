@@ -1,5 +1,7 @@
 package fr.skytasul.quests.api.utils.messaging;
 
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
@@ -8,8 +10,6 @@ import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 public interface Placeholder {
 
@@ -20,7 +20,23 @@ public interface Placeholder {
 
 	static Placeholder of(@NotNull String key, @Nullable Object value) {
 		String string = Objects.toString(value);
-		return ofSupplier(key, () -> string);
+		return new Placeholder() {
+
+			@Override
+			public @Nullable String resolve(@NotNull String key, @NotNull PlaceholdersContext context) {
+				return string;
+			}
+
+			@Override
+			public boolean matches(@NotNull String keyToMatch) {
+				return keyToMatch.equals(key);
+			}
+
+			@Override
+			public String toString() {
+				return "%s=%s".formatted(key, string);
+			}
+		};
 	}
 
 	static Placeholder ofSupplier(@NotNull String key, @NotNull Supplier<@Nullable String> valueSupplier) {
@@ -34,6 +50,11 @@ public interface Placeholder {
 			@Override
 			public boolean matches(@NotNull String keyToMatch) {
 				return keyToMatch.equals(key);
+			}
+
+			@Override
+			public String toString() {
+				return "%s=<supplier>".formatted(key);
 			}
 		};
 	}
@@ -64,6 +85,11 @@ public interface Placeholder {
 				}
 				return false;
 			}
+
+			@Override
+			public String toString() {
+				return "/%s/=<regex function>".formatted(regex);
+			}
 		};
 	}
 
@@ -84,6 +110,11 @@ public interface Placeholder {
 			@Override
 			public @Nullable String resolveContextual(@NotNull String key, T context) {
 				return valueFunction.apply(context);
+			}
+
+			@Override
+			public String toString() {
+				return "%s=<contextual function>".formatted(key);
 			}
 		};
 	}
@@ -119,6 +150,11 @@ public interface Placeholder {
 			@Override
 			public @NotNull Class<T> getContextClass() {
 				return contextClass;
+			}
+
+			@Override
+			public String toString() {
+				return "/%s/=<contextual regex function>".formatted(regex);
 			}
 		};
 	}

@@ -263,6 +263,10 @@ public class QuestsAPIImplementation implements QuestsAPI {
 	}
 
 	private class MessageProcessorInfo implements Comparable<MessageProcessorInfo> {
+		private static final Comparator<MessageProcessorInfo> COMPARATOR = Comparator
+				.<MessageProcessorInfo>comparingInt(info -> info.priority)
+				.thenComparing(info -> info.key);
+
 		private String key;
 		private int priority;
 		private MessageProcessor processor;
@@ -275,7 +279,7 @@ public class QuestsAPIImplementation implements QuestsAPI {
 
 		@Override
 		public int compareTo(MessageProcessorInfo o) {
-			return Integer.compare(priority, o.priority);
+			return COMPARATOR.compare(this, o);
 		}
 	}
 
