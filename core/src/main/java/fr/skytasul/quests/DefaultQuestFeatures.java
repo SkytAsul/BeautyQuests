@@ -378,9 +378,9 @@ public final class DefaultQuestFeatures {
 		QuestsAPI.getAPI().registerQuestOption(new QuestOptionCreator<>("hologramText", 17, OptionHologramText.class,
 				OptionHologramText::new, Lang.HologramText.toString()));
 		QuestsAPI.getAPI().registerQuestOption(new QuestOptionCreator<>("hologramLaunch", 25, OptionHologramLaunch.class,
-				OptionHologramLaunch::new, QuestsConfigurationImplementation.getConfiguration().getHoloLaunchItem()));
+				OptionHologramLaunch::new, QuestsConfiguration.getConfig().getHologramsConfig().launchItem()));
 		QuestsAPI.getAPI().registerQuestOption(new QuestOptionCreator<>("hologramLaunchNo", 26, OptionHologramLaunchNo.class,
-				OptionHologramLaunchNo::new, QuestsConfigurationImplementation.getConfiguration().getHoloLaunchNoItem()));
+				OptionHologramLaunchNo::new, QuestsConfiguration.getConfig().getHologramsConfig().cannotLaunchItem()));
 	}
 
 }

@@ -12,6 +12,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
+import org.jetbrains.annotations.NotNull;
 import org.joml.Vector3f;
 import java.util.ArrayList;
 import java.util.List;
@@ -22,6 +23,11 @@ public class BQFancyHolograms implements BqHologramManager {
 
 	private int counter = Integer.MIN_VALUE + ThreadLocalRandom.current().nextInt(1000000);
 	private HologramManager hologramsManager = FancyHologramsPlugin.get().getHologramManager();
+
+	@Override
+	public @NotNull String name() {
+		return "FancyHolograms";
+	}
 
 	@Override
 	public boolean supportPerPlayerVisibility() {

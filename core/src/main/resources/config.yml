@@ -148,16 +148,22 @@ accountsHook: false
 # If set to "true" and the PlayerBlockTracker plugin is enabled on this server, then player-placed blocks will be tracked
 # using PlayerBlockTracker: it allows for persistence after restart, piston tracking, and more.
 usePlayerBlockTracker: true
-# (Holograms) Disable the hologram above NPC's head
-disableTextHologram: false
-# (Holograms) Value added to the hologram height (decimal value)
-hologramsHeight: 0.0
-# (Holograms) Material name of the hologram showed above head of Quests starter. If ProtocolLib is enabled, holograms will be visible only by players who can start the quest
-holoLaunchItemName: BOOK
-# (Holograms) Material name of the hologram showed above head of Stage NPC. If ProtocolLib is enabled, holograms will be visible only by players who has to talk with this NPC
-holoTalkItemName: COAL
-# (Holograms) Is the custom name of the hologram in datas.yml shown
-showCustomHologramName: true
+# Holograms-related settings
+holograms:
+  # Disable the hologram that is always shown above NPCs heads
+  disable text hologram: false
+  # Y-value added to the hologram height
+  additional height: 0.0
+  # Hologram shown above the head of NPCs when the player can launch a quest from them.
+  launch item: BOOK
+  # Hologram shown above the head of NPCs when the player cannot launch any quest from them.
+  cannot launch item: BOOK
+  # Material name of the hologram showed above head of Stage NPC.
+  talk item: COAL
+  # If enabled, items having custom name will display them in a new hologram above the item.
+  custom item name: true
+  # Preferred plugin to use as holograms manager. If null (the default), the plugin will use whatever compatible hologram plugin has loaded last.
+  preferred plugin: null
 # (PlaceholdersAPI) Configuration for %beautyquests_started_ordered_X% placeholder
 startedQuestsPlaceholder:
   # Max length of a line if using splitted placeholder

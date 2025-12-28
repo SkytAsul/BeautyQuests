@@ -173,11 +173,21 @@ public class QuestsAPIImplementation implements QuestsAPI {
 	@Override
 	public void setHologramsManager(@NotNull BqHologramManager newHologramsManager) {
 		Validate.notNull(newHologramsManager);
+
+		if (plugin.getConfiguration().getHologramsConfig().preferredPlugin() != null) {
+			if (!plugin.getConfiguration().getHologramsConfig().preferredPlugin().equals(newHologramsManager.name())) {
+				LOGGER.warning("The holograms manager {} has loaded but is not the preferred one. Ignoring it.",
+						newHologramsManager.name());
+				return;
+			}
+		}
+
 		if (hologramsManager != null)
-			LOGGER.warning(newHologramsManager.getClass().getSimpleName()
-					+ " will replace " + hologramsManager.getClass().getSimpleName() + " as the new holograms manager.");
+			LOGGER.warning("{} will replace {} as the new holograms manager.", newHologramsManager.name(),
+					hologramsManager.name());
+
 		hologramsManager = newHologramsManager;
-		LOGGER.debug("Holograms manager has been registered: " + newHologramsManager.getClass().getName());
+		LOGGER.debug("Holograms manager has been registered: {}", newHologramsManager.name());
 	}
 
 	@Override

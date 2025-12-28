@@ -39,6 +39,9 @@ public interface QuestsConfiguration {
 	@NotNull
 	QuestDescription getQuestDescriptionConfig();
 
+	@NotNull
+	Holograms getHologramsConfig();
+
 	interface Quests {
 
 		int getDefaultTimer();
@@ -166,6 +169,28 @@ public interface QuestsConfiguration {
 
 		@NotNull
 		Map<String, String> tables();
+
+	}
+
+	interface Holograms {
+
+		@Nullable
+		String preferredPlugin();
+
+		boolean disableTextHologram();
+
+		double additionalHeight();
+
+		@Nullable
+		ItemStack launchItem();
+
+		@Nullable
+		ItemStack cannotLaunchItem();
+
+		@Nullable
+		ItemStack talkItem();
+
+		boolean customItemName();
 
 	}
 

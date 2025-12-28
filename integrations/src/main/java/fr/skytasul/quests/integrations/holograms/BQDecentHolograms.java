@@ -8,6 +8,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
+import org.jetbrains.annotations.NotNull;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -17,6 +18,11 @@ import java.util.concurrent.ThreadLocalRandom;
 public class BQDecentHolograms implements BqHologramManager {
 
 	private int counter = Integer.MIN_VALUE + ThreadLocalRandom.current().nextInt(1000000);
+
+	@Override
+	public @NotNull String name() {
+		return "DecentHolograms";
+	}
 
 	@Override
 	public boolean supportPerPlayerVisibility() {

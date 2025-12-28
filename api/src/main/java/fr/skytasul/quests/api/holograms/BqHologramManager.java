@@ -5,6 +5,9 @@ import org.jetbrains.annotations.NotNull;
 
 public interface BqHologramManager {
 
+	@NotNull
+	String name();
+
 	boolean supportPerPlayerVisibility();
 
 	boolean supportItems();

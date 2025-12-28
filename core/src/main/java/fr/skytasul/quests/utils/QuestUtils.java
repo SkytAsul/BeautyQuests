@@ -41,7 +41,8 @@ public final class QuestUtils {
 
 	public static Location upLocationForEntity(LivingEntity en, double value) {
 		double height = value;
-		height += QuestsConfigurationImplementation.getConfiguration().getHologramsHeight();
+		height += 0.28;
+		height += QuestsConfiguration.getConfig().getHologramsConfig().additionalHeight();
 		height += en.getHeight();
 		if (en instanceof Player) {
 			if (cachedScoreboardPresenceExp < System.currentTimeMillis()) {

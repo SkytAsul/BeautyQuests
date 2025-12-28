@@ -12,6 +12,8 @@ import fr.skytasul.quests.api.localization.Lang;
 import fr.skytasul.quests.api.localization.Locale;
 import fr.skytasul.quests.api.questers.data.QuesterDataManager;
 import fr.skytasul.quests.api.utils.IntegrationManager;
+import fr.skytasul.quests.api.utils.MinecraftNames;
+import fr.skytasul.quests.api.utils.Utils;
 import fr.skytasul.quests.api.utils.logger.LoggerExpanded;
 import fr.skytasul.quests.commands.CommandsManagerImplementation;
 import fr.skytasul.quests.editor.EditorManagerImplementation;
@@ -418,7 +420,7 @@ public class BeautyQuests extends JavaPlugin implements QuestsPlugin {
 	private void loadConfigParameters(boolean init) throws LoadingException {
 		try{
 			File configFile = new File(getDataFolder(), "config.yml");
-			config = new QuestsConfigurationImplementation(getConfig());
+			config = new QuestsConfigurationImplementation(getConfig(), data);
 			if (config.update()) {
 				config.getConfig().save(configFile);
 				logger.info("Updated config.");
@@ -426,6 +428,8 @@ public class BeautyQuests extends JavaPlugin implements QuestsPlugin {
 			if (init) loadLang();
 			ConfigUpdater.update(this, "config.yml", configFile);
 			config.init();
+
+			initTranslations();
 
 			if (config.getDatabaseConfig().enabled()) {
 				db = null;
@@ -567,6 +571,25 @@ public class BeautyQuests extends JavaPlugin implements QuestsPlugin {
 				}
 			}
 		}else lastVersion = getDescription().getVersion();
+	}
+
+	private void initTranslations() {
+		String fileName = config.getMinecraftTranslationsFile();
+		Optional<String> extension = Utils.getFilenameExtension(fileName);
+		if (extension.isPresent()) {
+			if (extension.get().equalsIgnoreCase("json")) {
+				logger.warning("File {} is not a JSON file.", fileName);
+				return;
+			}
+		} else {
+			fileName += ".json";
+		}
+
+		try {
+			MinecraftNames.intialize(QuestsPlugin.getPlugin().getDataFolder().toPath().resolve(fileName));
+		} catch (Exception ex) {
+			logger.severe("An error occurred when loading Minecraft Vanilla Translations from {}.", ex, fileName);
+		}
 	}
 
 	private void finishLoad() {

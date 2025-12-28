@@ -85,7 +85,7 @@ public class StageNPC extends AbstractStage implements Locatable.PreciseLocatabl
 					tmp.add(p);
 				}
 
-				if (QuestsConfigurationImplementation.getConfiguration().getHoloTalkItem() != null
+				if (QuestsConfiguration.getConfig().getHologramsConfig().talkItem() != null
 						&& QuestsAPI.getAPI().hasHologramsManager()
 						&& QuestsAPI.getAPI().getHologramsManager().supportItems()
 						&& QuestsAPI.getAPI().getHologramsManager().supportPerPlayerVisibility()) {
@@ -105,9 +105,9 @@ public class StageNPC extends AbstractStage implements Locatable.PreciseLocatabl
 	}
 
 	private void createHoloLaunch() {
-		ItemStack item = QuestsConfigurationImplementation.getConfiguration().getHoloTalkItem();
+		ItemStack item = QuestsConfiguration.getConfig().getHologramsConfig().talkItem();
 		hologram = QuestsAPI.getAPI().getHologramsManager().createHologram(npc.getNpc().getLocation(), false);
-		if (QuestsConfigurationImplementation.getConfiguration().isCustomHologramNameShown() && item.hasItemMeta()
+		if (QuestsConfiguration.getConfig().getHologramsConfig().customItemName() && item.hasItemMeta()
 				&& item.getItemMeta().hasDisplayName())
 			hologram.appendTextLine(item.getItemMeta().getDisplayName());
 		hologram.appendItem(item);
@@ -281,7 +281,7 @@ public class StageNPC extends AbstractStage implements Locatable.PreciseLocatabl
 	public void load() {
 		super.load();
 		if (QuestsConfigurationImplementation.getConfiguration().showTalkParticles()
-				|| QuestsConfigurationImplementation.getConfiguration().getHoloTalkItem() != null) {
+				|| QuestsConfiguration.getConfig().getHologramsConfig().talkItem() != null) {
 			if (!hide)
 				launchRefreshTask();
 		}

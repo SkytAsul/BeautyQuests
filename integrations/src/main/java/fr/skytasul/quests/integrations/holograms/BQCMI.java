@@ -5,6 +5,7 @@ import com.Zrips.CMI.Modules.Holograms.CMIHologram;
 import fr.skytasul.quests.api.holograms.BqHologram;
 import fr.skytasul.quests.api.holograms.BqHologramManager;
 import org.bukkit.Location;
+import org.jetbrains.annotations.NotNull;
 import java.lang.reflect.Constructor;
 
 public class BQCMI implements BqHologramManager {
@@ -25,6 +26,11 @@ public class BQCMI implements BqHologramManager {
 		}catch (ReflectiveOperationException ex) {
 			throw new IllegalStateException(ex);
 		}
+	}
+
+	@Override
+	public @NotNull String name() {
+		return "CMI";
 	}
 
 	@Override

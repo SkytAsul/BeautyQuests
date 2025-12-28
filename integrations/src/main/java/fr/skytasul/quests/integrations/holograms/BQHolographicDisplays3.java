@@ -10,6 +10,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
+import org.jetbrains.annotations.NotNull;
 import java.lang.reflect.Field;
 import java.util.List;
 import java.util.Map;
@@ -23,6 +24,11 @@ public class BQHolographicDisplays3 implements BqHologramManager {
 	private final HolographicDisplaysAPI api = HolographicDisplaysAPI.get(Bukkit.getPluginManager().getPlugin("HolographicDisplays"));
 
 	private Field visibilitiesField;
+
+	@Override
+	public @NotNull String name() {
+		return "HolographicDisplays";
+	}
 
 	@Override
 	public boolean supportPerPlayerVisibility() {

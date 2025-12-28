@@ -52,15 +52,15 @@ public class BqNpcImplementation implements Located.LocatedEntity, BqNpc {
 	private boolean hologramsRemoved = true;
 	private Hologram hologramText = new Hologram(false,
 			QuestsAPI.getAPI().hasHologramsManager()
-					&& !QuestsConfigurationImplementation.getConfiguration().isTextHologramDisabled(),
+					&& !QuestsConfiguration.getConfig().getHologramsConfig().disableTextHologram(),
 			Lang.HologramText.toString());
 	private Hologram hologramLaunch = new Hologram(false,
 			QuestsAPI.getAPI().hasHologramsManager() && QuestsAPI.getAPI().getHologramsManager().supportItems(),
-			QuestsConfigurationImplementation.getConfiguration().getHoloLaunchItem());
+			QuestsConfiguration.getConfig().getHologramsConfig().launchItem());
 	private Hologram hologramLaunchNo = new Hologram(false,
 			QuestsAPI.getAPI().hasHologramsManager() && QuestsAPI.getAPI().getHologramsManager().supportItems()
 					&& QuestsAPI.getAPI().getHologramsManager().supportPerPlayerVisibility(),
-			QuestsConfigurationImplementation.getConfiguration().getHoloLaunchNoItem());
+			QuestsConfiguration.getConfig().getHologramsConfig().cannotLaunchItem());
 	private Hologram hologramPool = new Hologram(false,
 			QuestsAPI.getAPI().hasHologramsManager()
 					&& QuestsAPI.getAPI().getHologramsManager().supportPerPlayerVisibility(),
@@ -460,7 +460,7 @@ public class BqNpcImplementation implements Located.LocatedEntity, BqNpc {
 			if (Objects.equals(item, this.item)) return;
 			this.item = item;
 			canAppear = enabled && item != null;
-			if (canAppear && QuestsConfigurationImplementation.getConfiguration().isCustomHologramNameShown()
+			if (canAppear && QuestsConfigurationImplementation.getConfiguration().getHologramsConfig().customItemName()
 					&& item.hasItemMeta() && item.getItemMeta().hasDisplayName())
 				this.text = item.getItemMeta().getDisplayName();
 			delete(); // delete to regenerate with new item

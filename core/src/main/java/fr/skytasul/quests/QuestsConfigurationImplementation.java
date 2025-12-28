@@ -3,15 +3,14 @@ package fr.skytasul.quests;
 import com.cryptomorin.xseries.XMaterial;
 import com.cryptomorin.xseries.XSound;
 import fr.skytasul.quests.api.QuestsConfiguration;
-import fr.skytasul.quests.api.QuestsPlugin;
 import fr.skytasul.quests.api.gui.ItemUtils;
 import fr.skytasul.quests.api.localization.Lang;
 import fr.skytasul.quests.api.npcs.NpcClickType;
 import fr.skytasul.quests.api.options.description.DescriptionSource;
 import fr.skytasul.quests.api.options.description.QuestDescription;
-import fr.skytasul.quests.api.utils.MinecraftNames;
 import fr.skytasul.quests.api.utils.PlayerListCategory;
 import fr.skytasul.quests.api.utils.Utils;
+import fr.skytasul.quests.api.utils.logger.LoggerExpanded;
 import fr.skytasul.quests.utils.ParticleEffect;
 import fr.skytasul.quests.utils.ParticleEffect.ParticleShape;
 import fr.skytasul.quests.utils.compatibility.InternalIntegrations;
@@ -21,6 +20,7 @@ import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.FireworkMeta;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -30,20 +30,15 @@ public class QuestsConfigurationImplementation implements QuestsConfiguration {
 		return BeautyQuests.getInstance().getConfiguration();
 	}
 
+	private static final LoggerExpanded LOGGER = LoggerExpanded.get("BeautyQuests.Configuration");
+
 	private String minecraftTranslationsFile = null;
 	private boolean enablePrefix = true;
-	private double hologramsHeight = 0.0;
-	private boolean disableTextHologram = false;
-	private boolean showCustomHologramName = true;
 	private boolean hookAcounts = false;
 	private boolean usePlayerBlockTracker = false;
 	private ParticleEffect particleStart;
 	private ParticleEffect particleTalk;
 	private ParticleEffect particleNext;
-
-	private ItemStack holoLaunchItem = null;
-	private ItemStack holoLaunchNoItem = null;
-	private ItemStack holoTalkItem = null;
 
 	private FireworkMeta defaultFirework = null;
 
@@ -53,6 +48,8 @@ public class QuestsConfigurationImplementation implements QuestsConfiguration {
 	int saveCycle = 15;
 
 	private final FileConfiguration config;
+	private final ConfigurationSection dataFile;
+
 	private QuestsConfig quests;
 	private DatabaseConfig database;
 	private GuiConfig gui;
@@ -61,9 +58,12 @@ public class QuestsConfigurationImplementation implements QuestsConfiguration {
 	private QuestsMenuConfig menu;
 	private StageDescriptionConfig stageDescription;
 	private QuestDescriptionConfig questDescription;
+	private HologramsConfig holograms;
 
-	QuestsConfigurationImplementation(FileConfiguration config) {
+
+	QuestsConfigurationImplementation(FileConfiguration config, ConfigurationSection dataFile) {
 		this.config = config;
+		this.dataFile = dataFile;
 
 		quests = new QuestsConfig();
 		database = new DatabaseConfig(config.getConfigurationSection("database"));
@@ -73,6 +73,7 @@ public class QuestsConfigurationImplementation implements QuestsConfiguration {
 		menu = new QuestsMenuConfig(config.getConfigurationSection("questsMenu"));
 		stageDescription = new StageDescriptionConfig(config.getConfigurationSection("stage description"));
 		questDescription = new QuestDescriptionConfig(config.getConfigurationSection("questDescription"));
+		holograms = HologramsConfig.load(this, config.getConfigurationSection("holograms"));
 	}
 
 	boolean update() {
@@ -83,16 +84,16 @@ public class QuestsConfigurationImplementation implements QuestsConfiguration {
 		result |= selection.update();
 		result |= menu.update();
 		result |= stageDescription.update();
+		result |= HologramsConfig.update(config.getConfigurationSection("holograms"));
 		return result;
 	}
 
 	void init() {
 		backups = config.getBoolean("backups", true);
-		if (!backups) QuestsPlugin.getPlugin().getLoggerExpanded().warning("Backups are disabled due to the presence of \"backups: false\" in config.yml.");
+		if (!backups)
+			LOGGER.warning("Backups are disabled due to the presence of \"backups: false\" in config.yml.");
 
 		minecraftTranslationsFile = config.getString("minecraftTranslationsFile");
-		if (isMinecraftTranslationsEnabled())
-			initializeTranslations();
 		quests.init();
 		database.init();
 		gui.init();
@@ -101,13 +102,11 @@ public class QuestsConfigurationImplementation implements QuestsConfiguration {
 		menu.init();
 		stageDescription.init();
 		questDescription.init();
+		holograms = HologramsConfig.load(this, config.getConfigurationSection("holograms"));
 
 		saveCycle = config.getInt("saveCycle");
 		saveCycleMessage = config.getBoolean("saveCycleMessage");
 		enablePrefix = config.getBoolean("enablePrefix");
-		disableTextHologram = config.getBoolean("disableTextHologram");
-		showCustomHologramName = config.getBoolean("showCustomHologramName");
-		hologramsHeight = 0.28 + config.getDouble("hologramsHeight");
 		hookAcounts = config.getBoolean("accountsHook");
 		usePlayerBlockTracker = config.getBoolean("usePlayerBlockTracker");
 
@@ -119,36 +118,13 @@ public class QuestsConfigurationImplementation implements QuestsConfiguration {
 				loadParticles("next", new ParticleEffect(Utils.valueOfEnum(Particle.class, "SMOKE_NORMAL", "SMOKE"),
 						ParticleShape.SPOT, null));
 
-		holoLaunchItem = loadHologram("launchItem");
-		holoLaunchNoItem = loadHologram("nolaunchItem");
-		holoTalkItem = loadHologram("talkItem");
-
-		if (BeautyQuests.getInstance().getDataFile().contains("firework")) {
-			defaultFirework = BeautyQuests.getInstance().getDataFile().getSerializable("firework", FireworkMeta.class);
+		if (dataFile.contains("firework")) {
+			defaultFirework = dataFile.getSerializable("firework", FireworkMeta.class);
 		}else {
 			FireworkMeta fm = (FireworkMeta) Bukkit.getItemFactory().getItemMeta(XMaterial.FIREWORK_ROCKET.parseMaterial());
 			fm.addEffect(FireworkEffect.builder().with(FireworkEffect.Type.BURST).withTrail().withFlicker().withColor(Color.YELLOW, Color.ORANGE).withFade(Color.SILVER).build());
 			fm.setPower(0);
 			defaultFirework = fm;
-		}
-	}
-
-	private void initializeTranslations() {
-		String fileName = minecraftTranslationsFile;
-		Optional<String> extension = Utils.getFilenameExtension(minecraftTranslationsFile);
-		if (extension.isPresent()) {
-			if (extension.get().equalsIgnoreCase("json")) {
-				QuestsPlugin.getPlugin().getLoggerExpanded().warning("File " + fileName + " is not a JSON file.");
-				return;
-			}
-		} else {
-			fileName += ".json";
-		}
-
-		if (!MinecraftNames.intialize(QuestsPlugin.getPlugin().getDataFolder().toPath().resolve(fileName))) {
-			QuestsPlugin.getPlugin().getLoggerExpanded()
-					.warning("Cannot enable the \"minecraftTranslationsFile\" option : problem when initializing");
-			minecraftTranslationsFile = null;
 		}
 	}
 
@@ -158,19 +134,12 @@ public class QuestsConfigurationImplementation implements QuestsConfiguration {
 			try{
 				particle = ParticleEffect.deserialize(config.getConfigurationSection(name));
 			}catch (Exception ex){
-				QuestsPlugin.getPlugin().getLoggerExpanded().warning("Loading of " + name + " particles failed: Invalid particle, color or shape.", ex);
+				LOGGER.warning("Loading of {0} particles failed: Invalid particle, color or shape.", ex, name);
 			}
 			if (particle == null) particle = defaultParticle;
-			QuestsPlugin.getPlugin().getLoggerExpanded().debug("Loaded " + name + " particles: " + particle.toString());
+			LOGGER.debug("Loaded {0} particles: {1}", name, particle.toString());
 		}
 		return particle;
-	}
-
-	private ItemStack loadHologram(String name) {
-		if (BeautyQuests.getInstance().getDataFile().contains(name)){
-			return ItemStack.deserialize(BeautyQuests.getInstance().getDataFile().getConfigurationSection(name).getValues(false));
-		}
-		return null;
 	}
 
 	private static ItemStack loadItem(ConfigurationSection config, String key, ItemStack def) {
@@ -178,14 +147,14 @@ public class QuestsConfigurationImplementation implements QuestsConfiguration {
 			return config.getItemStack(key);
 		if (config.isString(key))
 			return XMaterial.matchXMaterial(config.getString(key)).map(XMaterial::parseItem).orElse(def);
-		QuestsPlugin.getPlugin().getLogger().warning("Cannot load item " + key + " from config");
+		LOGGER.warning("Cannot load item '{0}' from config", key);
 		return def;
 	}
 
 	private String loadSound(String key) {
 		String sound = config.getString(key);
 		if (XSound.of(sound).isEmpty())
-			QuestsPlugin.getPlugin().getLoggerExpanded().warning("Sound " + sound + " is not a valid Bukkit sound.");
+			LOGGER.warning("Sound '{0}' is not a valid Bukkit sound.", sound);
 		return sound;
 	}
 
@@ -242,12 +211,17 @@ public class QuestsConfigurationImplementation implements QuestsConfiguration {
 		return questDescription;
 	}
 
+	@Override
+	public @NotNull Holograms getHologramsConfig() {
+		return holograms;
+	}
+
 	public String getPrefix() {
 		return (enablePrefix) ? Lang.Prefix.toString() : "§6";
 	}
 
-	public boolean isTextHologramDisabled() {
-		return disableTextHologram;
+	public String getMinecraftTranslationsFile() {
+		return minecraftTranslationsFile;
 	}
 
 	public boolean showStartParticles() {
@@ -274,26 +248,6 @@ public class QuestsConfigurationImplementation implements QuestsConfiguration {
 		return particleNext;
 	}
 
-	public double getHologramsHeight() {
-		return hologramsHeight;
-	}
-
-	public boolean isCustomHologramNameShown() {
-		return showCustomHologramName;
-	}
-
-	public ItemStack getHoloLaunchItem() {
-		return holoLaunchItem;
-	}
-
-	public ItemStack getHoloLaunchNoItem() {
-		return holoLaunchNoItem;
-	}
-
-	public ItemStack getHoloTalkItem() {
-		return holoTalkItem;
-	}
-
 	public FireworkMeta getDefaultFirework() {
 		return defaultFirework;
 	}
@@ -304,10 +258,6 @@ public class QuestsConfigurationImplementation implements QuestsConfiguration {
 
 	public boolean usePlayerBlockTracker() {
 		return usePlayerBlockTracker && InternalIntegrations.PlayerBlockTracker.isEnabled();
-	}
-
-	public boolean isMinecraftTranslationsEnabled() {
-		return minecraftTranslationsFile != null && !minecraftTranslationsFile.isEmpty();
 	}
 
 	public QuestDescription getQuestDescription() {
@@ -362,7 +312,7 @@ public class QuestsConfigurationImplementation implements QuestsConfiguration {
 							.collect(Collectors.toList());
 				}
 			} catch (IllegalArgumentException ex) {
-				QuestsPlugin.getPlugin().getLoggerExpanded()
+				LOGGER
 						.warning("Unknown click type " + config.get("npcClick") + " for config entry \"npcClick\"");
 			}
 			dontCancelNpcClick = config.getBoolean("dont cancel npc click");
@@ -768,7 +718,7 @@ public class QuestsConfigurationImplementation implements QuestsConfiguration {
 			}
 
 			if (tabs.isEmpty()) {
-				QuestsPlugin.getPlugin().getLoggerExpanded().warning("Quests Menu must have at least one enabled tab.");
+				LOGGER.warning("Quests Menu must have at least one enabled tab.");
 				tabs = EnumSet.allOf(PlayerListCategory.class);
 			}
 			openNotStartedTabWhenEmpty = config.getBoolean("openNotStartedTabWhenEmpty");
@@ -831,8 +781,7 @@ public class QuestsConfigurationImplementation implements QuestsConfiguration {
 				try {
 					descSources.add(DescriptionSource.valueOf(s));
 				} catch (IllegalArgumentException ex) {
-					QuestsPlugin.getPlugin().getLoggerExpanded()
-							.warning("Loading of description splitted sources failed : source " + s + " does not exist");
+					LOGGER.warning("Loading of description splitted sources failed: source {0} does not exist", s);
 				}
 			}
 			bossBars = config.getBoolean("boss bars");
@@ -968,6 +917,43 @@ public class QuestsConfigurationImplementation implements QuestsConfiguration {
 		@Override
 		public String getRequirementsInvalid() {
 			return requirementsInvalid;
+		}
+
+	}
+
+	public record HologramsConfig(@Nullable String preferredPlugin, boolean disableTextHologram, double additionalHeight,
+			@Nullable ItemStack launchItem, @Nullable ItemStack cannotLaunchItem, @Nullable ItemStack talkItem,
+			boolean customItemName) implements Holograms {
+
+		static HologramsConfig load(@NotNull QuestsConfigurationImplementation questsConfig,
+				@NotNull ConfigurationSection config) {
+			return new HologramsConfig(
+					config.getString("preferred plugin"), config.getBoolean("disable text hologram"),
+					config.getDouble("additional height"),
+					loadHologramItem(questsConfig, config, "launchItem", "launch item"),
+					loadHologramItem(questsConfig, config, "noLaunchItem", "cannot launch item"),
+					loadHologramItem(questsConfig, config, "talkItem", "talk item"),
+					config.getBoolean("custom item name"));
+		}
+
+		static boolean update(@NotNull ConfigurationSection config) {
+			boolean result = false;
+			if (config.getParent() != null) {
+				result |= migrateEntry(config.getParent(), "disableTextHologram", config, "disable text hologram");
+				result |= migrateEntry(config.getParent(), "hologramsHeight", config, "additional height");
+				result |= migrateEntry(config.getParent(), "holoLaunchItemName", config, "launch item");
+				result |= migrateEntry(config.getParent(), "holoTalkItemName", config, "talk item");
+				result |= migrateEntry(config.getParent(), "showCustomHologramName", config, "custom item name");
+			}
+			return result;
+		}
+
+		private static ItemStack loadHologramItem(QuestsConfigurationImplementation questsConfig,
+				ConfigurationSection config, String dataName, String configName) {
+			if (questsConfig.dataFile.contains(dataName)) {
+				return ItemStack.deserialize(questsConfig.dataFile.getConfigurationSection(dataName).getValues(false));
+			}
+			return loadItem(config, configName, null);
 		}
 
 	}
