@@ -25,8 +25,8 @@ public final class ItemUtils {
 
 	private ItemUtils() {}
 
-	private static final int LORE_LINE_LENGTH = 40;
-	private static final int LORE_LINE_LENGTH_CRITICAL = 1000;
+	public static final int LORE_LINE_LENGTH = 40;
+	public static final int LORE_LINE_LENGTH_CRITICAL = 1000;
 
 	/**
 	 * Create an ItemStack instance from a generic XMaterial

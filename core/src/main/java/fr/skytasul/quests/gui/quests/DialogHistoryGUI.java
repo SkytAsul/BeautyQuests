@@ -120,7 +120,8 @@ public class DialogHistoryGUI extends PagedGUI<WrappedDialogable> {
 				Message msg = messages.get(i);
 				String formatted = msg.formatMessage(getViewer(), dialogable.getNPC(),
 						dialogable.getDialog().getNPCName(dialogable.getNPC()), i, messages.size());
-				lines.add(ChatColorUtils.wordWrap(formatted, 40, 100));
+				lines.add(
+						ChatColorUtils.wordWrap(formatted, ItemUtils.LORE_LINE_LENGTH, ItemUtils.LORE_LINE_LENGTH_CRITICAL));
 			}
 
 			if (lines.isEmpty()) {
