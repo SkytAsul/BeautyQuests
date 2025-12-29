@@ -79,11 +79,18 @@ public interface QuestPoolController extends HasPlaceholders {
 	/**
 	 * The result of a {@link QuestPoolController#canGive(Player)} operation.
 	 *
-	 * @param result <code>true</code> if a quest can be given from this pool
-	 * @param reason a potential reason why the pool could not give a quest. If {@link #result} is
-	 *        <code>true</code>, then this should be <code>null</code>
+	 * @param type type of result
+	 * @param reason a potential reason why the pool could not give a quest. If {@link #type} is
+	 *        <code>OK</code>, then this should be <code>null</code>
 	 */
-	record CanGiveResult(boolean result, @Nullable String reason) {
+	record CanGiveResult(CanGiveResultType type, @Nullable String reason) {
+		public boolean isSuccess() {
+			return type == CanGiveResultType.OK;
+		}
+	}
+
+	enum CanGiveResultType {
+		OK, ON_COOLDOWN, REQUIREMENTS_UNMET, ALL_COMPLETED, MAX_QUESTS, NONE_AVAILABLE
 	}
 
 }

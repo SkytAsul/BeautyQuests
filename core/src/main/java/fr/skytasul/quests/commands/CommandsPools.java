@@ -87,7 +87,7 @@ public class CommandsPools implements OrphanCommand {
 	public void start(BukkitCommandActor actor, EntitySelector<Player> players, QuestPoolController pool) {
 		for (Player player : players) {
 			Quester acc = PlayerManager.getPlayerAccount(player);
-			if (!pool.canGive(player).result()) {
+			if (!pool.canGive(player).isSuccess()) {
 				Lang.POOL_START_ERROR.send(player, pool, acc);
 				return;
 			}

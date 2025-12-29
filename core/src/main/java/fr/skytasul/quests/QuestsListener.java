@@ -90,7 +90,7 @@ public class QuestsListener implements Listener{
 							quester.getDetailedName(), pool.getId());
 					return false;
 				}
-				return pool.canGive(p).result();
+				return pool.canGive(p).isSuccess();
 			}catch (Exception ex) {
 				QuestsPlugin.getPlugin().getLoggerExpanded().severe("An exception occured when checking requirements on the pool " + pool.getId() + " for player " + p.getName(), ex);
 				return false;

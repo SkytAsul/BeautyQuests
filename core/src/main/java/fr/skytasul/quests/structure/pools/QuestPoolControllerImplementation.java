@@ -14,6 +14,7 @@ import fr.skytasul.quests.api.questers.Quester;
 import fr.skytasul.quests.api.questers.data.QuesterPoolData;
 import fr.skytasul.quests.api.quests.Quest;
 import fr.skytasul.quests.api.utils.Utils;
+import fr.skytasul.quests.api.utils.logger.LoggerExpanded;
 import fr.skytasul.quests.api.utils.messaging.MessageUtils;
 import fr.skytasul.quests.api.utils.messaging.PlaceholderRegistry;
 import fr.skytasul.quests.npcs.BqNpcImplementation;
@@ -30,6 +31,8 @@ import java.util.concurrent.ThreadLocalRandom;
 import java.util.stream.Collectors;
 
 public class QuestPoolControllerImplementation implements QuestPoolController, Comparable<QuestPoolController> {
+
+	private static final LoggerExpanded LOGGER = LoggerExpanded.get("BeautyQuests.QuestPoolController");
 
 	private final int id;
 	private QuestPoolData data;
@@ -131,8 +134,6 @@ public class QuestPoolControllerImplementation implements QuestPoolController, C
 	}
 
 	public void questCompleted(Quester acc, Quest quest) {
-		if (!data.avoidDuplicates())
-			return;
 		var poolDatas = acc.getDataHolder().getPoolData(this);
 
 		var completedQuests = poolDatas.getCompletedQuests();
@@ -146,33 +147,61 @@ public class QuestPoolControllerImplementation implements QuestPoolController, C
 
 		Optional<QuesterPoolData> questerData = quester.getDataHolder().getPoolDataIfPresent(this);
 
-		if (questerData.isPresent()) {
+		if (data.timeDiff() > 0 && questerData.isPresent()) {
 			long time = (questerData.get().getLastGive() + data.timeDiff()) - System.currentTimeMillis();
 			if (time > 0)
-				return new CanGiveResult(false, Lang.POOL_NO_TIME.quickFormat("time_left", Utils.millisToHumanString(time)));
+				return new CanGiveResult(CanGiveResultType.ON_COOLDOWN,
+						Lang.POOL_NO_TIME.quickFormat("time_left", Utils.millisToHumanString(time)));
 		}
 
 		var requirementsMatch = data.requirements().allMatch(p);
 		if (!requirementsMatch.result())
-			return new CanGiveResult(false, requirementsMatch.reason());
+			return new CanGiveResult(CanGiveResultType.REQUIREMENTS_UNMET, requirementsMatch.reason());
 
-		List<Quest> notDoneQuests = data.avoidDuplicates() && questerData.isPresent() ? quests.stream()
-				.filter(quest -> !questerData.get().getCompletedQuests().contains(quest.getId()))
-				.collect(Collectors.toList())
-				: quests;
+		if (quests.isEmpty()) {
+			LOGGER.warning("Quest pool {0} has got no quest in it.", id);
+			return new CanGiveResult(CanGiveResultType.NONE_AVAILABLE, "There are no quests in the pool.");
+		}
 
-		if (notDoneQuests.isEmpty()) { // all quests completed
-			if (!data.redoAllowed() || quests.stream().noneMatch(quest -> quest.canStart(p, false)))
-				return new CanGiveResult(false, Lang.POOL_ALL_COMPLETED.toString());
+		List<Quest> notCompleted = getNotCompletedQuests(questerData);
+
+		if (notCompleted.isEmpty()) {
+			// all quests completed: we check if the player can redo some of them
+			notCompleted = replenishQuests(quester, questerData.orElseThrow());
+			if (notCompleted.isEmpty())
+				return new CanGiveResult(CanGiveResultType.ALL_COMPLETED, Lang.POOL_ALL_COMPLETED.toString());
 		} else if (quester.getDataHolder().getAllQuestsData().stream()
 				.filter(quest -> quest.hasStarted() && quests.contains(quest.getQuest()))
-				.count() >= data.maxQuests())
-			return new CanGiveResult(false, Lang.POOL_MAX_QUESTS.format(this));
+				.count() >= data.maxQuests()) {
+			// player has too much quests in this pool to be able to start one more
+			return new CanGiveResult(CanGiveResultType.MAX_QUESTS, Lang.POOL_MAX_QUESTS.format(this));
+		}
 
-		if (notDoneQuests.stream().noneMatch(quest -> quest.canStart(p, false)))
-			return new CanGiveResult(false, Lang.POOL_NO_AVAILABLE.toString());
+		List<Quest> notStarted =
+				notCompleted.stream().filter(quest -> !quest.hasStarted(quester)).collect(Collectors.toList());
+		if (notStarted.isEmpty()) {
+			// means all quests that are not yet completed are already started.
+			// we should then check if the player can redo some of the quests it has completed
+			if (questerData.isPresent())
+				notStarted = replenishQuests(quester, questerData.get());
+		}
 
-		return new CanGiveResult(true, null);
+		List<Quest> available = notStarted.stream().filter(quest -> quest.canStart(p, false)).collect(Collectors.toList());
+		// at this point, "available" contains all quests that the player has not yet completed, that it is
+		// not currently doing and that meet the requirements to launch
+
+		if (available.isEmpty())
+			return new CanGiveResult(CanGiveResultType.NONE_AVAILABLE, Lang.POOL_NO_AVAILABLE.toString());
+
+		return new CanGiveResult(CanGiveResultType.OK, null);
+	}
+
+	private List<Quest> getNotCompletedQuests(Optional<QuesterPoolData> questerData) {
+		return questerData.isEmpty() || (!data.avoidDuplicates() && data.redoAllowed())
+				? quests
+				: quests.stream()
+						.filter(quest -> !questerData.get().getCompletedQuests().contains(quest.getId()))
+						.toList();
 	}
 
 	@Override
@@ -180,22 +209,18 @@ public class QuestPoolControllerImplementation implements QuestPoolController, C
 		Quester quester = PlayerManager.getPlayerAccount(p);
 		QuesterPoolData questerData = quester.getDataHolder().getPoolData(this);
 
-		long time = (questerData.getLastGive() + data.timeDiff()) - System.currentTimeMillis();
-		if (time > 0)
-			return CompletableFuture
-					.completedFuture(Lang.POOL_NO_TIME.quickFormat("time_left", Utils.millisToHumanString(time)));
-
 		return CompletableFuture.supplyAsync(() -> {
 			List<Quest> started = new ArrayList<>(data.questsPerLaunch());
 			try {
 				for (int i = 0; i < data.questsPerLaunch(); i++) {
-					PoolGiveResult result = giveOne(p, quester, questerData, !started.isEmpty()).get();
-					if (result.quest != null) {
-						started.add(result.quest);
-						questerData.setLastGive(System.currentTimeMillis());
-					} else if (!result.forceContinue) {
+					var canGiveResults = canGive(p);
+					if (canGiveResults.isSuccess()) {
+						giveOne(p, quester, questerData).get().ifPresent(started::add);
+						// giveOne can return an empty optional if the player refused
+						// a quest. We should still continue the loop.
+					} else {
 						if (started.isEmpty())
-							return result.reason;
+							return canGiveResults.reason();
 						else
 							break;
 					}
@@ -205,58 +230,38 @@ public class QuestPoolControllerImplementation implements QuestPoolController, C
 				Thread.currentThread().interrupt();
 			} catch (ExecutionException ex) {
 				throw new CompletionException(ex);
+			} finally {
+				if (!started.isEmpty())
+					questerData.setLastGive(System.currentTimeMillis());
 			}
 
 			return "started quest(s) " + started.stream().map(x -> "#" + x.getId()).collect(Collectors.joining(", "));
 		});
 	}
 
-	protected CompletableFuture<PoolGiveResult> giveOne(Player p, Quester acc, QuesterPoolData datas,
-			boolean hadOne) {
-		if (!data.requirements().allMatch(p, !hadOne))
-			return CompletableFuture.completedFuture(new PoolGiveResult(""));
+	private CompletableFuture<Optional<Quest>> giveOne(Player p, Quester quester, QuesterPoolData datas) {
+		List<Quest> notCompleted = getNotCompletedQuests(Optional.of(datas));
 
-		List<Quest> notCompleted = data.avoidDuplicates() ? quests.stream()
-				.filter(quest -> !datas.getCompletedQuests().contains(quest.getId())).collect(Collectors.toList()) : quests;
-		if (notCompleted.isEmpty()) {
-			// all quests completed: we check if the player can redo some of them
-			notCompleted = replenishQuests(acc, datas);
-			if (notCompleted.isEmpty())
-				return CompletableFuture.completedFuture(new PoolGiveResult(Lang.POOL_ALL_COMPLETED.toString()));
-		} else if (acc.getDataHolder().getAllQuestsData().stream()
-				.filter(quest -> quest.hasStarted() && quests.contains(quest.getQuest()))
-				.count() >= data.maxQuests()) {
-			// player has too much quests in this pool to be able to start one more
-			return CompletableFuture.completedFuture(new PoolGiveResult(Lang.POOL_MAX_QUESTS.format(this)));
-		}
-
-		List<Quest> notStarted = notCompleted.stream().filter(quest -> !quest.hasStarted(acc)).collect(Collectors.toList());
-		if (notStarted.isEmpty()) {
-			// means all quests that are not yet completed are already started.
-			// we should then check if the player can redo some of the quests it has completed
-			notStarted = replenishQuests(acc, datas);
-		}
-
-		List<Quest> available = notStarted.stream().filter(quest -> quest.canStart(p, false)).collect(Collectors.toList());
+		List<Quest> available = notCompleted.stream().filter(quest -> quest.canStart(p, false)).toList();
 		// at this point, "available" contains all quests that the player has not yet completed, that it is
 		// not currently doing and that meet the requirements to launch
 
 		if (available.isEmpty()) {
-			return CompletableFuture.completedFuture(new PoolGiveResult(Lang.POOL_NO_AVAILABLE.toString()));
-		} else {
-			CompletableFuture<PoolGiveResult> future = new CompletableFuture<>();
-			QuestUtils.runOrSync(() -> {
-				Quest quest = available.get(ThreadLocalRandom.current().nextInt(available.size()));
-				quest.attemptStart(p).whenComplete((result, exception) -> {
-					if (exception != null) {
-						future.completeExceptionally(exception);
-					} else {
-						future.complete(result ? new PoolGiveResult(quest) : new PoolGiveResult("").forceContinue());
-					}
-				});
-			});
-			return future;
+			throw new IllegalStateException("There is no quest available");
 		}
+
+		var future = new CompletableFuture<Optional<Quest>>();
+		QuestUtils.runOrSync(() -> {
+			Quest quest = available.get(ThreadLocalRandom.current().nextInt(available.size()));
+			quest.attemptStart(p).whenComplete((result, exception) -> {
+				if (exception != null) {
+					future.completeExceptionally(exception);
+				} else {
+					future.complete(result ? Optional.of(quest) : Optional.empty());
+				}
+			});
+		});
+		return future;
 	}
 
 	private List<Quest> replenishQuests(@NotNull Quester quester, @NotNull QuesterPoolData datas) {
@@ -266,15 +271,15 @@ public class QuestPoolControllerImplementation implements QuestPoolController, C
 				.filter(Quest::isRepeatable)
 				.filter(quest -> !quest.hasStarted(quester))
 				.collect(Collectors.toList());
-		if (!notDoneQuests.isEmpty()) {
+		if (!notDoneQuests.isEmpty() && quester.isActive()) {
 			datas.setCompletedQuests(quests
 					.stream()
 					.filter(quest -> !notDoneQuests.contains(quest))
 					.map(Quest::getId)
 					.collect(Collectors.toSet()));
+			QuestsPlugin.getPlugin().getLoggerExpanded().debug("Replenished available quests of {} for pool {}",
+					quester.getDetailedName(), id);
 		}
-		QuestsPlugin.getPlugin().getLoggerExpanded().debug("Replenished available quests of {} for pool {}",
-				quester.getDetailedName(), id);
 		return notDoneQuests;
 	}
 
@@ -322,27 +327,6 @@ public class QuestPoolControllerImplementation implements QuestPoolController, C
 
 	public void unloadStarter() {
 		npc = null;
-	}
-
-	private static class PoolGiveResult {
-		private final Quest quest;
-		private final String reason;
-		private boolean forceContinue = false;
-
-		public PoolGiveResult(Quest quest) {
-			this.quest = quest;
-			this.reason = null;
-		}
-
-		public PoolGiveResult(String reason) {
-			this.quest = null;
-			this.reason = reason;
-		}
-
-		public PoolGiveResult forceContinue() {
-			forceContinue = true;
-			return this;
-		}
 	}
 
 }

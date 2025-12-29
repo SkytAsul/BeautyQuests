@@ -5,13 +5,11 @@ import static fr.skytasul.quests.test.TestUtils.loadPlugin;
 import static fr.skytasul.quests.test.TestUtils.waitForEvent;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.contains;
-import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.hasItem;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.not;
 import static org.hamcrest.Matchers.startsWith;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import fr.skytasul.quests.BeautyQuests;
 import fr.skytasul.quests.api.QuestsAPI;
 import fr.skytasul.quests.api.pools.QuestPoolController;
@@ -84,8 +82,7 @@ class QuestPoolControllerTest {
 		givePool();
 
 		var canGiveResult = pool.canGive(player);
-		assertFalse(canGiveResult.result());
-		assertThat(canGiveResult.reason(), containsString("more than"));
+		assertEquals(QuestPoolController.CanGiveResultType.MAX_QUESTS, canGiveResult.type());
 	}
 
 	@Test
@@ -97,6 +94,21 @@ class QuestPoolControllerTest {
 			createQuest(i, false);
 
 		assertThat(givePool(), hasSize(2));
+	}
+
+	@Test
+	void testCooldown() throws InterruptedException, ExecutionException {
+		pool = plugin.getPoolsManager()
+				.registerPool(new QuestPoolData("test", null, null, 4, 2, false, 500, false, new RequirementList(), false));
+
+		for (int i = 0; i < 3; i++)
+			createQuest(i, false);
+
+		assertThat(givePool(), hasSize(2));
+		assertEquals(QuestPoolController.CanGiveResultType.ON_COOLDOWN, pool.canGive(player).type());
+
+		Thread.sleep(500);
+		assertEquals(QuestPoolController.CanGiveResultType.OK, pool.canGive(player).type());
 	}
 
 	@ParameterizedTest
@@ -112,8 +124,7 @@ class QuestPoolControllerTest {
 		var permissions = player.addAttachment(plugin);
 
 		var canGiveResult = pool.canGive(player);
-		assertFalse(canGiveResult.result());
-		assertThat(canGiveResult.reason(), containsString("available"));
+		assertEquals(QuestPoolController.CanGiveResultType.NONE_AVAILABLE, canGiveResult.type());
 
 		permissions.setPermission("quest0", true);
 		player.recalculatePermissions();
@@ -128,8 +139,7 @@ class QuestPoolControllerTest {
 		finshQuest(quest1);
 
 		canGiveResult = pool.canGive(player);
-		assertFalse(canGiveResult.result());
-		assertThat(canGiveResult.reason(), containsString("completed all"));
+		assertEquals(QuestPoolController.CanGiveResultType.ALL_COMPLETED, canGiveResult.type());
 	}
 
 	@ParameterizedTest
@@ -145,8 +155,7 @@ class QuestPoolControllerTest {
 		var permissions = player.addAttachment(plugin);
 
 		var canGiveResult = pool.canGive(player);
-		assertFalse(canGiveResult.result());
-		assertThat(canGiveResult.reason(), containsString("available"));
+		assertEquals(QuestPoolController.CanGiveResultType.NONE_AVAILABLE, canGiveResult.type());
 
 		permissions.setPermission("quest0", true);
 		player.recalculatePermissions();
@@ -193,7 +202,7 @@ class QuestPoolControllerTest {
 
 	private List<Integer> givePool() throws InterruptedException, ExecutionException {
 		var canGiveResult = pool.canGive(player);
-		assertTrue(canGiveResult.result(), canGiveResult.reason());
+		assertEquals(QuestPoolController.CanGiveResultType.OK, canGiveResult.type());
 
 		var launchWaiter = waitForEvent(QuesterQuestLaunchEvent.class);
 		var giveResult = pool.give(player);

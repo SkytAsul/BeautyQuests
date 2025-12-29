@@ -160,7 +160,7 @@ public class BqNpcImplementation implements Located.LocatedEntity, BqNpc {
 					for (Player p : playersInRadius) {
 						boolean visible = false;
 						for (var pool : pools) {
-							if (pool.canGive(p).result()) {
+							if (pool.canGive(p).isSuccess()) {
 								visible = true;
 								break;
 							}
@@ -289,7 +289,7 @@ public class BqNpcImplementation implements Located.LocatedEntity, BqNpc {
 		if (!pools.add(pool)) return;
 		if (hologramPool.enabled && (pool.getPoolData().hologram() != null))
 			hologramPool.setText(pool.getPoolData().hologram());
-		addStartablePredicate((p) -> pool.canGive(p).result(), pool);
+		addStartablePredicate((p) -> pool.canGive(p).isSuccess(), pool);
 		updatedObjects();
 	}
 
