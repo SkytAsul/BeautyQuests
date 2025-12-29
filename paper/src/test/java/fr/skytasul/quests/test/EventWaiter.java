@@ -1,5 +1,6 @@
 package fr.skytasul.quests.test;
 
+import static fr.skytasul.quests.test.TestUtils.awaitFuture;
 import static org.junit.jupiter.api.Assertions.fail;
 import org.bukkit.Bukkit;
 import org.bukkit.event.Event;
@@ -8,9 +9,6 @@ import org.bukkit.event.HandlerList;
 import org.bukkit.event.Listener;
 import org.mockbukkit.mockbukkit.MockBukkit;
 import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.TimeoutException;
 
 public class EventWaiter<T extends Event> implements Listener {
 
@@ -33,23 +31,7 @@ public class EventWaiter<T extends Event> implements Listener {
 	}
 
 	public T assertFired(long millis) {
-		long lastTime = System.currentTimeMillis() + millis;
-
-		try {
-			do {
-				MockBukkit.getOrCreateMock().getScheduler().waitAsyncTasksFinished();
-				try {
-					return future.get(Math.min(lastTime - System.currentTimeMillis(), 20), TimeUnit.MILLISECONDS);
-				} catch (TimeoutException __) {
-					// ignore, continue the loop
-				}
-			} while (!future.isDone() && lastTime > System.currentTimeMillis());
-
-			fail("Event %s has not been called".formatted(eventClass.getSimpleName()));
-		} catch (InterruptedException | ExecutionException ex) {
-			fail("Event %s has not been called".formatted(eventClass.getSimpleName()), ex);
-		}
-		return null; // never reached
+		return awaitFuture(future, millis, "Event %s has not been called".formatted(eventClass.getSimpleName()));
 	}
 
 	public void assertNotFired() {

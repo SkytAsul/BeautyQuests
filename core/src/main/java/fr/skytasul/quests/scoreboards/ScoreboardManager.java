@@ -113,8 +113,6 @@ public class ScoreboardManager implements Listener, QuestsHandler {
 	public void load() {
 		if (!QuestsConfiguration.getConfig().getQuestsConfig().scoreboards())
 			return;
-		if (plugin.isUnitTesting())
-			return;
 
 		try {
 			new FastBoard(null); // trigger class initialization

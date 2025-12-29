@@ -313,7 +313,7 @@ public class QuestImplementation implements Quest, QuestDescriptionProvider, Com
 			if (sendMessage) Lang.ALREADY_STARTED.send(p);
 			return false;
 		}
-		if (!getOptionValueOrDef(OptionRepeatable.class) && hasFinished(quester))
+		if (!isRepeatable() && hasFinished(quester))
 			return false;
 		if (!testTimer(quester, sendMessage))
 			return false;

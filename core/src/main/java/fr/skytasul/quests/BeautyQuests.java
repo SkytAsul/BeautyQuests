@@ -528,17 +528,19 @@ public class BeautyQuests extends JavaPlugin implements QuestsPlugin {
 
 	private void loadDataFile() throws LoadingException {
 		dataFile = new File(getDataFolder(), "data.yml");
-		if (!dataFile.exists()){
+		if (dataFile.exists()) {
+			logger.debug("Loading data file, last time edited: {}", new Date(dataFile.lastModified()).toString());
+			data = YamlConfiguration.loadConfiguration(dataFile);
+		} else {
 			try {
 				dataFile.createNewFile();
-				getLogger().info("data.yml created.");
+				data = new YamlConfiguration();
+				logger.debug("Created data file.");
 			} catch (IOException e) {
 				throw new LoadingException("Couldn't create data file.", e);
 			}
 		}
-		logger.debug("Loading data file, last time edited : " + new Date(dataFile.lastModified()).toString());
-		data = YamlConfiguration.loadConfiguration(dataFile);
-		data.options().header("Do not edit ANYTHING here.");
+		data.options().header("Internal use only. Do not edit ANYTHING here.");
 		data.options().copyHeader(true);
 	}
 
@@ -575,6 +577,9 @@ public class BeautyQuests extends JavaPlugin implements QuestsPlugin {
 
 	private void initTranslations() {
 		String fileName = config.getMinecraftTranslationsFile();
+		if (fileName == null || fileName.isBlank())
+			return;
+
 		Optional<String> extension = Utils.getFilenameExtension(fileName);
 		if (extension.isPresent()) {
 			if (extension.get().equalsIgnoreCase("json")) {

@@ -13,7 +13,7 @@
 
 	<properties>
 		<maven.javadoc.skip>true</maven.javadoc.skip>
-		<argLine/>
+		<argLine />
 	</properties>
 
 	<repositories>
@@ -53,6 +53,12 @@
 			<groupId>org.mockito</groupId>
 			<artifactId>mockito-core</artifactId>
 			<version>5.18.0</version>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.awaitility</groupId>
+			<artifactId>awaitility</artifactId>
+			<version>4.3.0</version>
 			<scope>test</scope>
 		</dependency>
 		<dependency>

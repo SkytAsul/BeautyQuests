@@ -162,7 +162,7 @@ public class QuestPoolControllerImplementation implements QuestPoolController, C
 				: quests;
 
 		if (notDoneQuests.isEmpty()) { // all quests completed
-			if (!data.redoAllowed() || quests.stream().noneMatch(quest -> quest.isRepeatable() && quest.canStart(p, false)))
+			if (!data.redoAllowed() || quests.stream().noneMatch(quest -> quest.canStart(p, false)))
 				return new CanGiveResult(false, Lang.POOL_ALL_COMPLETED.toString());
 		} else if (quester.getDataHolder().getAllQuestsData().stream()
 				.filter(quest -> quest.hasStarted() && quests.contains(quest.getQuest()))
@@ -211,7 +211,7 @@ public class QuestPoolControllerImplementation implements QuestPoolController, C
 		});
 	}
 
-	private CompletableFuture<PoolGiveResult> giveOne(Player p, Quester acc, QuesterPoolData datas,
+	protected CompletableFuture<PoolGiveResult> giveOne(Player p, Quester acc, QuesterPoolData datas,
 			boolean hadOne) {
 		if (!data.requirements().allMatch(p, !hadOne))
 			return CompletableFuture.completedFuture(new PoolGiveResult(""));
