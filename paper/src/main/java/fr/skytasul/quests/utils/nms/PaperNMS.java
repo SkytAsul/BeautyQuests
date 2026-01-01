@@ -18,6 +18,7 @@ import net.minecraft.world.level.block.state.properties.Property;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
 import org.bukkit.inventory.meta.ItemMeta;
+import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.List;
@@ -27,6 +28,7 @@ public class PaperNMS extends NMS {
 	private Field customTagField;
 
 	private Method identifierFactory;
+	private Constructor<?> identifierConstructor;
 	private Method resourceKeyFactory;
 
 	public PaperNMS() throws ReflectiveOperationException {
@@ -36,13 +38,19 @@ public class PaperNMS extends NMS {
 		Class<?> identifierClass = Class.forName(MinecraftVersion.isHigherThan(21, 11) ? "net.minecraft.resources.Identifier"
 				: "net.minecraft.resources.ResourceLocation");
 		resourceKeyFactory = ResourceKey.class.getDeclaredMethod("create", ResourceKey.class, identifierClass);
-		identifierFactory = identifierClass.getDeclaredMethod("parse", String.class);
+		if (MinecraftVersion.isHigherThan(21, 0))
+			identifierFactory = identifierClass.getDeclaredMethod("parse", String.class);
+		else
+			identifierConstructor = identifierClass.getDeclaredConstructor(String.class);
 	}
 
 	@SuppressWarnings("unchecked")
 	private <T> ResourceKey<T> createResourceKey(ResourceKey<Registry<T>> registryKey, NamespacedKey key) {
 		try {
-			Object identifier = identifierFactory.invoke(null, key.toString());
+			Object identifier;
+			identifier = identifierFactory == null
+					? identifierConstructor.newInstance(key.toString())
+					: identifierFactory.invoke(null, key.toString());
 			return (ResourceKey<T>) resourceKeyFactory.invoke(null, registryKey, identifier);
 		} catch (ReflectiveOperationException ex) {
 			throw new RuntimeException(ex);
