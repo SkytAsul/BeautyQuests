@@ -174,8 +174,9 @@ public class QuestsAPIImplementation implements QuestsAPI {
 	public void setHologramsManager(@NotNull BqHologramManager newHologramsManager) {
 		Validate.notNull(newHologramsManager);
 
-		if (plugin.getConfiguration().getHologramsConfig().preferredPlugin() != null) {
-			if (!plugin.getConfiguration().getHologramsConfig().preferredPlugin().equals(newHologramsManager.name())) {
+		String preferred = plugin.getConfiguration().getHologramsConfig().preferredPlugin();
+		if (preferred != null && !preferred.isBlank()) {
+			if (!preferred.equals(newHologramsManager.name())) {
 				LOGGER.warning("The holograms manager {} has loaded but is not the preferred one. Ignoring it.",
 						newHologramsManager.name());
 				return;

@@ -163,7 +163,7 @@ holograms:
   # If enabled, items having custom name will display them in a new hologram above the item.
   custom item name: true
   # Preferred plugin to use as holograms manager. If null (the default), the plugin will use whatever compatible hologram plugin has loaded last.
-  preferred plugin: null
+  preferred plugin: ''
 # (PlaceholdersAPI) Configuration for %beautyquests_started_ordered_X% placeholder
 startedQuestsPlaceholder:
   # Max length of a line if using splitted placeholder
