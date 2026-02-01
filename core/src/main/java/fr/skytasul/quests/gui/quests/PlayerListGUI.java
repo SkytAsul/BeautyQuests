@@ -119,6 +119,8 @@ public class PlayerListGUI extends CategorizedPagedGUI<Quest> {
 			});
 			group.objects().add(quest);
 		}
+		for (var category : groupedQuests.values())
+			category.objects().sort(Quest::compareTo);
 		setCategories(groupedQuests.values());
 	}
 
