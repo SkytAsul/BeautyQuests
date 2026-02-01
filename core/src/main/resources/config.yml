@@ -157,12 +157,12 @@ holograms:
   # Hologram shown above the head of NPCs when the player can launch a quest from them.
   launch item: BOOK
   # Hologram shown above the head of NPCs when the player cannot launch any quest from them.
-  cannot launch item: BOOK
+  cannot launch item: ''
   # Material name of the hologram showed above head of Stage NPC.
   talk item: COAL
   # If enabled, items having custom name will display them in a new hologram above the item.
   custom item name: true
-  # Preferred plugin to use as holograms manager. If null (the default), the plugin will use whatever compatible hologram plugin has loaded last.
+  # Preferred plugin to use as holograms manager. If empty (the default), the plugin will use whatever compatible hologram plugin has loaded last.
   preferred plugin: ''
 # (PlaceholdersAPI) Configuration for %beautyquests_started_ordered_X% placeholder
 startedQuestsPlaceholder:
