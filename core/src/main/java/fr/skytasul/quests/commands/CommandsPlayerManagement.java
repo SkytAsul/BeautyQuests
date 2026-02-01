@@ -94,13 +94,13 @@ public class CommandsPlayerManagement implements OrphanCommand {
 			BukkitCommandActor actor,
 			Quester quester,
 			Quest quest,
-			@Range (min = 0, max = 14) @Optional Integer branchID,
-			@Range (min = 0, max = 14) @Optional Integer stageID) {
+			@Range(min = 0, max = 14) @Optional Integer branchId,
+			@Range(min = 0, max = 14) @Optional Integer stageId) {
 		// syntax: no arg: next or start | 1 arg: start branch | 2 args: set branch stage
 		BranchesManagerImplementation manager = (BranchesManagerImplementation) quest.getBranchesManager();
 
 		var dataOpt = quester.getDataHolder().getQuestDataIfPresent(quest);
-		if (branchID == null && (dataOpt.isEmpty() || !dataOpt.get().hasStarted())) { // start quest
+		if (branchId == null && (dataOpt.isEmpty() || !dataOpt.get().hasStarted())) { // start quest
 			quest.start(quester, false);
 			Lang.START_QUEST.send(actor.sender(), quest, quester);
 			return;
@@ -109,32 +109,32 @@ public class CommandsPlayerManagement implements OrphanCommand {
 
 		QuestBranchImplementation currentBranch =
 				(QuestBranchImplementation) quest.getBranchesManager().getPlayerBranch(quester);
-		if (branchID == null) { // next
+		if (branchId == null) { // next
 			if (data.getState() != QuesterQuestData.State.IN_ENDING_STAGES) {
 				currentBranch.finishPlayerStage(quester, currentBranch.getRegularStage(data.getStage().getAsInt()));
 				Lang.COMMAND_SETSTAGE_NEXT.send(actor.sender());
 			}else Lang.COMMAND_SETSTAGE_NEXT_UNAVAILABLE.send(actor.sender());
 		}else {
-			QuestBranchImplementation targetBranch = manager.getBranch(branchID);
+			QuestBranchImplementation targetBranch = manager.getBranch(branchId);
 			if (targetBranch == null)
-				throw new CommandErrorException(Lang.COMMAND_SETSTAGE_BRANCH_DOESNTEXIST.quickFormat("branch_id", branchID));
+				throw new CommandErrorException(Lang.COMMAND_SETSTAGE_BRANCH_DOESNTEXIST.quickFormat("branch_id", branchId));
 
-			if (stageID != null) {
+			if (stageId != null) {
 				if (currentBranch == null)
 					throw new CommandErrorException(Lang.ERROR_OCCURED.quickFormat("error",
 							"player " + quester.getDetailedName() + " has not started quest"));
-				if (targetBranch.getRegularStages().size() <= stageID)
+				if (targetBranch.getRegularStages().size() <= stageId)
 					throw new CommandErrorException(
-							Lang.COMMAND_SETSTAGE_STAGE_DOESNTEXIST.quickFormat("stage_id", stageID));
+							Lang.COMMAND_SETSTAGE_STAGE_DOESNTEXIST.quickFormat("stage_id", stageId));
 			}
-			Lang.COMMAND_SETSTAGE_SET.quickSend(actor.sender(), "stage_id", stageID);
+			Lang.COMMAND_SETSTAGE_SET.quickSend(actor.sender(), "stage_id", stageId);
 			if (currentBranch != null)
 				currentBranch.remove(quester, true);
-			if (stageID == null) { // start branch
+			if (stageId == null) { // start branch
 				targetBranch.start(quester);
 			}else { // set stage in branch
-				data.setBranch(OptionalInt.of(branchID));
-				targetBranch.setPlayerStage(quester, targetBranch.getRegularStage(stageID));
+				data.setBranch(OptionalInt.of(branchId));
+				targetBranch.setPlayerStage(quester, targetBranch.getRegularStage(stageId));
 			}
 			QuestsAPI.getAPI().propagateQuestsHandlers(handler -> handler.questUpdated(quester, quest));
 		}

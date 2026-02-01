@@ -161,32 +161,6 @@ msg:
       own:
         hidden: §6Your scoreboard is now hidden.
         shown: §6Your scoreboard is shown again.
-    help:
-      header: §6§lBeautyQuests — Help
-      create: '§6/{label} create: §eCreate a quest.'
-      edit: '§6/{label} edit: §eEdit a quest.'
-      remove: '§6/{label} remove <id>: §eDelete a quest with a specified id or click on
-        the NPC when not defined.'
-      finishAll: '§6/{label} finishAll <player>: §eFinish all quests of a player.'
-      setStage: '§6/{label} setStage <player> <id> [new branch] [new stage]: §eSkip the
-        current stage/start the branch/set a stage for a branch.'
-      startDialog: '§6/{label} startDialog <player> <quest id>: §eStarts the pending dialog
-        for a NPC stage or the starting dialog for a quest.'
-      resetPlayer: '§6/{label} resetPlayer <player>: §eRemove all informations about a
-        player.'
-      resetPlayerQuest: '§6/{label} resetPlayerQuest <player> [id]: §eDelete informations
-        of a quest for a player.'
-      seePlayer: '§6/{label} seePlayer <player>: §eView informations about a player.'
-      reload: '§6/{label} reload: §eSave and reload all configurations and files. (§cdeprecated§e)'
-      start: '§6/{label} start <player> [id]: §eForce the starting of a quest.'
-      setItem: '§6/{label} setItem <talk|launch>: §eSave the hologram item.'
-      setFirework: '§6/{label} setFirework: §eEdit the default ending firework.'
-      adminMode: '§6/{label} adminMode: §eToggle the Admin Mode. (Useful for displaying
-        little log messages.)'
-      version: '§6/{label} version: §eSee the current plugin version.'
-      downloadTranslations: '§6/{label} downloadTranslations <language>: §eDownloads a vanilla translation file'
-      save: '§6/{label} save: §eMake a manual plugin save.'
-      list: '§6/{label} list: §eSee the quest list. (Only for supported versions.)'
   typeCancel: §aWrite "cancel" to come back to the last text.
   editor:
     blockAmount: '§aWrite the amount of blocks:'
@@ -796,6 +770,32 @@ description:
     quest: 'Finish quest §e{quest_name}'
   reward:
     title: '§8§lRewards:'
+
+command:
+  header: §6§lBeautyQuests — Help §e(page {page_id}/{page_count})
+  base: 'Open the Quests menu.'
+  create: 'Create a quest.'
+  edit: 'Edit a quest.'
+  remove: 'Delete a quest with a specified id or click on NPC when not defined.'
+  finishAll: 'Force finish all quests of a player.'
+  setStage: 'Skip the current stage OR start a branch OR go to a stage in a branch.'
+  startDialog: 'Start the pending dialog a NPC stage or the starting dialog for a quest.'
+  resetPlayer: 'Remove all data of a quester.'
+  resetPlayerQuest: 'Delete quest data for a quester.'
+  resetQuest: 'Delete data of all questers for a quest.'
+  seePlayer: 'See all quests data for a player.'
+  start: 'Start a quest manually.'
+  cancel: 'Cancel a started quest.'
+  finish: 'Force finish a started quest.'
+  checkpoint: 'Go back to the last checkpoint reached for a quest.'
+  pools: 'Manage quest pools.'
+  setItem: 'Change the hologram item globally.'
+  setFirework: 'Edit the default ending firework.'
+  adminMode: 'Enter/exit the Admin Mode: get log messages in the chat when players do quest actions.'
+  version: 'See the current plugin version.'
+  downloadTranslations: 'Download a vanilla translation file for blocks, items...'
+  save: 'Make a manual plugin save.'
+  list: 'See a list of created quests.'
     
 misc:
   format:

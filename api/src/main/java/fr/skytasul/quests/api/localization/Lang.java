@@ -161,26 +161,6 @@ public enum Lang implements Locale {
 	COMMAND_TRANSLATION_EXISTS("msg.command.downloadTranslations.exists"), // 0: file
 	COMMAND_TRANSLATION_DOWNLOADED("msg.command.downloadTranslations.downloaded"), // 0: lang
 
-	COMMAND_HELP("msg.command.help.header", MessageType.DefaultMessageType.UNPREFIXED),
-	COMMAND_HELP_CREATE("msg.command.help.create", MessageType.DefaultMessageType.UNPREFIXED),
-	COMMAND_HELP_EDIT("msg.command.help.edit", MessageType.DefaultMessageType.UNPREFIXED),
-	COMMAND_HELP_REMOVE("msg.command.help.remove", MessageType.DefaultMessageType.UNPREFIXED),
-	COMMAND_HELP_FINISH("msg.command.help.finishAll", MessageType.DefaultMessageType.UNPREFIXED),
-	COMMAND_HELP_STAGE("msg.command.help.setStage", MessageType.DefaultMessageType.UNPREFIXED),
-	COMMAND_HELP_DIALOG("msg.command.help.startDialog", MessageType.DefaultMessageType.UNPREFIXED),
-	COMMAND_HELP_RESET("msg.command.help.resetPlayer", MessageType.DefaultMessageType.UNPREFIXED),
-	COMMAND_HELP_RESETQUEST("msg.command.help.resetPlayerQuest", MessageType.DefaultMessageType.UNPREFIXED),
-	COMMAND_HELP_SEE("msg.command.help.seePlayer", MessageType.DefaultMessageType.UNPREFIXED),
-	COMMAND_HELP_RELOAD("msg.command.help.reload", MessageType.DefaultMessageType.UNPREFIXED),
-	COMMAND_HELP_START("msg.command.help.start", MessageType.DefaultMessageType.UNPREFIXED),
-	COMMAND_HELP_SETITEM("msg.command.help.setItem", MessageType.DefaultMessageType.UNPREFIXED),
-	COMMAND_HELP_SETFIREWORK("msg.command.help.setFirework", MessageType.DefaultMessageType.UNPREFIXED),
-	COMMAND_HELP_ADMINMODE("msg.command.help.adminMode", MessageType.DefaultMessageType.UNPREFIXED),
-	COMMAND_HELP_VERSION("msg.command.help.version", MessageType.DefaultMessageType.UNPREFIXED),
-	COMMAND_HELP_DOWNLOAD_TRANSLATIONS("msg.command.help.downloadTranslations", MessageType.DefaultMessageType.UNPREFIXED),
-	COMMAND_HELP_SAVE("msg.command.help.save", MessageType.DefaultMessageType.UNPREFIXED),
-	COMMAND_HELP_LIST("msg.command.help.list", MessageType.DefaultMessageType.UNPREFIXED),
-
 	// * Editors *
 	ALREADY_EDITOR("msg.editor.already"),
 	ENTER_EDITOR_TITLE("msg.editor.enter.title"),
@@ -316,6 +296,32 @@ public enum Lang implements Locale {
 	TEXTLIST_TEXT_HELP_REMOVE("msg.editor.textList.help.remove", MessageType.DefaultMessageType.UNPREFIXED),
 	TEXTLIST_TEXT_HELP_LIST("msg.editor.textList.help.list", MessageType.DefaultMessageType.UNPREFIXED),
 	TEXTLIST_TEXT_HELP_CLOSE("msg.editor.textList.help.close", MessageType.DefaultMessageType.UNPREFIXED),
+
+	/* Command syntax */
+	COMMAND_HELP_HEADER("command.header"),
+	COMMAND_HELP_BASE("command.base"),
+	COMMAND_HELP_CREATE("command.create"),
+	COMMAND_HELP_EDIT("command.edit"),
+	COMMAND_HELP_REMOVE("command.remove"),
+	COMMAND_HELP_FINISH_ALL("command.finishAll"),
+	COMMAND_HELP_STAGE("command.setStage"),
+	COMMAND_HELP_DIALOG("command.startDialog"),
+	COMMAND_HELP_RESET("command.resetPlayer"),
+	COMMAND_HELP_RESETPLAYERQUEST("command.resetPlayerQuest"),
+	COMMAND_HELP_RESETQUEST("command.resetQuest"),
+	COMMAND_HELP_SEE("command.seePlayer"),
+	COMMAND_HELP_START("command.start"),
+	COMMAND_HELP_CANCEL("command.cancel"),
+	COMMAND_HELP_FINISH("command.finish"),
+	COMMAND_HELP_CHECKPOINT("command.checkpoint"),
+	COMMAND_HELP_POOLS("command.pools"),
+	COMMAND_HELP_SETITEM("command.setItem"),
+	COMMAND_HELP_SETFIREWORK("command.setFirework"),
+	COMMAND_HELP_ADMINMODE("command.adminMode"),
+	COMMAND_HELP_VERSION("command.version"),
+	COMMAND_HELP_DOWNLOAD_TRANSLATIONS("command.downloadTranslations"),
+	COMMAND_HELP_SAVE("command.save"),
+	COMMAND_HELP_LIST("command.list"),
 
 	// * Quests lists*
 
@@ -915,6 +921,14 @@ public enum Lang implements Locale {
 	@Override
 	public String toString() {
 		return getValue();
+	}
+
+	public static @Nullable Lang getFromPath(@NotNull String path) {
+		for (Lang lang : values()) {
+			if (lang.path.equals(path))
+				return lang;
+		}
+		return null;
 	}
 
 }

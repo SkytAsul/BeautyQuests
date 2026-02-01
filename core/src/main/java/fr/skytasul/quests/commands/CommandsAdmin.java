@@ -122,6 +122,7 @@ public class CommandsAdmin implements OrphanCommand {
 
 	@Subcommand ("reload")
 	@CommandPermission ("beautyquests.command.manage")
+	@SecretCommand // TODO remove once reload implemented again
 	public void reload(BukkitCommandActor actor) {
 		BeautyQuests.getInstance().performReload(actor.sender());
 	}

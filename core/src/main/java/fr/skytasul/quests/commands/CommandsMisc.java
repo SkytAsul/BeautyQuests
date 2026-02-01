@@ -4,57 +4,81 @@ import fr.skytasul.quests.BeautyQuests;
 import fr.skytasul.quests.api.localization.Lang;
 import fr.skytasul.quests.api.utils.messaging.MessageType;
 import fr.skytasul.quests.api.utils.messaging.MessageUtils;
+import fr.skytasul.quests.api.utils.messaging.PlaceholderRegistry;
+import revxrsal.commands.annotation.Default;
 import revxrsal.commands.annotation.Description;
+import revxrsal.commands.annotation.Range;
 import revxrsal.commands.annotation.Subcommand;
 import revxrsal.commands.bukkit.actor.BukkitCommandActor;
 import revxrsal.commands.bukkit.annotation.CommandPermission;
 import revxrsal.commands.command.ExecutableCommand;
+import revxrsal.commands.exception.NumberNotInRangeException;
 import revxrsal.commands.help.Help;
+import revxrsal.commands.node.CommandNode;
 import revxrsal.commands.orphan.OrphanCommand;
 import java.util.ArrayList;
+import java.util.List;
+import java.util.StringJoiner;
 
 @Description ("Main command for quests")
 @CommandPermission ("beautyquests.command")
 public class CommandsMisc implements OrphanCommand {
 
+	private static final int COMMANDS_PER_HELP_PAGE = 15;
+
 	@Subcommand ("help")
-	public void help(BukkitCommandActor actor, ExecutableCommand<BukkitCommandActor> executedCommand,
-			Help.RelatedCommands<BukkitCommandActor> commands) {
-		Lang.COMMAND_HELP.send(actor.sender());
+	public void help(BukkitCommandActor actor,
+			@Range(min = 1) @Default("1") int page,
+			ExecutableCommand<BukkitCommandActor> thisCommand) {
+		List<ExecutableCommand<BukkitCommandActor>> commands = thisCommand.siblingCommands(actor).all().stream()
+				.sorted((c1, c2) -> {
+					if (!c1.nodes().get(1).isLiteral())
+						return -1; // c1 is the top-level command
+					if (!c2.nodes().get(1).isLiteral())
+						return 1; // c2 is the top-level command
+					return c1.path().compareTo(c2.path());
+				})
+				.toList();
 
-		var list = new ArrayList<Lang>();
+		int numberOfPages = Help.numberOfPages(commands.size(), COMMANDS_PER_HELP_PAGE);
+		if (page > numberOfPages)
+			throw new NumberNotInRangeException(page, 1, numberOfPages);
 
-		for (var command : commands) {
-			if (!command.isVisibleTo(actor))
-				continue;
+		Lang.COMMAND_HELP_HEADER.send(actor.sender(), PlaceholderRegistry.of("page_id", page, "page_count", numberOfPages));
 
-			String subcommandLabel = "ERROR";
-			for (var node : command.nodes()) {
-				if (node.isLiteral()) {
-					subcommandLabel = node.name();
-				} else
-					break;
-			}
-
-			for (Lang lang : Lang.values()) {
-				if (lang.getPath().startsWith("msg.command.help.")) {
-					list.add(lang);
-					String cmdKey = lang.getPath().substring(17);
-					if (cmdKey.equalsIgnoreCase(subcommandLabel)) {
-						list.remove(lang);
-						String helpString = lang.quickFormat("label", command.firstNode().name());
-						MessageUtils.sendMessage(actor.sender(), helpString, MessageType.DefaultMessageType.UNPREFIXED);
+		for (var command : Help.paginate(commands, page, COMMANDS_PER_HELP_PAGE)) {
+			String usage = command.usage();
+			String path;
+			if (command.nodes().get(1).isLiteral()) {
+				var literalsJoiner = new StringJoiner(".");
+				for (int i = 1; i < command.nodes().size(); i++) { // we skip the first value since it's the command label
+					var node = command.nodes().get(i);
+					if (!node.isLiteral())
 						break;
-					}
+					literalsJoiner.add(node.name());
 				}
+				path = literalsJoiner.toString();
+			} else {
+				// hacky workaround for the [subcommand] parameter
+				usage = command.nodes().get(0).name();
+				path = "base";
 			}
+			Lang lang = Lang.getFromPath("command." + path);
+			String message = "/" + usage;
+			if (lang != null)
+				message += ": §e" + lang.getValue();
+			MessageUtils.sendMessage(actor.sender(), message, MessageType.DefaultMessageType.UNPREFIXED);
 		}
+	}
 
-		for (Lang lang : list) {
-			// temporary, until refactoring of the help system TODO make use of automatic usage generation
-			String helpString = lang.quickFormat("label", executedCommand.firstNode().name());
-			MessageUtils.sendMessage(actor.sender(), helpString, MessageType.DefaultMessageType.UNPREFIXED);
+	private static List<CommandNode<BukkitCommandActor>> getFirstLiterals(ExecutableCommand<BukkitCommandActor> command) {
+		var nodes = new ArrayList<CommandNode<BukkitCommandActor>>();
+		for (var node : command.nodes()) {
+			if (!node.isLiteral())
+				break;
+			nodes.add(node);
 		}
+		return nodes;
 	}
 
 	@Subcommand ("version")
