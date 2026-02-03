@@ -20,6 +20,7 @@ import fr.skytasul.quests.api.quests.Quest;
 import fr.skytasul.quests.api.quests.events.questers.QuesterQuestFinishEvent;
 import fr.skytasul.quests.api.quests.events.questers.QuesterQuestLaunchEvent;
 import fr.skytasul.quests.api.requirements.RequirementList;
+import fr.skytasul.quests.api.rewards.RewardList;
 import fr.skytasul.quests.options.OptionQuestPool;
 import fr.skytasul.quests.options.OptionRepeatable;
 import fr.skytasul.quests.options.OptionRequirements;
@@ -73,7 +74,8 @@ class QuestPoolControllerTest {
 	@Test
 	void testMaxQuests() throws InterruptedException, ExecutionException {
 		pool = plugin.getPoolsManager()
-				.registerPool(new QuestPoolData("test", null, null, 2, 1, false, 0, false, new RequirementList(), false));
+				.registerPool(new QuestPoolData("test", null, null, 2, 1, false, 0, false, false, new RequirementList(),
+						new RewardList(), new RewardList()));
 
 		for (int i = 0; i < 3; i++)
 			createQuest(i, false);
@@ -88,7 +90,8 @@ class QuestPoolControllerTest {
 	@Test
 	void testQuestsPerLaunch() throws InterruptedException, ExecutionException {
 		pool = plugin.getPoolsManager()
-				.registerPool(new QuestPoolData("test", null, null, 4, 2, false, 0, false, new RequirementList(), false));
+				.registerPool(new QuestPoolData("test", null, null, 4, 2, false, 0, false, false, new RequirementList(),
+						new RewardList(), new RewardList()));
 
 		for (int i = 0; i < 3; i++)
 			createQuest(i, false);
@@ -99,7 +102,8 @@ class QuestPoolControllerTest {
 	@Test
 	void testCooldown() throws InterruptedException, ExecutionException {
 		pool = plugin.getPoolsManager()
-				.registerPool(new QuestPoolData("test", null, null, 4, 2, false, 500, false, new RequirementList(), false));
+				.registerPool(new QuestPoolData("test", null, null, 4, 2, false, 500, false, false, new RequirementList(),
+						new RewardList(), new RewardList()));
 
 		for (int i = 0; i < 3; i++)
 			createQuest(i, false);
@@ -115,8 +119,9 @@ class QuestPoolControllerTest {
 	@ValueSource(booleans = {false, true})
 	void testNoRedo(boolean avoidDuplicates) throws InterruptedException, ExecutionException {
 		pool = plugin.getPoolsManager()
-				.registerPool(new QuestPoolData("test", null, null, 1, 1, false, 0, avoidDuplicates, new RequirementList(),
-						false));
+				.registerPool(
+						new QuestPoolData("test", null, null, 1, 1, false, 0, avoidDuplicates, false, new RequirementList(),
+								new RewardList(), new RewardList()));
 
 		var quest0 = createQuest(0, false, "quest0");
 		var quest1 = createQuest(1, true, "quest1");
@@ -147,7 +152,8 @@ class QuestPoolControllerTest {
 	void testRedoAllowed(boolean avoidDuplicates) throws InterruptedException, ExecutionException {
 		pool = plugin.getPoolsManager()
 				.registerPool(
-						new QuestPoolData("test", null, null, 1, 1, true, 0, avoidDuplicates, new RequirementList(), false));
+						new QuestPoolData("test", null, null, 1, 1, true, 0, avoidDuplicates, false, new RequirementList(),
+								new RewardList(), new RewardList()));
 
 		var quest0 = createQuest(0, false, "quest0");
 		var quest1 = createQuest(1, true, "quest1");
@@ -176,7 +182,8 @@ class QuestPoolControllerTest {
 	@RepeatedTest(value = 10) // since random is involved, we run this test multiple times
 	void testAvoidDuplicatesWork() throws InterruptedException, ExecutionException {
 		pool = plugin.getPoolsManager()
-				.registerPool(new QuestPoolData("test", null, null, 1, 1, false, 0, true, new RequirementList(), false));
+				.registerPool(new QuestPoolData("test", null, null, 1, 1, false, 0, true, false, new RequirementList(),
+						new RewardList(), new RewardList()));
 
 		var quests = IntStream.range(0, 3).mapToObj(id -> createQuest(id, true)).toList();
 

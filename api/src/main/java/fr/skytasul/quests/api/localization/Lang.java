@@ -20,6 +20,8 @@ public enum Lang implements Locale {
 	ErrorPrefix("misc.format.errorPrefix"),
 	SuccessPrefix("misc.format.successPrefix"),
 	RequirementNotMetPrefix("misc.format.requirementNotMetPrefix"),
+	ImportantItemPrefix("misc.format.importantItem"),
+	MiscItemPrefix("misc.format.miscItem"),
 
 	/* Messages */
 	FINISHED_BASE("msg.quest.finished.base"),
@@ -649,6 +651,9 @@ public enum Lang implements Locale {
 	poolItemAvoidDuplicates("inv.poolsManage.poolAvoidDuplicates"),
 	poolItemShowAsCategory("inv.poolsManage.showAsCategory"),
 	poolItemQuestsList("inv.poolsManage.poolQuestsList"), // 0: size, 1: quests
+	poolItemRequirements("inv.poolsManage.requirements"),
+	poolItemStartRewards("inv.poolsManage.startRewards"),
+	poolItemEndRewards("inv.poolsManage.endRewards"),
 	poolChoose("inv.poolsManage.choose"),
 	poolCreate("inv.poolsManage.create"),
 
@@ -663,6 +668,8 @@ public enum Lang implements Locale {
 	poolAvoidDuplicatesLore("inv.poolCreation.avoidDuplicatesLore"),
 	poolShowAsCategory("inv.poolCreation.showAsCategory"),
 	poolRequirements("inv.poolCreation.requirements"),
+	poolStartRewards("inv.poolCreation.startRewards", Lang.MiscItemPrefix),
+	poolEndRewards("inv.poolCreation.endRewards", Lang.MiscItemPrefix),
 
 	INVENTORY_POOLS_LIST("inv.poolsList.name"),
 

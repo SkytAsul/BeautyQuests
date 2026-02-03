@@ -35,10 +35,10 @@ public class QuestPoolControllerImplementation implements QuestPoolController, C
 	private static final LoggerExpanded LOGGER = LoggerExpanded.get("BeautyQuests.QuestPoolController");
 
 	private final int id;
-	private QuestPoolData data;
+	private final QuestPoolData data;
 
 	BqNpcImplementation npc;
-	List<Quest> quests = new ArrayList<>();
+	Set<Quest> quests = new HashSet<>();
 
 	private @Nullable PlaceholderRegistry placeholders;
 
@@ -66,7 +66,7 @@ public class QuestPoolControllerImplementation implements QuestPoolController, C
 	}
 
 	@Override
-	public List<Quest> getQuests() {
+	public Set<Quest> getQuests() {
 		return quests;
 	}
 
@@ -101,9 +101,13 @@ public class QuestPoolControllerImplementation implements QuestPoolController, C
 					.register("pool_show_as_category", MessageUtils.getYesNo(data.showAsCategory()))
 					.register("pool_time", Utils.millisToHumanString(data.timeDiff()))
 					.register("pool_hologram", QuestOption.formatNullableValue(data.hologram(), Lang.PoolHologramText))
+					.register("pool_requirements_amount", data.requirements().getSizeString())
+					.register("pool_start_rewards_amount", data.startRewards().getSizeString())
+					.register("pool_end_rewards_amount", data.endRewards().getSizeString())
 					.register("pool_quests",
 							() -> quests.stream().map(x -> "#" + x.getId()).collect(Collectors.joining(", ")))
-					.register("pool_quests_amount", () -> Integer.toString(quests.size()));
+					.register("pool_quests_amount", () -> Integer.toString(quests.size()))
+			;
 		}
 		return placeholders;
 	}
@@ -119,8 +123,10 @@ public class QuestPoolControllerImplementation implements QuestPoolController, C
 				Lang.poolItemTime.format(this),
 				Lang.poolItemHologram.format(this),
 				Lang.poolItemAvoidDuplicates.format(this),
-				"§7" + data.requirements().getSizeString(),
-				Lang.poolItemQuestsList.format(this));
+				Lang.poolItemQuestsList.format(this),
+				Lang.poolItemRequirements.format(this),
+				Lang.poolItemStartRewards.format(this),
+				Lang.poolItemEndRewards.format(this));
 	}
 
 	@Override
@@ -139,6 +145,12 @@ public class QuestPoolControllerImplementation implements QuestPoolController, C
 		var completedQuests = poolDatas.getCompletedQuests();
 		completedQuests.add(quest.getId());
 		poolDatas.setCompletedQuests(completedQuests);
+
+		if (!data.redoAllowed() && completedQuests.size() == quests.size()) {
+			LOGGER.debug("{0} completed all quests in pool {1}", acc.getDetailedName(), id);
+			data.endRewards().giveRewards(acc)
+					.whenComplete(LOGGER.logError("Failed to give rewards to {0}", acc.getDetailedName()));
+		}
 	}
 
 	@Override
@@ -163,7 +175,7 @@ public class QuestPoolControllerImplementation implements QuestPoolController, C
 			return new CanGiveResult(CanGiveResultType.NONE_AVAILABLE, "There are no quests in the pool.");
 		}
 
-		List<Quest> notCompleted = getNotCompletedQuests(questerData);
+		Collection<Quest> notCompleted = getNotCompletedQuests(questerData);
 
 		if (notCompleted.isEmpty()) {
 			// all quests completed: we check if the player can redo some of them
@@ -196,7 +208,7 @@ public class QuestPoolControllerImplementation implements QuestPoolController, C
 		return new CanGiveResult(CanGiveResultType.OK, null);
 	}
 
-	private List<Quest> getNotCompletedQuests(Optional<QuesterPoolData> questerData) {
+	private Collection<Quest> getNotCompletedQuests(Optional<QuesterPoolData> questerData) {
 		return questerData.isEmpty() || (!data.avoidDuplicates() && data.redoAllowed())
 				? quests
 				: quests.stream()
@@ -207,14 +219,21 @@ public class QuestPoolControllerImplementation implements QuestPoolController, C
 	@Override
 	public CompletableFuture<String> give(Player p) {
 		Quester quester = PlayerManager.getPlayerAccount(p);
+
+		boolean hadPoolData = quester.getDataHolder().hasPoolData(this);
 		QuesterPoolData questerData = quester.getDataHolder().getPoolData(this);
 
 		return CompletableFuture.supplyAsync(() -> {
+			boolean shouldGiveStartRewards = !hadPoolData;
 			List<Quest> started = new ArrayList<>(data.questsPerLaunch());
 			try {
 				for (int i = 0; i < data.questsPerLaunch(); i++) {
 					var canGiveResults = canGive(p);
 					if (canGiveResults.isSuccess()) {
+						if (shouldGiveStartRewards) {
+							data.startRewards().giveRewards(quester).get();
+							shouldGiveStartRewards = false;
+						}
 						giveOne(p, quester, questerData).get().ifPresent(started::add);
 						// giveOne can return an empty optional if the player refused
 						// a quest. We should still continue the loop.
@@ -240,7 +259,7 @@ public class QuestPoolControllerImplementation implements QuestPoolController, C
 	}
 
 	private CompletableFuture<Optional<Quest>> giveOne(Player p, Quester quester, QuesterPoolData datas) {
-		List<Quest> notCompleted = getNotCompletedQuests(Optional.of(datas));
+		Collection<Quest> notCompleted = getNotCompletedQuests(Optional.of(datas));
 
 		List<Quest> available = notCompleted.stream().filter(quest -> quest.canStart(p, false)).toList();
 		// at this point, "available" contains all quests that the player has not yet completed, that it is

@@ -653,8 +653,11 @@ inv:
     poolTime: '§8Time between quests: §7{pool_time}'
     poolHologram: '§8Hologram text: §7{pool_hologram}'
     poolAvoidDuplicates: '§8Avoid duplicates: §7{pool_duplicates}'
-    poolQuestsList: '§7{pool_quests_amount} §8quest(s): §7{pool_quests}'
     showAsCategory: '§8Show as category: §7{pool_show_as_category}'
+    requirements: '§8Requirements: §7{pool_requirements_amount}'
+    startRewards: '§8Start rewards: §7{pool_start_rewards_amount}'
+    endRewards: '§8End rewards: §7{pool_end_rewards_amount}'
+    poolQuestsList: '§7{pool_quests_amount} §8quest(s): §7{pool_quests}'
     create: §aCreate a quest pool
     choose: §e> §6§oChoose this pool §e<
   poolCreation:
@@ -669,6 +672,8 @@ inv:
     avoidDuplicatesLore: §8> §7Try to avoid doing\n  the same quest over and over
     showAsCategory: Show as category
     requirements: §bRequirements to start a quest
+    startRewards: Rewards given when a player starts the pool for the first time
+    endRewards: Rewards given when a player finishes the last quest of the pool
   poolsList.name: Quest pools
   itemComparisons:
     name: Item Comparisons
@@ -807,6 +812,8 @@ misc:
     errorPrefix: §4✖ §c
     successPrefix: §2✔ §a
     requirementNotMetPrefix: §c
+    importantItem: §a
+    miscItem: §e
   time:
     weeks: '{weeks_amount} weeks'
     days: '{days_amount} days'

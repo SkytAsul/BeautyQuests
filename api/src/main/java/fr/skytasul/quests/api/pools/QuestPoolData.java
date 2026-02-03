@@ -1,6 +1,7 @@
 package fr.skytasul.quests.api.pools;
 
 import fr.skytasul.quests.api.requirements.RequirementList;
+import fr.skytasul.quests.api.rewards.RewardList;
 import org.bukkit.configuration.ConfigurationSection;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -14,8 +15,10 @@ public record QuestPoolData(
 		boolean redoAllowed,
 		long timeDiff,
 		boolean avoidDuplicates,
+		boolean showAsCategory,
 		@NotNull RequirementList requirements,
-		boolean showAsCategory) {
+		@NotNull RewardList startRewards,
+		@NotNull RewardList endRewards) {
 
 	public void save(ConfigurationSection config) {
 		config.set("name", name);
@@ -29,6 +32,10 @@ public record QuestPoolData(
 		config.set("showAsCategory", showAsCategory);
 		if (!requirements.isEmpty())
 			config.set("requirements", requirements.serialize());
+		if (!startRewards.isEmpty())
+			config.set("startRewards", startRewards.serialize());
+		if (!endRewards.isEmpty())
+			config.set("endRewards", endRewards.serialize());
 	}
 
 	public static QuestPoolData deserialize(ConfigurationSection config) {
@@ -41,8 +48,10 @@ public record QuestPoolData(
 				config.getBoolean("redoAllowed"),
 				config.getLong("timeDiff"),
 				config.getBoolean("avoidDuplicates", true),
+				config.getBoolean("showAsCategory", false), // false for migration from 2.0
 				RequirementList.deserialize(config.getMapList("requirements")),
-				config.getBoolean("showAsCategory", false) // false for migration from 2.0
+				RewardList.deserialize(config.getMapList("startRewards")),
+				RewardList.deserialize(config.getMapList("endRewards"))
 		);
 	}
 

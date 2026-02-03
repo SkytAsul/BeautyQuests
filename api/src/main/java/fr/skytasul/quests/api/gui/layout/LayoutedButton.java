@@ -1,15 +1,15 @@
 package fr.skytasul.quests.api.gui.layout;
 
-import java.util.List;
-import java.util.function.BooleanSupplier;
-import java.util.function.Supplier;
+import com.cryptomorin.xseries.XMaterial;
+import fr.skytasul.quests.api.gui.ItemUtils;
+import fr.skytasul.quests.api.options.QuestOption;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import com.cryptomorin.xseries.XMaterial;
-import fr.skytasul.quests.api.gui.ItemUtils;
-import fr.skytasul.quests.api.options.QuestOption;
+import java.util.List;
+import java.util.function.BooleanSupplier;
+import java.util.function.Supplier;
 
 public interface LayoutedButton extends LayoutedClickHandler {
 
@@ -43,7 +43,7 @@ public interface LayoutedButton extends LayoutedClickHandler {
 			public @Nullable ItemStack getItem() {
 				return ItemUtils.item(material, name, lore);
 			}
-			
+
 		};
 	}
 
@@ -148,7 +148,7 @@ public interface LayoutedButton extends LayoutedClickHandler {
 			public @Nullable ItemStack getItem() {
 				return item.get();
 			}
-			
+
 		};
 	}
 
@@ -170,7 +170,8 @@ public interface LayoutedButton extends LayoutedClickHandler {
 
 	public static @NotNull LayoutedButton createSwitch(@NotNull BooleanSupplier stateSupplier, @NotNull String name,
 			@Nullable List<@Nullable String> lore, @NotNull LayoutedClickHandler click) {
-		return create(() -> ItemUtils.itemSwitch(name, stateSupplier.getAsBoolean(), lore.toArray(new String[0])), click);
+		return create(() -> ItemUtils.itemSwitch(name, stateSupplier.getAsBoolean(),
+				lore == null ? new String[0] : lore.toArray(new String[0])), click);
 	}
 
 }
