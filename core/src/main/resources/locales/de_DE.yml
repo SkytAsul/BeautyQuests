@@ -28,6 +28,7 @@ msg:
     drop: '§cDu kannst einen Questgegenstand nicht fallen lassen!'
     craft: '§cDu kannst keinen Questgegenstand zum Craften verwenden!'
     eat: Du kannst Quest Items nicht Essen!
+    place: '§cDu kannst keinen Questgegenstand platzieren!'
   stageMobs:
     listMobs: '§aDu musst {mobs} töten.'
   writeNPCText: '§aSchreibe den Dialog, den der NPC mit dem Spieler führt: (Schreibe „help”, um Hilfe zu erhalten.)'
@@ -46,11 +47,13 @@ msg:
   writeNpcName: '§aSchreibe den Namen des NPCs:'
   writeNpcSkinName: '§aSchreibe den Namen des NPC‐Skins:'
   writeQuestName: '§a Schreibe den Namen der Quest:'
+  writeCommand: '§aSchreibe Sie den gewünschten Befehl: (Der Befehl ist ohne den "/" und der Platzhalter "\{player}" wird unterstützt. Er wird durch den Namen des ausführenden Spielers ersetzt.)'
   writeHologramText: '§aSchreibe den Text des Hologramms: (Schreibe „none”, wenn du kein Hologramm haben möchtest und „null”, wenn du den Standard‐Text verwenden willst.)'
   writeQuestTimer: '§aSchreibe die benötigte Zeit (in Minuten), bevor ein Spieler die Quest erneut starten kann: (Schreibe „null“, wenn der Standard‐Timer verwendet werden soll.)'
   writeConfirmMessage: '§aSchreibe die Bestätigungsnachricht, die beim Startversuch der Quest dem Spieler gezeigt wird: (Schreibe „null“, wenn die Standard‐Nachricht verwendet werden soll.)'
   writeQuestDescription: '§aGebe die Beschreibung der Quest ein, welche in der Quest-GUI des Spielers angezeigt werden soll.'
   writeQuestMaterial: '§aSchreibe das Material des Questgegenstandes.'
+  writeQuestCustomOrder: 'Schreibe den benutzerdefinierten Sortierungs-Index der Quest oder "null", um auf die Quest-ID zurückzusetzen.'
   requirements:
     quest: '§cDu musst die Quest §e{quest_name}§c abgeschlossen haben!'
     level: '§cDein Level muss {long_level} sein!'
@@ -113,17 +116,18 @@ msg:
       player: '§6Alle Informationen über die Quest {quest} wurden von {deleter_name} gelöscht.'
       remover: '§6{player} Questinformation(en) von {quest} wurde(n) gelöscht.'
     resetQuest: '§6Quest Daten wurden für {player_amount} Spieler entfernt.'
+    startQuest: '§6Du hast den Start der Quest {quest} für {player} erzwungen.'
     startQuestNoRequirements: '§cDer Spieler erfüllt nicht die Anforderungen für die Quest {quest}... Füge "-OverrideRequirements am Ende deines Befehls hinzu, um die Anforderungsüberprüfung zu umgehen.'
     cancelQuest: '§6Du hast die Quest {quest} abgebrochen.'
     cancelQuestUnavailable: '§cDie Quest {quest} kann nicht abgebrochen werden.'
     backupCreated: '§6Du hast erfolgreich Sicherungen aller Quests und Spielerinformationen erstellt.'
-    backupPlayersFailed: '§cDas Sichern von allen Spielerinformationen ist fehlgeschlagen.'
-    backupQuestsFailed: '§cDas Sichern von allen Quests ist fehlgeschlagen.'
+    backupFailed: Backup konnte nicht erstellt werden.
     adminModeEntered: '§aDu hast den Admin‐Modus betreten.'
     adminModeLeft: '§aDu hast den Admin‐Modus verlassen.'
     resetPlayerPool:
       timer: '§aDu hast den {pool} Gruppentimer auf {player} zurückgesetzt.'
       full: '§aDu hast die {pool} Gruppendaten auf {player} zurückgesetzt.'
+    resetPool: Daten des Pools für {player_amount} Spieler entfernt.
     startPlayerPool:
       error: 'Der Pool {pool} für {player} konnte nicht gestartet werden.'
       success: 'Pool {pool} bis {player}gestartet. Ergebnis: {result}'
@@ -138,26 +142,6 @@ msg:
       own:
         hidden: '§6Dein Scoreboard ist jetzt versteckt.'
         shown: Dein Scoreboard wird wieder angezeigt.
-    help:
-      header: '§6§lBeautyQuests — Hilfe'
-      create: '§6/{label} create: §eErstelle eine Quest.'
-      edit: '§6/{label} edit: §eBearbeite eine Quest.'
-      remove: '§6/{label} remove <ID>: §eLösche eine Quest mit der angegebenen ID oder klicke auf den NPC, wenn nicht definiert.'
-      finishAll: '§6/{label} finishAll <Spieler>: §eBeende alle Quests eines Spielers.'
-      setStage: '§6/{label} setStage <Spieler> <ID> [neuer Zweig] [neuer Schritt]: §eÜberspringe den aktuellen Schritt/starte einen Zweig/setze einen Schritt für einen Zweig.'
-      startDialog: '§6/{label} startDialog <player> <quest id>: §eStartet den ausstehenden Dialog für eine NPC-Stufe oder den Startdialog für eine Quest.'
-      resetPlayer: '§6/{label} resetPlayer <Spieler>: §eEntferne alle Informationen eines Spielers.'
-      resetPlayerQuest: '§6/{label} resetPlayerQuest <Spieler> [ID]: §eLösche Informationen einer Quest für einen Spieler.'
-      seePlayer: '§6/{label} seePlayer <Spieler>: §eSieh dir die Informationen eines Spielers an.'
-      reload: '§6/{label} reload: §eSpeichere und und lade alle Konfigurationen und Dateien neu. (§cveraltet§e)'
-      start: '§6/{label} start <Spieler> [ID]: §eErzwinge das Starten einer Quest.'
-      setItem: '§6/{label} setItem <talk|launch>: §eSpeichere das Hologramm‐Item.'
-      setFirework: '§6/{label} SetFeuerwerk: §eBearbeite das standardmäßig end Feuerwerk.'
-      adminMode: '§6/{label} adminMode: §eSchalte den Admin‐Modus (für die Anzeige von Protokollnachrichten) für dich um.'
-      version: '§6/{label} version: §eLass dir die aktuelle Plugin‐Version anzeigen.'
-      downloadTranslations: '§6/{label} heruntergeladene Übersetzung <language>: §eDownloads einer Vanille-Übersetzungsdatei'
-      save: '§6/{label} save: §eFühre eine manuelle Plugin‐Speicherung durch.'
-      list: '§6/{label} list: §eSieh dir die Questliste an. (Funktioniert nur bei unterstützten Versionen.)'
   typeCancel: '§aSchreibe „cancel“, um zum letzten Text zurückzukehren.'
   editor:
     blockAmount: '§aSchreibe die Anzahl der Blöcke:'
@@ -204,6 +188,9 @@ msg:
       chooseObjectiveRequired: '§aGebe den Namen des Ziels an.'
       chooseObjectiveTargetScore: '§aGebe den benötigten Punktestand für das Ziel an.'
       chooseRegionRequired: '§aSchreibe den Namen der benötigten Region (du musst in der gleichen Welt sein).'
+      chooseRequirementCustomReason: 'Schreibe den benutzerdefinierten Grund für diese Anforderung. Wenn der Spieler die Anforderung nicht erfüllt, aber trotzdem versucht, die Quest zu starten, wird diese Nachricht im Chat erscheinen.'
+      chooseRequirementCustomDescription: 'Schreibe die benutzerdefinierte Beschreibung für diese Anforderung. Sie wird in der Beschreibung der Quest im Menü erscheinen.'
+      chooseRewardCustomDescription: 'Schreibe die benutzerdefinierte Beschreibung für diese Belohnung. Sie wird in der Beschreibung der Quest im Menü erscheinen.'
     selectWantedBlock: '§aKlicke mit dem Stock auf den gewünschten Block für diesen Schritt.'
     itemCreator:
       itemType: '§aSchreibe den Namen des gewünschten Items:'
@@ -215,6 +202,7 @@ msg:
       unknownBlockType: '§cUnbekannter Blocktyp.'
       invalidBlockType: '§cUngültiger Blocktyp.'
     dialog:
+      syntaxMessage: '§cKorrekter Syntax: {command} <Nachricht>'
       syntaxRemove: '§cKorrekte Syntax: remove <ID>'
       player: '§aNachricht "§7{msg}§a" für den Spieler hinzugefügt.'
       npc: '§aNachricht "§7{msg}§a" für den NPC hinzugefügt.'
@@ -269,6 +257,7 @@ msg:
     comparisonTypeDefault: '§aWählen Sie den Vergleichstyp unter {available}aus. Der Standardvergleich ist: §e§l{default}§r§a. Geben Sie §onull§r§a ein, um ihn zu verwenden.'
     scoreboardObjectiveNotFound: '§cUnbekanntes Scoreboard Ziel.'
     pool:
+      name: 'Schreibe den Namen des Pools der Quest.'
       hologramText: 'Schreibe den benutzerdefinierten Hologramm-Text für diese Gruppe (oder "null", wenn du den Standardtext möchtest).'
       maxQuests: 'Lege die maximale Anzahl an Quests fest, die aus dieser Gruppe gestartet werden können.'
       questsPerLaunch: 'Schreibe die Anzahl der Quests, die du bei einem Klick auf den NPC erhalten hast.'
@@ -289,12 +278,14 @@ msg:
       removed: 'Das Questfeuerwerk entfernt!'
   writeCommandDelay: '§aGebe die gewünschte Befehl Verzögerung in Ticks an.'
 advancement:
+  finished: '{times_finished} x beendet'
   notStarted: Nicht gestartet
 inv:
   validate: '§b§lBestätigen'
   cancel: '§c§lAbbrechen'
   search: '§e§lSuche'
   addObject: '§aFüge ein Ziel hinzu'
+  edit: Bearbeiten
   confirm:
     name: Bist du sicher?
     'yes': '§aBestätigen'
@@ -314,6 +305,7 @@ inv:
     placeBlocks: '§aPlatziere Blöcke'
     talkChat: '§aIm Chat schreiben'
     interact: '§aMit Block interagieren'
+    interactLocation: '§aInteragiere mit Block vor Ort'
     fish: '§aFische fangen'
     melt: '§6Schmelze Elemente'
     enchant: '§dVerzauberte Gegenstände'
@@ -337,6 +329,7 @@ inv:
     editMessageType: '§eDie zu schreibende Nachricht bearbeiten'
     cancelMessage: Senden abbrechen
     ignoreCase: Fall der Nachricht ignorieren
+    replacePlaceholders: 'Ersetze \{PLAYER} und Platzhalter von PAPI'
     selectItems: '§eBenötigte Items auswählen'
     selectItemsMessage: '§eFragenachricht bearbeiten'
     selectItemsComparisons: '§eWähle Gegenstandsvergleiche (ERWEITERT)'
@@ -348,6 +341,7 @@ inv:
     leftClick: Muss Linksklick sein
     editFishes: '§eDie zu fangenden Fische bearbeiten'
     editItemsToMelt: '§eBearbeite Items zum Schmelzen'
+    editItemsToMeltLore: Die Gegenstände, die du hier platzierst, sind die, welche die Spieler AUS dem Ofen erhalten sollen, nicht die, die sie REINLEGEN.
     editItemsToEnchant: '§eBearbeite Items zum Verzaubern'
     editItem: '§eHerzustellendes Item bearbeiten'
     editBucketType: '§eTyp des zu befüllenden Eimers bearbeiten'
@@ -370,6 +364,12 @@ inv:
         targetMobs: '§cMobs zu Schaden'
       eatDrink:
         items: '§eBearbeite Items um zu essen oder zu trinken'
+      playTime:
+        changeTimeMode: 'Die Art, wie die Zeit berechnet wird ändern'
+        modes:
+          online: 'Spieler muss mit dem Server verbunden sein'
+          offline: 'Spieler kann offline sein, aber der Server muss laufen, um die Zeit zu zählen'
+          realtime: 'Zeit wird gezählt, auch wenn der Spieler und der Server offline sind'
   stages:
     name: Schritte erstellen
     nextPage: '§eNächste Seite'
@@ -459,6 +459,12 @@ inv:
     fireworkLoreDrop: Lege dein eigenes Feuerwerk hierher
     visibility: '§bQuest Sichtbarkeit'
     visibilityLore: Legen Sie fest, in welchen Tabs des Menüs die Quest angezeigt wird und ob die Quest auf dynamischen Karten sichtbar ist.
+    questerStrategy: Quester-Strategie
+    customOrder: '§eBenutzerdefinierte Questreihenfolge'
+    customOrderLore: |-
+      Nummer für die Sortierung der Quests im Menü.
+
+      Wenn nicht gesetzt, wird stattdessen die Quest-ID verwendet.
     keepDatas: Spielerdaten beibehalten
     keepDatasLore: |-
       Erzwinge das Plugin die Daten der Spieler zu speichern, obwohl Stufen bearbeitet wurden. §c§lWARNUNG §c- Aktivieren dieser Option kann die Daten deiner Spieler zerstören.
@@ -503,11 +509,14 @@ inv:
     mythicMob: '§6Mythic Mob auswählen'
     epicBoss: '§6Wähle einen Epic Boss'
     boss: '§6Wähle einen Boss'
+    advancedSpawners: '§6Wähle einen AdvancedSpawners Mob'
   stageEnding:
     locationTeleport: '§eTeleportationsposition bearbeiten'
     command: '§eAuszuführenden Befehl bearbeiten'
   requirements:
     name: Anforderungen
+    setReason: Eigenen Grund festlegen
+    reason: '§8Eigener Grund: §7{reason}'
   rewards:
     name: Belohnungen
     commands: 'Befehle: {amount}'
@@ -530,9 +539,17 @@ inv:
     inProgress: Laufende Quests
     loreDialogsHistoryClick: '§7Dialoge anzeigen'
     loreCancelClick: '§cQuest abbrechen'
+    loreScoreboardPinClick: '§7An das Scoreboard pinnen'
+    loreScoreboardUnpinClick: '§7§lVom Scoreboard entfernen'
     loreStart: '§a§oKlicke, um die Quest zu starten.'
     loreStartUnavailable: '§c§oDu erfüllst nicht die Anforderungen, um die Quest zu starten.'
+    timeToWaitRedo: '§7§oDu kannst diese Quest in {time_left} erneut starten...'
     canRedo: '§3§oDu kannst diese Quest erneut starten!'
+    timesFinished: '§6{times_finished} x §eabgeschlossen.'
+    categoryOther: Andere Quests
+    format:
+      normal: '§6§l§o{quest_name}'
+      withId: '§6§l§o{quest_name}§r      §e#{quest_id}'
   itemCreator:
     name: Item‐Ersteller
     itemType: '§bItem‐Typ'
@@ -562,6 +579,7 @@ inv:
     console: '§eKonsole: {command_console}'
   block:
     name: Block auswählen
+    material: '§eMaterial: {block_type}'
     materialNotItemLore: 'Dieser Block kann momentan nicht als Item angezeigt werden. Er wird immer noch korrekt als {block_material} gespeichert.'
     blockName: '§bEigener Blockname'
     blockData: '§dBlockdaten (fortgeschritten)'
@@ -593,18 +611,21 @@ inv:
   factionsList.name: Fraktionsliste
   poolsManage:
     name: Questgruppen
+    itemName: '§aPool {pool}'
+    poolNPC: '§8NPC: §7{pool_npc_name} ({pool_npc_id})'
     poolMaxQuests: '§8Max. Quests: §7{pool_max_quests}'
     poolQuestsPerLaunch: '§8Quests pro Start vergeben: §7{pool_quests_per_launch}'
     poolRedo: '§8Kann abgeschlossene Quests wiederholen: §7{pool_redo}'
     poolTime: '§8Zeit zwischen Quests: §7{pool_time}'
     poolHologram: '§8Hologramm-Text: §7{pool_hologram}'
     poolAvoidDuplicates: '§8Duplikate vermeiden: §7{pool_duplicates}'
+    showAsCategory: '§8Als Kategorie anzeigen: §7{pool_show_as_category}'
     poolQuestsList: '§7{pool_quests_amount} §8Quest(s): §7{pool_quests}'
     create: '§aErstelle eine Questgruppe'
-    edit: '§e> §6§oBearbeite die Gruppe... §e<'
     choose: '§e> §6§oWähle diese Gruppe §e<'
   poolCreation:
     name: Questgruppen Erstellung
+    poolName: Pool name
     hologramText: '§eBenutzerdefiniertes Hologramm der Gruppe'
     maxQuests: '§aMax. Quests'
     questsPerLaunch: '§aPro Start gestartete Quests'
@@ -612,12 +633,15 @@ inv:
     redoAllowed: Ist Wiederholen erlaubt
     avoidDuplicates: Duplikate vermeiden
     avoidDuplicatesLore: '§8> §7Versuche es zu vermeiden,\n  immer wieder die gleiche Quest zu absolvieren'
+    showAsCategory: Als Kategorie anzeigen
     requirements: '§bAnforderungen, um eine Quest zu starten'
   poolsList.name: Questgruppen
   itemComparisons:
     name: Itemvergleiche
     bukkit: Bukkit nativer Vergleich
+    bukkitLore: "Nutzt das Standard Bukkit Gegenstandsvergleichsystem.\nVergleicht Material, Haltbarkeit, NBT Tags..."
     customBukkit: Bukkit nativer Vergleich - KEIN NBT
+    customBukkitLore: "Nutzt das Standard Bukkit Gegenstandsvergleichsystem, aber löscht NBT Tags.\nVergleicht Material, Haltbarkeit..."
     material: Gegenstandsmaterial
     materialLore: 'Vergleicht Gegenstandsmaterial (z.B Stein, Eisenschwert...)'
     itemName: Gegenstandsname
@@ -630,6 +654,8 @@ inv:
     repairCostLore: Vergleicht Reparaturkosten für Rüstungen und Schwerter
     itemsAdder: ItemsAdder
     itemsAdderLore: Vergleicht ItemsAdder-IDs
+    mmoItems: MMOItems Item
+    mmoItemsLore: Vergleicht MMOItem-Arten und IDs
   editTitle:
     name: Titel bearbeiten
     title: '§6Titel'
@@ -649,8 +675,17 @@ inv:
     name: Schadensursache
   damageCausesList:
     name: Schadensverursachungsliste
+  visibility:
+    name: Questsichtbarkeit
+    notStarted: '"Nicht gestartet"-Menü-Tab'
+    inProgress: 'Menü-Tab "In Bearbeitung"'
+    finished: '"Beendet" Menü-Tab'
+    maps: 'Karten (wie Dynmap oder BlueMap)'
+  equipmentSlots:
+    name: Equipment Slots
   questObjects:
     setCustomDescription: 'Eigene Beschreibung festlegen'
+    description: '§8Beschreibung: §7{description}'
 scoreboard:
   name: '§6§lQuests'
   noLaunched: '§cKeine laufenden Quests.'
@@ -666,6 +701,7 @@ scoreboard:
     mine: '§eBaue {blocks} ab'
     placeBlocks: '§ePlatziere {blocks}'
     chat: '§eSchreibe §6{text}'
+    interact: '§eKlicke auf den Block bei §6{x} {y} {z}'
     interactMaterial: '§eKlicke auf einen §6{block}§e Block'
     fish: '§eAngle §6{items}'
     melt: '§6{items} §eschmelzen'
@@ -673,17 +709,24 @@ scoreboard:
     craft: '§eStelle §6{items} §eher'
     bucket: '§eBefülle §6{buckets}'
     location: '§eGehe zu: §6{target_x}§e, §6{target_y}§e, §6{target_z}§e in §6{target_world}'
+    playTimeFormatted: '§eSpiele §6{time_remaining_human}'
     breed: '§eZüchte §6{mobs}'
     tame: '§eZähme §6{mobs}'
     die: '§csterben'
+    dealDamage:
+      any: '§cFüge {damage_remaining} Schaden zu'
+      mobs: '§cFüge {target_mobs} {damage_remaining} Schaden zu'
+    eatDrink: '§eKonsumiere §6{items}'
 indication:
   startQuest: '§7Möchtest du die Quest {quest_name} starten?'
   closeInventory: '§7Bist du sicher, dass du die GUI schließen möchtest?'
   cancelQuest: '§7Bist du sicher, dass du die Quest {quest_name} abbrechen möchtest?'
   removeQuest: '§7Bist du sicher, dass du die Quest {quest} entfernen möchtest?'
+  removePool: '§7Bist du sicher dass du den Pool {pool} entfernen willst?'
 description:
   requirement:
     title: '§8§lAnforderungen:'
+    level: 'Level {short_level}'
     jobLevel: 'Level {short_level} für {job_name}'
     combatLevel: 'Kampflevel {short_level}'
     skillLevel: 'Level {short_level} für {skill_name}'
@@ -695,6 +738,8 @@ description:
 misc:
   format:
     prefix: '§6<§e§lQuests§r§6> §r'
+    npcText: '§6[{message_id}/{message_count}] §e§l{npc_name_message}:§r§e {text}'
+    selfText: '§6[{message_id}/{message_count}] §e§l{player_name}:§r§e {text}'
     editorPrefix: '§a'
   time:
     weeks: '{weeks_amount} Wochen'
@@ -702,6 +747,9 @@ misc:
     hours: '{hours_amount} Stunden'
     minutes: '{minutes_amount} Minuten'
     lessThanAMinute: 'weniger als eine Minute'
+  playerQuester:
+    name: Spieler Quester
+    description: Quest-Daten pro Spieler
   stageType:
     region: Region finden
     npc: NPC finden
@@ -711,7 +759,10 @@ misc:
     placeBlocks: Blöcke platzieren
     chat: Im Chat schreiben
     interact: Mit Block interagieren
+    interactLocation: Interagiere mit Block vor Ort
     Fish: Fische fangen
+    Melt: Gegenstände schmelzen
+    Enchant: Gegenstände verzaubern
     Craft: Item herstellen
     Bucket: Eimer befüllen
     location: Position finden
@@ -719,6 +770,8 @@ misc:
     breedAnimals: Züchte Tiere
     tameAnimals: Zähme Tiere
     die: Sterben
+    dealDamage: Schaden zufügen
+    eatDrink: Essen oder trinken
   comparison:
     equals: gleich wie {number}
     different: anders als {number}
@@ -741,6 +794,7 @@ misc:
     quest: '§aQuest benötigt'
     mcMMOSkillLevel: '§dBenötigtes Fertigkeitslevel'
     money: '§dGeld benötigt'
+    equipment: '§eAusrüstung erforderlich'
   reward:
     skillApiXp: SkillAPI XP Belohnung
   bucket:

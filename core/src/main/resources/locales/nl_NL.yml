@@ -25,8 +25,8 @@ msg:
     noAvailable: '§7Er is geen quest meer beschikbaar...'
     maxQuests: '§cJe kunt niet meer dan {pool_max_quests} quest(s) tegelijk hebben...'
   questItem:
-    drop: '§cJe kan geen Quest item laten vallen!'
-    craft: '§cJe kan geen Quest voorwerp gebruiken om te craften!'
+    drop: '§cJe kan Quest items niet laten vallen!'
+    craft: '§cJe kan Quest voorwerpen niet gebruiken om mee te craften!'
     eat: '§cJe kan geen Quest item eten!'
   stageMobs:
     listMobs: '§aJe moet {mobs} doden.'
@@ -119,8 +119,6 @@ msg:
     cancelQuest: '§6Je hebt de quest {quest} geannuleerd.'
     cancelQuestUnavailable: '§cDe quest "{quest}" kan niet worden gestopt.'
     backupCreated: '§6Je hebt een back-ups gemaakt van alle quests en spelersinformatie.'
-    backupPlayersFailed: '§cMaken van een back-up voor alle spelersinformatie is mislukt.'
-    backupQuestsFailed: '§cHet maken van een back-up voor alle quests, is mislukt.'
     adminModeEntered: '§aJe hebt de Admin modus geactiveerd.'
     adminModeLeft: '§aJe hebt de Admin modus gedeactiveerd.'
     resetPlayerPool:
@@ -140,26 +138,6 @@ msg:
       own:
         hidden: '§6Je scorebord is verborgen.'
         shown: '§6Je scorebord is zichtbaar.'
-    help:
-      header: '§6§lBeautyQuests — Help'
-      create: '§6/{label} create: §eCreate a quest.'
-      edit: '§6/{label} edit: §eBewerk een quest.'
-      remove: '§6/{label} remove <id>: §eVerwijder een quest met een opgegeven id of klik op de NPC wanneer je geed id gedefinieerd.'
-      finishAll: '§6/{label} finishAll <player>: §eVoltooi alle quests van een speler.'
-      setStage: '§6/{label} setStage <player> <id> [nieuwe branch] [nieuwe fase]: §eSla de huidige fase over/start de vertakking/set een fase in voor een branche.'
-      startDialog: '§6/{label} startDialog <player> <quest id>: §eStart de eerstvolgende conversatie voor een NPC status of het startgesprek voor een quest.'
-      resetPlayer: '§6/{label} resetPlayer <player>: §eVerwijder alle informatie van een speler.'
-      resetPlayerQuest: '§6/{label} resetPlayerQuest <player> [id]: §eVerwijder informatie van een quest voor een speler.'
-      seePlayer: '§6/{label} seePlayer <player>: §eBekijk informatie van een speler.'
-      reload: '§6/{label} reload: §eSlaat op en herlaad alle configuraties en bestanden. (§cdeprecated§)'
-      start: '§6/{label} start <player> [id]: §eForceer het starten van een quest.'
-      setItem: '§6/{label} setItem <talk|launch>: §eOpslaan van het hologram item.'
-      setFirework: '§6/{label} setFirework: §eBewerk het standaard einde van vuurwerk.'
-      adminMode: '§6/{label} adminMode: §eSchakel de Admin modus. aan/uit (Handig voor het weergeven van kleine log berichten.)'
-      version: '§6/{label} versie: §eBekijk de huidige versie van de plugin.'
-      downloadTranslations: '§6/{label} downloadTranslations <language>: §eDownload een standaard vertaling-file.'
-      save: '§6/{label} save: §eLaat een handmatige plugin opslaan.'
-      list: '§6/{label} list: §eBekijk de lijst van alle quests. (Alleen voor ondersteunde versies).'
   typeCancel: '§aTyp "cancel" om terug te gaan naar de laatste tekst.'
   editor:
     blockAmount: '§aTyp de hoeveelheid blokken in:'

@@ -28,6 +28,7 @@ msg:
     drop: '§cPředmět, který je součástí tvého úkolu, není možné zahodit!'
     craft: '§cNemůžeš použít item z úkolu k výrobě!'
     eat: '§cNemůžeš sníst úkolový předmět!'
+    place: '§cNemůžeš položit úkolový předmět!'
   stageMobs:
     listMobs: '§aMusíš zabít {mobs}'
   writeNPCText: '§aNapiš dialog který NPC řekně hráči: (Napiš "help" pro získání pomoci)'
@@ -119,8 +120,6 @@ msg:
     cancelQuest: '§6Zrušil jsi úkol {quest}.'
     cancelQuestUnavailable: '§cQuest {quest} nemůže být zrušen.'
     backupCreated: '§6Úspěšně jsi vytvořil zálohy všech úkolů a informací o hráči.'
-    backupPlayersFailed: '§cVytváření zálohy pro všechny hráčské informace se nezdařilo.'
-    backupQuestsFailed: '§cVytváření zálohy pro všechny úkoly se nezdařilo.'
     adminModeEntered: '§aSpustil jsi režim správce.'
     adminModeLeft: '§aOpustil jsi režim správce.'
     resetPlayerPool:
@@ -140,26 +139,6 @@ msg:
       own:
         hidden: '§6Tvá tabulka questů je nyní skryta.'
         shown: '§6Tvá tabulka questů je znovu zobrazena.'
-    help:
-      header: '§6§lBeautyQuests — Nápověda'
-      create: '§6/{label} vytvořit: §eVytvoř úkol.'
-      edit: '§6/{label} editace: §eEdituj úkol.'
-      remove: '§6/{label} remove <id>: §eVymazat úkol se zadaným id nebo kliknout na NPC pokud není definováno.'
-      finishAll: '§6/{label} dokončil všechny <player>: §eDokonči všechny questy hráče.'
-      setStage: '§6/{label} setStage <player> <id> [new branch] [new stage]: §ePřeskočit aktuální scénu/spustit větev/nastavit scénu pro větev.'
-      startDialog: '§6/{label} startDialog <player> <quest id>: §eZačne čekající dialog pro fázi NPC nebo úvodní dialog pro quest.'
-      resetPlayer: '§6/{label} resetPlayer <player>: §eOdstraňte všechny informace o hráči.'
-      resetPlayerQuest: '§6/{label} resetPlayerQuest <player> [id]: §eVymazat informace o hledání pro hráče.'
-      seePlayer: '§6/{label} seePlayer <player>: §eZobrazit informace o hráči.'
-      reload: '§6/{label} reload: §eUloží a znovu načte konfiguraci a soubory. (§cdeprecated§e)'
-      start: '§6/{label} start <player> [id]: §eVynutit spuštění úkolu.'
-      setItem: '§6/{label} setItem <talk|launch>: §eSave položku hologramu.'
-      setFirework: '§6/{label} setFirework: §eUpraví výchozí končící ohňostroj'
-      adminMode: '§6/{label} adminMod: §ePřepni režim správce. (Pouze pro zobrazení malých zpráv v logech.)'
-      version: '§6/{label} verze: §ePodívejte se na aktuální verzi pluginu.'
-      downloadTranslations: '§6/{label} downloadTranslations <language>: §eStáhne vanilla soubor překladu'
-      save: '§6/{label} save: §eVytvoří manuální uložení pluginu.'
-      list: '§6/{label} seznam: §ePodívejte se na seznam úkolů. (Pouze pro podporované verze)'
   typeCancel: '§aNapište "cancel" pro návrat k poslednímu textu.'
   editor:
     blockAmount: '§aNapiš množství bloků:'
@@ -400,7 +379,6 @@ inv:
   poolsManage:
     name: eÚkolový bazén
     itemName: '§aPool {pool}'
-    poolNPC: '§8NPC: §7{pool_npc_id}'
     poolMaxQuests: '§8Max úkolů: §7{pool_max_quests}'
     poolQuestsPerLaunch: '§8Úkoly zadané na spuštění: §7{pool_quests_per_launch}'
     poolRedo: '§8Můžeš znovu provést dokončené úkoly: §7{pool_redo}'
@@ -409,7 +387,6 @@ inv:
     poolAvoidDuplicates: '§8Vyhnout se duplicitě: §7{pool_duplicates}'
     poolQuestsList: '§7{pool_quests_amount} §8questy: §7{pool_quests}'
     create: '§aVytvoř sbor hledání'
-    edit: '§e> §6§oUpravte pool... §e<'
     choose: '§e> §6Vyber tento bazén §e<'
   poolCreation:
     name: Vytváření sdružení úkolů

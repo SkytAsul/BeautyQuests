@@ -53,6 +53,7 @@ msg:
   writeConfirmMessage: '§aAdd meg a kezdésnél megjelenő megerősítő üzenetet: (Használd a "null" paramétert ha az alapértelmezett üzenetet szertnéd használni.)'
   writeQuestDescription: '§aAdd meg a leírást, amelyet a játékos a Küldetés Menüben látni fog.'
   writeQuestMaterial: '§aAdd meg a küldetés ikon tárgyát.'
+  writeQuestCustomOrder: 'Adj meg egy tetszőleges indexet, vagy használd a "null" paramétert a visszaállításhoz.'
   requirements:
     quest: '§cBe kell fejezned a §e{quest_name}§c küldetést!'
     level: '§cA szintednek {long_level}-nak/nek kell lennie!'
@@ -141,26 +142,6 @@ msg:
       own:
         hidden: '§6A scoreboard mostantól el van rejtve.'
         shown: '§6A scoreboard mostantól látható.'
-    help:
-      header: '§6§lBeautyQuests - Súgó'
-      create: '§6/{label} create: §eKüldetés létrehozása.'
-      edit: '§6/{label} edit: §eKüldetés módosítása.'
-      remove: '§6/{label} remove <id>:§eKitörli a megadott ID-jű Küldetést, vagy kattints az NPC-re, ha nem adtál meg ID-t.'
-      finishAll: '§6/{label} finishAll <player>: §eA játékos összes küldetésének teljesítése.'
-      setStage: '§6/{label} setStage <player> <id> [new branch] [new stage]: §eA jelenlegi állomás átugrása.'
-      startDialog: '§6/{label} startDialog <player> <quest id>: §eElindítja a függőben lévő dialógust egy NPC állomásnál, vagy a küldetés kezdő dialógusát.'
-      resetPlayer: '§6/{label} resetPlayer <player>: §eMinden játékos adat törlése.'
-      resetPlayerQuest: '§6/{label} resetPlayerQuest <player> [id]: §eEgy játékos adott küldetés adatainak törlése.'
-      seePlayer: '§6/{label} seePlayer <player>: §eJátékos információ megtekintése.'
-      reload: '§6/{label} reload: §eMenti, majd ujratölti a konfigurációt és a fájlokat. (§cdeprecated§e)'
-      start: '§6/{label} start <player> [id]: §eKényszeríti a küldetés elkezdését.'
-      setItem: '§6/{label} setItem <talk|launch>: §eElmenti a hologramnak beállított tárgyat.'
-      setFirework: '§6/{label} setFirework: §eSzerkezti az alapértelmezett záró tüzijátékot.'
-      adminMode: '§6/{label} adminMode: §eAdmin mód váltása. (Log üzenetek megjelenítésénél hasznos.)'
-      version: '§6/{label} version: §eA jelenlegi plugin verzió megjelenítése.'
-      downloadTranslations: '§6/{label} downloadTranslations <language>: §eLetölti a megadott nyelv fordítását.'
-      save: '§6/{label} save: §eEgy kézi mentés készítése.'
-      list: '§6/{label} list: §eKüldetés lista megjelenítése. (Csak a támogatott verziók esetén.)'
   typeCancel: '§aÍrd be, hogy "cancel" ahhoz, hogy visszatérj az utolsó üzenethez.'
   editor:
     blockAmount: '§aÍrd be a blokkok mennyiségét:'
@@ -276,6 +257,7 @@ msg:
     comparisonTypeDefault: '§aVálassza ki az összehasonlítás típusát a(z) {available} közül. Alapértelmezett összehasonlítás: §e§l{default}§r§a. Írd be a §onull§r§a-t a használathoz.'
     scoreboardObjectiveNotFound: '§cIsmeretlen scoreboard objective.'
     pool:
+      name: 'Add meg a gyűjtemény nevét.'
       hologramText: 'Írd be ezen küldetés gyűjtemény hologram szövegét (Használd a "null" paramétert, ha az alapértelmezettet szeretnéd).'
       maxQuests: 'Írd be a maximum elkezdhető küldetések számát.'
       questsPerLaunch: 'Írd be az egyszerre elkezdhető küldetések maximum számát.'
@@ -304,6 +286,7 @@ inv:
   search: '§e§lKeresés'
   addObject: '§aAdj meg egy object-et'
   pickAnother: Válassz másikat
+  edit: Módosítás
   confirm:
     name: Biztos vagy benne?
     'yes': '§aElfogadás'
@@ -359,6 +342,7 @@ inv:
     leftClick: Bal-klikk-nek kell történnie
     editFishes: '§eKifogandó halak módosítása'
     editItemsToMelt: '§eKiégetendő tárgyak módosítása'
+    editItemsToMeltLore: Azt a tárgyat rakd ide, amit a sütés KIMENETEKÉNT szeretnél kapni.
     editItemsToEnchant: '§eBűvölendő tárgyak módosítása'
     editItem: '§eElkészítendő tárgyak módosítása'
     editBucketType: '§eMegtöltendő vödör típus módosítása'
@@ -477,6 +461,11 @@ inv:
     visibility: '§bKüldetés láthatósága'
     visibilityLore: Válaszd ki, melyik fülön legyen látható a küldetés a menün, vagy dynamic map-en belül.
     questerStrategy: Résztvevők kiválasztása
+    customOrder: '§eTetszőleges küldetés sorrend'
+    customOrderLore: |-
+      A küldetések sorrendjének meghatározására szolgáló szám.
+
+      A küldetés ID-t használja, ha nincsn beállítva.
     keepDatas: Játékos adatok megőrzése
     keepDatasLore: |-
       A játékos adatok kényszerített megörzése, akkor is, ha az adott állomás módosítva lett.
@@ -552,11 +541,14 @@ inv:
     inProgress: Folyamatban lévő küldetések
     loreDialogsHistoryClick: '§7Dialógusok megtekintése'
     loreCancelClick: '§cKüldetés megszakítása'
+    loreScoreboardPinClick: '§7Kitűzés a scoreboard-ra'
+    loreScoreboardUnpinClick: '§7§lElátvolítás a scoreboard-ról'
     loreStart: '§a§oKattints a küldetés elkezdéséhez.'
     loreStartUnavailable: '§c§oNem felelsz meg a megfelelő követelményeknek, a küldetés elindításához.'
     timeToWaitRedo: '§7§oA küldetést {time_left} múlva újraindíthatod...'
     canRedo: '§3§oÚjratudod kezdeni ezt a küldetést!'
     timesFinished: '§6{times_finished}§e alkalommal teljesítve.'
+    categoryOther: További küldetések
     format:
       normal: '§6§l§o{quest_name}'
       withId: '§6§l§o{quest_name}§r      §e#{quest_id}'
@@ -622,19 +614,20 @@ inv:
   poolsManage:
     name: Küldetés Gyűjtemény
     itemName: '§aGyűjtemény {pool}'
-    poolNPC: '§8NPC: §7{pool_npc_id}'
+    poolNPC: '§8NPC: §7{pool_npc_name} ({pool_npc_id})'
     poolMaxQuests: '§8Küldetések maximális száma: §7{pool_max_quests}'
     poolQuestsPerLaunch: '§8Indításkor adott küldetések száma: §7{pool_quests_per_launch}'
     poolRedo: '§8Újrakezdhetőek-e a teljesített küldetések: §7{pool_redo}'
     poolTime: '§8Küldetések közti idő: §7{pool_time}'
     poolHologram: '§8Hologram szövege: §7{pool_hologram}'
     poolAvoidDuplicates: '§8Küldetés duplikáció mellőzése: §7{pool_duplicates}'
+    showAsCategory: '§8Megjelenítés katgeóriaként: §7{pool_show_as_category}'
     poolQuestsList: '§7{pool_quests_amount} §8gyűjtemény küldetései: §7{pool_quests}'
     create: '§aKüldetés gyűjtemény létrehozása'
-    edit: '§e> §6§oGyűjtemény szerkeztése... §e<'
     choose: '§e> §6§oEzen gyűjtemény kiválasztása §e<'
   poolCreation:
     name: Küldetés gyűjtemény létrehozása
+    poolName: Gyűjtemény neve
     hologramText: '§eGyűjtemény egyedi hologramja'
     maxQuests: '§aMaximum küldetés szám'
     questsPerLaunch: '§aIndításkor megkezdett küldetések száma'
@@ -642,6 +635,7 @@ inv:
     redoAllowed: Újraindítás engedélyezett-e
     avoidDuplicates: Küldetés duplikáció mellőzése
     avoidDuplicatesLore: '§8> §7Ugyanazon küldetés folyamatosan\n történő felvételének megakadályozása'
+    showAsCategory: Megjelenítés kategóriaként
     requirements: '§bKüldetés kezdéséhez szükséges követelmények'
   poolsList.name: Küldetés gyűjtemények
   itemComparisons:
@@ -717,7 +711,7 @@ scoreboard:
     craft: '§eKészíts §6{items}-t'
     bucket: '§eTölts meg §6{buckets}-t'
     location: '§eMenj §6{target_x}§e, §6{target_y}§e, §6{target_z}§e koordinátára a(z) §6{target_world}§e világban'
-    playTimeFormatted: '§eJátsz §6{time_remaining_human}§e időt a szerveren'
+    playTimeFormatted: '§eJátssz §6{time_remaining_human}§e időt a szerveren'
     breed: '§eSzaporíts §6{mobs}-t'
     tame: '§eSzelidíts meg §6{mobs}-t'
     die: '§cHalj meg'

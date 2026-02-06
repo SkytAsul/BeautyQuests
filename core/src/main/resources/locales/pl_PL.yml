@@ -119,8 +119,6 @@ msg:
     cancelQuest: '§6Anulowałeś zadanie {quest}.'
     cancelQuestUnavailable: '§cZadanie {quest} nie może zostać anulowane.'
     backupCreated: '§6Pomyślnie utworzyłeś kopie zapasowe wszystkich zadań i informacji o graczach.'
-    backupPlayersFailed: '§cTworzenie kopii zapasowej dla wszystkich graczy nie powiodło się.'
-    backupQuestsFailed: '§cTworzenie kopii zapasowej dla wszystkich zadań nie powiodło się.'
     adminModeEntered: '§aWłączyłeś/aś tryb administratora.'
     adminModeLeft: '§aWyłączyłeś/aś tryb administratora.'
     resetPlayerPool:
@@ -140,26 +138,6 @@ msg:
       own:
         hidden: '§6Twoja tablica wyników jest teraz ukryta.'
         shown: '§6Twoja tablica wyników pojawiła się ponownie.'
-    help:
-      header: '§6§lBeautyQuests - Pomoc'
-      create: '§6/{label} create: §eUtwórz zadanie.'
-      edit: '§6/{label} edit: §eEdytuj zadanie.'
-      remove: '§6/{label} remove <id>: §eUsuń zadanie z podanym id lub kliknij na NPC jeśli nie zdefiniowano.'
-      finishAll: '§6/{label} finishAll <player>: §eZakończ wszystkie zadania gracza.'
-      setStage: '§6/{label} setStage <gracz> <id> [nowa gałąź] [nowy etap]: §ePomiń bieżący etap/uruchom gałąź/ustaw etap dla gałęzi.'
-      startDialog: '§7/{label} startDialog <player> <quest id>: §eUruchamia oczekujące okno dialogowe dla etapu NPC lub startowego okna dialogowego dla zadania.'
-      resetPlayer: '§6/{label} resetPlayer <gracz>: §eUsuń wszystkie informacje o graczu.'
-      resetPlayerQuest: '§6/{label} resetPlayerQuest <gracz> [id]: §eUsuń informacje o zadaniu danego gracza.'
-      seePlayer: '§6/{label} SeePlayer <gracz>: §eWyświetl informacje o graczu.'
-      reload: '§6/{label} reload: §eZapisz i odśwież wszystkie konfiguracje i pliki. (§cprzestarzałe§e)'
-      start: '§6/{label} start <gracz> [id]: §eWymuś rozpoczęcie zadania.'
-      setItem: '§6/{label} setItem <talk|launch>: §eZapisz hologram.'
-      setFirework: '§6/{label} setFirework: §eEdytuj domyślny końcowy efekt fajerwerki.'
-      adminMode: '§6/{label} adminMode: §ePrzełącz tryb administratora. (Przydatne do wyświetlania małych wiadomości dziennika.)'
-      version: '§6/{label} version: §eZobacz aktualną wersję pluginu.'
-      downloadTranslations: '§6/{label} downloadTranslations <język>: §ePobiera plik z tłumaczeniem vanilla'
-      save: '§6/{label} save: §eZapisz ręcznie plugin (postęp/zmiany).'
-      list: '§6/{label} list: §eZobacz listę zadań. (Tylko dla obsługiwanych wersji.)'
   typeCancel: '§aNapisz "cancel" aby wrócić do ostatniego tekstu.'
   editor:
     blockAmount: '§aNapisz liczbę bloków:'
@@ -581,7 +559,7 @@ inv:
     noQuests: Nie utworzono wcześniej żadnych zadań.
   commandsList:
     name: Lista komend
-    value: '§Komenda: {command_label}'
+    value: '§eKomenda: {command_label}'
     console: '§eKonsola: {command_console}'
   block:
     name: Wybierz blok
@@ -618,7 +596,6 @@ inv:
   poolsManage:
     name: Pula Zadań
     itemName: '§aPula {pool}'
-    poolNPC: '§8NPC: §7{pool_npc_id}'
     poolMaxQuests: '§8Maks. zadań: §7{pool_max_quests}'
     poolQuestsPerLaunch: '§8Zadania podane podczas startu: §7{pool_quests_per_launch}'
     poolRedo: '§8Można wykonywać ponownie ukończone zadania: §7{pool_redo}'
@@ -627,7 +604,6 @@ inv:
     poolAvoidDuplicates: '§8Unikaj duplikatów: §7{pool_duplicates}'
     poolQuestsList: '§7{pool_quests_amount} §8zadań(ia): §7{pool_quests}'
     create: '§aUtwórz pulę zadań'
-    edit: '§e> §6§oEdytuj pulę... §e<'
     choose: '§e> §6§oWybierz tę pulę §e<'
   poolCreation:
     name: Tworzenie puli zadań

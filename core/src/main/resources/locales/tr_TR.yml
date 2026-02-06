@@ -119,8 +119,6 @@ msg:
     cancelQuest: '§6{quest} görevini iptal ettin.'
     cancelQuestUnavailable: '§c{quest} görevi iptal edilemez.'
     backupCreated: '§6Tüm görevlerin ve oyuncu bilgilerinin yedeklerini başarıyla oluşturdunuz.'
-    backupPlayersFailed: '§cTüm oyuncu bilgileri için bir yedek oluşturma başarısız oldu.'
-    backupQuestsFailed: '§cTüm görevler için bir yedek oluşturma başarısız oldu.'
     adminModeEntered: '§aYönetici Moduna girdiniz.'
     adminModeLeft: '§aYönetici Modundan ayrıldınız.'
     resetPlayerPool:
@@ -140,26 +138,6 @@ msg:
       own:
         hidden: '§6Puan tablonuz artık gizlidir.'
         shown: '§6Puan tablonuz tekrar görünür.'
-    help:
-      header: '§6§lBeautyQuests — Yardım'
-      create: '§6/{label} create: §eKullanarak bir görev oluşturun.'
-      edit: '§6/{label} düzenle: §eKullanarak bir görevi düzenleyin.'
-      remove: '§6/{label} remove <id>: §eBelirli bir ID''ye sahip bir görevi silin veya tanımlanmamışsa NPC''ye tıklayın.'
-      finishAll: '§6/{label} finishAll <oyuncu>: §eBir oyuncunun tüm görevlerini tamamlayın.'
-      setStage: '§6/{label} setStage <oyuncu> <id> [yeni iş] [yeni aşama]: §eGeçerli aşamayı atla, iş için bir aşama ayarla.'
-      startDialog: '§6/{label} startDialog <oyuncu> <görev id''si>: §eBir NPC aşaması için bekleyen diyaloğu veya bir görev için başlangıç ​​diyaloğunu başlatır.'
-      resetPlayer: '§6/{label} resetPlayer <oyuncu>: §eBir oyuncuyla ilgili tüm bilgileri kaldırın.'
-      resetPlayerQuest: '§6/{label} resetPlayerQuest <oyuncu> [id]: §eBir oyuncu için bir görevin bilgilerini silin.'
-      seePlayer: '§6/{label} seePlayer <oyuncu>: §eBir oyuncu hakkındaki bilgileri görüntüleyin.'
-      reload: '§6/{label} reload: §eTüm yapılandırmaları ve dosyaları kaydedin ve yeniden yükleyin. (§ckullanımdan kaldırıldı§e)'
-      start: '§6/{label} start <oyuncu> [id]: §eBir görevin başlamasını zorla.'
-      setItem: '§6/{label} setItem <talk|launch>: §eHologram öğesini kaydedin.'
-      setFirework: '§6/{label} setFirework: §eVarsayılan biten havai fişekleri düzenleyin.'
-      adminMode: '§6/{label} adminMode: §eYönetici Modunu değiştirin. (Küçük günlük mesajlarını görüntülemek için kullanışlıdır.)'
-      version: '§6/{label} version: §eGeçerli eklenti sürümüne bakın.'
-      downloadTranslations: '§6/{label} downloadTranslations <language>: §eBir vanilla çeviri dosyası indirir.'
-      save: '§6/{label} save: §eManuel bir eklenti kaydetme yapın.'
-      list: '§6/{label} list: §eGörev listesine bakın. (Yalnızca desteklenen sürümler için.)'
   typeCancel: '§aSon metne geri dönmek için "cancel" yazın.'
   editor:
     blockAmount: '§aBlokların sayısını yazın:'
@@ -618,7 +596,6 @@ inv:
   poolsManage:
     name: Görev grupları
     itemName: '§aGrup {pool}'
-    poolNPC: '§8NPC: §7{pool_npc_id}'
     poolMaxQuests: '§8Maks. görevler: §7{pool_max_quests}'
     poolQuestsPerLaunch: '§8Başlatma başına verilen görevler: §7{pool_quests_per_launch}'
     poolRedo: '§8Tamamlanan görevleri yeniden yapabilir: §7{pool_redo}'
@@ -627,7 +604,6 @@ inv:
     poolAvoidDuplicates: '§8Kopyalardan kaçının: §7{pool_duplicates}'
     poolQuestsList: '§7{pool_quests_amount} §8Görev: §7{pool_quests}'
     create: '§aBir görev grubu oluşturun'
-    edit: '§e> §6§oGrubu düzenle... §e<'
     choose: '§e> §6§oBu grubu seç §e<'
   poolCreation:
     name: Görev grubu oluşturma
