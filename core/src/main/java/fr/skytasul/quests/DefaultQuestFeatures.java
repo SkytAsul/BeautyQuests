@@ -161,7 +161,8 @@ public final class DefaultQuestFeatures {
 		QuestsAPI.getAPI().registerQuestOption(new QuestOptionCreator<>("hideNoRequirements", 28,
 				OptionHideNoRequirements.class, OptionHideNoRequirements::new, false));
 		QuestsAPI.getAPI().registerQuestOption(
-				new QuestOptionCreator<>("auto", 29, OptionAutoQuest.class, OptionAutoQuest::new, false));
+				new QuestOptionCreator<>("auto", 29, OptionAutoQuest.class, OptionAutoQuest::new,
+						OptionAutoQuest.Mode.DISABLED));
 		QuestsAPI.getAPI().registerQuestOption(new QuestOptionCreator<>("repeatable", 30, OptionRepeatable.class,
 				OptionRepeatable::new, false, "multiple"));
 		QuestsAPI.getAPI().registerQuestOption(new QuestOptionCreator<>("timer", 31, OptionTimer.class, OptionTimer::new,

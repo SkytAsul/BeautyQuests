@@ -110,7 +110,7 @@ public class QuestCreationGuiImplementation extends LayoutedGUI implements Quest
 				@Override
 				public void click(@NotNull LayoutedClickEvent event) {
 					option.click(new QuestCreationGuiClickEvent(event.getPlayer(), QuestCreationGuiImplementation.this, event.getClicked(),
-							event.getCursor(), event.getSlot(), event.getClick()));
+							event.getCursor(), event.getSlot(), event.getClick(), option));
 				}
 
 				@Override

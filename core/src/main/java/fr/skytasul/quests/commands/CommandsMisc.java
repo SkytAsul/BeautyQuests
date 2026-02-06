@@ -14,9 +14,7 @@ import revxrsal.commands.bukkit.annotation.CommandPermission;
 import revxrsal.commands.command.ExecutableCommand;
 import revxrsal.commands.exception.NumberNotInRangeException;
 import revxrsal.commands.help.Help;
-import revxrsal.commands.node.CommandNode;
 import revxrsal.commands.orphan.OrphanCommand;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.StringJoiner;
 
@@ -69,16 +67,6 @@ public class CommandsMisc implements OrphanCommand {
 				message += ": §e" + lang.getValue();
 			MessageUtils.sendMessage(actor.sender(), message, MessageType.DefaultMessageType.UNPREFIXED);
 		}
-	}
-
-	private static List<CommandNode<BukkitCommandActor>> getFirstLiterals(ExecutableCommand<BukkitCommandActor> command) {
-		var nodes = new ArrayList<CommandNode<BukkitCommandActor>>();
-		for (var node : command.nodes()) {
-			if (!node.isLiteral())
-				break;
-			nodes.add(node);
-		}
-		return nodes;
 	}
 
 	@Subcommand ("version")

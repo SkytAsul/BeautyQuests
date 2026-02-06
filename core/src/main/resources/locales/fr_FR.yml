@@ -406,8 +406,6 @@ inv:
     hideNoRequirementsItemLore: Si activé, la quête ne sera pas affichée dans le menu des quêtes lorsque les conditions ne sont pas remplies.
     bypassLimit: Ne pas compter la limite de quêtes
     bypassLimitLore: Si activé, la quête sera démarrée même si le joueur a atteint son nombre maximum de quêtes en cours.
-    auto: Démarrer automatiquement à la première connexion
-    autoLore: Si activé, la quête sera lancée automatiquement lorsque le joueur rejoindra le serveur pour la première fois.
     questName: '§a§lModifier le nom de la quête'
     questNameLore: Un nom doit être défini pour terminer la création de quête.
     setItemsRewards: '§eModifier les gains d''item'
@@ -473,6 +471,12 @@ inv:
     optionValue: '§8Valeur : §7{value}'
     defaultValue: '§8(valeur par défaut)'
     requiredParameter: '§7Paramètre requis'
+    autoMode:
+      title: Quête automatique
+      description: Est-ce que la quête devrait être commencée automatiquement ou non.
+      disabled: Désactivé
+      allPlayers: Pour tous les joueurs
+      newPlayers: Seulement pour les nouveaux joueurs
   itemsSelect:
     name: Modifier les items
     none: |-
