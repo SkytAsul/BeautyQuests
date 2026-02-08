@@ -19,11 +19,8 @@ public abstract class AbstractGui implements Gui {
 
 	@Override
 	public final void showInternal(Player player) {
-		if (inventory == null) {
+		if (inventory == null)
 			createInventory(player);
-		} else {
-			refreshInternal(player);
-		}
 		inventory = XInventoryView.of(player.openInventory(inventory)).getTopInventory();
 	}
 
