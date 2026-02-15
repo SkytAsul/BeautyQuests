@@ -214,6 +214,16 @@ public class StageControllerImplementation<T extends AbstractStage> implements S
 		Bukkit.getPluginManager().registerEvents(this, BeautyQuests.getInstance());
 		propagateStageHandlers(handler -> handler.stageLoad(this));
 		stage.load();
+
+		// handles already online questers when the quest is loaded
+		for (Quester quester : QuestsAPI.getAPI().getQuesterManager().getLoadedQuesters()) {
+			if (hasStarted(quester)) {
+				for (Player player : quester.getOnlinePlayers()) {
+					propagateStageHandlers(handler -> handler.stageJoin(player, quester, this));
+					stage.joined(player, quester);
+				}
+			}
+		}
 	}
 
 	public void unload() {

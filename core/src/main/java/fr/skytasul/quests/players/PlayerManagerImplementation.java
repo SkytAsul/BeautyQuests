@@ -162,12 +162,14 @@ public class PlayerManagerImplementation implements PlayerManager, Listener {
 
 	@EventHandler(priority = EventPriority.LOWEST)
 	public void onJoin(PlayerJoinEvent e) {
-		load(e.getPlayer());
+		if (playersLoaded)
+			load(e.getPlayer());
 	}
 
 	@EventHandler
 	public void onQuit(PlayerQuitEvent e) {
-		unload(e.getPlayer());
+		if (playersLoaded)
+			unload(e.getPlayer());
 	}
 
 }

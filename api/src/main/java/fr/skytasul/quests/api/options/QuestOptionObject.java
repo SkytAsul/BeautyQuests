@@ -26,9 +26,10 @@ public abstract class QuestOptionObject<T extends QuestObject, C extends QuestOb
 	}
 
 	@Override
-	public void detach() {
-		super.detach();
+	public Quest detach() {
+		Quest previous = super.detach();
 		detachObjects();
+		return previous;
 	}
 
 	@Override

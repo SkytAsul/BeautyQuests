@@ -15,10 +15,6 @@ import fr.skytasul.quests.api.options.OptionSet;
 import fr.skytasul.quests.api.options.QuestOption;
 import fr.skytasul.quests.api.options.QuestOptionCreator;
 import fr.skytasul.quests.api.options.UpdatableOptionSet;
-import fr.skytasul.quests.api.questers.Quester;
-import fr.skytasul.quests.api.questers.data.QuesterQuestData;
-import fr.skytasul.quests.api.questers.events.QuesterJoinEvent;
-import fr.skytasul.quests.api.quests.branches.EndingStage;
 import fr.skytasul.quests.api.quests.creation.QuestCreationGui;
 import fr.skytasul.quests.api.quests.creation.QuestCreationGuiClickEvent;
 import fr.skytasul.quests.api.quests.events.QuestCreateEvent;
@@ -222,9 +218,6 @@ public class QuestCreationGuiImplementation extends LayoutedGUI implements Quest
 				QuestsPlugin.getPlugin().getLoggerExpanded().severe("Error when trying to save newly created quest.", e);
 			}
 
-			if (keepPlayerDatas)
-				keepDatas(qu);
-
 			QuestsAPI.getAPI().propagateQuestsHandlers(handler -> {
 				if (session.isEdition())
 					handler.questEdit(qu, session.getQuestEdited(), keepPlayerDatas);
@@ -233,24 +226,6 @@ public class QuestCreationGuiImplementation extends LayoutedGUI implements Quest
 		}
 
 		close(session.getPlayer());
-	}
-
-	private void keepDatas(QuestImplementation qu) {
-		for (Quester quester : QuestsAPI.getAPI().getQuesterManager().getLoadedQuesters()) {
-			quester.getDataHolder().getQuestDataIfPresent(qu).filter(QuesterQuestData::hasStarted).ifPresent(data -> {
-				var branch = qu.getBranchesManager().getBranch(data.getBranch().getAsInt());
-				for (Player player : quester.getOnlinePlayers()) {
-					var joinEvent = new QuesterJoinEvent(quester, player, false);
-					if (data.getState() == QuesterQuestData.State.IN_ENDING_STAGES) {
-						for (EndingStage endingStage : branch.getEndingStages()) {
-							((StageControllerImplementation<?>) endingStage.getStage()).onJoin(joinEvent);
-						}
-					} else if (data.getState() == QuesterQuestData.State.IN_REGULAR_STAGE) {
-						branch.getRegularStage(data.getStage().getAsInt()).onJoin(joinEvent);
-					}
-				}
-			});
-		}
 	}
 
 	private boolean loadBranch(QuestBranchImplementation branch, StagesGUI stagesGui) {

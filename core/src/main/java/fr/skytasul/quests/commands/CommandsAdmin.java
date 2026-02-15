@@ -119,14 +119,6 @@ public class CommandsAdmin implements OrphanCommand {
 		}
 	}
 
-
-	@Subcommand ("reload")
-	@CommandPermission ("beautyquests.command.manage")
-	@SecretCommand // TODO remove once reload implemented again
-	public void reload(BukkitCommandActor actor) {
-		BeautyQuests.getInstance().performReload(actor.sender());
-	}
-
 	@Subcommand ("save")
 	@CommandPermission ("beautyquests.command.manage")
 	public void save(BukkitCommandActor actor) {
@@ -295,6 +287,17 @@ public class CommandsAdmin implements OrphanCommand {
 
 	public enum ItemHologram {
 		TALK, LAUNCH, NOLAUNCH;
+	}
+
+	@CommandPermission("beautyquests.command.manage")
+	@Subcommand("reload data")
+	public void reloadData(BukkitCommandActor actor) {
+		boolean result = BeautyQuests.getInstance().performDataReload();
+
+		if (result)
+			actor.reply("Successfully reloaded plugin data!");
+		else
+			actor.error("Something went horribly wrong. The plugin has been disabled.");
 	}
 
 }

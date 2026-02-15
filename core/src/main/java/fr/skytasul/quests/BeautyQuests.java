@@ -38,7 +38,6 @@ import org.bstats.charts.DrilldownPie;
 import org.bstats.charts.SimplePie;
 import org.bstats.charts.SingleLineChart;
 import org.bukkit.Bukkit;
-import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.plugin.Plugin;
@@ -119,6 +118,12 @@ public class BeautyQuests extends JavaPlugin implements QuestsPlugin {
 		this.unitTesting = unitTesting;
 	}
 
+	private void fatalError() {
+		logger.severe("This is a fatal error. Now disabling.");
+		disable = true;
+		setEnabled(false);
+	}
+
 	@Override
 	public void onLoad(){
 		instance = this;
@@ -131,9 +136,7 @@ public class BeautyQuests extends JavaPlugin implements QuestsPlugin {
 			initApi();
 		} catch (Exception ex) {
 			logger.severe("An unexpected exception occurred while initializing the API.", ex);
-			logger.severe("This is a fatal error. Now disabling.");
-			disable = true;
-			setEnabled(false);
+			fatalError();
 		}
 	}
 
@@ -198,14 +201,10 @@ public class BeautyQuests extends JavaPlugin implements QuestsPlugin {
 		}catch (LoadingException ex) {
 			if (ex.getCause() != null) logger.severe("A fatal error occurred while loading plugin.", ex.getCause());
 			logger.severe(ex.loggerMessage);
-			logger.severe("This is a fatal error. Now disabling.");
-			disable = true;
-			setEnabled(false);
+			fatalError();
 		}catch (Exception ex) {
 			logger.severe("An unexpected exception occurred while loading plugin.", ex);
-			logger.severe("This is a fatal error. Now disabling.");
-			disable = true;
-			setEnabled(false);
+			fatalError();
 		}
 	}
 
@@ -598,11 +597,23 @@ public class BeautyQuests extends JavaPlugin implements QuestsPlugin {
 	}
 
 	private void finishLoad() {
+		if (disable)
+			return;
+
 		try {
-			long lastMillis = System.currentTimeMillis();
-			loadAllDatas();
-			getLogger().info(quests.getQuestsAmount() + " quests loaded ("
-					+ (((double) System.currentTimeMillis() - lastMillis) / 1000D) + "s)!");
+			integrations.lockDependencies();
+
+			initScoreboards();
+			loadQuestData();
+			questerManager.load();
+			loadQuestHandlers();
+
+			Bukkit.getScheduler().runTaskLater(BeautyQuests.getInstance(), () -> {
+				players.loadOnlinePlayers();
+				loaded = true;
+
+				Bukkit.getPluginManager().callEvent(new BeautyQuestsLoadedEvent());
+			}, 0L);
 
 			getServer().getPluginManager().registerEvents(new QuestsListener(), BeautyQuests.this);
 
@@ -620,41 +631,19 @@ public class BeautyQuests extends JavaPlugin implements QuestsPlugin {
 			}
 		} catch (Throwable e) {
 			logger.severe("An error occurred while loading plugin datas.", e);
+			fatalError();
 		}
 	}
 
-	private void loadAllDatas() throws Throwable {
-		if (disable) return;
-		integrations.lockDependencies();
-		// command.lockCommands(); we cannot register Brigadier after plugin initialization...
-
-		if (scoreboards == null && config.getQuestsConfig().scoreboards()) {
-			File scFile = new File(getDataFolder(), "scoreboard.yml");
-			if (!scFile.exists())
-				saveResource("scoreboard.yml", false);
-			ConfigUpdater.update(this, "scoreboard.yml", scFile);
-			scoreboards = new ScoreboardManager(this, scFile);
-			getAPI().registerQuestsHandler(scoreboards);
-		}
-
+	private void loadQuestData() throws IOException {
+		long lastMillis = System.currentTimeMillis();
 		pools = new QuestPoolsManagerImplementation(this, new File(getDataFolder(), "questPools.yml"));
 		quests = new QuestsManagerImplementation(this, data.getInt("lastID"), saveFolder);
+		logger.info("{0} quests and {1} pools loaded ({2}s)!", quests.getQuestsAmount(), pools.getPools().size(),
+				((double) System.currentTimeMillis() - lastMillis) / 1000D);
+	}
 
-		try{
-			questerManager.load();
-		}catch (Exception ex) {
-			logger.severe("Error while loading player datas.", ex);
-
-			if (!doneBackup) {
-				try {
-					performBackup();
-					doneBackup = true;
-				} catch (IOException exBackup) {
-					logger.warning("Failed to create a backup.", exBackup);
-				}
-			}
-		}
-
+	private void loadQuestHandlers() {
 		for (var iterator = getAPI().getQuestsHandlers().iterator(); iterator.hasNext();) {
 			QuestsHandler handler = iterator.next();
 			try {
@@ -664,18 +653,25 @@ public class BeautyQuests extends JavaPlugin implements QuestsPlugin {
 				iterator.remove();
 			}
 		}
+	}
 
-		Bukkit.getScheduler().runTaskLater(BeautyQuests.getInstance(), () -> {
-			players.loadOnlinePlayers();
-			loaded = true;
-
-			Bukkit.getPluginManager().callEvent(new BeautyQuestsLoadedEvent());
-		}, 1L);
+	private void initScoreboards() throws IOException {
+		if (scoreboards == null && config.getQuestsConfig().scoreboards()) {
+			File scFile = new File(getDataFolder(), "scoreboard.yml");
+			if (!scFile.exists())
+				saveResource("scoreboard.yml", false);
+			ConfigUpdater.update(this, "scoreboard.yml", scFile);
+			scoreboards = new ScoreboardManager(this, scFile);
+			getAPI().registerQuestsHandler(scoreboards);
+		}
 	}
 
 	public void saveAllConfig(boolean unload) throws Exception {
 		if (unload) {
-			if (quests != null) quests.unloadQuests();
+			if (quests != null)
+				quests.unloadQuests();
+			if (pools != null)
+				pools.unloadAll();
 
 			getAPI().getQuestsHandlers().forEach(handler -> {
 				try {
@@ -767,48 +763,18 @@ public class BeautyQuests extends JavaPlugin implements QuestsPlugin {
 		logger.info("Performed backup at {0}.", backupDir);
 	}
 
-	public void performReload(CommandSender sender){
-		if (true) {
-			sender.sendMessage(
-					"§cReloading is currently disabled because it caused too many bugs. Please restart your server instead.");
-			return;
-		}
+	public boolean performDataReload() {
+		quests.unloadQuests();
+		pools.unloadAll();
 
 		try {
-			sender.sendMessage("§c§l-- ⚠ Warning ! This command can occur §omuch§r§c§l bugs ! --");
-			saveAllConfig(true);
-			sender.sendMessage("§aDatas saved!");
-		}catch (Exception e) {
-			sender.sendMessage("§cError when saving datas. §lInterrupting operation!");
-			e.printStackTrace();
-			return;
+			loadQuestData();
+			return true;
+		} catch (IOException ex) {
+			logger.severe("An error occured while reloading the plugin data.", ex);
+			fatalError();
+			return false;
 		}
-
-		try{
-			reloadConfig();
-			loadConfigParameters(false);
-			sender.sendMessage("§a Configuration parameters has been reloadeds.");
-		}catch (Throwable e){
-			sender.sendMessage("§cError when reloading configuration parameters. §lInterrupting operation!");
-			e.printStackTrace();
-			return;
-		}
-
-		sender.sendMessage("§7...Waiting for loading quests...");
-		new BukkitRunnable() {
-			@Override
-			public void run() {
-				try {
-					data = YamlConfiguration.loadConfiguration(dataFile);
-					loadAllDatas();
-					sender.sendMessage("§a " + quests.getQuests().size() + " quests loaded");
-					sender.sendMessage("§a§lPlugin entierely reloaded from files !");
-				} catch (Throwable e) {
-					sender.sendMessage("§cError when loading the data file. §lOperation failed!");
-					e.printStackTrace();
-				}
-			}
-		}.runTaskLater(BeautyQuests.getInstance(), 20L);
 	}
 
 	@Override

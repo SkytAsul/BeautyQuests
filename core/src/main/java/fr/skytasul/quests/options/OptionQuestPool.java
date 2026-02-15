@@ -29,9 +29,11 @@ public class OptionQuestPool extends QuestOption<QuestPoolControllerImplementati
 	}
 
 	@Override
-	public void detach() {
-		if (getValue() != null) getValue().removeQuest(getAttachedQuest());
-		super.detach();
+	public Quest detach() {
+		Quest previous = super.detach();
+		if (getValue() != null)
+			getValue().removeQuest(previous);
+		return previous;
 	}
 
 	@Override

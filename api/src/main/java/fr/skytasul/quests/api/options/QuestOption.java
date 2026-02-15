@@ -92,7 +92,10 @@ public abstract class QuestOption<T> implements Cloneable {
 		}
 	}
 
-	public void detach() {
+	public @NotNull Quest detach() {
+		if (this.attachedQuest == null)
+			throw new IllegalStateException("Cannot detach a non-attached option");
+
 		Quest previous = this.attachedQuest;
 		this.attachedQuest = null;
 
@@ -100,9 +103,10 @@ public abstract class QuestOption<T> implements Cloneable {
 			HandlerList.unregisterAll((Listener) this);
 		}
 
-		if (previous != null && this instanceof QuestDescriptionProvider) {
-			previous.getDescriptions().remove(this);
-		}
+		if (this instanceof QuestDescriptionProvider provider)
+			previous.getDescriptions().remove(provider);
+
+		return previous;
 	}
 
 	public abstract @Nullable Object save();

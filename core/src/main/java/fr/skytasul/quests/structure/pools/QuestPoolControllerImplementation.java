@@ -340,7 +340,7 @@ public class QuestPoolControllerImplementation implements QuestPoolController, C
 		return questerData.getCompletedQuests().stream().map(QuestsAPI.getAPI().getQuestsManager()::getQuest).toList();
 	}
 
-	void unload() {
+	public void unload() {
 		if (npc != null) npc.removePool(this);
 	}
 

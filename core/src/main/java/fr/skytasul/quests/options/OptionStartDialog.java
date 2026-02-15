@@ -9,6 +9,7 @@ import fr.skytasul.quests.api.npcs.dialogs.Dialog;
 import fr.skytasul.quests.api.npcs.dialogs.DialogRunner;
 import fr.skytasul.quests.api.options.OptionSet;
 import fr.skytasul.quests.api.options.QuestOption;
+import fr.skytasul.quests.api.quests.Quest;
 import fr.skytasul.quests.api.quests.creation.QuestCreationGuiClickEvent;
 import fr.skytasul.quests.api.stages.types.Dialogable;
 import fr.skytasul.quests.utils.types.DialogRunnerImplementation;
@@ -17,41 +18,41 @@ import org.bukkit.configuration.MemoryConfiguration;
 import org.bukkit.inventory.ItemStack;
 
 public class OptionStartDialog extends QuestOption<Dialog> implements Dialogable {
-	
+
 	private DialogRunnerImplementation runner;
-	
+
 	public OptionStartDialog() {
 		super(OptionStarterNPC.class);
 	}
-	
+
 	@Override
 	public Object save() {
 		MemoryConfiguration section = new MemoryConfiguration();
 		getValue().serialize(section);
 		return section;
 	}
-	
+
 	@Override
 	public void load(ConfigurationSection config, String key) {
 		setValue(Dialog.deserialize(config.getConfigurationSection(key)));
 	}
-	
+
 	@Override
 	public Dialog cloneValue(Dialog value) {
 		return value.clone();
 	}
-	
+
 	@Override
 	public boolean shouldDisplay(OptionSet options) {
 		return options.getOption(OptionStarterNPC.class).getValue() != null;
 	}
-	
+
 	private String[] getLore() {
 		return new String[] {formatDescription(Lang.startDialogLore.toString()), "",
 				getValue() == null ? Lang.NotSet.toString()
 						: "§7" + Lang.AmountDialogLines.quickFormat("lines_amount", getValue().getMessages().size())};
 	}
-	
+
 	@Override
 	public ItemStack getItemStack(OptionSet options) {
 		return ItemUtils.item(XMaterial.WRITABLE_BOOK, Lang.startDialog.toString(), getLore());
@@ -66,26 +67,26 @@ public class OptionStartDialog extends QuestOption<Dialog> implements Dialogable
 			event.reopen();
 		}, getValue()).start();
 	}
-	
+
 	@Override
 	public Dialog getDialog() {
 		return getValue();
 	}
-	
+
 	@Override
 	public BqNpc getNPC() {
 		return getAttachedQuest().getOptionValueOrDef(OptionStarterNPC.class);
 	}
-	
+
 	@Override
-	public void detach() {
-		super.detach();
+	public Quest detach() {
 		if (runner != null) {
 			runner.unload();
 			runner = null;
 		}
+		return super.detach();
 	}
-	
+
 	@Override
 	public DialogRunner getDialogRunner() {
 		if (runner == null) {
@@ -94,5 +95,5 @@ public class OptionStartDialog extends QuestOption<Dialog> implements Dialogable
 		}
 		return runner;
 	}
-	
+
 }

@@ -27,7 +27,6 @@ import fr.skytasul.quests.api.utils.PlayerListCategory;
 import fr.skytasul.quests.api.utils.QuestVisibilityLocation;
 import fr.skytasul.quests.api.utils.Utils;
 import fr.skytasul.quests.api.utils.messaging.*;
-import fr.skytasul.quests.npcs.BqNpcImplementation;
 import fr.skytasul.quests.options.*;
 import fr.skytasul.quests.players.AdminMode;
 import fr.skytasul.quests.utils.QuestUtils;
@@ -75,6 +74,7 @@ public class QuestImplementation implements Quest, QuestDescriptionProvider, Com
 
 	public void load() {
 		QuestsAPI.getAPI().propagateQuestsHandlers(handler -> handler.questLoaded(this));
+		manager.loadBranches();
 	}
 
 	@Override
@@ -583,8 +583,6 @@ public class QuestImplementation implements Quest, QuestDescriptionProvider, Com
 	public void delete(boolean silently, boolean keepDatas) {
 		questsManager.removeQuest(this);
 		unload();
-		if (hasOption(OptionStarterNPC.class))
-			((BqNpcImplementation) getOptionValueOrDef(OptionStarterNPC.class)).removeQuest(this);
 
 		if (!keepDatas) {
 			BeautyQuests.getInstance().getQuesterManager().getDataManager().resetQuestData(id).whenComplete(

@@ -7,33 +7,42 @@ import fr.skytasul.quests.api.localization.Lang;
 import fr.skytasul.quests.api.npcs.BqNpc;
 import fr.skytasul.quests.api.options.OptionSet;
 import fr.skytasul.quests.api.options.QuestOption;
+import fr.skytasul.quests.api.quests.Quest;
 import fr.skytasul.quests.api.quests.creation.QuestCreationGuiClickEvent;
+import fr.skytasul.quests.npcs.BqNpcImplementation;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.inventory.ItemStack;
 import java.util.ArrayList;
 import java.util.List;
 
 public class OptionStarterNPC extends QuestOption<BqNpc> {
-	
+
 	public OptionStarterNPC() {
 		super(OptionQuestPool.class);
 	}
-	
+
 	@Override
 	public Object save() {
 		return getValue().getId();
 	}
-	
+
 	@Override
 	public void load(ConfigurationSection config, String key) {
 		setValue(QuestsPlugin.getPlugin().getNpcManager().getById(config.getString(key)));
 	}
-	
+
 	@Override
 	public BqNpc cloneValue(BqNpc value) {
 		return value;
 	}
-	
+
+	@Override
+	public Quest detach() {
+		Quest previous = super.detach();
+		((BqNpcImplementation) getValue()).removeQuest(previous);
+		return previous;
+	}
+
 	private List<String> getLore(OptionSet options) {
 		List<String> lore = new ArrayList<>(4);
 		lore.add(formatDescription(Lang.questStarterSelectLore.toString()));
@@ -43,7 +52,7 @@ public class OptionStarterNPC extends QuestOption<BqNpc> {
 				: "§7" + getValue().getNpc().getName() + " §8(" + getValue().getId() + ")");
 		return lore;
 	}
-	
+
 	@Override
 	public ItemStack getItemStack(OptionSet options) {
 		return ItemUtils.item(XMaterial.VILLAGER_SPAWN_EGG, Lang.questStarterSelect.toString(), getLore(options));

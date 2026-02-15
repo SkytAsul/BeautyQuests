@@ -43,11 +43,6 @@ public class CommandsManagerImplementation implements CommandsManager {
 		});
 
 		var builder = BukkitLamp.builder(bukkitConfigBuilder.build());
-		// handler.failOnTooManyArguments();
-
-		// TODO
-		// builder.accept(BukkitVisitors.brigadier(ArgumentTypes.builder().addType(QuesterSelector.class,
-		// MinecraftArgumentType.ENTITY.create(false, true)), null));
 
 		builder.parameterTypes(parameters -> {
 			parameters.addParameterType(Quest.class, new QuestParameter());
@@ -105,11 +100,10 @@ public class CommandsManagerImplementation implements CommandsManager {
 		Orphans path;
 		if (subpath == null || subpath.isEmpty()) {
 			path = Orphans.path(COMMAND_ALIASES);
-		}else {
+		} else {
 			path = Orphans.path(Arrays.stream(COMMAND_ALIASES).map(x -> x + " " + subpath).toArray(String[]::new));
 		}
 		lamp.register(Arrays.stream(commands).map(path::handler).toArray());
-		// if (locked) QuestsPlugin.getPlugin().getLoggerExpanded().warning("Registered commands after final locking.");
 	}
 
 	public void unload() {

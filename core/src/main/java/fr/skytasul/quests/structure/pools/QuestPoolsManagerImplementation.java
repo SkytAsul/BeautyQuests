@@ -63,6 +63,10 @@ public class QuestPoolsManagerImplementation implements QuestPoolsManager {
 		config.save(file);
 	}
 
+	public void unloadAll() {
+		pools.values().forEach(QuestPoolControllerImplementation::unload);
+	}
+
 	@Override
 	public @NotNull QuestPoolController registerPool(@NotNull QuestPoolData pool) {
 		int id = pools.keySet().stream().mapToInt(Integer::intValue).max().orElse(-1) + 1;

@@ -63,13 +63,11 @@ public class QuestBranchImplementation implements QuestBranch {
 	public void addRegularStage(@NotNull StageControllerImplementation<?> stage) {
 		Validate.notNull(stage, "Stage cannot be null !");
 		regularStages.add(stage);
-		stage.load();
 	}
 
-	public void addEndStage(@NotNull StageControllerImplementation<?> stage, @NotNull QuestBranchImplementation linked) {
+	public void addEndStage(@NotNull StageControllerImplementation<?> stage, @Nullable QuestBranchImplementation linked) {
 		Validate.notNull(stage, "Stage cannot be null !");
 		endStages.add(new EndingStageImplementation(stage, linked));
-		stage.load();
 	}
 
 	@Override
@@ -314,6 +312,11 @@ public class QuestBranchImplementation implements QuestBranch {
 
 	private boolean isInStageEnd(@NotNull QuesterQuestData data) {
 		return data.getState() == QuesterQuestData.State.IN_ENDING_STAGES;
+	}
+
+	public void loadStages() {
+		regularStages.forEach(StageControllerImplementation::load);
+		endStages.forEach(end -> end.getStage().load());
 	}
 
 	public void remove(){

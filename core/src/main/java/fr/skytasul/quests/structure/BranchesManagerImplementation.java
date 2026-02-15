@@ -118,6 +118,10 @@ public class BranchesManagerImplementation implements QuestBranchesManager {
 		branches.clear();
 	}
 
+	public void loadBranches() {
+		branches.values().forEach(QuestBranchImplementation::loadStages);
+	}
+
 	public void save(@NotNull ConfigurationSection section) throws DataSavingException {
 		ConfigurationSection branchesSection = section.createSection("branches");
 		for (Integer id : branches.keySet()) {
