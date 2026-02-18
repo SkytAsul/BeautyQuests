@@ -237,10 +237,10 @@ public class PlayerListGUI extends CategorizedPagedGUI<Quest> {
 							&& BeautyQuests.getInstance().getScoreboardManager() != null) {
 						Scoreboard sb = BeautyQuests.getInstance().getScoreboardManager().getPlayerScoreboard(player);
 						if (sb != null) {
-							sb.getEntry(qu, quester).ifPresent(entry -> {
-								entry.setPinned(!entry.isPinned());
-								getDelegate().setItems(); // refresh the glittering effect
-							});
+							Scoreboard.QuestEntry questEntry = sb.getEntry(qu, quester).orElseThrow(
+									() -> new IllegalStateException("Trying to pin a quest not present in scoreboard"));
+							questEntry.setPinned(!questEntry.isPinned());
+							getDelegate().setItems(); // refresh the glittering effect
 						}
 					}
 					break;

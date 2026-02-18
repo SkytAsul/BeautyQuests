@@ -204,6 +204,23 @@ public class ScoreboardManager implements Listener, QuestsHandler {
 	}
 
 	@Override
+	public void questUnload(Quest quest) {
+		if (!quest.isScoreboardEnabled())
+			return;
+		scoreboards.forEach((p, scoreboard) -> scoreboard.questRemove(quest));
+	}
+
+	@Override
+	public void questLoaded(Quest quest) {
+		if (!quest.isScoreboardEnabled())
+			return;
+		for (Quester quester : plugin.getQuesterManager().getLoadedQuesters()) {
+			if (quest.hasStarted(quester))
+				questEvent(quester, x -> x.questAdd(quest, quester));
+		}
+	}
+
+	@Override
 	public void questFinish(Quester quester, Quest quest) {
 		if (!quest.isScoreboardEnabled()) return;
 		questEvent(quester, x -> x.questRemove(quest, quester));
