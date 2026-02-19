@@ -8,11 +8,14 @@ import fr.skytasul.quests.api.localization.Lang;
 import fr.skytasul.quests.api.options.OptionSet;
 import fr.skytasul.quests.api.options.QuestOption;
 import fr.skytasul.quests.api.quests.creation.QuestCreationGuiClickEvent;
+import fr.skytasul.quests.api.utils.Utils;
 import fr.skytasul.quests.utils.QuestUtils;
 import org.bukkit.Material;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.inventory.ItemStack;
+import org.jetbrains.annotations.Nullable;
 
+// TODO refactor to use QuestOptionItem
 public class OptionQuestItem extends QuestOption<ItemStack> {
 
 	@Override
@@ -38,6 +41,11 @@ public class OptionQuestItem extends QuestOption<ItemStack> {
 	@Override
 	public ItemStack cloneValue(ItemStack value) {
 		return value.clone();
+	}
+
+	@Override
+	public @Nullable String getValueString() {
+		return getValue() == null ? null : Utils.getStringFromItemStack(getValue(), "", false);
 	}
 
 	private String[] getLore() {

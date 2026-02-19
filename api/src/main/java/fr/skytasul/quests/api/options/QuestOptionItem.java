@@ -9,6 +9,7 @@ import fr.skytasul.quests.api.utils.Utils;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.event.inventory.ClickType;
 import org.bukkit.inventory.ItemStack;
+import org.jetbrains.annotations.Nullable;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -34,6 +35,11 @@ public abstract class QuestOptionItem extends QuestOption<ItemStack> {
 	@Override
 	public ItemStack cloneValue(ItemStack value) {
 		return value.clone();
+	}
+
+	@Override
+	public @Nullable String getValueString() {
+		return getValue() == null ? null : Utils.getStringFromItemStack(getValue(), "", false);
 	}
 
 	private List<String> getLore() {

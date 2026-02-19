@@ -8,6 +8,7 @@ import fr.skytasul.quests.api.QuestsPlugin;
 import fr.skytasul.quests.api.comparison.ItemComparison;
 import fr.skytasul.quests.api.localization.Lang;
 import fr.skytasul.quests.api.objects.QuestObjectLocation;
+import fr.skytasul.quests.api.options.OptionRequirements;
 import fr.skytasul.quests.api.options.QuestOptionCreator;
 import fr.skytasul.quests.api.quests.quester.QuestQuesterStrategyCreator;
 import fr.skytasul.quests.api.requirements.RequirementCreator;

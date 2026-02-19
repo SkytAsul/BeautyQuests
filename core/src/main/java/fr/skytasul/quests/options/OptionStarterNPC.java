@@ -12,6 +12,7 @@ import fr.skytasul.quests.api.quests.creation.QuestCreationGuiClickEvent;
 import fr.skytasul.quests.npcs.BqNpcImplementation;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.inventory.ItemStack;
+import org.jetbrains.annotations.Nullable;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -43,13 +44,17 @@ public class OptionStarterNPC extends QuestOption<BqNpc> {
 		return previous;
 	}
 
+	@Override
+	public @Nullable String getValueString() {
+		return getValue() == null ? null : getValue().getNpc().getName() + " §8(" + getValue().getId() + ")";
+	}
+
 	private List<String> getLore(OptionSet options) {
 		List<String> lore = new ArrayList<>(4);
 		lore.add(formatDescription(Lang.questStarterSelectLore.toString()));
 		lore.add(null);
 		if (options != null && options.hasOption(OptionQuestPool.class) && options.getOption(OptionQuestPool.class).hasCustomValue()) lore.add(Lang.questStarterSelectPool.toString());
-		lore.add(getValue() == null ? Lang.NotSet.toString()
-				: "§7" + getValue().getNpc().getName() + " §8(" + getValue().getId() + ")");
+		lore.add(formatValue());
 		return lore;
 	}
 

@@ -15,6 +15,7 @@ import org.jetbrains.annotations.Nullable;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 public abstract class QuestOptionObject<T extends QuestObject, C extends QuestObjectCreator<T>, L extends List<T>>
 		extends QuestOption<L> {
@@ -59,6 +60,12 @@ public abstract class QuestOptionObject<T extends QuestObject, C extends QuestOb
 	@Override
 	public void load(ConfigurationSection config, String key) {
 		setValue(instanciate(SerializableObject.deserializeList(config.getMapList(key), this::deserialize)));
+	}
+
+	@Override
+	public @Nullable String getValueString() {
+		return getValue() == null ? null
+				: getValue().stream().map(obj -> obj.getDescription(null)).collect(Collectors.joining(", "));
 	}
 
 	protected abstract T deserialize(Map<String, Object> map);

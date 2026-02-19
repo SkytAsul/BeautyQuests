@@ -17,6 +17,7 @@ import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.ClickType;
 import org.bukkit.inventory.ItemStack;
+import org.jetbrains.annotations.Nullable;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -51,18 +52,23 @@ public class OptionQuestPool extends QuestOption<QuestPoolControllerImplementati
 		return value;
 	}
 
+	@Override
+	public @Nullable String getValueString() {
+		if (getValue() == null)
+			return null;
+		String poolName = getValue().getPoolData().name();
+		String poolId = "#" + getValue().getId();
+		return poolName == null ? poolId : poolName + " " + poolId;
+	}
+
 	private List<String> getLore() {
 		List<String> lore = new ArrayList<>(5);
 		lore.add(formatDescription(Lang.questPoolLore.toString()));
 		lore.add("");
+		lore.add(formatValue());
 		if (hasCustomValue()) {
-			String poolName = getValue().getPoolData().name();
-			String poolId = "#" + getValue().getId();
-			lore.add(formatValue(poolName == null ? poolId : poolName + " " + poolId));
 			lore.add("");
 			lore.add("§8" + Lang.ClickShiftRight.toString() + " > §d" + Lang.Reset.toString());
-		} else {
-			lore.add(formatNullableValue(null, true));
 		}
 		return lore;
 	}

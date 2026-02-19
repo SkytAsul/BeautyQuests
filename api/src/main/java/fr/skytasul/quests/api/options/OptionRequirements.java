@@ -1,10 +1,9 @@
-package fr.skytasul.quests.options;
+package fr.skytasul.quests.api.options;
 
 import com.cryptomorin.xseries.XMaterial;
 import fr.skytasul.quests.api.QuestsAPI;
 import fr.skytasul.quests.api.localization.Lang;
 import fr.skytasul.quests.api.objects.QuestObjectsRegistry;
-import fr.skytasul.quests.api.options.QuestOptionObject;
 import fr.skytasul.quests.api.options.description.QuestDescriptionContext;
 import fr.skytasul.quests.api.options.description.QuestDescriptionProvider;
 import fr.skytasul.quests.api.requirements.AbstractRequirement;

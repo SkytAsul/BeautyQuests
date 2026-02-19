@@ -8,6 +8,8 @@ import fr.skytasul.quests.api.quests.creation.QuestCreationGuiClickEvent;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -34,12 +36,24 @@ public abstract class QuestOptionString extends QuestOption<String> {
 		return value;
 	}
 
+	@Override
+	public @Nullable String getValueString() {
+		return getValue();
+	}
+
+	@Override
+	public @NotNull String formatValue() {
+		if (isMultiline() && getValue() != null)
+			return "{nl}" + getValue();
+		return getValue();
+	}
+
 	private String[] getLore() {
 		if (getItemDescription() == null)
-			return new String[] {formatValue(getValue())};
+			return new String[] {formatValue()};
 
 		String description = formatDescription(getItemDescription());
-		return new String[] {description, "", formatValue((isMultiline() && getValue() != null ? "{nl}" : "") + getValue())};
+		return new String[] {description, "", formatValue()};
 	}
 
 	@Override

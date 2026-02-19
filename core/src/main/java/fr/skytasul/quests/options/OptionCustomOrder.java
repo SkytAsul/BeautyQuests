@@ -32,9 +32,13 @@ public class OptionCustomOrder extends QuestOption<OptionalInt> {
 		return value;
 	}
 
+	@Override
+	public @Nullable String getValueString() {
+		return getValue().isEmpty() ? null : Integer.toString(getValue().getAsInt());
+	}
+
 	private String[] getLore() {
-		return new String[] {QuestOption.formatDescription(Lang.optionCustomOrderLore.toString()), "",
-				QuestOption.formatNullableValue(getValue().isEmpty() ? null : getValue().getAsInt(), !hasCustomValue())};
+		return new String[] {QuestOption.formatDescription(Lang.optionCustomOrderLore.toString()), "", formatValue()};
 	}
 
 	@Override

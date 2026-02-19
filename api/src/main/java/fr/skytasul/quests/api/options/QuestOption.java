@@ -19,6 +19,8 @@ import org.jetbrains.annotations.Nullable;
 import java.util.Objects;
 import java.util.Optional;
 
+// TODO refactor so options are always present on quests, even for default values (no longer stored
+// in QuestOptionCreator)
 @AutoRegistered
 public abstract class QuestOption<T> implements Cloneable {
 
@@ -109,6 +111,15 @@ public abstract class QuestOption<T> implements Cloneable {
 		return previous;
 	}
 
+	/**
+	 * Get a string that represents the value and can be shown to players.
+	 *
+	 * @return a nullable string representing the value
+	 */
+	public @Nullable String getValueString() {
+		return Objects.toString(value);
+	}
+
 	public abstract @Nullable Object save();
 
 	public abstract void load(@NotNull ConfigurationSection config, @NotNull String key);
@@ -132,8 +143,8 @@ public abstract class QuestOption<T> implements Cloneable {
 
 	public abstract void click(@NotNull QuestCreationGuiClickEvent event);
 
-	public @NotNull String formatValue(@Nullable String valueString) {
-		return formatNullableValue(valueString, !hasCustomValue());
+	public @NotNull String formatValue() {
+		return formatNullableValue(getValueString(), !hasCustomValue());
 	}
 
 	public static @Nullable String formatDescription(@Nullable String description) {

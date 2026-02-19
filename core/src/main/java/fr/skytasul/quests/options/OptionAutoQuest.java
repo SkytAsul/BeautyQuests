@@ -42,11 +42,16 @@ public class OptionAutoQuest extends QuestOption<OptionAutoQuest.Mode> implement
 	}
 
 	@Override
+	public @Nullable String getValueString() {
+		return getValue().title.toString();
+	}
+
+	@Override
 	public @NotNull ItemStack getItemStack(@NotNull OptionSet options) {
 		Mode selectedMode = getValue();
 		return ItemUtils.item(selectedMode.material, selectedMode.color + Lang.autoModeTitle.toString(),
 				QuestOption.formatDescription(Lang.autoModeDescription.toString()), "",
-				QuestOption.formatNullableValue(selectedMode.title, selectedMode == Mode.DISABLED));
+				formatValue());
 	}
 
 	@Override

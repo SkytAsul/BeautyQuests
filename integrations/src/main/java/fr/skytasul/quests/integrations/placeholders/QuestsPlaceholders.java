@@ -4,7 +4,7 @@ import fr.skytasul.quests.api.QuestsAPI;
 import fr.skytasul.quests.api.QuestsPlugin;
 import fr.skytasul.quests.api.localization.Lang;
 import fr.skytasul.quests.api.options.description.DescriptionSource;
-import fr.skytasul.quests.api.players.PlayerManager;
+import fr.skytasul.quests.api.players.PlayerQuester;
 import fr.skytasul.quests.api.pools.QuestPoolController;
 import fr.skytasul.quests.api.questers.Quester;
 import fr.skytasul.quests.api.questers.data.QuesterQuestData;
@@ -31,7 +31,9 @@ public class QuestsPlaceholders extends PlaceholderExpansion implements Listener
 
 	private static QuestsPlaceholders placeholders;
 
-	private static final Pattern POOl_PLACEHOLDER_PATTERN =
+	private static final Pattern QUEST_PLACEHOLDER_PATTERN =
+			Pattern.compile("quest_(\\d+)_(\\w+)");
+	private static final Pattern POOL_PLACEHOLDER_PATTERN =
 			Pattern.compile("pool_(\\d+)_(can_start|can_start_reason|remaining|in_progress|completed|cooldown)");
 
 	private final int lineLength;
@@ -91,11 +93,15 @@ public class QuestsPlaceholders extends PlaceholderExpansion implements Listener
 
 	@Override
 	public List<String> getPlaceholders() {
-		return Arrays.asList("total_amount", "quest_restartable_ID", "player_inprogress_amount", "player_finished_amount",
+		List<String> placeholders = new ArrayList<>(
+				List.of("total_amount", "player_inprogress_amount", "player_finished_amount",
 				"player_finished_total_amount", "started", "started_ordered", "started_ordered_X", "advancement_ID",
 				"advancement_ID_raw", "player_quest_finished_ID", "started_id_list",
 				"pool_ID_can_start", "pool_ID_can_start_reason", "pool_ID_remaining", "pool_ID_in_progress",
-				"pool_ID_completed", "pool_ID_cooldown");
+						"pool_ID_completed", "pool_ID_cooldown"));
+		for (var questOptionCreator : QuestsAPI.getAPI().getQuestOptions())
+			placeholders.add("quest_ID_" + questOptionCreator.id);
+		return placeholders;
 	}
 
 	@Override
@@ -103,21 +109,29 @@ public class QuestsPlaceholders extends PlaceholderExpansion implements Listener
 		if (identifier.equals("total_amount"))
 			return "" + QuestsAPI.getAPI().getQuestsManager().getQuests().size();
 
-		if (identifier.startsWith("quest_restartable_")) {
-			String sid = identifier.substring(18);
-			try {
-				Quest qu = QuestsAPI.getAPI().getQuestsManager().getQuest(Integer.parseInt(sid));
-				if (qu == null)
-					return "§c§lError: unknown quest §o" + sid;
-				return Boolean.toString(qu.isRepeatable());
-			} catch (NumberFormatException ex) {
-				return "§c§lError: §o" + sid;
+		var questMatcher = QUEST_PLACEHOLDER_PATTERN.matcher(identifier);
+		if (questMatcher.matches()) {
+			int questId = Integer.parseInt(questMatcher.group(1));
+			Quest quest = QuestsAPI.getAPI().getQuestsManager().getQuest(questId);
+			if (quest == null)
+				return "error: unknown quest %d".formatted(questId);
+
+			String optionId = questMatcher.group(2);
+			var optionCreatorOpt =
+					QuestsAPI.getAPI().getQuestOptions().stream().filter(option -> option.id.equals(optionId)).findAny();
+			if (optionCreatorOpt.isPresent()) {
+				try {
+					return quest.getOption(optionCreatorOpt.get().optionClass).getValueString();
+				} catch (IllegalArgumentException __) {
+					return "default value";
+				}
 			}
 		}
 
-		if (!off.isOnline()) return "§cerror: offline";
+		if (!off.isOnline())
+			return "§cerror: offline";
 		Player p = off.getPlayer();
-		Quester quester = PlayerManager.getPlayerAccount(p);
+		PlayerQuester quester = QuestsPlugin.getPlugin().getPlayersManager().getQuester(p);
 
 		if (quester == null)
 			return "§cdatas not loaded";
@@ -247,7 +261,7 @@ public class QuestsPlaceholders extends PlaceholderExpansion implements Listener
 			}
 		}
 
-		var poolMatcher = POOl_PLACEHOLDER_PATTERN.matcher(identifier);
+		var poolMatcher = POOL_PLACEHOLDER_PATTERN.matcher(identifier);
 		if (poolMatcher.matches()) {
 			int poolId = Integer.parseInt(poolMatcher.group(1));
 			QuestPoolController pool = QuestsAPI.getAPI().getPoolsManager().getPool(poolId);

@@ -11,6 +11,7 @@ import fr.skytasul.quests.api.quests.creation.QuestCreationGuiClickEvent;
 import fr.skytasul.quests.api.utils.Utils;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.inventory.ItemStack;
+import org.jetbrains.annotations.Nullable;
 
 public class OptionTimer extends QuestOption<Integer> {
 
@@ -34,6 +35,11 @@ public class OptionTimer extends QuestOption<Integer> {
 	}
 
 	@Override
+	public @Nullable String getValueString() {
+		return Utils.millisToHumanString(getValue() * 60L * 1000L);
+	}
+
+	@Override
 	public boolean shouldDisplay(OptionSet options) {
 		return options.getOption(OptionRepeatable.class).getValue();
 	}
@@ -44,8 +50,7 @@ public class OptionTimer extends QuestOption<Integer> {
 	}
 
 	private String[] getLore() {
-		return new String[] {formatDescription(Lang.timerLore.toString()), "",
-				formatValue(Utils.millisToHumanString(getValue() * 60L * 1000L))};
+		return new String[] {formatDescription(Lang.timerLore.toString()), "", formatValue()};
 	}
 
 	@Override

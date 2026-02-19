@@ -16,6 +16,7 @@ import fr.skytasul.quests.utils.types.DialogRunnerImplementation;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.MemoryConfiguration;
 import org.bukkit.inventory.ItemStack;
+import org.jetbrains.annotations.Nullable;
 
 public class OptionStartDialog extends QuestOption<Dialog> implements Dialogable {
 
@@ -47,10 +48,14 @@ public class OptionStartDialog extends QuestOption<Dialog> implements Dialogable
 		return options.getOption(OptionStarterNPC.class).getValue() != null;
 	}
 
+	@Override
+	public @Nullable String getValueString() {
+		return getValue() == null ? null
+				: Lang.AmountDialogLines.quickFormat("lines_amount", getValue().getMessages().size());
+	}
+
 	private String[] getLore() {
-		return new String[] {formatDescription(Lang.startDialogLore.toString()), "",
-				getValue() == null ? Lang.NotSet.toString()
-						: "§7" + Lang.AmountDialogLines.quickFormat("lines_amount", getValue().getMessages().size())};
+		return new String[] {formatDescription(Lang.startDialogLore.toString()), "", formatValue()};
 	}
 
 	@Override

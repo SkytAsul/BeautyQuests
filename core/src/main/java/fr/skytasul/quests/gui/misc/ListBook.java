@@ -2,7 +2,7 @@ package fr.skytasul.quests.gui.misc;
 
 import fr.skytasul.quests.api.QuestsAPI;
 import fr.skytasul.quests.api.localization.Lang;
-import fr.skytasul.quests.options.OptionRequirements;
+import fr.skytasul.quests.api.options.OptionRequirements;
 import fr.skytasul.quests.options.OptionStarterNPC;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;

@@ -8,6 +8,7 @@ import fr.skytasul.quests.api.data.DataLoadingException;
 import fr.skytasul.quests.api.data.DataSavingException;
 import fr.skytasul.quests.api.localization.Lang;
 import fr.skytasul.quests.api.npcs.BqNpc;
+import fr.skytasul.quests.api.options.OptionRequirements;
 import fr.skytasul.quests.api.options.QuestOption;
 import fr.skytasul.quests.api.options.QuestOptionCreator;
 import fr.skytasul.quests.api.options.description.DescriptionSource;
@@ -98,7 +99,7 @@ public class QuestImplementation implements Quest, QuestDescriptionProvider, Com
 		for (QuestOption<?> option : options) {
 			if (clazz.isInstance(option)) return (T) option;
 		}
-		throw new NullPointerException("Quest " + id + " do not have option " + clazz.getName());
+		throw new IllegalArgumentException("Quest " + id + " do not have option " + clazz.getName());
 	}
 
 	@Override
