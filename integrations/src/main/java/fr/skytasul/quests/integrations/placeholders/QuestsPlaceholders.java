@@ -1,15 +1,19 @@
 package fr.skytasul.quests.integrations.placeholders;
 
 import fr.skytasul.quests.api.QuestsAPI;
+import fr.skytasul.quests.api.QuestsConfiguration;
 import fr.skytasul.quests.api.QuestsPlugin;
 import fr.skytasul.quests.api.localization.Lang;
 import fr.skytasul.quests.api.options.description.DescriptionSource;
+import fr.skytasul.quests.api.options.description.QuestDescriptionContext;
+import fr.skytasul.quests.api.options.description.QuestDescriptionProvider;
 import fr.skytasul.quests.api.players.PlayerQuester;
 import fr.skytasul.quests.api.pools.QuestPoolController;
 import fr.skytasul.quests.api.questers.Quester;
 import fr.skytasul.quests.api.questers.data.QuesterQuestData;
 import fr.skytasul.quests.api.quests.Quest;
 import fr.skytasul.quests.api.utils.ChatColorUtils;
+import fr.skytasul.quests.api.utils.PlayerListCategory;
 import fr.skytasul.quests.api.utils.Utils;
 import me.clip.placeholderapi.events.ExpansionRegisterEvent;
 import me.clip.placeholderapi.expansion.PlaceholderExpansion;
@@ -33,6 +37,8 @@ public class QuestsPlaceholders extends PlaceholderExpansion implements Listener
 
 	private static final Pattern QUEST_PLACEHOLDER_PATTERN =
 			Pattern.compile("quest_(\\d+)_(\\w+)");
+	private static final Pattern PLAYER_QUEST_PLACEHOLDER_PATTERN =
+			Pattern.compile("player_quest_(\\d+)_(\\w+)");
 	private static final Pattern POOL_PLACEHOLDER_PATTERN =
 			Pattern.compile("pool_(\\d+)_(can_start|can_start_reason|remaining|in_progress|completed|cooldown)");
 
@@ -81,7 +87,6 @@ public class QuestsPlaceholders extends PlaceholderExpansion implements Listener
 	}
 
 	@Override
-
 	public boolean persist() {
 		return true;
 	}
@@ -93,14 +98,20 @@ public class QuestsPlaceholders extends PlaceholderExpansion implements Listener
 
 	@Override
 	public List<String> getPlaceholders() {
-		List<String> placeholders = new ArrayList<>(
-				List.of("total_amount", "player_inprogress_amount", "player_finished_amount",
-				"player_finished_total_amount", "started", "started_ordered", "started_ordered_X", "advancement_ID",
-				"advancement_ID_raw", "player_quest_finished_ID", "started_id_list",
-				"pool_ID_can_start", "pool_ID_can_start_reason", "pool_ID_remaining", "pool_ID_in_progress",
-						"pool_ID_completed", "pool_ID_cooldown"));
+		var placeholders = new ArrayList<String>();
+		placeholders.addAll(List.of("total_amount"));
+		placeholders.addAll(List.of("player_inprogress_amount", "player_finished_amount", "player_finished_total_amount", "player_quest_finished_ID"));
+		placeholders.addAll(List.of("started", "started_ordered", "started_ordered_X", "started_id_list"));
+		placeholders.addAll(List.of("advancement_ID", "advancement_ID_raw"));
+		placeholders.addAll(List.of("pool_ID_can_start", "pool_ID_can_start_reason", "pool_ID_remaining", "pool_ID_in_progress", "pool_ID_completed", "pool_ID_cooldown"));
 		for (var questOptionCreator : QuestsAPI.getAPI().getQuestOptions())
 			placeholders.add("quest_ID_" + questOptionCreator.id);
+		for (var questOptionCreator : QuestsAPI.getAPI().getQuestOptions())
+			if (QuestDescriptionProvider.class.isAssignableFrom(questOptionCreator.optionClass)) {
+				// TODO rework this atrocious code when refactoring options (fetch the data from a registry)
+				var fakeOption = (QuestDescriptionProvider) questOptionCreator.optionSupplier.get();
+				placeholders.add("player_quest_ID_" + fakeOption.getDescriptionId());
+			}
 		return placeholders;
 	}
 
@@ -258,6 +269,27 @@ public class QuestsPlaceholders extends PlaceholderExpansion implements Listener
 						.toString();
 			}catch (NumberFormatException ex) {
 				return "§c§lError: §o" + sid;
+			}
+		}
+
+		var playerQuestMatcher = PLAYER_QUEST_PLACEHOLDER_PATTERN.matcher(identifier);
+		if (playerQuestMatcher.matches()) {
+			int questId = Integer.parseInt(playerQuestMatcher.group(1));
+			Quest quest = QuestsAPI.getAPI().getQuestsManager().getQuest(questId);
+			if (quest == null)
+				return "error: unknown quest %d".formatted(questId);
+
+			String descriptionId = playerQuestMatcher.group(2);
+			var descriptionProviderOpt =
+					quest.getDescriptions().stream().filter(desc -> desc.getDescriptionId().equals(descriptionId)).findAny();
+			if (descriptionProviderOpt.isPresent()) {
+				var listCategory = quest.hasStarted(quester) ? PlayerListCategory.IN_PROGRESS
+						: (quest.hasFinished(quester) ? PlayerListCategory.FINISHED : PlayerListCategory.NOT_STARTED);
+				List<String> descriptionLines = descriptionProviderOpt.get().provideDescription(new QuestDescriptionContext(
+						QuestsConfiguration.getConfig().getQuestDescriptionConfig(),
+						quest, p, quester, listCategory,
+						DescriptionSource.PLACEHOLDER));
+				return String.join("\n", descriptionLines);
 			}
 		}
 
