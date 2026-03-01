@@ -79,8 +79,8 @@
 			<url>https://repo.pyr.lol/snapshots</url>
 		</repository>
 		<repository>
-			<id>sonatype</id>
-			<url>https://s01.oss.sonatype.org/content/repositories/snapshots</url>
+			<id>magemonkey-snapshots</id>
+			<url>https://repo.travja.dev/snapshots</url>
 		</repository>
 	</repositories>
 
@@ -188,7 +188,7 @@
 		<dependency>
 			<groupId>studio.magemonkey</groupId>
 			<artifactId>fabled</artifactId>
-			<version>1.0.0-R0.33-SNAPSHOT</version>
+			<version>1.0.4-R0.73-SNAPSHOT</version>
 			<scope>provided</scope>
 		</dependency>
 		<dependency>
@@ -209,7 +209,7 @@
 			<version>2.8.5</version>
 			<scope>provided</scope>
 		</dependency>
-<!--		<dependency>
+		<!--		<dependency>
 			<groupId>io.github.arcaneplugins</groupId>
 			<artifactId>levelledmobs-plugin</artifactId>
 			<version>4.0.3.1</version>
