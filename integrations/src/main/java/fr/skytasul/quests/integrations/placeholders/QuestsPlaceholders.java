@@ -9,7 +9,6 @@ import fr.skytasul.quests.api.options.description.QuestDescriptionContext;
 import fr.skytasul.quests.api.options.description.QuestDescriptionProvider;
 import fr.skytasul.quests.api.players.PlayerQuester;
 import fr.skytasul.quests.api.pools.QuestPoolController;
-import fr.skytasul.quests.api.questers.Quester;
 import fr.skytasul.quests.api.questers.data.QuesterQuestData;
 import fr.skytasul.quests.api.quests.Quest;
 import fr.skytasul.quests.api.utils.ChatColorUtils;
@@ -26,8 +25,10 @@ import org.bukkit.event.Listener;
 import org.bukkit.scheduler.BukkitTask;
 import java.util.*;
 import java.util.Map.Entry;
-import java.util.concurrent.locks.ReentrantLock;
+import java.util.concurrent.locks.ReadWriteLock;
+import java.util.concurrent.locks.ReentrantReadWriteLock;
 import java.util.function.Consumer;
+import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
@@ -41,6 +42,8 @@ public class QuestsPlaceholders extends PlaceholderExpansion implements Listener
 			Pattern.compile("player_quest_(\\d+)_(\\w+)");
 	private static final Pattern POOL_PLACEHOLDER_PATTERN =
 			Pattern.compile("pool_(\\d+)_(can_start|can_start_reason|remaining|in_progress|completed|cooldown)");
+	private static final Pattern STARTED_ORDERED_PATTERN =
+			Pattern.compile("started_ordered(?:_(?:(?<id>\\d+)|(?<desc>\\w+)))?");
 
 	private final int lineLength;
 	private final int changeTime;
@@ -49,7 +52,7 @@ public class QuestsPlaceholders extends PlaceholderExpansion implements Listener
 
 	private BukkitTask task;
 	private Map<Player, PlayerPlaceholderData> players = new HashMap<>();
-	private ReentrantLock playersLock = new ReentrantLock();
+	private ReadWriteLock playersLock = new ReentrantReadWriteLock();
 
 	private List<Entry<String, Consumer<PlaceholderExpansion>>> waitingExpansions = new ArrayList<>();
 
@@ -111,7 +114,9 @@ public class QuestsPlaceholders extends PlaceholderExpansion implements Listener
 				// TODO rework this atrocious code when refactoring options (fetch the data from a registry)
 				var fakeOption = (QuestDescriptionProvider) questOptionCreator.optionSupplier.get();
 				placeholders.add("player_quest_ID_" + fakeOption.getDescriptionId());
+				placeholders.add("started_ordered_" + fakeOption.getDescriptionId());
 			}
+		placeholders.sort(String::compareTo);
 		return placeholders;
 	}
 
@@ -175,62 +180,9 @@ public class QuestsPlaceholders extends PlaceholderExpansion implements Listener
 					.collect(Collectors.joining("\n"));
 		}
 
-		if (identifier.startsWith("started_ordered")) {
-			String after = identifier.substring(15);
-			if (task == null) launchTask();
-
-			playersLock.lock();
-			try {
-				PlayerPlaceholderData data = players.get(p);
-
-				if (data == null) {
-					data = new PlayerPlaceholderData(quester);
-					players.put(p, data);
-				}
-
-				if (data.left.isEmpty()) {
-					data.left = (List) QuestsAPI.getAPI().getQuestsManager().getQuestsStarted(data.acc, false, true);
-				} else
-					QuestsAPI.getAPI().getQuestsManager().updateQuestsStarted(quester, true, data.left);
-
-				try {
-					int i = -1;
-					boolean noSplit = after.isEmpty();
-					if (!noSplit) {
-						try {
-							i = Integer.parseInt(after.substring(1)) - 1;
-						}catch (NumberFormatException ex) {
-							i = -1;
-						}
-						if (i < 0) return "§cindex must be a positive integer";
-					}
-
-					if (data.left.isEmpty()) return i == -1 || i == 0 ? Lang.SCOREBOARD_NONE.toString() : "";
-
-					Quest quest = data.left.get(0);
-					String desc = quest.getDescriptionLine(quester, DescriptionSource.PLACEHOLDER);
-					String format = noSplit ? inlineFormat : splitFormat;
-					format = format.replace("{questName}", quest.getName()).replace("{questDescription}", desc);
-
-					if (noSplit) return format;
-
-					try {
-						List<String> lines = ChatColorUtils.wordWrap(format, lineLength);
-						if (i >= lines.size()) return "";
-						return lines.get(i);
-					}catch (Exception ex) {
-						players.remove(p);
-						return "§c" + ex.getMessage();
-					}
-				}catch (Exception ex) {
-					QuestsPlugin.getPlugin().getLoggerExpanded().warning(
-							"An error occurred while parsing placeholder " + identifier + " for " + p.getName(), ex);
-					return "§cinvalid placeholder";
-				}
-			}finally {
-				playersLock.unlock();
-			}
-		}
+		Matcher matcher = STARTED_ORDERED_PATTERN.matcher(identifier);
+		if (matcher.matches())
+			return getStartedOrderedPlaceholder(matcher, quester);
 
 		if (identifier.startsWith("advancement_")) {
 			int rawIndex = identifier.indexOf("_raw");
@@ -313,9 +265,73 @@ public class QuestsPlaceholders extends PlaceholderExpansion implements Listener
 		return null;
 	}
 
+	@SuppressWarnings("unchecked")
+	private String getStartedOrderedPlaceholder(Matcher matcher, PlayerQuester quester) {
+		Player p = quester.getPlayer().orElseThrow();
+
+		if (task == null)
+			launchTask();
+
+		playersLock.readLock().lock();
+		try {
+			PlayerPlaceholderData data = players.get(p);
+
+			if (data == null) {
+				data = new PlayerPlaceholderData();
+				players.put(p, data);
+			}
+
+			if (data.left.isEmpty()) {
+				data.left = QuestsAPI.getAPI().getQuestsManager().getQuestsStarted(quester, false, true);
+			} else
+				QuestsAPI.getAPI().getQuestsManager().updateQuestsStarted(quester, true, (List<Quest>) data.left);
+
+			Quest quest = data.left.isEmpty() ? null : data.left.get(0);
+			if (matcher.group("desc") != null) {
+				// started_ordered_<desc ID>
+				String descriptionId = matcher.group("desc");
+				if (quest == null)
+					return Lang.SCOREBOARD_NONE.toString();
+
+				var descriptionProviderOpt =
+						quest.getDescriptions().stream()
+								.filter(desc -> desc.getDescriptionId().equals(descriptionId)).findAny();
+				if (descriptionProviderOpt.isPresent()) {
+					List<String> descriptionLines = descriptionProviderOpt.get()
+							.provideDescription(new QuestDescriptionContext(
+									QuestsConfiguration.getConfig().getQuestDescriptionConfig(),
+									quest, p, quester, PlayerListCategory.IN_PROGRESS,
+									DescriptionSource.PLACEHOLDER));
+					return descriptionLines == null ? null : String.join("\n", descriptionLines);
+				} else
+					return null;
+			} else {
+				// started_ordered or started_ordered_<line ID>
+				OptionalInt splitId = matcher.group("id") == null ? OptionalInt.empty()
+						: OptionalInt.of(Integer.parseInt(matcher.group("id")));
+				if (quest == null)
+					return splitId.isEmpty() || splitId.getAsInt() == 0 ? Lang.SCOREBOARD_NONE.toString() : "";
+
+				String desc = quest.getDescriptionLine(quester, DescriptionSource.PLACEHOLDER);
+				String format = splitId.isEmpty() ? inlineFormat : splitFormat;
+				format = format.replace("{questName}", quest.getName()).replace("{questDescription}", desc);
+
+				if (splitId.isEmpty())
+					return format;
+
+				List<String> lines = ChatColorUtils.wordWrap(format, lineLength);
+				if (splitId.getAsInt() >= lines.size())
+					return "";
+				return lines.get(splitId.getAsInt());
+			}
+		} finally {
+			playersLock.readLock().unlock();
+		}
+	}
+
 	private void launchTask() {
 		task = Bukkit.getScheduler().runTaskTimerAsynchronously(QuestsPlugin.getPlugin(), () -> {
-			playersLock.lock();
+			playersLock.writeLock().lock();
 			try {
 				for (Iterator<Entry<Player, PlayerPlaceholderData>> iterator = players.entrySet().iterator(); iterator.hasNext();) {
 					Entry<Player, PlayerPlaceholderData> entry = iterator.next();
@@ -327,7 +343,7 @@ public class QuestsPlaceholders extends PlaceholderExpansion implements Listener
 					if (!data.left.isEmpty()) data.left.remove(0);
 				}
 			}finally {
-				playersLock.unlock();
+				playersLock.writeLock().unlock();
 			}
 		}, 0, changeTime * 20);
 	}
@@ -344,13 +360,8 @@ public class QuestsPlaceholders extends PlaceholderExpansion implements Listener
 		}
 	}
 
-	class PlayerPlaceholderData {
-		private List<Quest> left = Collections.emptyList();
-		private Quester acc;
-
-		public PlayerPlaceholderData(Quester acc) {
-			this.acc = acc;
-		}
+	private class PlayerPlaceholderData {
+		private List<? extends Quest> left = Collections.emptyList();
 	}
 
 }
