@@ -10,6 +10,7 @@ import fr.skytasul.quests.api.utils.MinecraftVersion;
 import fr.skytasul.quests.utils.nms.NMS;
 import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.identity.Identity;
+import net.kyori.adventure.key.Key;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.entity.Firework;
@@ -117,8 +118,11 @@ public final class QuestUtils {
 		if (xsoundOpt.isPresent())
 			return xsoundOpt.get().record();
 
-		QuestsPlugin.getPlugin().getLoggerExpanded().warning("Cannot find sound {0}", sound);
-		return new XSound.Record().withSound(sound);
+		Key soundKey = Key.key(sound);
+		if (soundKey.namespace() == "minecraft")
+			QuestsPlugin.getPlugin().getLoggerExpanded().namedWarning("Cannot find sound {0}", sound, 3600, sound);
+
+		return new XSound.Record().withSound(soundKey.asString());
 	}
 
 	public static void playPluginSound(Audience audience, String sound, float volume) {
