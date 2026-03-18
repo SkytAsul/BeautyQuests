@@ -399,6 +399,11 @@ inv:
           online: 'Player has to be connected to the server'
           offline: 'Player can be offline, but server has to be running for the time to be counted'
           realtime: 'Time is counted even if the player and the server are offline'
+      chat:
+        isRegex: 'Match as a RegExp §d(ADVANCED)'
+        isRegexDescription: |-
+          If you want the stage to complete for any chat matching the input as a regular expression, turn on this option.
+          For instance, if this option is turned on, the "Hello .+" input would match any player message starting with "Hello".
   stages:
     name: Create stages
     nextPage: §eNext page

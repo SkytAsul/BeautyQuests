@@ -421,6 +421,9 @@ public enum Lang implements Locale {
 	stagePlayTimeModeOffline("inv.create.stage.playTime.modes.offline"),
 	stagePlayTimeModeRealtime("inv.create.stage.playTime.modes.realtime"),
 
+	stageChatIsRegex("inv.create.stage.chat.isRegex"),
+	stageChatIsRegexDescription("inv.create.stage.chat.isRegexDescription"),
+
 	INVENTORY_STAGES("inv.stages.name"),
 	nextPage("inv.stages.nextPage"),
 	laterPage("inv.stages.laterPage"),
