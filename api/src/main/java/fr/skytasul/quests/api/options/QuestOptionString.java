@@ -8,7 +8,6 @@ import fr.skytasul.quests.api.quests.creation.QuestCreationGuiClickEvent;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
-import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -38,11 +37,6 @@ public abstract class QuestOptionString extends QuestOption<String> {
 
 	@Override
 	public @Nullable String getValueString() {
-		return getValue();
-	}
-
-	@Override
-	public @NotNull String formatValue() {
 		if (isMultiline() && getValue() != null)
 			return "{nl}" + getValue();
 		return getValue();
