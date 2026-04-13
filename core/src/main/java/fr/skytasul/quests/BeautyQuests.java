@@ -581,7 +581,7 @@ public class BeautyQuests extends JavaPlugin implements QuestsPlugin {
 
 		Optional<String> extension = Utils.getFilenameExtension(fileName);
 		if (extension.isPresent()) {
-			if (extension.get().equalsIgnoreCase("json")) {
+			if (!extension.get().equalsIgnoreCase("json")) {
 				logger.warning("File {} is not a JSON file.", fileName);
 				return;
 			}
