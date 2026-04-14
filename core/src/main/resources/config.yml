@@ -80,7 +80,7 @@ gui:
   hide folder if single category: true
 
 # - Dialogs -
-# Various options related to dialogs 
+# Various options related to dialogs
 dialogs:
   # Dialogs are shown in the action bar instead of the chat
   inActionBar: false
@@ -214,6 +214,8 @@ stage description:
   boss bar format: "§6{quest_name}: §e{progress_done}/{progress_total}"
   # Seconds before the progress bar disappear (set it to 0 to make it persistent)
   boss bar timeout: 15
+  # Show active progress bars when players join the server
+  show progress bars on join: true
 
 # - Quest descriptions -
 # How is formatted the quest description in GUIs

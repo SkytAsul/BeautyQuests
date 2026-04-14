@@ -62,7 +62,7 @@ public class StageOptionProgressBar<T extends AbstractStage & HasProgress> exten
 	@Override
 	public void stageStart(Quester quester, StageController stage) {
 		if (areBarsEnabled())
-			bars.computeIfAbsent(quester, __ -> new ProgressBar(quester, (T) stage.getStage()));
+			bars.computeIfAbsent(quester, __ -> new ProgressBar(quester, (T) stage.getStage())).update();
 	}
 
 	@Override
@@ -72,8 +72,11 @@ public class StageOptionProgressBar<T extends AbstractStage & HasProgress> exten
 
 	@Override
 	public void stageJoin(Player p, @NotNull Quester quester, StageController stage) {
-		if (areBarsEnabled())
-			bars.computeIfAbsent(quester, __ -> new ProgressBar(quester, (T) stage.getStage())).update();
+		if (areBarsEnabled()) {
+			var bar = bars.computeIfAbsent(quester, __ -> new ProgressBar(quester, (T) stage.getStage()));
+			if (getProgressConfig().showOnJoin())
+				bar.update();
+		}
 	}
 
 	@Override
@@ -138,9 +141,6 @@ public class StageOptionProgressBar<T extends AbstractStage & HasProgress> exten
 				style = Overlay.PROGRESS;
 
 			bar = BossBar.bossBar(Component.empty(), 0, Color.YELLOW, style);
-
-			update();
-			quester.showBossBar(bar);
 		}
 
 		public void remove() {

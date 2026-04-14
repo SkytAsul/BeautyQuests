@@ -764,6 +764,7 @@ public class QuestsConfigurationImplementation implements QuestsConfiguration {
 		private boolean bossBars = true;
 		private String bossBarFormat;
 		private int bossBarTimeout = 15;
+		private boolean showOnJoin = true;
 
 		private final ConfigurationSection config;
 
@@ -787,6 +788,7 @@ public class QuestsConfigurationImplementation implements QuestsConfiguration {
 			bossBars = config.getBoolean("boss bars");
 			bossBarFormat = config.getString("boss bar format");
 			bossBarTimeout = config.getInt("boss bar timeout");
+			showOnJoin = config.getBoolean("show progress bars on join");
 		}
 
 		private boolean update() {
@@ -866,6 +868,11 @@ public class QuestsConfigurationImplementation implements QuestsConfiguration {
 		@Override
 		public int getBossBarTimeout() {
 			return bossBarTimeout;
+		}
+
+		@Override
+		public boolean showOnJoin() {
+			return showOnJoin;
 		}
 
 	}
