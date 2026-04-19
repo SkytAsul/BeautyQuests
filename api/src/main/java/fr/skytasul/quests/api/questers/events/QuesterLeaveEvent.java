@@ -18,6 +18,10 @@ public class QuesterLeaveEvent extends AbstractQuesterEvent {
 		return player;
 	}
 
+	public boolean isLastOnlinePlayer() {
+		return quester.getOnlinePlayers().size() == 1;
+	}
+
 	@Override
 	public HandlerList getHandlers() {
 		return handlers;

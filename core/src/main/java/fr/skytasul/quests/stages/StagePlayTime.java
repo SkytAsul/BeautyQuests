@@ -154,7 +154,7 @@ public class StagePlayTime extends AbstractStage implements HasProgress {
 			QuestsPlugin.getPlugin().getLoggerExpanded()
 					.warning("Unavailable task in \"Play Time\" stage " + toString() + " for player " + p.getName());
 		}
-		if (quester.getOnlinePlayers().isEmpty())
+		if (quester.getOnlinePlayers().size() == 1)
 			cancelRefresh(quester);
 	}
 
