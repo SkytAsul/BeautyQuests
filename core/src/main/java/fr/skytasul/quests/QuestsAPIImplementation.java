@@ -5,7 +5,7 @@ import fr.skytasul.quests.api.QuestsConfiguration;
 import fr.skytasul.quests.api.QuestsHandler;
 import fr.skytasul.quests.api.QuestsPlugin;
 import fr.skytasul.quests.api.comparison.ItemComparison;
-import fr.skytasul.quests.api.holograms.BqHologramManager;
+import fr.skytasul.quests.api.holograms.BqInternalHologramFactory;
 import fr.skytasul.quests.api.localization.Lang;
 import fr.skytasul.quests.api.mobs.MobFactory;
 import fr.skytasul.quests.api.mobs.MobStacker;
@@ -52,7 +52,7 @@ public class QuestsAPIImplementation implements QuestsAPI {
 	private QuestObjectsRegistry<AbstractReward, RewardCreator> rewards;
 	private SerializableRegistry<QuestQuesterStrategy, QuestQuesterStrategyCreator> questerStrategies;
 
-	private BqHologramManager hologramsManager = null;
+	private BqInternalHologramFactory hologramsManager = null;
 	private BQBlocksManagerImplementation blocksManager = new BQBlocksManagerImplementation();
 	private MessageSender messageSender;
 
@@ -166,12 +166,12 @@ public class QuestsAPIImplementation implements QuestsAPI {
 	}
 
 	@Override
-	public @Nullable BqHologramManager getHologramsManager() {
+	public @Nullable BqInternalHologramFactory getHologramsManager() {
 		return hologramsManager;
 	}
 
 	@Override
-	public void setHologramsManager(@NotNull BqHologramManager newHologramsManager) {
+	public void setHologramsManager(@NotNull BqInternalHologramFactory newHologramsManager) {
 		Validate.notNull(newHologramsManager);
 
 		String preferred = plugin.getConfiguration().getHologramsConfig().preferredPlugin();

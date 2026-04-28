@@ -1,7 +1,7 @@
 package fr.skytasul.quests.integrations.holograms;
 
-import fr.skytasul.quests.api.holograms.BqHologram;
-import fr.skytasul.quests.api.holograms.BqHologramManager;
+import fr.skytasul.quests.api.holograms.BqInternalHologram;
+import fr.skytasul.quests.api.holograms.BqInternalHologramFactory;
 import me.filoghost.holographicdisplays.api.HolographicDisplaysAPI;
 import me.filoghost.holographicdisplays.api.hologram.Hologram;
 import me.filoghost.holographicdisplays.api.hologram.VisibilitySettings;
@@ -19,7 +19,7 @@ import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
-public class BQHolographicDisplays3 implements BqHologramManager {
+public class BQHolographicDisplays3 implements BqInternalHologramFactory {
 
 	private final HolographicDisplaysAPI api = HolographicDisplaysAPI.get(Bukkit.getPluginManager().getPlugin("HolographicDisplays"));
 
@@ -51,7 +51,7 @@ public class BQHolographicDisplays3 implements BqHologramManager {
 		return visible ? Visibility.VISIBLE : Visibility.HIDDEN;
 	}
 
-	public class HD3Hologram implements BqHologram {
+	public class HD3Hologram implements BqInternalHologram {
 
 		private final Hologram hologram;
 

@@ -2,8 +2,8 @@ package fr.skytasul.quests.integrations.holograms;
 
 import eu.decentsoftware.holograms.api.DHAPI;
 import eu.decentsoftware.holograms.api.holograms.Hologram;
-import fr.skytasul.quests.api.holograms.BqHologram;
-import fr.skytasul.quests.api.holograms.BqHologramManager;
+import fr.skytasul.quests.api.holograms.BqInternalHologram;
+import fr.skytasul.quests.api.holograms.BqInternalHologramFactory;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
@@ -15,7 +15,7 @@ import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.ThreadLocalRandom;
 
-public class BQDecentHolograms implements BqHologramManager {
+public class BQDecentHolograms implements BqInternalHologramFactory {
 
 	private int counter = Integer.MIN_VALUE + ThreadLocalRandom.current().nextInt(1000000);
 
@@ -42,7 +42,7 @@ public class BQDecentHolograms implements BqHologramManager {
 		return new DecentHologram(hologram);
 	}
 
-	public class DecentHologram implements BqHologram {
+	public class DecentHologram implements BqInternalHologram {
 
 		private final Hologram hologram;
 

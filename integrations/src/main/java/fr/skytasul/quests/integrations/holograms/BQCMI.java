@@ -2,13 +2,13 @@ package fr.skytasul.quests.integrations.holograms;
 
 import com.Zrips.CMI.CMI;
 import com.Zrips.CMI.Modules.Holograms.CMIHologram;
-import fr.skytasul.quests.api.holograms.BqHologram;
-import fr.skytasul.quests.api.holograms.BqHologramManager;
+import fr.skytasul.quests.api.holograms.BqInternalHologram;
+import fr.skytasul.quests.api.holograms.BqInternalHologramFactory;
 import org.bukkit.Location;
 import org.jetbrains.annotations.NotNull;
 import java.lang.reflect.Constructor;
 
-public class BQCMI implements BqHologramManager {
+public class BQCMI implements BqInternalHologramFactory {
 
 	private Constructor<CMIHologram> holoConstructor;
 	private Constructor<?> locationConstructor;
@@ -54,7 +54,7 @@ public class BQCMI implements BqHologramManager {
 		}
 	}
 
-	public class BQCMIHologram implements BqHologram {
+	public class BQCMIHologram implements BqInternalHologram {
 
 		private final CMIHologram hologram;
 

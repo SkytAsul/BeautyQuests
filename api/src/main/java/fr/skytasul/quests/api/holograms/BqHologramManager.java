@@ -1,18 +1,17 @@
 package fr.skytasul.quests.api.holograms;
 
-import org.bukkit.Location;
+import fr.skytasul.quests.api.tracking.BqTrackingHologram;
+import net.kyori.adventure.key.Key;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 public interface BqHologramManager {
 
-	@NotNull
-	String name();
+	@Nullable
+	BqInternalHologramFactory getInternalFactory();
 
-	boolean supportPerPlayerVisibility();
+	void setInternalFactory(@NotNull Key name, @NotNull BqInternalHologramFactory factory);
 
-	boolean supportItems();
-
-	@NotNull
-	BqHologram createHologram(@NotNull Location lc, boolean defaultVisible);
+	BqTrackingHologram createTrackingHologram(BqTrackingHologram.TrackingData data);
 
 }

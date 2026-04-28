@@ -182,30 +182,12 @@ public interface QuestsAPI {
 	void addNpcFactory(@NotNull String key, @NotNull BqInternalNpcFactory factory);
 
 	/**
-	 * Checks if there is an hologram manager registered.
-	 *
-	 * @return <code>true</code> if {@link #getHologramsManager()} will not return <code>null</code>,
-	 *         <code>false</code> otherwise
-	 */
-	default boolean hasHologramsManager() {
-		return getHologramsManager() != null;
-	}
-
-	/**
 	 * Gets the currently registered holograms manager.
 	 *
 	 * @return the current holograms manager
 	 */
 	@Nullable
 	BqHologramManager getHologramsManager();
-
-	/**
-	 * Sets the plugin's holograms manager to the one passed as argument.<br>
-	 * If there is already an holograms manager registered, this one will replace it.
-	 *
-	 * @param newHologramsManager holograms manager to register
-	 */
-	void setHologramsManager(@NotNull BqHologramManager newHologramsManager);
 
 	/**
 	 * Gets the blocks manager, which provides methods to register custom block types and deserialize

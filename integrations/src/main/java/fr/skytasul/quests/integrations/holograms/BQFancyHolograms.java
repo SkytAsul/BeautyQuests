@@ -6,8 +6,8 @@ import de.oliver.fancyholograms.api.data.ItemHologramData;
 import de.oliver.fancyholograms.api.data.TextHologramData;
 import de.oliver.fancyholograms.api.data.property.Visibility;
 import de.oliver.fancyholograms.api.hologram.Hologram;
-import fr.skytasul.quests.api.holograms.BqHologram;
-import fr.skytasul.quests.api.holograms.BqHologramManager;
+import fr.skytasul.quests.api.holograms.BqInternalHologram;
+import fr.skytasul.quests.api.holograms.BqInternalHologramFactory;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
@@ -19,7 +19,7 @@ import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.ThreadLocalRandom;
 
-public class BQFancyHolograms implements BqHologramManager {
+public class BQFancyHolograms implements BqInternalHologramFactory {
 
 	private int counter = Integer.MIN_VALUE + ThreadLocalRandom.current().nextInt(1000000);
 	private HologramManager hologramsManager = FancyHologramsPlugin.get().getHologramManager();
@@ -44,7 +44,7 @@ public class BQFancyHolograms implements BqHologramManager {
 		return new BqFancyHologram(lc, defaultVisible);
 	}
 
-	private class BqFancyHologram implements BqHologram {
+	private class BqFancyHologram implements BqInternalHologram {
 
 		private final int id = counter++;
 

@@ -8,7 +8,6 @@ import fr.skytasul.quests.api.QuestsConfiguration;
 import fr.skytasul.quests.api.QuestsPlugin;
 import fr.skytasul.quests.api.editors.DialogEditor;
 import fr.skytasul.quests.api.gui.ItemUtils;
-import fr.skytasul.quests.api.holograms.BqHologram;
 import fr.skytasul.quests.api.localization.Lang;
 import fr.skytasul.quests.api.npcs.BqNpc;
 import fr.skytasul.quests.api.npcs.dialogs.Dialog;
@@ -25,6 +24,7 @@ import fr.skytasul.quests.api.stages.types.Dialogable;
 import fr.skytasul.quests.api.stages.types.Locatable;
 import fr.skytasul.quests.api.stages.types.Locatable.LocatableType;
 import fr.skytasul.quests.api.stages.types.Locatable.LocatedType;
+import fr.skytasul.quests.api.tracking.BqTrackingHologram;
 import fr.skytasul.quests.api.utils.messaging.PlaceholderRegistry;
 import fr.skytasul.quests.npcs.BQNPCClickEvent;
 import fr.skytasul.quests.utils.QuestUtils;
@@ -41,6 +41,7 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scheduler.BukkitTask;
 import org.jetbrains.annotations.NotNull;
+import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -55,8 +56,7 @@ public class StageNPC extends AbstractStage implements Locatable.PreciseLocatabl
 
 	private BukkitTask task;
 
-	private List<Player> cached = new ArrayList<>();
-	protected BqHologram hologram;
+	protected BqTrackingHologram hologram;
 
 	public StageNPC(StageController controller) {
 		super(controller);
@@ -65,6 +65,9 @@ public class StageNPC extends AbstractStage implements Locatable.PreciseLocatabl
 	private void launchRefreshTask() {
 		if (npc == null)
 			return;
+
+		hologram = QuestsAPI.getAPI().getHologramsManager().createTrackingHologram(
+				new BqTrackingHologram.TrackingData(npc, Duration.ofMillis(500), List.of(), true, false));
 		task = new BukkitRunnable() {
 			List<Player> tmp = new ArrayList<>();
 
@@ -226,20 +229,15 @@ public class StageNPC extends AbstractStage implements Locatable.PreciseLocatabl
 	}
 
 	private void cachePlayer(Player p) {
-		cached.add(p);
+		hologram.setPlayerVisibility(p, true);
 		if (npc != null)
 			npc.hideForPlayer(p, this);
 	}
 
 	private void uncachePlayer(Player p) {
-		cached.remove(p);
+		hologram.setPlayerVisibility(p, false);
 		if (npc != null)
 			npc.removeHiddenForPlayer(p, this);
-	}
-
-	private void uncacheAll() {
-		if (npc != null)
-			cached.forEach(p -> npc.removeHiddenForPlayer(p, this));
 	}
 
 	@Override
@@ -274,7 +272,6 @@ public class StageNPC extends AbstractStage implements Locatable.PreciseLocatabl
 		if (dialogRunner != null)
 			dialogRunner.unload();
 		removeHoloLaunch();
-		uncacheAll();
 	}
 
 	@Override
