@@ -20,7 +20,7 @@ msg:
     checkpoint: '§7已到达任务记录点！'
     failed: '§6任务{quest_name}失败……'
   pools:
-    noTime: '§c你必须先等待一会儿才能执行其它任务。'
+    noTime: '§c你必须先等待 {time_left} 才能执行其它任务。'
     allCompleted: '§7你已完成所有任务！'
     noAvailable: '§7没有更多可用的任务……'
     maxQuests: '§c你不能同时进行多于 {pool_max_quests}个任务……'
@@ -109,7 +109,7 @@ msg:
     leaveAll: '§e你强制结束了{success}个任务. §c出现{errors}个错误.'
     resetPlayer:
       player: '§6你的所有任务数据 ({quest_amount}) 被 {deleter_name} 删除了.'
-      remover: '§6已删除{player}的{quest_amount}任务信息（和{quest_pool}任务池）。'
+      remover: '§6已删除 {player_name} 的 {quest_amount} 条任务信息（以及 {pool_amount} 个任务池）。'
     resetPlayerQuest:
       player: '§6任务数据 {quest} 已被 {deleter_name} 删除.'
       remover: '§6{quest} 的 {player} 条任务信息已被删除.'
@@ -251,14 +251,14 @@ msg:
         unset: '§a自定义NPC名称重置为默认值 (原为§7{old_name}§a)'
       skippable:
         set: '§a对话可跳过状态已设置为§7{new_state}§a (原为§7{old_state}§a)'
-        unset: '§a对话可跳过状态已重置为默认§7{1}§a (原为§7{old_state}§a)'
+        unset: '§a对话可跳过状态已重置为默认值 (原为§7{old_state}§a)'
     mythicmobs:
       list: '§a所有的MythocMobs:'
       isntMythicMob: '§c这个MythicMob不存在.'
       disabled: '§cMythicMob已关闭.'
     advancedSpawnersMob: '输入所需击杀的自定义刷怪笼怪物名称：'
     textList:
-      syntax: '§c正确用法: '
+      syntax: '§c正确用法: {command}'
       added: '§a已添加文本 "§7{msg}§a"。'
       removed: '§a已删除文本 "§7{msg}§a"。'
       help:
