@@ -1,13 +1,12 @@
 package fr.skytasul.quests.utils.nms;
 
-import fr.skytasul.quests.BeautyQuests;
 import fr.skytasul.quests.api.QuestsPlugin;
-import fr.skytasul.quests.api.utils.MinecraftVersion;
 import fr.skytasul.quests.utils.ReflectUtils;
 import net.kyori.adventure.key.Key;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.inventory.meta.ItemMeta;
+import org.jetbrains.annotations.Nullable;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.List;
@@ -15,7 +14,6 @@ import java.util.Map;
 
 public abstract class NMS{
 
-	protected final ReflectUtils nmsReflect;
 	protected final ReflectUtils craftReflect;
 
 	protected Field unhandledTags;
@@ -23,9 +21,7 @@ public abstract class NMS{
 
 	public NMS() {
 		try {
-			String remappedSuffix = getMappingsVersion() == null ? "" : "." + getMappingsVersion();
-			nmsReflect = ReflectUtils.fromPackage("net.minecraft.server" + remappedSuffix);
-			craftReflect = ReflectUtils.fromPackage("org.bukkit.craftbukkit" + remappedSuffix);
+			craftReflect = ReflectUtils.fromPackage(Bukkit.getServer().getClass().getPackageName());
 			if (!(this instanceof NullNMS)) {
 				Class<?> itemMetaClass = craftReflect.fromName("inventory.CraftMetaItem");
 				unhandledTags = itemMetaClass.getDeclaredField("unhandledTags");
@@ -52,47 +48,13 @@ public abstract class NMS{
 		return (boolean) equalsCommon.invoke(meta1, meta2);
 	}
 
-	public static NMS getNMS() {
-		return nms;
-	}
+	public static @Nullable NMS createVersionedNms() {
+		String version = Bukkit.getServer().getClass().getPackage().getName().split("\\.")[3];
 
-	private static NMS nms;
-
-	static {
-		QuestsPlugin.getPlugin().getLoggerExpanded().debug("Server version: {0}", Bukkit.getVersion());
-		if (BeautyQuests.getInstance().isUnitTesting()) {
-			nms = new NullNMS();
-		} else if (BeautyQuests.getInstance().isRunningPaper() && MinecraftVersion.isHigherThan(20, 5)) {
-			loadPaperNms();
-		} else {
-			try {
-				String versionNms = getMappingsVersion().substring(1);
-				loadVersionedNms(versionNms);
-			} catch (Exception ex) {
-				BeautyQuests.getInstance().getLoggerExpanded().severe("Cannot get server internals version", ex);
-			}
-		}
-
-		if (nms == null) {
-			nms = new NullNMS();
-			QuestsPlugin.getPlugin().getLoggerExpanded().warning("Some functionnalities of the plugin have not been enabled.");
-		}
-	}
-
-	private static String getMappingsVersion() throws ReflectiveOperationException {
-		if (BeautyQuests.getInstance().isRunningPaper() && MinecraftVersion.isHigherThan(20, 5)) {
-			// Plugin is not remapped
-			return null;
-		}
-
-		// Spigot / legacy Paper
-		return Bukkit.getServer().getClass().getPackage().getName().split("\\.")[3];
-	}
-
-	private static void loadVersionedNms(String version) {
 		try {
-			nms = (NMS) Class.forName("fr.skytasul.quests.utils.nms.v" + version).getDeclaredConstructor().newInstance();
-			QuestsPlugin.getPlugin().getLoggerExpanded().info("Loaded valid remapped internals access for {0}.", version);
+			NMS nms = (NMS) Class.forName("fr.skytasul.quests.utils.nms.v" + version).getDeclaredConstructor().newInstance();
+			QuestsPlugin.getPlugin().getLoggerExpanded().debug("Loaded valid remapped internals access for {0}.", version);
+			return nms;
 		} catch (ClassNotFoundException __) {
 			QuestsPlugin.getPlugin().getLoggerExpanded()
 					.warning("The Minecraft version {0} is not supported by BeautyQuests.", version);
@@ -100,16 +62,7 @@ public abstract class NMS{
 			QuestsPlugin.getPlugin().getLoggerExpanded()
 					.severe("An error ocurred when loading internals compatibility for version {0}.", ex, version);
 		}
-	}
-
-	private static void loadPaperNms() {
-		try {
-			nms = (NMS) Class.forName("fr.skytasul.quests.utils.nms.PaperNMS").getDeclaredConstructor().newInstance();
-			QuestsPlugin.getPlugin().getLoggerExpanded().info("Loaded valid Paper internals access.");
-		} catch (Exception ex) {
-			QuestsPlugin.getPlugin().getLoggerExpanded()
-					.severe("An error ocurred when loading internals compatibilities for Paper.", ex);
-		}
+		return null;
 	}
 
 }

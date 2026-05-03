@@ -1,6 +1,6 @@
 package fr.skytasul.quests.utils.nms;
 
-import fr.skytasul.quests.api.utils.MinecraftVersion;
+import fr.skytasul.quests.api.QuestsPlugin;
 import io.papermc.paper.registry.RegistryAccess;
 import io.papermc.paper.registry.RegistryKey;
 import net.kyori.adventure.key.Key;
@@ -35,10 +35,11 @@ public class PaperNMS extends NMS {
 		customTagField = craftReflect.fromName("inventory.CraftMetaItem").getDeclaredField("customTag");
 		customTagField.setAccessible(true);
 
-		Class<?> identifierClass = Class.forName(MinecraftVersion.isHigherThan(21, 11) ? "net.minecraft.resources.Identifier"
+		Class<?> identifierClass = Class.forName(
+				QuestsPlugin.getPlugin().getServerVersion().isAfter(1, 21, 11) ? "net.minecraft.resources.Identifier"
 				: "net.minecraft.resources.ResourceLocation");
 		resourceKeyFactory = ResourceKey.class.getDeclaredMethod("create", ResourceKey.class, identifierClass);
-		if (MinecraftVersion.isHigherThan(21, 0))
+		if (QuestsPlugin.getPlugin().getServerVersion().isAfter(1, 21, 0))
 			identifierFactory = identifierClass.getDeclaredMethod("parse", String.class);
 		else
 			identifierConstructor = identifierClass.getDeclaredConstructor(String.class);

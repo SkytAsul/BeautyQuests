@@ -27,7 +27,7 @@ public class MinecraftNames {
 	private static Map<EntityType, String> cachedEntities = new HashMap<>();
 	private static Map<XMaterial, String> cachedMaterials = new HashMap<>();
 
-	private static final boolean POTIONS_ENABLED = MinecraftVersion.isHigherThan(20, 5);
+	private static final boolean POTIONS_ENABLED = QuestsPlugin.getPlugin().getServerVersion().isAfter(1, 20, 5);
 
 	public static void intialize(@NotNull Path path) throws JsonParseException, IOException {
 		if (!Files.exists(path)) {

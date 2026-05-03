@@ -32,6 +32,7 @@ import fr.skytasul.quests.utils.compatibility.InternalIntegrations;
 import fr.skytasul.quests.utils.compatibility.Paper;
 import fr.skytasul.quests.utils.logger.BqLoggerHandler;
 import fr.skytasul.quests.utils.nms.NMS;
+import fr.skytasul.quests.utils.nms.NullNMS;
 import net.kyori.adventure.platform.bukkit.BukkitAudiences;
 import org.bstats.bukkit.Metrics;
 import org.bstats.charts.DrilldownPie;
@@ -61,11 +62,11 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
-public class BeautyQuests extends JavaPlugin implements QuestsPlugin {
+public abstract class BeautyQuests extends JavaPlugin implements QuestsPlugin {
 
 	private static BeautyQuests instance;
 	private BukkitRunnable saveTask;
-	private @Nullable Paper paperCompat;
+	private NMS nms;
 	private QuestsAPIImplementation api;
 
 	/* --------- Storage --------- */
@@ -102,7 +103,7 @@ public class BeautyQuests extends JavaPlugin implements QuestsPlugin {
 
 	private @NotNull IntegrationManager integrations = new IntegrationManager();
 	private @Nullable CommandsManagerImplementation command;
-	private @Nullable LoggerExpanded logger;
+	protected @Nullable LoggerExpanded logger;
 	private @Nullable BqLoggerHandler loggerHandler;
 	private @Nullable GuiManagerImplementation guiManager;
 	private @Nullable EditorManagerImplementation editorManager;
@@ -128,8 +129,6 @@ public class BeautyQuests extends JavaPlugin implements QuestsPlugin {
 	public void onLoad(){
 		instance = this;
 
-		checkPaper();
-		initLibraries();
 		initLogger();
 
 		try {
@@ -157,7 +156,7 @@ public class BeautyQuests extends JavaPlugin implements QuestsPlugin {
 			audiences = BukkitAudiences.create(this);
 
 			saveDefaultConfig();
-			NMS.getNMS(); // to force initialization
+			initInternals();
 
 			saveFolder = new File(getDataFolder(), "quests");
 			if (!saveFolder.exists()) saveFolder.mkdirs();
@@ -253,43 +252,6 @@ public class BeautyQuests extends JavaPlugin implements QuestsPlugin {
 
 	/* ---------- Various init ---------- */
 
-	private void checkPaper() {
-		try {
-			if (Class.forName("com.destroystokyo.paper.ParticleBuilder") != null) {
-				paperCompat = (Paper) Class.forName("fr.skytasul.quests.utils.compatibility.PaperImplementation")
-						.getDeclaredConstructor().newInstance();
-			}
-		} catch (Exception ex) {
-			paperCompat = null;
-		}
-	}
-
-	private void initLibraries() {
-		/*var libManager = isPaper ? new PaperLibraryManager(this) : new BukkitLibraryManager(this);
-
-		libManager.addMavenCentral();
-		libManager.addMavenLocal();
-
-		libManager.loadLibrary(Library.builder()
-				.groupId("com{}github{}Revxrsal{}Lamp")
-				.artifactId("bukkit")
-				.version("3.1.1")
-				.relocate("revxrsal{}commands", "fr{}skytasul{}quests{}api{}commands{}revxrsal")
-				.build());
-		libManager.loadLibrary(Library.builder()
-				.groupId("com{}github{}Revxrsal{}Lamp")
-				.artifactId("bukkit")
-				.version("3.1.1")
-				.relocate("revxrsal{}commands", "fr{}skytasul{}quests{}api{}commands{}revxrsal")
-				.build());
-		libManager.loadLibrary(Library.builder()
-				.groupId("com{}github{}cryptomorin")
-				.artifactId("XSeries")
-				.version("11.2.0")
-				.relocate("com{}cryptomorin{}xseries", "fr{}skytasul{}quests{}api{}utils")
-				.build());*/
-	}
-
 	private void initLogger() {
 		loggerHandler = null;
 		if (!isUnitTesting()) {
@@ -304,6 +266,27 @@ public class BeautyQuests extends JavaPlugin implements QuestsPlugin {
 		}
 
 		logger = new LoggerExpanded(getLogger());
+	}
+
+	private void initInternals() {
+		if (unitTesting) {
+			nms = new NullNMS();
+			return;
+		}
+
+		QuestsPlugin.getPlugin().getLoggerExpanded().debug("Detected server version: {0}. Bukkit version: {1}",
+				getServerVersion(), Bukkit.getVersion());
+		try {
+			nms = createInternalsAccess();
+			logger.info("Full integration with version {0}!", getServerVersion());
+		} catch (Exception ex) {
+			logger.severe("Unexpected exception during internals creation", ex);
+		}
+
+		if (nms == null) {
+			nms = new NullNMS();
+			logger.warning("Some functionnalities of the plugin have not been enabled.");
+		}
 	}
 
 	private void initApi() throws ReflectiveOperationException {
@@ -878,13 +861,8 @@ public class BeautyQuests extends JavaPlugin implements QuestsPlugin {
 		return ensureLoaded(audiences);
 	}
 
-	@Override
-	public boolean isRunningPaper() {
-		return paperCompat != null;
-	}
-
-	public Optional<Paper> getPaperCompatibility() {
-		return Optional.ofNullable(paperCompat);
+	public @NotNull NMS getInternalsAccess() {
+		return nms;
 	}
 
 	public boolean isCompletelyLoaded() {
@@ -894,6 +872,10 @@ public class BeautyQuests extends JavaPlugin implements QuestsPlugin {
 	public boolean isUnitTesting() {
 		return unitTesting;
 	}
+
+	public abstract @NotNull Optional<Paper> getPaperCompatibility();
+
+	protected abstract @Nullable NMS createInternalsAccess();
 
 
 	public static @NotNull BeautyQuests getInstance() {

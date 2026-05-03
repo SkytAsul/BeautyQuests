@@ -66,6 +66,13 @@
 		</dependency>
 		<dependency>
 			<groupId>${project.groupId}</groupId>
+			<artifactId>beautyquests-spigot</artifactId>
+			<version>${revision}</version>
+			<type>jar</type>
+			<scope>compile</scope>
+		</dependency>
+		<dependency>
+			<groupId>${project.groupId}</groupId>
 			<artifactId>beautyquests-integrations</artifactId>
 			<version>${revision}</version>
 			<type>jar</type>
