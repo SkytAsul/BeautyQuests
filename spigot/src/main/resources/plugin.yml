@@ -3,7 +3,7 @@ author: SkytAsul
 version: "${plugin.version}"
 description: Quests system with a simple graphical interface.
 website: https://www.spigotmc.org/resources/beautyquests.39255/
-api-version: 1.17
+api-version: "1.20"
 main: fr.skytasul.quests.BeautyQuestsSpigot
 
 softdepend:
@@ -47,7 +47,8 @@ libraries:
 - com.github.cryptomorin:XSeries:${xseries.version}
 - com.zaxxer:HikariCP:${hikaricp.version}
 - fr.mrmicky:fastboard:${fastboard.version}
-- net.kyori:adventure-api:${adventure.version}
+# Omitted so it is a transitive dependency
+#- net.kyori:adventure-api:${adventure.version}
 - net.kyori:adventure-platform-bukkit:${adventure.bukkit.version}
 - commons-lang:commons-lang:${commons-lang.version}
     

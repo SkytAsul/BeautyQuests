@@ -23,6 +23,7 @@ public class BeautyQuestsPaper extends BeautyQuests {
 		try {
 			minecraftVersion = ServerBuildInfo.buildInfo().minecraftVersionId();
 		} catch (NoClassDefFoundError ex) {
+			// before 1.20.6
 			// e.g. Bukkit.getBukkitVersion() -> 1.17.1-R0.1-SNAPSHOT
 			minecraftVersion = Bukkit.getBukkitVersion().split("-R")[0];
 		}

@@ -12,30 +12,9 @@ import java.util.Optional;
 public class BeautyQuestsSpigot extends BeautyQuests {
 
 	private final Version serverVersion;
-	private Paper paperCompat;
 
 	public BeautyQuestsSpigot() {
 		serverVersion = Version.parse(Bukkit.getBukkitVersion().split("-R")[0]);
-	}
-
-	@Override
-	public void onLoad() {
-		super.onLoad();
-
-		checkPaper();
-	}
-
-	private void checkPaper() {
-		// Paper plugins did not exist before 1.20 so we (unfortunately) have to do this check in the Spigot
-		// plugin
-		try {
-			if (Class.forName("com.destroystokyo.paper.ParticleBuilder") != null) {
-				paperCompat = (Paper) Class.forName("fr.skytasul.quests.utils.compatibility.PaperImplementation")
-						.getDeclaredConstructor().newInstance();
-			}
-		} catch (Exception ex) {
-			paperCompat = null;
-		}
 	}
 
 	@Override
@@ -50,7 +29,7 @@ public class BeautyQuestsSpigot extends BeautyQuests {
 
 	@Override
 	public @NotNull Optional<Paper> getPaperCompatibility() {
-		return Optional.ofNullable(paperCompat);
+		return Optional.empty();
 	}
 
 	@Override

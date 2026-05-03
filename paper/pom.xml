@@ -81,19 +81,19 @@
 		</dependency>
 
 		<dependency>
-			<groupId>io.papermc.paper</groupId>
-			<artifactId>paper-api</artifactId>
-			<version>${minecraft.version}</version>
-			<scope>provided</scope>
-		</dependency>
-		<dependency> <!-- To have NMS on the classpath -->
-			<groupId>org.spigotmc</groupId>
-			<artifactId>spigot</artifactId>
-			<version>${minecraft.version}</version>
-			<classifier>remapped-mojang</classifier>
+			<groupId>ca.bkaw</groupId>
+			<artifactId>paper-nms</artifactId>
+			<version>${minecraft.version}.build.53-stable-SNAPSHOT</version>
 			<scope>provided</scope>
 		</dependency>
 	</dependencies>
+
+	<pluginRepositories>
+		<pluginRepository>
+			<id>bytecode.space</id>
+			<url>https://repo.bytecode.space/repository/maven-public/</url>
+		</pluginRepository>
+	</pluginRepositories>
 
 	<build>
 		<resources>
@@ -126,16 +126,21 @@
 						-javaagent:${org.mockito:mockito-core:jar}</argLine>
 				</configuration>
 			</plugin>
+			<plugin>
+				<groupId>ca.bkaw</groupId>
+				<artifactId>paper-nms-maven-plugin</artifactId>
+				<version>1.4.11-SNAPSHOT</version>
+			</plugin>
 		</plugins>
 	</build>
 
 	<dependencyManagement>
 		<dependencies>
+			<!-- Cannot compile without this -->
 			<dependency>
 				<groupId>net.kyori</groupId>
-				<artifactId>adventure-platform-facet</artifactId>
-				<version>4.0.1</version>
-				<!-- Overriden by MockBukkit -->
+				<artifactId>adventure-api</artifactId>
+				<version>4.21.0</version>
 			</dependency>
 		</dependencies>
 	</dependencyManagement>

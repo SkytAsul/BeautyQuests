@@ -45,7 +45,7 @@
 		<revision.raw>2.1.0</revision.raw>
 
 		<!-- Sometimes not the latest version since MockBukkit is long to update -->
-		<minecraft.version>1.21.10-R0.1-SNAPSHOT</minecraft.version>
+		<minecraft.version>26.1.2</minecraft.version>
 
 		<junit.version>6.0.1</junit.version>
 		<mockbukkit.version.minecraft>1.21</mockbukkit.version.minecraft>
@@ -58,12 +58,12 @@
 		<commons-lang.version>2.6</commons-lang.version>
 
 		<!--
-			Version of Adventure included in Paper 1.17.1.
+			Version of Adventure included in Paper 1.20.1.
 			Since we cannot load a different Adventure version,
 			we've got to comply with this one.
 		-->
-		<adventure.version>4.9.3</adventure.version>
-		<adventure.bukkit.version>4.0.1</adventure.bukkit.version>
+		<adventure.version>4.14.0</adventure.version>
+		<adventure.bukkit.version>4.4.1</adventure.bukkit.version>
 	</properties>
 
 	<profiles>
@@ -106,12 +106,6 @@
 		<module>paper</module>
 		<module>spigot</module>
 		<module>integrations</module>
-		<module>v1_17_R1</module>
-		<module>v1_18_R1</module>
-		<module>v1_18_R2</module>
-		<module>v1_19_R1</module>
-		<module>v1_19_R2</module>
-		<module>v1_19_R3</module>
 		<module>v1_20_R1</module>
 		<module>v1_20_R2</module>
 		<module>v1_20_R3</module>
