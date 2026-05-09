@@ -2,6 +2,7 @@ package fr.skytasul.quests.test;
 
 import static org.junit.jupiter.api.Assertions.fail;
 import fr.skytasul.quests.BeautyQuests;
+import fr.skytasul.quests.BeautyQuestsPaper;
 import fr.skytasul.quests.api.events.internal.BeautyQuestsLoadedEvent;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.event.Event;
@@ -18,14 +19,14 @@ public class TestUtils {
 
 	public static BeautyQuests loadPlugin() {
 		var config = YamlConfiguration.loadConfiguration(new InputStreamReader(
-				BeautyQuests.class.getClassLoader().getResourceAsStream("config.yml"), StandardCharsets.UTF_8));
+				BeautyQuestsPaper.class.getClassLoader().getResourceAsStream("config.yml"), StandardCharsets.UTF_8));
 		config.set("sounds", false);
 		config.set("fireworks", false);
 		config.set("scoreboards", false);
 
 		MockBukkit.getOrCreateMock();
 		var loadedWaiter = new EventWaiter<>(BeautyQuestsLoadedEvent.class);
-		var plugin = MockBukkit.loadWithConfig(BeautyQuests.class, config, Boolean.TRUE);
+		var plugin = MockBukkit.loadWithConfig(BeautyQuestsPaper.class, config, Boolean.TRUE);
 		loadedWaiter.assertFired(10);
 		return plugin;
 	}

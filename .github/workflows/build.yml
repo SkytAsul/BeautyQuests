@@ -20,7 +20,7 @@ jobs:
         with:
           distribution: temurin
           java-version: |
-            21
+            25
           # maybe necessary to add more since we want to compile for lower?
           cache: maven
       

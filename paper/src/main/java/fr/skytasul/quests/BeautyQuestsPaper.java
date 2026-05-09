@@ -17,6 +17,12 @@ public class BeautyQuestsPaper extends BeautyQuests {
 	private final PaperImplementation paperCompat;
 
 	public BeautyQuestsPaper() {
+		this(false);
+	}
+
+	public BeautyQuestsPaper(Boolean unitTesting) {
+		super(unitTesting);
+
 		paperCompat = new PaperImplementation();
 
 		String minecraftVersion;

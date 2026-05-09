@@ -14,6 +14,7 @@ public class BeautyQuestsSpigot extends BeautyQuests {
 	private final Version serverVersion;
 
 	public BeautyQuestsSpigot() {
+		super(false);
 		serverVersion = Version.parse(Bukkit.getBukkitVersion().split("-R")[0]);
 	}
 

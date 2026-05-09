@@ -111,10 +111,6 @@ public abstract class BeautyQuests extends JavaPlugin implements QuestsPlugin {
 
 	/* ---------------------------------------------- */
 
-	public BeautyQuests() {
-		this(false);
-	}
-
 	public BeautyQuests(Boolean unitTesting) {
 		this.unitTesting = unitTesting;
 	}

@@ -118,6 +118,9 @@
 				<configuration>
 					<argLine>@{argLine}
 						-javaagent:${org.mockito:mockito-core:jar}</argLine>
+					<classpathDependencyExcludes>
+						<classpathDependencyExclude>ca.bkaw:paper-nms</classpathDependencyExclude>
+					</classpathDependencyExcludes>
 				</configuration>
 			</plugin>
 			<plugin>
