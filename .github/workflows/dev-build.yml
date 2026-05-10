@@ -20,6 +20,7 @@ jobs:
         uses: actions/download-artifact@v8
         with:
           run-id: ${{ github.event.workflow_run.id }}
+          github-token: ${{ github.token }}
 
       - name: Compute build number
         id: build-number
@@ -36,7 +37,8 @@ jobs:
           draft: true
           name: "${{ github.event.workflow_run.head_branch }} - build ${{ steps.build-number.outputs.BUILD_NUMBER }}"
           tag_name: "build/${{ steps.build-number.outputs.BUILD_NUMBER }}"
-          target_commitish: ${{ github.sha }}
+          target_commitish: ${{ github.event.workflow_run.head_sha }}
+          generate_release_notes: true
           body: |-
             ### Note
             This is a **dev build** and not a release. Please use with care!
@@ -54,9 +56,8 @@ jobs:
         with:
           prerelease: false
           draft: true
-          name: "${{ github.ref_name }}"
-          tag_name: "${{ github.ref_name }}"
-          target_commitish: ${{ github.sha }}
+          tag_name: "${{ github.event.workflow_run.head_branch }}"
+          target_commitish: ${{ github.event.workflow_run.head_sha }}
           generate_release_notes: true
           files: |
             ${{ steps.artifact.outputs.download-path }}/*.jar
