@@ -14,7 +14,7 @@ import java.util.jar.JarFile;
 
 public class BeautyQuestsLoader implements PluginLoader {
 
-	private static final String MAVEN_CENTRAL = "https://repo1.maven.org/maven2/";
+	private static final String MAVEN_CENTRAL = "https://repo.papermc.io/repository/maven-public/";
 
 	@Override
 	public void classloader(PluginClasspathBuilder classpathBuilder) {
@@ -36,7 +36,7 @@ public class BeautyQuestsLoader implements PluginLoader {
 			if (repository.equals("https://maven-central.storage-download.googleapis.com/maven2")) {
 				classpathBuilder.getContext().getLogger().info("""
 					Paper is using the Google mirror for Maven central repository, which lacks some artifacts.
-					BeautyQuests will use the default Maven central CDN until a better mirror has been found.
+					BeautyQuests will use PaperMC's public repository instead.
 					""");
 				repository = MAVEN_CENTRAL;
 			}

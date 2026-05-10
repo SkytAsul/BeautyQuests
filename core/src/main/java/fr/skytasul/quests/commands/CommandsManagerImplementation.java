@@ -36,6 +36,12 @@ public class CommandsManagerImplementation implements CommandsManager {
 
 	public CommandsManagerImplementation(BeautyQuests plugin) {
 		var bukkitConfigBuilder = BukkitLampConfig.builder(plugin);
+
+		if (QuestsPlugin.getPlugin().isRunningPaper() && QuestsPlugin.getPlugin().getServerVersion().isBefore(1, 20, 6)) {
+			// until https://github.com/Revxrsal/Lamp/issues/148 is resolved
+			bukkitConfigBuilder.disableBrigadier();
+		}
+
 		bukkitConfigBuilder.actorFactory(ActorFactory.defaultFactory(plugin, Optional.of(plugin.getAudiences())));
 		bukkitConfigBuilder.argumentTypes(types -> {
 			types.addTypeLast(Quester.class, MinecraftArgumentType.ENTITY.create(true, true));

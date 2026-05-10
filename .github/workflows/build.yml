@@ -20,7 +20,7 @@ jobs:
         with:
           distribution: temurin
           java-version: |
-            21
+            25
           # maybe necessary to add more since we want to compile for lower?
           cache: maven
       
@@ -39,6 +39,10 @@ jobs:
           curl -s https://skytasul.fr/ConfigUpdater-2.2-SNAPSHOT-offline.jar -o ./jars/ConfigUpdater-2.2-SNAPSHOT-offline.jar
           mvn org.apache.maven.plugins:maven-install-plugin:2.5.2:install-file -Dfile=./jars/ConfigUpdater-2.2-SNAPSHOT-offline.jar
 
+      - name: Prepare Paper NMS
+        run: |
+          mvn -pl paper paper-nms:init
+          
       - name: Build and package with Maven
         run: |
           profile=$([ "${{ github.ref_name }}" == "${{ github.event.repository.default_branch }}" ] && echo "release" || echo "devbuild")

@@ -1,5 +1,6 @@
 package fr.skytasul.quests.commands;
 
+import com.google.gson.Gson;
 import fr.skytasul.quests.BeautyQuests;
 import fr.skytasul.quests.api.QuestsAPI;
 import fr.skytasul.quests.api.QuestsPlugin;
@@ -9,7 +10,6 @@ import fr.skytasul.quests.api.localization.Lang;
 import fr.skytasul.quests.api.npcs.BqNpc;
 import fr.skytasul.quests.api.quests.Quest;
 import fr.skytasul.quests.api.utils.MinecraftNames;
-import fr.skytasul.quests.api.utils.MinecraftVersion;
 import fr.skytasul.quests.api.utils.messaging.PlaceholderRegistry;
 import fr.skytasul.quests.gui.creation.QuestCreationSession;
 import fr.skytasul.quests.gui.misc.ListBook;
@@ -19,6 +19,7 @@ import fr.skytasul.quests.questers.data.sql.SqlDataManager;
 import fr.skytasul.quests.structure.QuestImplementation;
 import fr.skytasul.quests.utils.Database;
 import fr.skytasul.quests.utils.QuestUtils;
+import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
@@ -40,6 +41,7 @@ import java.net.URL;
 import java.nio.channels.Channels;
 import java.nio.channels.ReadableByteChannel;
 import java.sql.SQLException;
+import java.util.Map;
 import java.util.concurrent.ExecutionException;
 
 public class CommandsAdmin implements OrphanCommand {
@@ -179,7 +181,7 @@ public class CommandsAdmin implements OrphanCommand {
 		if (lang == null)
 			throw new CommandErrorException(Lang.COMMAND_TRANSLATION_SYNTAX.toString());
 
-		String version = MinecraftVersion.VERSION_STRING;
+		String version = QuestsPlugin.getPlugin().getServerVersion().toString(true);
 		String url = MinecraftNames.LANG_DOWNLOAD_URL.replace("%version%", version).replace("%language%", lang);
 
 		try {
@@ -298,6 +300,18 @@ public class CommandsAdmin implements OrphanCommand {
 			actor.reply("Successfully reloaded plugin data!");
 		else
 			actor.error("Something went horribly wrong. The plugin has been disabled.");
+	}
+
+	@Subcommand("debugInfo")
+	@SecretCommand
+	public void showDebugInfo(BukkitCommandActor actor) {
+		Map<String, Object> debug = Map.of(
+				"plugin_version", BeautyQuests.getInstance().getDescription().getVersion(),
+				"server_version", BeautyQuests.getInstance().getServerVersion().toString(false),
+				"bukkit_version", Bukkit.getBukkitVersion(),
+				"paper_detected", BeautyQuests.getInstance().isRunningPaper());
+		String debugJson = new Gson().toJson(debug);
+		actor.sendRawMessage(debugJson);
 	}
 
 }

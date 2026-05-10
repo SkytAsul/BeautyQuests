@@ -6,8 +6,6 @@ import fr.skytasul.quests.QuestsConfigurationImplementation;
 import fr.skytasul.quests.api.QuestsConfiguration;
 import fr.skytasul.quests.api.QuestsPlugin;
 import fr.skytasul.quests.api.utils.AutoRegistered;
-import fr.skytasul.quests.api.utils.MinecraftVersion;
-import fr.skytasul.quests.utils.nms.NMS;
 import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.identity.Identity;
 import net.kyori.adventure.key.Key;
@@ -64,7 +62,8 @@ public final class QuestUtils {
 	public static boolean isSimilar(ItemStack item1, ItemStack item2) {
 		if (item2.getType() == item1.getType() && item2.getDurability() == item1.getDurability()) {
 			try {
-				return NMS.getNMS().equalsWithoutNBT(item1.getItemMeta(), item2.getItemMeta());
+				return BeautyQuests.getInstance().getInternalsAccess().equalsWithoutNBT(item1.getItemMeta(),
+						item2.getItemMeta());
 			} catch (ReflectiveOperationException ex) {
 				QuestsPlugin.getPlugin().getLoggerExpanded()
 						.severe("An error occurred while attempting to compare items using NMS", ex);
@@ -166,7 +165,7 @@ public final class QuestUtils {
 				fw.setMetadata("questFinish", new FixedMetadataValue(BeautyQuests.getInstance(), true));
 				fw.setFireworkMeta(meta);
 			};
-			if (MinecraftVersion.isHigherThan(20, 6)) {
+			if (QuestsPlugin.getPlugin().getServerVersion().isAfter(1, 20, 6)) {
 				lc.getWorld().spawn(lc, Firework.class, fw -> fwConsumer.accept(fw));
 				// Much better to use the built-in method to do operations on entity
 				// before it is sent to the players, as it will not create flickering.

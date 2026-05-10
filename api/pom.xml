@@ -56,7 +56,7 @@
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-surefire-plugin</artifactId>
-				<version>3.2.2</version>
+				<version>3.5.4</version>
 			</plugin>
 		</plugins>
 	</build>
@@ -93,7 +93,7 @@
 		<dependency>
 			<groupId>org.spigotmc</groupId>
 			<artifactId>spigot-api</artifactId>
-			<version>${minecraft.version}</version>
+			<version>${minecraft.version}-R0.1-SNAPSHOT</version>
 			<scope>provided</scope>
 		</dependency>
 
@@ -111,7 +111,7 @@
 			<scope>compile</scope>
 		</dependency>
 		<dependency>
-			<groupId>com.github.cryptomorin</groupId>
+			<groupId>io.github.almighty-satan</groupId>
 			<artifactId>XSeries</artifactId>
 			<version>${xseries.version}</version>
 			<scope>compile</scope>
@@ -131,14 +131,7 @@
 
 		<dependency>
 			<groupId>org.junit.jupiter</groupId>
-			<artifactId>junit-jupiter-api</artifactId>
-			<version>${junit.version}</version>
-			<scope>test</scope>
-		</dependency>
-		<dependency>
-			<groupId>org.junit.jupiter</groupId>
-			<artifactId>junit-jupiter-params</artifactId>
-			<version>${junit.version}</version>
+			<artifactId>junit-jupiter</artifactId>
 			<scope>test</scope>
 		</dependency>
 

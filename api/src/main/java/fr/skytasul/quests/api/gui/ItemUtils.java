@@ -6,7 +6,6 @@ import fr.skytasul.quests.api.QuestsPlugin;
 import fr.skytasul.quests.api.options.QuestOption;
 import fr.skytasul.quests.api.utils.ChatColorUtils;
 import fr.skytasul.quests.api.utils.MinecraftNames;
-import fr.skytasul.quests.api.utils.MinecraftVersion;
 import fr.skytasul.quests.api.utils.Utils;
 import org.apache.commons.lang.Validate;
 import org.bukkit.DyeColor;
@@ -315,7 +314,7 @@ public final class ItemUtils {
 			ItemMeta meta = is.getItemMeta();
 			if (meta.hasDisplayName())
 				return meta.getDisplayName();
-			if (MinecraftVersion.isHigherThan(20, 5) && meta.hasItemName())
+			if (QuestsPlugin.getPlugin().getServerVersion().isAfter(1, 20, 5) && meta.hasItemName())
 				return meta.getItemName();
 		}
 		return format ? MinecraftNames.getMaterialName(is) : XMaterial.matchXMaterial(is).name();
@@ -341,13 +340,14 @@ public final class ItemUtils {
 
 	public static boolean isGlittering(ItemStack is) {
 		ItemMeta im = is.getItemMeta();
-		return (MinecraftVersion.isHigherThan(20, 6) && im.hasEnchantmentGlintOverride() && im.getEnchantmentGlintOverride())
-				|| im.hasEnchants();
+		return (QuestsPlugin.getPlugin().getServerVersion().isAfter(1, 20, 6)
+				&& im.hasEnchantmentGlintOverride()
+				&& im.getEnchantmentGlintOverride()) || im.hasEnchants();
 	}
 
 	public static void setGlittering(ItemStack is, boolean glitter) {
 		ItemMeta im = is.getItemMeta();
-		if (MinecraftVersion.isHigherThan(20, 6)) {
+		if (QuestsPlugin.getPlugin().getServerVersion().isAfter(1, 20, 6)) {
 			im.setEnchantmentGlintOverride(glitter ? Boolean.TRUE : null);
 		} else {
 			if (glitter) {
