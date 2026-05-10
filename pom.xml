@@ -47,9 +47,6 @@
 		<!-- Sometimes not the latest version since MockBukkit is long to update -->
 		<minecraft.version>26.1.2</minecraft.version>
 
-		<mockbukkit.version.minecraft>26.1.2</mockbukkit.version.minecraft>
-		<mockbukkit.version>4.113.0</mockbukkit.version>
-
 		<lamp.version>4.0.0-rc.16</lamp.version>
 		<xseries.version>13.6.0+26.1</xseries.version>
 		<hikaricp.version>6.0.0</hikaricp.version>
