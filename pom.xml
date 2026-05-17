@@ -76,10 +76,17 @@
 
 	<profiles>
 		<profile>
-			<id>devbuild</id>
+			<id>default</id>
 			<activation>
 				<activeByDefault>true</activeByDefault>
 			</activation>
+			<properties>
+				<plugin.version>${revision.raw}+build.internal</plugin.version>
+				<revision>${revision.raw}-SNAPSHOT</revision>
+			</properties>
+		</profile>
+		<profile>
+			<id>devbuild</id>
 			<properties>
 				<plugin.version>${revision.raw}+build.${build.number}</plugin.version>
 				<revision>${revision.raw}-SNAPSHOT</revision>

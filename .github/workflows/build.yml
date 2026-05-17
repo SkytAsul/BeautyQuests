@@ -1,12 +1,14 @@
 name: Build
 
 on:
-  push:
-    branches:
-      - '**'
-    paths-ignore:
-      - .github/**
   pull_request:
+  workflow_call:
+    inputs:
+      build-number:
+        type: number
+        required: false
+        default: -1
+        description: "Build number. If absent, the build will be a release."
 
 jobs:
   build:
@@ -24,14 +26,12 @@ jobs:
             25
           # maybe necessary to add more since we want to compile for lower?
           cache: maven
-      
-      - name: Download private dependencies
+
+      - name: Download and install private dependencies
         run: |
           mkdir jars
           curl -s https://skytasul.fr/protected/bq-jars.tar.gz --header 'Token: ${{ secrets.PrivateDownloadToken }}' --output - | tar xzfv - --directory ./jars
-
-      - name: Install private dependencies
-        run: "./integrations/libs.sh mvn ./jars"
+          ./integrations/libs.sh mvn ./jars
 
       - name: Install missing dependencies
         run: |
@@ -43,13 +43,24 @@ jobs:
       - name: Prepare Paper NMS
         run: |
           mvn -pl paper paper-nms:init
-          
+
       - name: Build and package with Maven
         run: |
-          profile=$([ "${{ github.ref_name }}" == "${{ github.event.repository.default_branch }}" ] && echo "release" || echo "devbuild")
-          echo "Building with profile $profile"
-          mvn -B clean package --file pom.xml -Dbuild.number=${{ github.run_number }} -P $profile
-    
+          mvn_args=()
+          # There is no easy way to know if the build is coming from a workflow_call
+          # https://github.com/orgs/community/discussions/160735
+          # Thus, we test if the inputs are completely empty instead
+          if [ "${{ toJSON(inputs) }}" != "{}" ]; then
+            if [ "${{ inputs.build-number }}" == "-1" ]; then
+              mvn_args+=(-P release)
+              echo ::notice::Doing a release build
+            else
+              mvn_args+=(-P devbuild -Dbuild.number=${{ inputs.build-number }})
+              echo ::notice::Doing a dev build with number ${{ inputs.build-number }}
+            fi
+          fi
+          mvn -B clean package --file pom.xml ${mvn_args[@]}
+
       - name: Upload artifact
         uses: actions/upload-artifact@v7
         with:

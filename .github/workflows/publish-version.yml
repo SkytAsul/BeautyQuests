@@ -1,4 +1,4 @@
-name: Release update
+name: Publish version
 
 on:
   release:
@@ -62,11 +62,9 @@ jobs:
           version: "${{ github.event.release.tag_name }}"
           changelog: "${{ github.event.release.body }}"
           game-versions: |-
-            1.17.x
-            1.18.x
-            1.19.x
             1.20.x
             1.21.x
+            26.1.x
           status: "draft"
           channel: "release"
           loaders: |-
@@ -85,7 +83,7 @@ jobs:
           description: "${{ github.event.release.body }}"
           platform_dependencies: |
             {
-              "PAPER": [">=1.17"],
+              "PAPER": [">=1.20"],
             }
           files: |
             [
