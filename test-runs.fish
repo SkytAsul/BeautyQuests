@@ -97,3 +97,5 @@ for mc_version in "26.1.2"
         test_ver $mc_version $server_type java25
     end
 end
+
+test_ver "26.2" "paper" java25 # merge this above once Spigot is available

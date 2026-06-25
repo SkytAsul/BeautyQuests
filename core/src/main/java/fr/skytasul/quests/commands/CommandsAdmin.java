@@ -307,7 +307,7 @@ public class CommandsAdmin implements OrphanCommand {
 	public void showDebugInfo(BukkitCommandActor actor) {
 		Map<String, Object> debug = Map.of(
 				"plugin_version", BeautyQuests.getInstance().getDescription().getVersion(),
-				"server_version", BeautyQuests.getInstance().getServerVersion().toString(false),
+				"server_version", BeautyQuests.getInstance().getServerVersion().toString(true),
 				"bukkit_version", Bukkit.getBukkitVersion(),
 				"paper_detected", BeautyQuests.getInstance().isRunningPaper());
 		String debugJson = new Gson().toJson(debug);

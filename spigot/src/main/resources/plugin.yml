@@ -44,14 +44,14 @@ softdepend:
 libraries:
 - io.github.revxrsal:lamp.bukkit:${lamp.version}
 - io.github.revxrsal:lamp.common:${lamp.version}
-- io.github.almighty-satan:XSeries:${xseries.version}
+- com.github.cryptomorin:XSeries:${xseries.version}
 - com.zaxxer:HikariCP:${hikaricp.version}
 - fr.mrmicky:fastboard:${fastboard.version}
 # Omitted so it is a transitive dependency
 #- net.kyori:adventure-api:${adventure.version}
 - net.kyori:adventure-platform-bukkit:${adventure.bukkit.version}
 - commons-lang:commons-lang:${commons-lang.version}
-    
+
 permissions:
   beautyquests.*:
     description: Gives access to BeautyQuests whole
