@@ -53,14 +53,15 @@
 		<fastboard.version>2.2.0</fastboard.version>
 		<commons-lang.version>2.6</commons-lang.version>
 
-		<!--
-			Version of Adventure included in Paper 1.20.1.
-			Since we cannot load a different Adventure version,
-			we've got to comply with this one.
-		-->
-		<adventure.version>4.14.0</adventure.version>
 		<adventure.bukkit.version>4.4.1</adventure.bukkit.version>
 	</properties>
+
+	<repositories>
+		<repository>
+			<id>papermc</id>
+			<url>https://repo.papermc.io/repository/maven-public/</url>
+		</repository>
+	</repositories>
 
 	<dependencyManagement>
 		<dependencies>
@@ -70,6 +71,11 @@
 				<version>6.0.3</version>
 				<type>pom</type>
 				<scope>import</scope>
+			</dependency>
+			<dependency>
+				<groupId>io.papermc.paper</groupId>
+				<artifactId>paper-api</artifactId>
+				<version>26.1.2.build.72-stable</version>
 			</dependency>
 		</dependencies>
 	</dependencyManagement>

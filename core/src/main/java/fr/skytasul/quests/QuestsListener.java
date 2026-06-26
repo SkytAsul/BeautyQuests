@@ -181,8 +181,14 @@ public class QuestsListener implements Listener{
 	}
 
 	@EventHandler (priority = EventPriority.HIGH)
-	public void onDeath(PlayerDeathEvent e) {
-		BeautyQuests.getInstance().getPaperCompatibility().ifPresent(paper -> paper.keepDeathItems(e, Utils::isQuestItem));
+	public void onDeath(PlayerDeathEvent event) {
+		for (Iterator<ItemStack> iterator = event.getDrops().iterator(); iterator.hasNext();) {
+			ItemStack item = iterator.next();
+			if (Utils.isQuestItem(item)) {
+				iterator.remove();
+				event.getItemsToKeep().add(item);
+			}
+		}
 	}
 
 	@EventHandler

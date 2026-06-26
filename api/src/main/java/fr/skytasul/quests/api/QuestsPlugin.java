@@ -42,8 +42,6 @@ public interface QuestsPlugin extends Plugin {
 
 	public @NotNull BukkitAudiences getAudiences();
 
-	public boolean isRunningPaper();
-
 	public @NotNull Version getServerVersion();
 
 	/**

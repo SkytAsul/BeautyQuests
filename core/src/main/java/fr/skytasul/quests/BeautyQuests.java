@@ -14,6 +14,7 @@ import fr.skytasul.quests.api.questers.data.QuesterDataManager;
 import fr.skytasul.quests.api.utils.IntegrationManager;
 import fr.skytasul.quests.api.utils.MinecraftNames;
 import fr.skytasul.quests.api.utils.Utils;
+import fr.skytasul.quests.api.utils.Version;
 import fr.skytasul.quests.api.utils.logger.LoggerExpanded;
 import fr.skytasul.quests.commands.CommandsManagerImplementation;
 import fr.skytasul.quests.editor.EditorManagerImplementation;
@@ -29,10 +30,10 @@ import fr.skytasul.quests.structure.QuestsManagerImplementation;
 import fr.skytasul.quests.structure.pools.QuestPoolsManagerImplementation;
 import fr.skytasul.quests.utils.Database;
 import fr.skytasul.quests.utils.compatibility.InternalIntegrations;
-import fr.skytasul.quests.utils.compatibility.Paper;
 import fr.skytasul.quests.utils.logger.BqLoggerHandler;
 import fr.skytasul.quests.utils.nms.NMS;
 import fr.skytasul.quests.utils.nms.NullNMS;
+import io.papermc.paper.ServerBuildInfo;
 import net.kyori.adventure.platform.bukkit.BukkitAudiences;
 import org.bstats.bukkit.Metrics;
 import org.bstats.charts.DrilldownPie;
@@ -65,6 +66,8 @@ import java.util.stream.Collectors;
 public abstract class BeautyQuests extends JavaPlugin implements QuestsPlugin {
 
 	private static BeautyQuests instance;
+
+	private Version serverVersion;
 	private BukkitRunnable saveTask;
 	private NMS nms;
 	private QuestsAPIImplementation api;
@@ -142,12 +145,6 @@ public abstract class BeautyQuests extends JavaPlugin implements QuestsPlugin {
 
 		try {
 			logger.info("------------ BeautyQuests ------------");
-
-			if (isRunningPaper())
-				logger.debug("Paper detected.");
-			else
-				logger.warning("You are not running the Paper software.\n"
-						+ "It is highly recommended to use it for extended features and more stability.");
 
 			audiences = BukkitAudiences.create(this);
 
@@ -265,6 +262,10 @@ public abstract class BeautyQuests extends JavaPlugin implements QuestsPlugin {
 	}
 
 	private void initInternals() {
+		String minecraftVersion = ServerBuildInfo.buildInfo().minecraftVersionId();
+		logger.debug("Minecraft version from build info: {0}", minecraftVersion);
+		serverVersion = Version.parse(minecraftVersion);
+
 		if (unitTesting) {
 			nms = new NullNMS();
 			return;
@@ -861,6 +862,11 @@ public abstract class BeautyQuests extends JavaPlugin implements QuestsPlugin {
 		return nms;
 	}
 
+	@Override
+	public @NotNull Version getServerVersion() {
+		return ensureLoaded(serverVersion);
+	}
+
 	public boolean isCompletelyLoaded() {
 		return loaded;
 	}
@@ -868,8 +874,6 @@ public abstract class BeautyQuests extends JavaPlugin implements QuestsPlugin {
 	public boolean isUnitTesting() {
 		return unitTesting;
 	}
-
-	public abstract @NotNull Optional<Paper> getPaperCompatibility();
 
 	protected abstract @Nullable NMS createInternalsAccess();
 
