@@ -31,6 +31,8 @@ function test_ver
 
     set container_image_version $argv[3]
 
+    set -l extra_args $argv[4..]
+
     podman pull -q "$container_image:$container_image_version"
 
     podman run -d \
@@ -45,6 +47,7 @@ function test_ver
         -v mc_libraries:/data/libraries:Z \
         -v "$(realpath $bq_jar):/plugins/bq.jar:ro,Z" \
         --name mc \
+        $extra_args \
         "$container_image:$container_image_version" > /dev/null
 
     echo Waiting for server to be running...
