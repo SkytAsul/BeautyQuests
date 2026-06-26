@@ -89,16 +89,10 @@ end
 podman kill mc &> /dev/null
 podman rm mc &> /dev/null
 
-for mc_version in "1.20.1" "1.20.6" "1.21.4" "1.21.11"
-    for server_type in spigot paper
-        test_ver $mc_version $server_type java21
-    end
+for mc_version in "1.20.6" "1.21.4" "1.21.11"
+    test_ver $mc_version paper java21
 end
 
-for mc_version in "26.1.2"
-    for server_type in spigot paper
-        test_ver $mc_version $server_type java25
-    end
+for mc_version in "26.1.2" "26.2"
+    test_ver $mc_version paper java25
 end
-
-test_ver "26.2" "paper" java25 # merge this above once Spigot is available

@@ -22,6 +22,7 @@ public class BeautyQuestsPaper extends BeautyQuests {
 
 	public BeautyQuestsPaper(Boolean unitTesting) {
 		super(unitTesting);
+		System.out.println("Instanciated");
 
 		paperCompat = new PaperImplementation();
 
@@ -53,15 +54,11 @@ public class BeautyQuestsPaper extends BeautyQuests {
 
 	@Override
 	protected @Nullable NMS createInternalsAccess() {
-		if (serverVersion.isAfter(1, 20, 5)) {
-			try {
-				return new PaperNMS();
-			} catch (ReflectiveOperationException ex) {
-				logger.severe("Failed to load internals compatibility for Paper {0}", ex, serverVersion);
-				return null;
-			}
-		} else {
-			return NMS.createVersionedNms();
+		try {
+			return new PaperNMS();
+		} catch (ReflectiveOperationException ex) {
+			logger.severe("Failed to load internals compatibility for Paper {0}", ex, serverVersion);
+			return null;
 		}
 	}
 

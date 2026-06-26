@@ -30,11 +30,6 @@
 							<descriptors>
 								<descriptor>all-jar.xml</descriptor>
 							</descriptors>
-							<archive>
-								<manifestEntries>
-									<paperweight-mappings-namespace>mojang</paperweight-mappings-namespace>
-								</manifestEntries>
-							</archive>
 						</configuration>
 					</execution>
 				</executions>
@@ -66,84 +61,7 @@
 		</dependency>
 		<dependency>
 			<groupId>${project.groupId}</groupId>
-			<artifactId>beautyquests-spigot</artifactId>
-			<version>${revision}</version>
-			<type>jar</type>
-			<scope>compile</scope>
-		</dependency>
-		<dependency>
-			<groupId>${project.groupId}</groupId>
 			<artifactId>beautyquests-integrations</artifactId>
-			<version>${revision}</version>
-			<type>jar</type>
-			<scope>compile</scope>
-		</dependency>
-		<dependency>
-			<groupId>${project.groupId}</groupId>
-			<artifactId>beautyquests-v1_20_R1</artifactId>
-			<version>${revision}</version>
-			<type>jar</type>
-			<scope>compile</scope>
-		</dependency>
-		<dependency>
-			<groupId>${project.groupId}</groupId>
-			<artifactId>beautyquests-v1_20_R2</artifactId>
-			<version>${revision}</version>
-			<type>jar</type>
-			<scope>compile</scope>
-		</dependency>
-		<dependency>
-			<groupId>${project.groupId}</groupId>
-			<artifactId>beautyquests-v1_20_R3</artifactId>
-			<version>${revision}</version>
-			<type>jar</type>
-			<scope>compile</scope>
-		</dependency>
-		<dependency>
-			<groupId>${project.groupId}</groupId>
-			<artifactId>beautyquests-v1_20_R4</artifactId>
-			<version>${revision}</version>
-			<type>jar</type>
-			<scope>compile</scope>
-		</dependency>
-		<dependency>
-			<groupId>${project.groupId}</groupId>
-			<artifactId>beautyquests-v1_21_R1</artifactId>
-			<version>${revision}</version>
-			<type>jar</type>
-			<scope>compile</scope>
-		</dependency>
-		<dependency>
-			<groupId>${project.groupId}</groupId>
-			<artifactId>beautyquests-v1_21_R3</artifactId>
-			<version>${revision}</version>
-			<type>jar</type>
-			<scope>compile</scope>
-		</dependency>
-		<dependency>
-			<groupId>${project.groupId}</groupId>
-			<artifactId>beautyquests-v1_21_R4</artifactId>
-			<version>${revision}</version>
-			<type>jar</type>
-			<scope>compile</scope>
-		</dependency>
-		<dependency>
-			<groupId>${project.groupId}</groupId>
-			<artifactId>beautyquests-v1_21_R5</artifactId>
-			<version>${revision}</version>
-			<type>jar</type>
-			<scope>compile</scope>
-		</dependency>
-		<dependency>
-			<groupId>${project.groupId}</groupId>
-			<artifactId>beautyquests-v1_21_R6</artifactId>
-			<version>${revision}</version>
-			<type>jar</type>
-			<scope>compile</scope>
-		</dependency>
-		<dependency>
-			<groupId>${project.groupId}</groupId>
-			<artifactId>beautyquests-v1_21_R7</artifactId>
 			<version>${revision}</version>
 			<type>jar</type>
 			<scope>compile</scope>

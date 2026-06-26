@@ -3,10 +3,12 @@ package fr.skytasul.quests;
 import io.papermc.paper.plugin.loader.PluginClasspathBuilder;
 import io.papermc.paper.plugin.loader.PluginLoader;
 import io.papermc.paper.plugin.loader.library.impl.MavenLibraryResolver;
+
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.eclipse.aether.artifact.DefaultArtifact;
 import org.eclipse.aether.graph.Dependency;
 import org.eclipse.aether.repository.RemoteRepository;
+
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.List;
@@ -21,7 +23,7 @@ public class BeautyQuestsLoader implements PluginLoader {
 		List<String> librariesList;
 
 		try (var pluginJar = new JarFile(classpathBuilder.getContext().getPluginSource().toFile());
-				var pluginYamlReader = new InputStreamReader(pluginJar.getInputStream(pluginJar.getEntry("plugin.yml")))) {
+				var pluginYamlReader = new InputStreamReader(pluginJar.getInputStream(pluginJar.getEntry("libraries.yml")))) {
 			var config = YamlConfiguration.loadConfiguration(pluginYamlReader);
 			librariesList = config.getStringList("libraries");
 		} catch (IOException ex) {

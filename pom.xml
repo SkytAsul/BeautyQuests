@@ -10,7 +10,7 @@
 	<packaging>pom</packaging>
 
 	<name>BeautyQuests</name>
-	<description>A Spigot quests plugin based on a simple-to-use graphical
+	<description>A Minecraft quests plugin based on a simple-to-use graphical
 		interface.</description>
 	<url>https://github.com/SkytAsul/BeautyQuests/</url>
 
@@ -37,9 +37,9 @@
 
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-		<maven.compiler.source>17</maven.compiler.source>
-		<maven.compiler.target>17</maven.compiler.target>
-		<maven.compiler.release>17</maven.compiler.release>
+		<maven.compiler.source>21</maven.compiler.source>
+		<maven.compiler.target>21</maven.compiler.target>
+		<maven.compiler.release>21</maven.compiler.release>
 
 		<build.number>unknown</build.number>
 		<revision.raw>2.1.0</revision.raw>
@@ -101,36 +101,11 @@
 		</profile>
 	</profiles>
 
-	<repositories>
-		<repository>
-			<id>codemc-nms</id>
-			<url>https://repo.codemc.io/repository/nms/</url>
-		</repository>
-	</repositories>
-
-	<distributionManagement>
-		<repository>
-			<id>skytasul</id>
-			<url>https://repo.codemc.org/repository/skytasul/</url>
-		</repository>
-	</distributionManagement>
-
 	<modules>
 		<module>api</module>
 		<module>core</module>
 		<module>paper</module>
-		<module>spigot</module>
 		<module>integrations</module>
-		<module>v1_20_R1</module>
-		<module>v1_20_R2</module>
-		<module>v1_20_R3</module>
-		<module>v1_20_R4</module>
-		<module>v1_21_R1</module>
-		<module>v1_21_R3</module>
-		<module>v1_21_R4</module>
-		<module>v1_21_R5</module>
-		<module>v1_21_R6</module>
-		<module>v1_21_R7</module>
 		<module>dist</module>
 	</modules>
 

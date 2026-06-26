@@ -2,7 +2,9 @@
 [![GitHub pre-release](https://img.shields.io/github/v/release/SkytAsul/BeautyQuests?include_prereleases&color=green&label=pre-release)](https://github.com/SkytAsul/BeautyQuests/releases)
 [![GitHub Actions](https://img.shields.io/github/actions/workflow/status/SkytAsul/BeautyQuests/build.yml)](https://github.com/SkytAsul/BeautyQuests/actions)
 [![Crowdin](https://d322cqt584bo4o.cloudfront.net/beautyquests/localized.svg)](https://crowdin.com/project/beautyquests)
-[![Spiget Downloads](https://img.shields.io/spiget/downloads/39255)](https://www.spigotmc.org/resources/beautyquests.39255/)
+[![Spiget Downloads](https://img.shields.io/spiget/downloads/39255?label=Spigot%20downloads)](https://www.spigotmc.org/resources/beautyquests.39255/)
+[![Modrinth Downloads](https://img.shields.io/modrinth/dt/beautyquests?label=Modrinth%20downloads)](https://modrinth.com/plugin/beautyquests/)
+[![Hangar Downloads](https://img.shields.io/hangar/dt/beautyquests?label=Hangar%20downloads)](https://hangar.papermc.io/SkytAsul/BeautyQuests)
 ![bStats Servers](https://img.shields.io/bstats/servers/7460)
 ![bStats Players](https://img.shields.io/bstats/players/7460)
 [![Discord](https://ptb.discordapp.com/api/guilds/482632781395132416/widget.png)](https://discord.gg/H8fXrkD)
@@ -18,7 +20,7 @@ What is **BeautyQuests**?
 ***
 
 ## Downloads
-Plugin releases can be downloaded from **[SpigotMC](https://www.spigotmc.org/resources/beautyquests.39255)**.
+Plugin releases can be downloaded from **[Modrinth](https://modrinth.com/plugin/beautyquests/)** or **[Hangar](https://hangar.papermc.io/SkytAsul/BeautyQuests)**.
 
 Development builds are available in the **[releases section](https://github.com/SkytAsul/BeautyQuests/releases)**.
 
