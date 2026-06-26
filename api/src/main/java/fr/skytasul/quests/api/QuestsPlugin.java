@@ -9,7 +9,6 @@ import fr.skytasul.quests.api.players.PlayerManager;
 import fr.skytasul.quests.api.utils.IntegrationManager;
 import fr.skytasul.quests.api.utils.Version;
 import fr.skytasul.quests.api.utils.logger.LoggerExpanded;
-import net.kyori.adventure.platform.bukkit.BukkitAudiences;
 import org.bukkit.plugin.Plugin;
 import org.jetbrains.annotations.NotNull;
 
@@ -39,8 +38,6 @@ public interface QuestsPlugin extends Plugin {
 	public @NotNull IntegrationManager getIntegrationManager();
 
 	public void notifyLoadingFailure();
-
-	public @NotNull BukkitAudiences getAudiences();
 
 	public @NotNull Version getServerVersion();
 

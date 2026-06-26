@@ -52,8 +52,6 @@
 		<hikaricp.version>6.0.0</hikaricp.version>
 		<fastboard.version>2.2.0</fastboard.version>
 		<commons-lang.version>2.6</commons-lang.version>
-
-		<adventure.bukkit.version>4.4.1</adventure.bukkit.version>
 	</properties>
 
 	<repositories>

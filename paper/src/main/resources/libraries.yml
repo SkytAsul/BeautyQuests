@@ -4,7 +4,4 @@ libraries:
 - com.github.cryptomorin:XSeries:${xseries.version}
 - com.zaxxer:HikariCP:${hikaricp.version}
 - fr.mrmicky:fastboard:${fastboard.version}
-# Omitted so it is a transitive dependency
-#- net.kyori:adventure-api:${adventure.version}
-- net.kyori:adventure-platform-bukkit:${adventure.bukkit.version}
 - commons-lang:commons-lang:${commons-lang.version}

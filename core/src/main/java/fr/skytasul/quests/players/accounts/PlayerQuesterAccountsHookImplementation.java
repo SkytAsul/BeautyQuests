@@ -54,10 +54,9 @@ public class PlayerQuesterAccountsHookImplementation extends AbstractPlayerQuest
 		return List.of(acc.getOfflinePlayer());
 	}
 
-	@SuppressWarnings("resource")
 	@Override
 	public @NotNull Iterable<? extends Audience> audiences() {
-		return acc.getPlayer().map(QuestsPlugin.getPlugin().getAudiences()::player).map(List::of).orElse(List.of());
+		return acc.getPlayer().map(List::of).orElse(List.of());
 	}
 
 	@Override

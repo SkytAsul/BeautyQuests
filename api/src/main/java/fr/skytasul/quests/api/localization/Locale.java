@@ -9,7 +9,6 @@ import fr.skytasul.quests.api.utils.messaging.MessageUtils;
 import fr.skytasul.quests.api.utils.messaging.PlaceholderRegistry;
 import net.kyori.adventure.audience.Audience;
 import org.bukkit.ChatColor;
-import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.plugin.Plugin;
 import org.jetbrains.annotations.NotNull;
@@ -60,10 +59,6 @@ public interface Locale {
 		send(audience, (HasPlaceholders) null);
 	}
 
-	default void send(@NotNull CommandSender sender) {
-		send(QuestsPlugin.getPlugin().getAudiences().sender(sender));
-	}
-
 	default void send(@NotNull Audience audience, @NotNull HasPlaceholders @NotNull... placeholdersHolders) {
 		HasPlaceholders fullHolder = null;
 		if (placeholdersHolders != null) {
@@ -76,16 +71,8 @@ public interface Locale {
 				fullHolder == null ? null : fullHolder.getPlaceholdersRegistry());
 	}
 
-	default void send(@NotNull CommandSender sender, @NotNull HasPlaceholders @NotNull... placeholdersHolders) {
-		send(QuestsPlugin.getPlugin().getAudiences().sender(sender), placeholdersHolders);
-	}
-
 	default void quickSend(@NotNull Audience audience, @NotNull String key1, @Nullable Object value1) {
 		send(audience, PlaceholderRegistry.of(key1, value1));
-	}
-
-	default void quickSend(@NotNull CommandSender sender, @NotNull String key1, @Nullable Object value1) {
-		quickSend(QuestsPlugin.getPlugin().getAudiences().sender(sender), key1, value1);
 	}
 
 	public static void loadStrings(@NotNull Locale @NotNull [] locales, @NotNull YamlConfiguration defaultConfig,

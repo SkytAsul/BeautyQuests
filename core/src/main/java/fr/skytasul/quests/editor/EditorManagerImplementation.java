@@ -49,7 +49,7 @@ public class EditorManagerImplementation implements EditorManager, Listener {
 				.debug(player.getName() + " is entering editor " + editor.getClass().getName() + ".");
 
 		player.sendTitle(Lang.ENTER_EDITOR_TITLE.toString(), Lang.ENTER_EDITOR_SUB.toString(), 5, 50, 5);
-		QuestsPlugin.getPlugin().getAudiences().player(player).showBossBar(bar);
+		player.showBossBar(bar);
 
 		QuestUtils.autoRegister(editor);
 
@@ -57,7 +57,7 @@ public class EditorManagerImplementation implements EditorManager, Listener {
 			editor.begin();
 		} catch (Exception ex) {
 			QuestsPlugin.getPlugin().getLoggerExpanded().severe("An error occurred while beginning editor", ex);
-			DefaultErrors.sendGeneric(QuestsPlugin.getPlugin().getAudiences().player(player), "impossible to begin editor");
+			DefaultErrors.sendGeneric(player, "impossible to begin editor");
 			editor.cancel();
 		}
 
@@ -71,7 +71,7 @@ public class EditorManagerImplementation implements EditorManager, Listener {
 			return;
 
 		QuestsPlugin.getPlugin().getLoggerExpanded().debug(player.getName() + " has left the editor.");
-		QuestsPlugin.getPlugin().getAudiences().player(player).hideBossBar(bar);
+		player.hideBossBar(bar);
 		editor.end();
 
 		QuestUtils.autoUnregister(editor);

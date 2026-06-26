@@ -34,7 +34,6 @@ import fr.skytasul.quests.utils.logger.BqLoggerHandler;
 import fr.skytasul.quests.utils.nms.NMS;
 import fr.skytasul.quests.utils.nms.NullNMS;
 import io.papermc.paper.ServerBuildInfo;
-import net.kyori.adventure.platform.bukkit.BukkitAudiences;
 import org.bstats.bukkit.Metrics;
 import org.bstats.charts.DrilldownPie;
 import org.bstats.charts.SimplePie;
@@ -110,7 +109,6 @@ public abstract class BeautyQuests extends JavaPlugin implements QuestsPlugin {
 	private @Nullable BqLoggerHandler loggerHandler;
 	private @Nullable GuiManagerImplementation guiManager;
 	private @Nullable EditorManagerImplementation editorManager;
-	private @Nullable BukkitAudiences audiences;
 
 	/* ---------------------------------------------- */
 
@@ -145,8 +143,6 @@ public abstract class BeautyQuests extends JavaPlugin implements QuestsPlugin {
 
 		try {
 			logger.info("------------ BeautyQuests ------------");
-
-			audiences = BukkitAudiences.create(this);
 
 			saveDefaultConfig();
 			initInternals();
@@ -238,8 +234,6 @@ public abstract class BeautyQuests extends JavaPlugin implements QuestsPlugin {
 		}finally {
 			if (loggerHandler != null)
 				loggerHandler.close();
-			if (audiences != null)
-				audiences.close();
 		}
 	}
 
@@ -851,11 +845,6 @@ public abstract class BeautyQuests extends JavaPlugin implements QuestsPlugin {
 
 	public @NotNull QuesterManagerImplementation getQuesterManager() {
 		return ensureLoaded(questerManager);
-	}
-
-	@Override
-	public @NotNull BukkitAudiences getAudiences() {
-		return ensureLoaded(audiences);
 	}
 
 	public @NotNull NMS getInternalsAccess() {

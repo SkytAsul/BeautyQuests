@@ -28,10 +28,6 @@ public class QuestCreationSession {
 		return player;
 	}
 
-	public @NotNull Audience getPlayerAudience() {
-		return QuestsPlugin.getPlugin().getAudiences().player(player);
-	}
-
 	public boolean hasCustomID() {
 		return customID != -1;
 	}

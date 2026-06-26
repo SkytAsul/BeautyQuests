@@ -252,8 +252,7 @@ public class StageChat extends AbstractStage implements Listener {
 					try {
 						Pattern.compile(msg);
 					} catch (PatternSyntaxException ex) {
-						DefaultErrors.sendGeneric(QuestsPlugin.getPlugin().getAudiences().player(p),
-								"Invalid RegEx: " + ex.getMessage());
+						DefaultErrors.sendGeneric(p, "Invalid RegEx: " + ex.getMessage());
 						return null;
 					}
 				}

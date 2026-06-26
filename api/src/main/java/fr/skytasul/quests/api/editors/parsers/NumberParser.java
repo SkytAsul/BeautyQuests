@@ -1,6 +1,5 @@
 package fr.skytasul.quests.api.editors.parsers;
 
-import fr.skytasul.quests.api.QuestsPlugin;
 import fr.skytasul.quests.api.localization.Lang;
 import fr.skytasul.quests.api.utils.messaging.DefaultErrors;
 import org.bukkit.entity.Player;
@@ -53,13 +52,13 @@ public class NumberParser<T extends Number> implements AbstractParser<T> {
 			if (min != null || max != null) {
 				BigDecimal bd = new BigDecimal(msg);
 				if ((min != null && bd.compareTo(min) < 0) || (max != null && bd.compareTo(max) > 0)) {
-					DefaultErrors.sendOutOfBounds(QuestsPlugin.getPlugin().getAudiences().player(p), min, max);
+					DefaultErrors.sendOutOfBounds(p, min, max);
 					return null;
 				}
 			}
 			return number;
 		}catch (Exception ex) {}
-		DefaultErrors.sendInvalidNumber(QuestsPlugin.getPlugin().getAudiences().player(p), msg);
+		DefaultErrors.sendInvalidNumber(p, msg);
 		return null;
 	}
 

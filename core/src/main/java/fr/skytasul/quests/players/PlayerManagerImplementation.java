@@ -129,7 +129,7 @@ public class PlayerManagerImplementation implements PlayerManager, Listener {
 							}
 						}
 					});
-				}, "Failed to load quester data", plugin.getAudiences().player(player)));
+				}, "Failed to load quester data", player));
 	}
 
 	protected void unload(@NotNull Player player) {

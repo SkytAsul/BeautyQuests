@@ -25,10 +25,6 @@ public abstract class Editor {
 		return player;
 	}
 
-	protected @NotNull Audience getPlayerAudience() {
-		return QuestsPlugin.getPlugin().getAudiences().player(player);
-	}
-
 	public void begin() {
 		if (started)
 			throw new IllegalStateException("Editor already started");
