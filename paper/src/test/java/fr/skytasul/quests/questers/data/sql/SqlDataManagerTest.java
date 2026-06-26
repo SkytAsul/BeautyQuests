@@ -7,7 +7,7 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assumptions.abort;
-import fr.skytasul.quests.api.QuestsConfiguration;
+
 import fr.skytasul.quests.api.data.DataLoadingException;
 import fr.skytasul.quests.api.data.SavableData;
 import fr.skytasul.quests.api.questers.QuesterManager;
@@ -18,8 +18,6 @@ import fr.skytasul.quests.questers.QuesterDataStub;
 import fr.skytasul.quests.utils.Database;
 import net.kyori.adventure.key.Key;
 import org.bukkit.configuration.InvalidConfigurationException;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
@@ -28,7 +26,6 @@ import org.mockito.Mockito;
 import java.io.IOException;
 import java.sql.SQLException;
 import java.util.List;
-import java.util.Map;
 import java.util.OptionalInt;
 import java.util.concurrent.ExecutionException;
 
@@ -40,7 +37,7 @@ class SqlDataManagerTest {
 
 	@BeforeEach
 	void setUp() throws InvalidConfigurationException, IOException, SQLException {
-		Database db = new Database(new FakeDatabaseConfig());
+		Database db = new Database(new FakeDatabaseConfig("jdbc:h2:mem:beautyquests"));
 		db.testConnection();
 
 		instance = new SqlDataManager(db);
@@ -169,54 +166,6 @@ class SqlDataManagerTest {
 		var newData = result.dataHandler();
 		assertTrue(newData.hasQuestData(quest));
 		assertEquals(OptionalInt.of(1), newData.getQuestData(quest).getStage());
-	}
-
-	static class FakeDatabaseConfig implements QuestsConfiguration.Database {
-		@Override
-		public boolean enabled() {
-			return true;
-		}
-
-		@Override
-		public @Nullable String host() {
-			return null;
-		}
-
-		@Override
-		public int port() {
-			return 0;
-		}
-
-		@Override
-		public @NotNull String databaseName() {
-			return "beautyquests";
-		}
-
-		@Override
-		public @Nullable String username() {
-			return null;
-		}
-
-		@Override
-		public @Nullable String password() {
-			return null;
-		}
-
-		@Override
-		public boolean sslEnabled() {
-			return false;
-		}
-
-		@Override
-		public @Nullable String connectionString() {
-			return "jdbc:h2:mem:beautyquests";
-		}
-
-		@Override
-		public @NotNull Map<String, String> tables() {
-			return Map.of("questers", "questers", "questers quests", "questers_quests", "questers pools", "questers_pools");
-		}
-
 	}
 
 }
