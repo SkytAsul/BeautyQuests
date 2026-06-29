@@ -77,7 +77,7 @@ dependencies:
       required: false
     Tooltips:
       required: false
-    
+
 permissions:
   beautyquests.*:
     description: Gives access to BeautyQuests whole
@@ -117,46 +117,46 @@ permissions:
       beautyquests.command.pools: true
       beautyquests.command.pools.start: true
   beautyquests.command.listPlayer:
-    decription: 'Gives access to the menu GUI'
+    description: 'Gives access to the menu GUI'
     default: true
   beautyquests.command.version:
-    decription: 'Gives access to the "/quests version"'
+    description: 'Gives access to the "/quests version"'
     default: true
   beautyquests.command.create:
-    decription: 'Gives access to "/quests create"'
+    description: 'Gives access to "/quests create"'
     default: op
   beautyquests.command.edit:
-    decription: 'Gives access to "/quests edit"'
+    description: 'Gives access to "/quests edit"'
     default: op
   beautyquests.command.list:
-    decription: 'Gives access to "/quests list"'
+    description: 'Gives access to "/quests list"'
     default: op
   beautyquests.command.help:
-    decription: 'Gives access to "/quests help"'
+    description: 'Gives access to "/quests help"'
     default: true
   beautyquests.command.remove:
-    decription: 'Gives access to "/quests remove"'
+    description: 'Gives access to "/quests remove"'
     default: op
   beautyquests.command.manage:
-    decription: 'Gives access to "/quests reload" and some more management commands'
+    description: 'Gives access to "/quests reload" and some more management commands'
     default: op
   beautyquests.command.finish:
-    decription: 'Gives access to "/quests finish" and "finishAll"'
+    description: 'Gives access to "/quests finish" and "finishAll"'
     default: op
   beautyquests.command.setStage:
-    decription: 'Gives access to "/quests setStage"'
+    description: 'Gives access to "/quests setStage"'
     default: op
   beautyquests.command.setName:
-    decription: 'Gives access to "/quests setName"'
+    description: 'Gives access to "/quests setName"'
     default: op
   beautyquests.command.resetPlayer:
-    decription: 'Gives access to "/quests resetPlayer" and "resetPlayerQuest"'
+    description: 'Gives access to "/quests resetPlayer" and "resetPlayerQuest"'
     default: op
   beautyquests.command.seePlayer:
-    decription: 'Gives access to "/quests seePlayer"'
+    description: 'Gives access to "/quests seePlayer"'
     default: op
   beautyquests.command.setItem:
-    decription: 'Gives access to "/quests setItem"'
+    description: 'Gives access to "/quests setItem"'
     default: op
   beautyquests.command.adminMode:
     description: 'Gives access to "/quests adminMode"'

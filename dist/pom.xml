@@ -54,7 +54,7 @@
 		</dependency>
 		<dependency>
 			<groupId>${project.groupId}</groupId>
-			<artifactId>beautyquests-paper</artifactId>
+			<artifactId>beautyquests-paper-nms</artifactId>
 			<version>${revision}</version>
 			<type>jar</type>
 			<scope>compile</scope>

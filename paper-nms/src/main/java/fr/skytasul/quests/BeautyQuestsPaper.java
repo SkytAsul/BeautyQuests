@@ -7,11 +7,7 @@ import org.jetbrains.annotations.Nullable;
 public class BeautyQuestsPaper extends BeautyQuests {
 
 	public BeautyQuestsPaper() {
-		this(false);
-	}
-
-	public BeautyQuestsPaper(Boolean unitTesting) {
-		super(unitTesting);
+		super(false);
 	}
 
 	@Override
