@@ -3,12 +3,14 @@ package fr.skytasul.quests;
 import static fr.skytasul.quests.test.TestUtils.loadPlugin;
 import static fr.skytasul.quests.test.TestUtils.waitForEvent;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+
 import fr.skytasul.quests.api.questers.events.QuesterJoinEvent;
 import fr.skytasul.quests.api.utils.messaging.MessageType;
 import fr.skytasul.quests.api.utils.messaging.MessageUtils;
 import fr.skytasul.quests.api.utils.messaging.PlaceholdersContext;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.mockbukkit.mockbukkit.MockBukkit;
 import org.mockbukkit.mockbukkit.ServerMock;
@@ -29,6 +31,7 @@ public class MessagingTest {
 	}
 
 	@Test
+	@Disabled("MockBukkit does not implement identity pointers for now (https://github.com/MockBukkit/MockBukkit/pull/1583)")
 	void testQuesterNamePlaceholder() {
 		var questerJoinEventWaiter = waitForEvent(QuesterJoinEvent.class);
 
