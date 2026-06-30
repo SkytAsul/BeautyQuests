@@ -77,7 +77,7 @@ jobs:
           api_token: ${{ secrets.HANGAR_TOKEN }}
           slug: 'BeautyQuests'
           version: "${{ github.event.release.tag_name }}"
-          channel: ${{ github.event.release.prerelease && 'alpha' || 'release' }}
+          channel: ${{ github.event.release.prerelease && 'Development' || 'Release' }}
           description: "${{ github.event.release.body }}"
           platform_dependencies: |
             {

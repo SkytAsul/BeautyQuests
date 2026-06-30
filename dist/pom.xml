@@ -13,7 +13,7 @@
 
 	<build>
 		<directory>../target</directory>
-		<finalName>beautyquests-${revision}</finalName>
+		<finalName>beautyquests-${beautyquests.version}</finalName>
 		<plugins>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
