@@ -18,6 +18,9 @@
 	<build>
 		<resources>
 			<resource>
+				<directory>src/main/resources</directory>
+			</resource>
+			<resource>
 				<targetPath>.</targetPath>
 				<filtering>true</filtering>
 				<directory>${basedir}/src/main/resources</directory>
@@ -25,9 +28,6 @@
 					<include>paper-plugin.yml</include>
 					<include>libraries.yml</include>
 				</includes>
-			</resource>
-			<resource>
-				<directory>src/main/resources</directory>
 			</resource>
 		</resources>
 		<plugins>
