@@ -44,8 +44,6 @@ jobs:
 
   publish:
     name: Publish version on platforms
-    if: ${{ !github.event.release.prerelease }}
-    # TODO: prerelease too
     runs-on: ubuntu-latest
     steps:
       - name: Download artifact
@@ -67,7 +65,7 @@ jobs:
             26.1.x
             26.2.x
           status: "draft"
-          channel: "release"
+          channel: ${{ github.event.release.prerelease && 'alpha' || 'release' }}
           loaders: |-
             paper
           files: "${{ github.event.release.assets[0].name }}"
@@ -79,11 +77,11 @@ jobs:
           api_token: ${{ secrets.HANGAR_TOKEN }}
           slug: 'BeautyQuests'
           version: "${{ github.event.release.tag_name }}"
-          channel: release
+          channel: ${{ github.event.release.prerelease && 'alpha' || 'release' }}
           description: "${{ github.event.release.body }}"
           platform_dependencies: |
             {
-              "PAPER": [">=1.20.6"],
+              "PAPER": [">=1.20.6"]
             }
           files: |
             [
