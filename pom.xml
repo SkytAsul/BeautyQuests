@@ -85,21 +85,21 @@
 				<activeByDefault>true</activeByDefault>
 			</activation>
 			<properties>
-				<plugin.version>${revision.raw}+build.internal</plugin.version>
+				<beautyquests.version>${revision.raw}+build.internal</beautyquests.version>
 				<revision>${revision.raw}-SNAPSHOT</revision>
 			</properties>
 		</profile>
 		<profile>
 			<id>devbuild</id>
 			<properties>
-				<plugin.version>${revision.raw}+build.${build.number}</plugin.version>
+				<beautyquests.version>${revision.raw}+build.${build.number}</beautyquests.version>
 				<revision>${revision.raw}-SNAPSHOT</revision>
 			</properties>
 		</profile>
 		<profile>
 			<id>release</id>
 			<properties>
-				<plugin.version>${revision.raw}</plugin.version>
+				<beautyquests.version>${revision.raw}</beautyquests.version>
 				<revision>${revision.raw}</revision>
 			</properties>
 		</profile>

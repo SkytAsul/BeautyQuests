@@ -1,6 +1,6 @@
 name: BeautyQuests
 author: SkytAsul
-version: "${plugin.version}"
+version: "${beautyquests.version}"
 description: Quests system with a simple graphical interface.
 website: https://hangar.papermc.io/SkytAsul/BeautyQuests/
 api-version: "1.20"

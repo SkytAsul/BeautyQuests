@@ -47,7 +47,7 @@ jobs:
           prerelease: true
           draft: true
           name: "${{ github.ref_name }} - build ${{ needs.prepare-build.outputs.build-number}}"
-          tag_name: "build/${{ needs.prepare-build.outputs.build-number }}"
+          tag_name: "${{ needs.build.outputs.plugin-version }}"
           target_commitish: ${{ github.sha }}
           generate_release_notes: true
           body: |-
