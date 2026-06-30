@@ -19,14 +19,12 @@ import org.jetbrains.annotations.NotNull;
 import revxrsal.commands.Lamp;
 import revxrsal.commands.bukkit.BukkitLamp;
 import revxrsal.commands.bukkit.BukkitLampConfig;
-import revxrsal.commands.bukkit.actor.ActorFactory;
 import revxrsal.commands.bukkit.actor.BukkitCommandActor;
 import revxrsal.commands.bukkit.brigadier.MinecraftArgumentType;
 import revxrsal.commands.exception.CommandErrorException;
 import revxrsal.commands.orphan.OrphanCommand;
 import revxrsal.commands.orphan.Orphans;
 import java.util.Arrays;
-import java.util.Optional;
 
 public class CommandsManagerImplementation implements CommandsManager {
 
@@ -37,12 +35,6 @@ public class CommandsManagerImplementation implements CommandsManager {
 	public CommandsManagerImplementation(BeautyQuests plugin) {
 		var bukkitConfigBuilder = BukkitLampConfig.builder(plugin);
 
-		if (QuestsPlugin.getPlugin().isRunningPaper() && QuestsPlugin.getPlugin().getServerVersion().isBefore(1, 20, 6)) {
-			// until https://github.com/Revxrsal/Lamp/issues/148 is resolved
-			bukkitConfigBuilder.disableBrigadier();
-		}
-
-		bukkitConfigBuilder.actorFactory(ActorFactory.defaultFactory(plugin, Optional.of(plugin.getAudiences())));
 		bukkitConfigBuilder.argumentTypes(types -> {
 			types.addTypeLast(Quester.class, MinecraftArgumentType.ENTITY.create(true, true));
 			types.addTypeLast(QuesterSelector.class, MinecraftArgumentType.ENTITY.create(false, true));

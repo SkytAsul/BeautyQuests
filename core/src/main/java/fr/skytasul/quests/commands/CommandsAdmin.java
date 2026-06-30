@@ -309,7 +309,7 @@ public class CommandsAdmin implements OrphanCommand {
 				"plugin_version", BeautyQuests.getInstance().getDescription().getVersion(),
 				"server_version", BeautyQuests.getInstance().getServerVersion().toString(true),
 				"bukkit_version", Bukkit.getBukkitVersion(),
-				"paper_detected", BeautyQuests.getInstance().isRunningPaper());
+				"paper_detected", true);
 		String debugJson = new Gson().toJson(debug);
 		actor.sendRawMessage(debugJson);
 	}

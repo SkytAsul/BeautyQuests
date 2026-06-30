@@ -35,7 +35,7 @@ public class Database implements Closeable {
 		if (connectionString == null || connectionString.isEmpty())
 			connectionString = "jdbc:mysql://" + config.host() + ":" + config.port() + "/" + config.databaseName();
 
-		Matcher matcher = Pattern.compile("^jdbc:(\\w+):\\/\\/").matcher(connectionString);
+		Matcher matcher = Pattern.compile("^jdbc:(\\w+):").matcher(connectionString);
 		if (matcher.find()) {
 			type = switch (matcher.group(1).toLowerCase()) {
 				case "mysql" -> DbType.MySQL;

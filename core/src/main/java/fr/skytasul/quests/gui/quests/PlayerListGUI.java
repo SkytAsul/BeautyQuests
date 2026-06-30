@@ -227,8 +227,7 @@ public class PlayerListGUI extends CategorizedPagedGUI<Quest> {
 					break;
 				case RIGHT:
 					if (QuestsConfiguration.getConfig().getDialogsConfig().isHistoryEnabled() && hadDialog(qu, quester)) {
-						QuestUtils.playPluginSound(QuestsPlugin.getPlugin().getAudiences().player(getViewer()),
-								"ITEM_BOOK_PAGE_TURN", 0.5f, 1.4f);
+						QuestUtils.playPluginSound(getViewer(), "ITEM_BOOK_PAGE_TURN", 0.5f, 1.4f);
 						new DialogHistoryGUI(quester, qu, () -> reopen(getViewer())).open(getViewer());
 					}
 					break;

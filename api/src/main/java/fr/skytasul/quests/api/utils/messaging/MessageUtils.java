@@ -1,13 +1,11 @@
 package fr.skytasul.quests.api.utils.messaging;
 
 import fr.skytasul.quests.api.QuestsAPI;
-import fr.skytasul.quests.api.QuestsPlugin;
 import fr.skytasul.quests.api.localization.Lang;
 import fr.skytasul.quests.api.utils.ChatColorUtils;
 import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
-import org.bukkit.command.CommandSender;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import java.util.Objects;
@@ -26,18 +24,9 @@ public final class MessageUtils {
 		sendMessage(audience, message, type, null);
 	}
 
-	public static void sendMessage(@NotNull CommandSender sender, @Nullable String message, @NotNull MessageType type) {
-		sendMessage(QuestsPlugin.getPlugin().getAudiences().sender(sender), message, type);
-	}
-
 	public static void sendMessage(@NotNull Audience audience, @Nullable String message, @NotNull MessageType type,
 			@Nullable PlaceholderRegistry placeholders) {
 		sendRawMessage(audience, message, placeholders, PlaceholdersContext.of(audience, true, type));
-	}
-
-	public static void sendMessage(@NotNull CommandSender sender, @Nullable String message, @NotNull MessageType type,
-			@Nullable PlaceholderRegistry placeholders) {
-		sendMessage(QuestsPlugin.getPlugin().getAudiences().sender(sender), message, type, placeholders);
 	}
 
 	public static void sendRawMessage(@NotNull Audience audience, @Nullable String text,
@@ -57,11 +46,6 @@ public final class MessageUtils {
 			}
 		}
 		audience.sendMessage(fullCompo);
-	}
-
-	public static void sendRawMessage(@NotNull CommandSender sender, @Nullable String text,
-			@Nullable PlaceholderRegistry placeholders, @NotNull PlaceholdersContext context) {
-		sendRawMessage(QuestsPlugin.getPlugin().getAudiences().sender(sender), text, placeholders, context);
 	}
 
 	public static String finalFormat(@NotNull String text, @Nullable PlaceholderRegistry placeholders,

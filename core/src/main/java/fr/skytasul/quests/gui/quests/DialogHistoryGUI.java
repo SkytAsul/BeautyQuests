@@ -65,15 +65,13 @@ public class DialogHistoryGUI extends PagedGUI<WrappedDialogable> {
 			if (existing.page > 0) {
 				existing.page--;
 				changed = true;
-				QuestUtils.playPluginSound(QuestsPlugin.getPlugin().getAudiences().player(player),
-						"ENTITY_BAT_TAKEOFF", 0.4f, 1.5f);
+				QuestUtils.playPluginSound(getViewer(), "ENTITY_BAT_TAKEOFF", 0.4f, 1.5f);
 			}
 		}else if (clickType.isRightClick()) {
 			if (existing.page + 1 < existing.pages.size()) {
 				existing.page++;
 				changed = true;
-				QuestUtils.playPluginSound(QuestsPlugin.getPlugin().getAudiences().player(player),
-						"ENTITY_BAT_TAKEOFF", 0.4f, 1.7f);
+				QuestUtils.playPluginSound(getViewer(), "ENTITY_BAT_TAKEOFF", 0.4f, 1.7f);
 			}
 		}
 

@@ -312,8 +312,7 @@ public class CommandsPlayerManagement implements OrphanCommand {
 	private void start(CommandSender sender, Quester target, Quest quest, boolean force) {
 		if (!force) {
 			if (!(target instanceof PlayerQuester playerQuester) || !playerQuester.isActive()) {
-				DefaultErrors.sendGeneric(BeautyQuests.getInstance().getAudiences().sender(sender),
-						"Cannot test requirements for non-player quester");
+				DefaultErrors.sendGeneric(sender,"Cannot test requirements for non-player quester");
 				return;
 			}
 			if (!quest.canStart(playerQuester.getPlayer().get(), true)) {

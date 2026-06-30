@@ -74,7 +74,7 @@ public class TextEditor<T> extends Editor {
 					returnment = tmp;
 				}
 			}catch (Throwable ex){
-				DefaultErrors.sendGeneric(getPlayerAudience(), strippedMessage + " parsingText");
+				DefaultErrors.sendGeneric(player, strippedMessage + " parsingText");
 				invalid = true;
 				ex.printStackTrace();
 			}

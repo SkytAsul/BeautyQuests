@@ -102,8 +102,7 @@ public class NpcCreateGUI extends LayoutedRowsGUI {
 					name, skin));
 		} catch (Exception ex) {
 			ex.printStackTrace();
-			DefaultErrors.sendGeneric(QuestsPlugin.getPlugin().getAudiences().player(event.getPlayer()),
-					"npc creation " + ex.getMessage());
+			DefaultErrors.sendGeneric(event.getPlayer(), "npc creation " + ex.getMessage());
 			cancel.run();
 		}
 	}

@@ -1,0 +1,196 @@
+name: BeautyQuests
+author: SkytAsul
+version: "${plugin.version}"
+description: Quests system with a simple graphical interface.
+website: https://hangar.papermc.io/SkytAsul/BeautyQuests/
+api-version: "1.20"
+main: fr.skytasul.quests.BeautyQuestsPaper
+loader: fr.skytasul.quests.BeautyQuestsLoader
+
+dependencies:
+  # By default declared dependencies are required, no dependency order
+  # and have joint classpath.
+  server:
+    WorldGuard:
+      required: false
+    MythicMobs:
+      required: false
+    Vault:
+      required: false
+    PlaceholderAPI:
+      required: false
+    Fabled:
+      required: false
+    HolographicDisplays:
+      required: false
+    Jobs:
+      required: false
+    Factions:
+      required: false
+    AccountsHook:
+      required: false
+    dynmap:
+      required: false
+    EpicBosses:
+      required: false
+    GPS:
+      required: false
+    mcMMO:
+      required: false
+    McCombatLevel:
+      required: false
+    CMI:
+      required: false
+    TokenEnchant:
+      required: false
+    Boss:
+      required: false
+    UltimateTimber:
+      required: false
+    ServersNPC:
+      required: false
+    Citizens:
+      required: false
+    FancyNpcs:
+      required: false
+    FancyHolograms:
+      required: false
+    ZNPCsPlus:
+      required: false
+    BlueMap:
+      required: false
+    Sentinel:
+      required: false
+    AdvancedSpawners:
+      required: false
+    DecentHolograms:
+      required: false
+    PlayerBlockTracker:
+      required: false
+    LevelledMobs:
+      required: false
+    WildStacker:
+      required: false
+    ItemsAdder:
+      required: false
+    StackMob:
+      required: false
+    Tooltips:
+      required: false
+
+permissions:
+  beautyquests.*:
+    description: Gives access to BeautyQuests whole
+    children:
+      beautyquests.command: true
+      beautyquests.command.*: true
+      beautyquests.seeId: true
+      beautyquests.start: true
+  beautyquests.command:
+    description: Gives access to "/quests"
+    default: true
+  beautyquests.command.*:
+    description: Gives access to all subcommands of "/quests"
+    children:
+      beautyquests.command.listPlayer: true
+      beautyquests.command.version: true
+      beautyquests.command.create: true
+      beautyquests.command.edit: true
+      beautyquests.command.list: true
+      beautyquests.command.help: true
+      beautyquests.command.remove: true
+      beautyquests.command.manage: true
+      beautyquests.command.finish: true
+      beautyquests.command.finishAll: true
+      beautyquests.command.setStage: true
+      beautyquests.command.setName: true
+      beautyquests.command.resetPlayer: true
+      beautyquests.command.seePlayer: true
+      beautyquests.command.adminMode: true
+      beautyquests.command.start: true
+      beautyquests.command.start.other: true
+      beautyquests.command.cancel: true
+      beautyquests.command.cancel.other: true
+      beautyquests.command.scoreboard: true
+      beautyquests.command.scoreboard.toggle: true
+      beautyquests.command.checkpoint: true
+      beautyquests.command.pools: true
+      beautyquests.command.pools.start: true
+  beautyquests.command.listPlayer:
+    description: 'Gives access to the menu GUI'
+    default: true
+  beautyquests.command.version:
+    description: 'Gives access to the "/quests version"'
+    default: true
+  beautyquests.command.create:
+    description: 'Gives access to "/quests create"'
+    default: op
+  beautyquests.command.edit:
+    description: 'Gives access to "/quests edit"'
+    default: op
+  beautyquests.command.list:
+    description: 'Gives access to "/quests list"'
+    default: op
+  beautyquests.command.help:
+    description: 'Gives access to "/quests help"'
+    default: true
+  beautyquests.command.remove:
+    description: 'Gives access to "/quests remove"'
+    default: op
+  beautyquests.command.manage:
+    description: 'Gives access to "/quests reload" and some more management commands'
+    default: op
+  beautyquests.command.finish:
+    description: 'Gives access to "/quests finish" and "finishAll"'
+    default: op
+  beautyquests.command.setStage:
+    description: 'Gives access to "/quests setStage"'
+    default: op
+  beautyquests.command.setName:
+    description: 'Gives access to "/quests setName"'
+    default: op
+  beautyquests.command.resetPlayer:
+    description: 'Gives access to "/quests resetPlayer" and "resetPlayerQuest"'
+    default: op
+  beautyquests.command.seePlayer:
+    description: 'Gives access to "/quests seePlayer"'
+    default: op
+  beautyquests.command.setItem:
+    description: 'Gives access to "/quests setItem"'
+    default: op
+  beautyquests.command.adminMode:
+    description: 'Gives access to "/quests adminMode"'
+    default: op
+  beautyquests.command.start:
+    description: 'Gives access to "/quests start" only for executing player'
+    default: op
+  beautyquests.command.start.other:
+    description: 'Gives access to "/quests start" for all players'
+    default: op
+  beautyquests.command.cancel:
+    description: 'Gives access to "/quests cancel" only for my own started quests'
+    default: op
+  beautyquests.command.cancel.other:
+    description: 'Gives access to "/quests cancel" for all players quests'
+    default: op
+  beautyquests.command.scoreboard:
+    description: 'Gives access to "/quests scoreboard" to manage player scoreboards'
+    default: op
+  beautyquests.command.scoreboard.toggle:
+    description: 'Gives access to "/quests scoreboard" to toggle player scoreboard'
+    default: true
+  beautyquests.command.pools:
+    description: 'Gives access to "/quests pools"'
+    default: op
+  beautyquests.command.pools.start:
+    description: 'Gives access to "/quests pools start"'
+    default: op
+  beautyquests.command.checkpoint:
+    description: 'Allows player to use checkpoints'
+    default: true
+  beautyquests.seeId:
+    description: 'Allows player to see the quest''s ID'
+    default: op
+  beautyquests.start:
+    description: 'Allows player to start quests'
+    default: true

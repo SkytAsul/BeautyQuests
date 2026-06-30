@@ -92,9 +92,7 @@ public class MythicMobs5 implements LeveledMobFactory<MythicMob>, Listener {
 	public String getName(MythicMob data) {
 		PlaceholderString displayName = data.getDisplayName();
 		if (displayName != null) {
-			return QuestsPlugin.getPlugin().isRunningPaper()
-					? Text.toLegacy(Text.parse(displayName.get()))
-					: displayName.get();
+			return Text.toLegacy(Text.parse(displayName.get()));
 		}
 		return data.getInternalName();
 	}

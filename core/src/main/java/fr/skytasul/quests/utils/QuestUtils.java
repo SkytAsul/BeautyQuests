@@ -9,8 +9,11 @@ import fr.skytasul.quests.api.utils.AutoRegistered;
 import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.identity.Identity;
 import net.kyori.adventure.key.Key;
+import net.kyori.adventure.sound.Sound;
+
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
+import org.bukkit.Registry;
 import org.bukkit.entity.Firework;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
@@ -133,6 +136,8 @@ public final class QuestUtils {
 			return;
 		if ("none".equals(sound))
 			return;
+
+		// TODO improve this now we are Paper-only
 
 		// ugly-ass mix of Adventure and XSeries code to have both Spigot/Paper compatibility
 		// and pre/post-registry flattening
