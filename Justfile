@@ -1,5 +1,5 @@
 prepare:
-  mvn -pl paper paper-nms:init
+  mvn -pl paper-nms paper-nms:init
 
 full-build:
   mvn clean install

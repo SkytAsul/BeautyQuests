@@ -42,7 +42,7 @@ jobs:
 
       - name: Prepare Paper NMS
         run: |
-          mvn -pl paper paper-nms:init
+          mvn -pl paper-nms paper-nms:init
 
       - name: Build and package with Maven
         run: |
