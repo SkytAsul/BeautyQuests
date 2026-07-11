@@ -1,0 +1,22 @@
+---
+title: Plugin configuration
+description: How to configure BeautyQuests to match the behaviors you want.
+---
+
+import { Steps } from '@astrojs/starlight/components';
+import { LinkButton } from '@astrojs/starlight/components';
+import { Aside } from '@astrojs/starlight/components';
+
+The default behavior of BeautyQuests should suit your basic needs. However, you might want to tweak some bits. Fortunately, many parts of BeautyQuests are configurable via its configuration file!
+
+<Steps>
+1. Open the `plugins/BeautyQuests/config.yml` file in your text editor.
+
+2. Change the settings you need.
+   <Aside type="tip">The configuration file is a YAML file. If you are not familiar with this file format, you can read [this guide](https://www.cloudbees.com/blog/yaml-tutorial-everything-you-need-get-started).</Aside>
+
+3. Save the file.
+
+4. Restart your server.
+   <Aside type="danger">Do not use the `/reload` command. This will most likely result in weird bugs.</Aside>
+</Steps>

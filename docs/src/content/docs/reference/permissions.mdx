@@ -1,0 +1,18 @@
+---
+title: Permissions
+description: List of the plugin permissions
+---
+
+import { Aside } from '@astrojs/starlight/components';
+
+- `beautyquests.*`: Gives complete access to BeautyQuests.
+- `beautyquests.start`[^1]: Gives player the permission to start quests.
+- `beautyquests.start.[limit]`: Gives player permission to start at most `limit` quests (overrides the `maxLaunchedQuests` config option).
+  <Aside type="tip">By carefully setting up those permissions, you can give access to more quest for higher ranks.</Aside>
+- `beautyquests.command`[^1]: Gives access to `/quests`, (sub-commands permissions are still needed).
+- `beautyquests.command.*`: Gives access to all the sub-commands.
+- `beautyquests.command.[sub-command]`: Gives access to a specific sub-command (sub-command: create, edit, ...).
+- `beautyquests.command.listPlayer`[^1]: Gives access to the quest menu (`/quests` without sub-command).
+- `beautyquests.seeId`: Players having this permission (by default operators) will see the IDs of the quests in the quest menus.
+
+[^1]: Those permissions are given by default. If you configured your permissions plugin to withdraw all permissions to the players, then you should give those specific permissions back.

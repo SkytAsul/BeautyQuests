@@ -235,8 +235,8 @@ questDescription:
 
 # - Particles configuration -
 # enabled: will the particle be shown?
-# particleEffect: name of the particle
-# particleColor: for colored particles, RGB value of the color
+# particleEffect: name of the particle (see a list at https://jd.papermc.io/paper/org/bukkit/Particle.html)
+# particleColor: RGB value of the color (only used for colored particles)
 # particleShape: shape of the particle effect (available: point, near, bar, exclamation, spot)
 
 # Particles shown on a NPC when the player can start the quest
