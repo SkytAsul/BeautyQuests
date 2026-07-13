@@ -6,6 +6,7 @@ on:
       - release/*
     paths-ignore:
       - .github/**
+      - docs/**
 
 jobs:
   prepare-build:
