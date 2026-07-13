@@ -2,12 +2,17 @@
 import { defineConfig } from 'astro/config';
 import starlight from '@astrojs/starlight';
 
+const gitBranch = import.meta.env.GITHUB_REF_NAME; // automatically setup by GitHub Actions
+
 // https://astro.build/config
 export default defineConfig({
 	site: "https://beautyquests.skytasul.fr",
 	integrations: [
 		starlight({
 			title: 'BeautyQuests',
+			customCss: [
+				"./src/styles/custom.css"
+			],
 			logo: {
 				src: './src/assets/logo.png',
 			},
@@ -17,7 +22,7 @@ export default defineConfig({
 				{ icon: 'discord', label: "Discord", href: 'https://discord.gg/H8fXrkD' },
 			],
 			editLink: {
-				baseUrl: 'https://github.com/SkytAsul/BeautyQuests/edit/${branch}/docs/'
+				baseUrl: `https://github.com/SkytAsul/BeautyQuests/edit/${gitBranch}/docs/`
 			},
 			sidebar: [
 				{

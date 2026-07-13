@@ -1,22 +1,38 @@
 ---
 title: BeautyQuests
 description: An easy-to-use questing plugins, using intuitive GUIs and with extensive possibilities!
-template: splash # Remove or comment out this line to display the site sidebar on this page.
-hero:
-  tagline: Thank you for choosing BeautyQuests to power up your RPG server!
-  image:
-    file: ../../assets/logo.png
-  actions:
-    - text: Getting started
-      link: /guides/getting-started/
-      icon: right-arrow
-    - text: Download the plugin
-      link: https://modrinth.com/plugin/beautyquests
-      icon: external
-      variant: secondary
+template: splash
+banner:
+  content: |
+    The documentation is still being written. You can look at the old one
+    <a href="https://github.com/SkytAsul/BeautyQuests/wiki">here</a>!
+head: 
+  # The following is to hide page title that is already present in the banner
+  - tag: style
+    content: ".content-panel:has(h1#_top:not([data-page-title])) { display: none; }"
 ---
 
+import { LinkButton } from '@astrojs/starlight/components';
 import { Card, CardGrid } from '@astrojs/starlight/components';
+
+![plugin banner](../../assets/banner.png)
+
+Thank you for choosing BeautyQuests to power up your RPG server!
+
+<LinkButton
+	href="/guides/getting-started"
+	variant="primary"
+	icon="right-arrow"
+>
+	Getting started
+</LinkButton>
+<LinkButton
+	href="https://modrinth.com/plugin/beautyquests"
+	variant="secondary"
+	icon="external"
+>
+	Download the plugin
+</LinkButton>
 
 ## A glimpse of beautiful quests
 
