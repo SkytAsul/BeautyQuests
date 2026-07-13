@@ -2,7 +2,7 @@
 import { defineConfig } from 'astro/config';
 import starlight from '@astrojs/starlight';
 
-const gitBranch = import.meta.env.GITHUB_REF_NAME; // automatically setup by GitHub Actions
+const gitBranch = process.env.GIT_BRANCH;
 
 // https://astro.build/config
 export default defineConfig({
