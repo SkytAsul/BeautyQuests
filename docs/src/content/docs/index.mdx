@@ -1,0 +1,58 @@
+---
+title: BeautyQuests
+description: An easy-to-use questing plugins, using intuitive GUIs and with extensive possibilities!
+template: splash
+banner:
+  content: |
+    The documentation is still being written. You can look at the old one
+    <a href="https://github.com/SkytAsul/BeautyQuests/wiki">here</a>!
+head: 
+  # The following is to hide page title that is already present in the banner
+  - tag: style
+    content: ".content-panel:has(h1#_top:not([data-page-title])) { display: none; }"
+---
+
+import { LinkButton } from '@astrojs/starlight/components';
+import { Card, CardGrid } from '@astrojs/starlight/components';
+
+![plugin banner](../../assets/banner.png)
+
+Thank you for choosing BeautyQuests to power up your RPG server!
+
+<LinkButton
+	href="/guides/getting-started"
+	variant="primary"
+	icon="right-arrow"
+>
+	Getting started
+</LinkButton>
+<LinkButton
+	href="https://modrinth.com/plugin/beautyquests"
+	variant="secondary"
+	icon="external"
+>
+	Download the plugin
+</LinkButton>
+
+## A glimpse of beautiful quests
+
+<CardGrid stagger>
+	<Card title="Easy-to-use" icon="pen">
+		All quests can be made in-game through intuitive user interfaces.
+	</Card>
+	<Card title="Very integrated" icon="puzzle">
+		Natively integrated with more than 30 plugins, ranging from Citizens to
+		WorldGuard through MythicMobs or DecentHolograms!
+	</Card>
+	<Card title="Server compatibility" icon="rocket">
+		Supports Paper and forks, from 1.20 to the latest version available.
+	</Card>
+	<Card title="RPG feelings" icon="comment-alt">
+		Create **dialogs** with NPCs, put on quest markers on your server's dynamic map,
+		display icons on top of NPCs...
+	</Card>
+	<Card title="And more with the Expansion!" icon="open-book">
+		Highly advanced features are available in **BeautyQuests-Expansion**, a
+		separate plugin available [here](https://www.spigotmc.org/resources/beautyquests-expansion.104701/)!
+	</Card>
+</CardGrid>

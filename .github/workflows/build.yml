@@ -2,6 +2,9 @@ name: Build
 
 on:
   pull_request:
+    paths-ignore:
+      - .github/**
+      - docs/**
   workflow_call:
     inputs:
       build-number:

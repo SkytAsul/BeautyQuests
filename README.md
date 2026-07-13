@@ -10,6 +10,8 @@
 [![Discord](https://ptb.discordapp.com/api/guilds/482632781395132416/widget.png)](https://discord.gg/H8fXrkD)
 [![Gitmoji](https://img.shields.io/badge/gitmoji-%20😜%20😍-FFDD67.svg?style=flat-square)](https://gitmoji.dev)
 
+![banner](docs/src/assets/banner.png)
+
 # BeautyQuests
 What is **BeautyQuests**?
 * BeautyQuests is a Minecraft quest plugin based on a simple-to-use graphical interface.
@@ -24,8 +26,8 @@ Plugin releases can be downloaded from **[Modrinth](https://modrinth.com/plugin/
 
 Development builds are available in the **[releases section](https://github.com/SkytAsul/BeautyQuests/releases)**.
 
-## Wiki
-You can find the **wiki [here](https://github.com/SkytAsul/BeautyQuests/wiki)**. It contains a lot of useful informations.
+## Documentation
+You can find the **wiki [here](https://beautyquests.skytasul.fr)**. It contains a lot of useful informations.
 
 ## Crowdin
 If you want to help us translate BeautyQuests into your native language, join the [official BeautyQuests Crowdin project](https://crowdin.com/project/beautyquests) and let players in-game see your translations (read the project description for more informations).
