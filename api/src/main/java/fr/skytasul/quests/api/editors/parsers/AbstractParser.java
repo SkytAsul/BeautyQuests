@@ -1,11 +1,24 @@
 package fr.skytasul.quests.api.editors.parsers;
 
-import org.bukkit.entity.Player;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
-public abstract interface AbstractParser<T> {
+public interface AbstractParser<T> {
 
-	public abstract T parse(Player p, String msg) throws Throwable;
+	@NotNull T parse(@NotNull String string) throws ParsingError;
 	
-	public default void sendIndication(Player p) {}
+	default @Nullable String getIndication() {
+		return null;
+	}
 	
+	class ParsingError extends Exception {
+
+		private static final long serialVersionUID = 1L;
+
+		public ParsingError(@NotNull String message) {
+			super(message);
+		}
+
+	}
+
 }

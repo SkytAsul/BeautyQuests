@@ -1,14 +1,18 @@
 package fr.skytasul.quests.api.editors;
 
+import fr.skytasul.quests.api.QuestsPlugin;
 import fr.skytasul.quests.api.editors.parsers.AbstractParser;
+import fr.skytasul.quests.api.editors.parsers.AbstractParser.ParsingError;
 import fr.skytasul.quests.api.localization.Lang;
 import fr.skytasul.quests.api.utils.messaging.DefaultErrors;
+import fr.skytasul.quests.api.utils.messaging.MessageType;
+import fr.skytasul.quests.api.utils.messaging.MessageUtils;
 import fr.skytasul.quests.api.utils.messaging.PlaceholderRegistry;
 import org.apache.commons.lang.Validate;
 import org.bukkit.entity.Player;
 import java.util.function.Consumer;
 
-public class TextEditor<T> extends Editor {
+public class TextEditor<T> extends AbstractChatEditor {
 
 	protected Consumer<T> run;
 	protected Runnable nul;
@@ -58,40 +62,37 @@ public class TextEditor<T> extends Editor {
 				run.accept(null);
 			}else nul.run();
 			return true;
-		}else if (strippedMessage.equals("cancel") && cancel != null) {
-			cancel();
-			return true;
 		}
 
-		T returnment = null;
-		boolean invalid = false;
-		if (parser != null){
-			try{
-				T tmp = parser.parse(player, strippedMessage);
-				if (tmp == null){
-					invalid = true;
-				}else {
-					returnment = tmp;
-				}
-			}catch (Throwable ex){
-				DefaultErrors.sendGeneric(player, strippedMessage + " parsingText");
-				invalid = true;
-				ex.printStackTrace();
-			}
-		}else returnment = (T) (useStripped ? strippedMessage : msg);
-
-		if (!invalid){
+		if (parser == null) {
 			stop();
-			run.accept(returnment);
+			run.accept((T) (useStripped ? strippedMessage : msg));
 			return true;
+		} else {
+			try {
+				T parsedValue = parser.parse(strippedMessage);
+				stop();
+				run.accept(parsedValue);
+				return true;
+			} catch (ParsingError ex) {
+				MessageUtils.sendMessage(player, ex.getMessage(), MessageType.DefaultMessageType.PREFIXED);
+				return false;
+			} catch (Exception ex) {
+				DefaultErrors.sendGeneric(player, strippedMessage + " parsingText");
+				QuestsPlugin.getPlugin().getLoggerExpanded().severe("Failure to parse text: {0}", ex, strippedMessage);
+				return false;
+			}
 		}
-		return false;
 	}
 
 	@Override
 	public void begin() {
 		super.begin();
-		if (parser != null) parser.sendIndication(player);
+		if (parser != null) {
+			var indication = parser.getIndication();
+			if (indication != null)
+				MessageUtils.sendMessage(player, indication, MessageType.DefaultMessageType.PREFIXED);
+		}
 	}
 
 }

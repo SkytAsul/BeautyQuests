@@ -5,7 +5,6 @@ import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import org.apache.commons.lang.StringUtils;
-import org.bukkit.entity.Player;
 
 public class DurationParser implements AbstractParser<Long> {
 	
@@ -24,7 +23,7 @@ public class DurationParser implements AbstractParser<Long> {
 	}
 	
 	@Override
-	public Long parse(Player p, String msg) throws Throwable {
+	public Long parse(String msg) throws ParsingError {
 		Matcher matcher = DURATION_PATTERN.matcher(msg);
 		long duration = 0;
 		while (matcher.find()) {
@@ -34,10 +33,8 @@ public class DurationParser implements AbstractParser<Long> {
 			if (StringUtils.isEmpty(unit)) unit = matcher.group(4);
 			
 			MinecraftTimeUnit munit = StringUtils.isEmpty(unit) ? defaultUnit : MinecraftTimeUnit.of(unit);
-			if (munit == null) {
-				p.sendMessage("§cUnknown unit " + unit);
-				return null;
-			}
+			if (munit == null)
+				throw new ParsingError("§cUnknown unit " + unit);
 			duration += munit.in(targetUnit, Long.parseLong(num));
 		}
 		return duration;

@@ -97,16 +97,6 @@ public class EditorManagerImplementation implements EditorManager, Listener {
 		this.factory = factory;
 	}
 
-	@EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = false)
-	public void onChat(AsyncPlayerChatEvent e) {
-		Editor editor = players.get(e.getPlayer());
-		if (editor == null)
-			return;
-
-		e.setCancelled(true);
-		QuestUtils.runOrSync(() -> editor.callChat(e.getMessage()));
-	}
-
 	@EventHandler
 	public void onQuit(PlayerQuitEvent e) {
 		leave(e.getPlayer());

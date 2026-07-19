@@ -11,7 +11,7 @@ import org.bukkit.entity.Player;
 import fr.skytasul.quests.api.localization.Lang;
 import fr.skytasul.quests.api.utils.messaging.PlaceholderRegistry;
 
-public class TextListEditor extends Editor{
+public class TextListEditor extends AbstractChatEditor{
 	
 	protected Consumer<List<String>> run;
 	public Predicate<String> valid;
