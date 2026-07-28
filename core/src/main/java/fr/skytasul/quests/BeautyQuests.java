@@ -144,6 +144,8 @@ public abstract class BeautyQuests extends JavaPlugin implements QuestsPlugin {
 		try {
 			logger.info("------------ BeautyQuests ------------");
 
+			logDebugInformation();
+
 			saveDefaultConfig();
 			initInternals();
 
@@ -253,6 +255,12 @@ public abstract class BeautyQuests extends JavaPlugin implements QuestsPlugin {
 		}
 
 		logger = new LoggerExpanded(getLogger());
+	}
+
+	private void logDebugInformation() {
+		logger.debug("Java runtime: {0} {1}", System.getProperty("java.runtime.name"), System.getProperty("java.runtime.version"));
+		logger.debug("System: {0} {1}", System.getProperty("os.name"), System.getProperty("os.version"));
+		logger.debug("System locale: {0}", java.util.Locale.getDefault());
 	}
 
 	private void initInternals() {
