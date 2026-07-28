@@ -63,7 +63,7 @@ public enum Lang implements Locale {
 	XP_GAIN("msg.writeXPGain"),
 	MOB_AMOUNT("msg.writeMobAmount"),
 	MOB_NAME("msg.writeMobName"),
-	CHAT_MESSAGE("msg.writeChatMessage"),
+	CHAT_MESSAGE("msg.writeChatMessage", EditorPrefix),
 	WRITE_MESSAGE("msg.writeMessage"),
 	WRITE_START_MESSAGE("msg.writeStartMessage"),
 	WRITE_END_MESSAGE("msg.writeEndMsg"),
@@ -171,6 +171,7 @@ public enum Lang implements Locale {
 	CHAT_EDITOR("msg.editor.chat"),
 	NPC_EDITOR_ENTER("msg.editor.npc.enter"),
 
+	CANNOT_BE_EMPTY("msg.editor.text.cannotBeEmpty", ErrorPrefix),
 	ARG_NOT_SUPPORTED("msg.editor.text.argNotSupported"),
 
 	CHOOSE_NPC_STARTER("msg.editor.npc.choseStarter"),

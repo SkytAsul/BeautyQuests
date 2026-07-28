@@ -2,7 +2,7 @@ package fr.skytasul.quests.stages;
 
 import com.cryptomorin.xseries.XMaterial;
 import fr.skytasul.quests.api.QuestsPlugin;
-import fr.skytasul.quests.api.editors.TextEditor;
+import fr.skytasul.quests.api.editors.parsers.AbstractParser;
 import fr.skytasul.quests.api.gui.ItemUtils;
 import fr.skytasul.quests.api.localization.Lang;
 import fr.skytasul.quests.api.options.QuestOption;
@@ -12,7 +12,6 @@ import fr.skytasul.quests.api.stages.StageDescriptionPlaceholdersContext;
 import fr.skytasul.quests.api.stages.creation.StageCreation;
 import fr.skytasul.quests.api.stages.creation.StageCreationContext;
 import fr.skytasul.quests.api.stages.creation.StageGuiLine;
-import fr.skytasul.quests.api.utils.messaging.DefaultErrors;
 import fr.skytasul.quests.api.utils.messaging.MessageUtils;
 import fr.skytasul.quests.api.utils.messaging.PlaceholderRegistry;
 import fr.skytasul.quests.api.utils.messaging.PlaceholdersContext;
@@ -238,26 +237,29 @@ public class StageChat extends AbstractStage implements Listener {
 		}
 
 		private void launchEditor(Player p) {
-			Lang.CHAT_MESSAGE.send(p);
-			new TextEditor<String>(p, () -> {
-				if (text == null)
-					context.remove();
-				context.reopenGui();
-			}, obj -> {
-				obj = obj.replace("{SLASH}", "/");
-				setText(obj);
-				context.reopenGui();
-			}, (__, msg) -> {
-				if (isRegex) {
+			var parser = new AbstractParser<String>() {
+				@Override
+				public @NotNull String parse(@NotNull String string) throws ParsingError {
+					if (!isRegex)
+						return string;
 					try {
-						Pattern.compile(msg);
+						Pattern.compile(string.replace("{SLASH}", "/"));
 					} catch (PatternSyntaxException ex) {
-						DefaultErrors.sendGeneric(p, "Invalid RegEx: " + ex.getMessage());
-						return null;
+						throw new ParsingError(Lang.INVALID_PATTERN.format(PlaceholderRegistry.of("input", string)));
 					}
+					return string;
 				}
-				return msg;
-			}).start();
+			};
+
+			QuestsPlugin.getPlugin().getEditorManager().getFactory().createTextEditorBuilderParser(p, parser,
+					text == null ? context::removeAndReopenGui : context::reopenGui, string -> {
+						setText(string.replace("{SLASH}", "/"));
+						context.reopenGui();
+					})
+					.setIndication(Lang.CHAT_MESSAGE.toString())
+					.setInitialString(text)
+					.build()
+					.start();
 		}
 	}
 

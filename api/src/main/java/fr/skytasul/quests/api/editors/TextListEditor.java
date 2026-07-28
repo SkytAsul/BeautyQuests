@@ -11,6 +11,12 @@ import org.bukkit.entity.Player;
 import fr.skytasul.quests.api.localization.Lang;
 import fr.skytasul.quests.api.utils.messaging.PlaceholderRegistry;
 
+/**
+ * A textual editor that uses the in-game chatbox to input a list of strings.
+ * <p>
+ * This editor should not be instanciated directly, prefer using the EditorFactory.
+ */
+@Deprecated(forRemoval = true)
 public class TextListEditor extends AbstractChatEditor{
 	
 	protected Consumer<List<String>> run;

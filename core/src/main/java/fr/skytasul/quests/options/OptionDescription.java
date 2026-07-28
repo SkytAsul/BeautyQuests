@@ -9,7 +9,7 @@ import fr.skytasul.quests.api.options.description.QuestDescriptionContext;
 import fr.skytasul.quests.api.options.description.QuestDescriptionProvider;
 import fr.skytasul.quests.api.utils.messaging.MessageUtils;
 import fr.skytasul.quests.api.utils.messaging.PlaceholdersContext;
-import org.bukkit.entity.Player;
+
 import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
@@ -28,8 +28,8 @@ public class OptionDescription extends QuestOptionString implements QuestDescrip
 	}
 
 	@Override
-	public void sendIndication(Player p) {
-		Lang.QUEST_DESCRIPTION.send(p);
+	public String getIndication() {
+		return Lang.QUEST_DESCRIPTION.getValue();
 	}
 
 	@Override

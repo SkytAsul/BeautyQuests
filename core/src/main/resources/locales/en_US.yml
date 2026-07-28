@@ -39,8 +39,7 @@ msg:
     value: {xp_amount})'
   writeMobAmount: '§aWrite the amount of mobs to kill:'
   writeMobName: '§aWrite the custom name of the mob to kill:'
-  writeChatMessage: '§aWrite required message: (Add "\{SLASH}" to the beginning if
-    you want a command.)'
+  writeChatMessage: 'Write the text players should type in the chat.'
   writeMessage: '§aWrite the message that will be sent to the player'
   writeStartMessage: '§aWrite the message that will be sent at the beginning of the quest,
     "null" if you want the default one or "none" if you want none:'
@@ -189,6 +188,7 @@ msg:
       notStarter: §cThis NPC isn't a quest starter.
     text:
       argNotSupported: §cThe argument {arg} not supported.
+      cannotBeEmpty: 'You must enter a value.'
       chooseLvlRequired: '§aWrite the required amount of levels:'
       chooseJobRequired: '§aWrite name of the wanted job:'
       choosePermissionRequired: '§aWrite the required permission to start the quest:'
