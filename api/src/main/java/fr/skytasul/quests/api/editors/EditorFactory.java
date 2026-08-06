@@ -36,6 +36,7 @@ public interface EditorFactory {
 
 		protected boolean allowEmpty = false;
 		protected boolean allowMultiline = false;
+		protected boolean forceMultiline = false;
 		
 		protected @NotNull String title = "Text Editor";
 		protected @Nullable String indication = null;
@@ -57,6 +58,21 @@ public interface EditorFactory {
 		
 		public @NotNull TextEditorBuilder<T> allowMultiline() {
 			allowMultiline = true;
+			return this;
+		}
+		
+		/**
+		 * Marks the editor as expecting multiple lines.
+		 * On legacy server versions, this will result in a multiline chat editor.
+		 * <p>
+		 * Since multiline chat editor is clunky to use, avoid using this unless
+		 * it's absolutely necessary.
+		 * 
+		 * @return the same builder
+		 */
+		public @NotNull TextEditorBuilder<T> forceMultiline() {
+			// TODO delete this once chat editors are removed (1.21.8)
+			forceMultiline = true;
 			return this;
 		}
 

@@ -34,10 +34,11 @@ public class ChatEditorFactory extends AbstractEditorFactory {
 		public Editor build() {
 			if (indication != null)
 				MessageUtils.sendMessage(player, indication, MessageType.DefaultMessageType.PREFIXED);
-			if (allowMultiline) {
+			if (allowMultiline && forceMultiline) {
 				if (!(parser instanceof TransparentParser)) throw new UnsupportedOperationException();
 				var endCallback = (Consumer<String>) super.endCallback;
-				return new TextListEditor(player, stringList -> endCallback.accept(String.join("\n", stringList)), List.of(initialString.split("\n")));
+				return new TextListEditor(player, cancelCallback, stringList -> endCallback.accept(String.join("\n", stringList)),
+						initialString == null ? List.of() : List.of(initialString.split("\n")));
 			} else {
 				return new TextEditor<>(player, cancelCallback, endCallback, resetCallback, resetWord, parser);
 			}

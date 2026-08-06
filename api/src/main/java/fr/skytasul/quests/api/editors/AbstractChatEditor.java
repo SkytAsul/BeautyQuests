@@ -42,12 +42,13 @@ public abstract class AbstractChatEditor extends Editor implements Listener {
 		String coloredMessage = ChatColorUtils.translateHexColorCodes(ChatColor.translateAlternateColorCodes('&', rawMessage));
 
 		QuestsPlugin.getPlugin().getLoggerExpanded().debug("{0} entered ''{1}'' ({2} characters) in an editor ({3})", player.getName(), rawMessage, rawMessage.length(), getClass().getName());
-		if (strippedMessage.equalsIgnoreCase("cancel")) {
-			cancel();
-			return;
-		}
 		
 		player.getScheduler().run(QuestsPlugin.getPlugin(), __ -> {
+			if (strippedMessage.equalsIgnoreCase("cancel")) {
+				cancel();
+				return;
+			}
+		
 			boolean success = chat(coloredMessage, strippedMessage);
 			if (!success)
 				Lang.CHAT_EDITOR.send(player);

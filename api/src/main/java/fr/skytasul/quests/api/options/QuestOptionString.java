@@ -65,7 +65,7 @@ public abstract class QuestOptionString extends QuestOption<String> {
 			event.reopen();
 		}, "null").setIndication(getIndication()).allowEmpty();
 		if (isMultiline()) {
-			editorBuilder.allowMultiline();
+			editorBuilder.allowMultiline().forceMultiline();
 			if (getValue() != null)
 				editorBuilder.setInitialString(getValue().replace("{nl}", "\n"));
 		} else {

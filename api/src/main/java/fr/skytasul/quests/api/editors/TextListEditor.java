@@ -1,5 +1,6 @@
 package fr.skytasul.quests.api.editors;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.StringJoiner;
@@ -24,11 +25,11 @@ public class TextListEditor extends AbstractChatEditor{
 	
 	private List<String> texts;
 	
-	public TextListEditor(Player p, Consumer<List<String>> end, List<String> texts){
-		super(p, null);
+	public TextListEditor(Player p, Runnable cancelCallback, Consumer<List<String>> end, List<String> texts){
+		super(p, cancelCallback);
 		Validate.notNull(texts, "Text list in Editor cannot be null.");
 		this.run = end;
-		this.texts = texts;
+		this.texts = new ArrayList<>(texts);
 	}
 	
 	@Override
