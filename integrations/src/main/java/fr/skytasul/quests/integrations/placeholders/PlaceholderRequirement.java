@@ -1,7 +1,6 @@
 package fr.skytasul.quests.integrations.placeholders;
 
 import fr.skytasul.quests.api.QuestsPlugin;
-import fr.skytasul.quests.api.editors.TextEditor;
 import fr.skytasul.quests.api.gui.LoreBuilder;
 import fr.skytasul.quests.api.localization.Lang;
 import fr.skytasul.quests.api.objects.QuestObjectClickEvent;
@@ -20,6 +19,8 @@ import java.math.BigDecimal;
 
 public class PlaceholderRequirement extends AbstractRequirement {
 
+	private static final ComparisonMethod DEFAULT_COMPARISON_METHOD = ComparisonMethod.EQUALS;
+
 	private String rawPlaceholder;
 
 	private PlaceholderExpansion hook;
@@ -30,7 +31,7 @@ public class PlaceholderRequirement extends AbstractRequirement {
 	private boolean parseValue = false;
 
 	public PlaceholderRequirement(){
-		this(null, null, null, null, ComparisonMethod.EQUALS);
+		this(null, null, null, null, DEFAULT_COMPARISON_METHOD);
 	}
 
 	public PlaceholderRequirement(String customDescription, String customReason, String placeholder, String value,
@@ -142,31 +143,45 @@ public class PlaceholderRequirement extends AbstractRequirement {
 		loreBuilder.addDescription(comparison.getTitle().quickFormat("number", value));
 	}
 
+	private void openIdentifierEditor(@NotNull QuestObjectClickEvent event) {
+		QuestsPlugin.getPlugin().getEditorManager().getFactory()
+				.createTextEditorBuilderString(event.getPlayer(), event::cancel, id -> {
+					setPlaceholder(id);
+					openTargetValueEditor(event);
+				}).setIndication(Lang.CHOOSE_PLACEHOLDER_REQUIRED_IDENTIFIER.toString())
+				.setInitialString(rawPlaceholder).build().start();
+		// XXX: no stripped message support here
+	}
+
+	private void openTargetValueEditor(@NotNull QuestObjectClickEvent event) {
+		QuestsPlugin.getPlugin().getEditorManager().getFactory()
+				.createTextEditorBuilderString(event.getPlayer(), event::cancel, value -> {
+					this.value = value;
+					try {
+						new BigDecimal(value); // tests if the value is a number
+						openComparisonEditor(event);
+					} catch (NumberFormatException __) {
+						event.reopenGUI();
+					}
+				}).setIndication(Lang.CHOOSE_PLACEHOLDER_REQUIRED_VALUE.toString())
+				.setInitialString(value).build().start();
+	}
+
+	private void openComparisonEditor(@NotNull QuestObjectClickEvent event) {
+		QuestsPlugin.getPlugin().getEditorManager().getFactory()
+				.createTextEditorBuilderParser(event.getPlayer(), ComparisonMethod.getComparisonParser(),
+						event::reopenGUI, comparison -> {
+							this.comparison = comparison == null ? DEFAULT_COMPARISON_METHOD : comparison;
+							event.reopenGUI();
+						})
+				.setInitialString(comparison.name()).allowEmpty()
+				.setIndication(Lang.COMPARISON_TYPE.quickFormat("default", DEFAULT_COMPARISON_METHOD.name()))
+				.build().start();
+	}
+
 	@Override
 	public void itemClick(QuestObjectClickEvent event) {
-		Lang.CHOOSE_PLACEHOLDER_REQUIRED_IDENTIFIER.send(event.getPlayer());
-		new TextEditor<String>(event.getPlayer(), event::cancel, id -> {
-			setPlaceholder(id);
-			Lang.CHOOSE_PLACEHOLDER_REQUIRED_VALUE.send(event.getPlayer(), this);
-			new TextEditor<String>(event.getPlayer(), () -> {
-				if (value == null) event.getGUI().remove(this);
-				event.reopenGUI();
-			}, value -> {
-				this.value = value;
-				try {
-					new BigDecimal(value); // tests if the value is a number
-					Lang.COMPARISON_TYPE.send(event.getPlayer(),
-							PlaceholderRegistry.of("available", ComparisonMethod.getComparisonParser().getNames(), "default",
-									ComparisonMethod.EQUALS.name().toLowerCase()).with(this));
-					new TextEditor<>(event.getPlayer(), null, comp -> {
-						this.comparison = comp == null ? ComparisonMethod.EQUALS : comp;
-						event.reopenGUI();
-					}, ComparisonMethod.getComparisonParser()).passNullIntoEndConsumer().start();
-				}catch (NumberFormatException __) {
-					event.reopenGUI();
-				}
-			}).start();
-		}).useStrippedMessage().start();
+		openIdentifierEditor(event);
 	}
 
 	@Override

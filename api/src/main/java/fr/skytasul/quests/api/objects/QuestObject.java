@@ -1,7 +1,6 @@
 package fr.skytasul.quests.api.objects;
 
 import fr.skytasul.quests.api.QuestsPlugin;
-import fr.skytasul.quests.api.editors.TextEditor;
 import fr.skytasul.quests.api.gui.ItemUtils;
 import fr.skytasul.quests.api.gui.LoreBuilder;
 import fr.skytasul.quests.api.localization.Lang;
@@ -148,18 +147,23 @@ public abstract class QuestObject extends SerializableObject implements Cloneabl
 		return ClickType.RIGHT;
 	}
 
-	protected abstract void sendCustomDescriptionHelpMessage(@NotNull Player p);
+	protected abstract @Nullable String getCustomDescriptionIndication(@NotNull Player p);
 
 	public final void click(@NotNull QuestObjectClickEvent event) {
 		if (event.getClick() == getRemoveClick())
 			return;
 
 		if (event.getClick() == getCustomDescriptionClick()) {
-			sendCustomDescriptionHelpMessage(event.getPlayer());
-			new TextEditor<String>(event.getPlayer(), event::reopenGUI, msg -> {
-				setCustomDescription(msg);
-				event.reopenGUI();
-			}).passNullIntoEndConsumer().start();
+			QuestsPlugin.getPlugin().getEditorManager().getFactory()
+					.createTextEditorBuilderString(event.getPlayer(), event::reopenGUI, description -> {
+						setCustomDescription(description);
+						event.reopenGUI();
+					}).addReset(() -> {
+						setCustomDescription(null);
+						event.reopenGUI();
+					}, "reset").allowEmpty().allowMultiline()
+					.setIndication(getCustomDescriptionIndication(event.getPlayer()))
+					.setInitialString(customDescription).build().start();
 		} else {
 			clickInternal(event);
 		}

@@ -1,5 +1,6 @@
 package fr.skytasul.quests.api.localization;
 
+import fr.skytasul.quests.api.editors.Editor;
 import fr.skytasul.quests.api.utils.messaging.MessageType;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -197,7 +198,7 @@ public enum Lang implements Locale {
 	NO_SUCH_ELEMENT("msg.editor.noSuchElement", EditorPrefix), // 0: available elements
 	INVALID_PATTERN("msg.editor.invalidPattern"), // 0: pattern
 
-	COMPARISON_TYPE("msg.editor.comparisonTypeDefault"), // 0: available comparisons, 1: default comparison
+	COMPARISON_TYPE("msg.editor.comparisonType", EditorPrefix),
 
 	SCOREBOARD_OBJECTIVE_NOT_FOUND("msg.editor.scoreboardObjectiveNotFound"),
 

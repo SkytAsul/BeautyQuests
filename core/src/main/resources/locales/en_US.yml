@@ -286,7 +286,7 @@ msg:
     availableElements: 'Available elements: §e{available_elements}'
     noSuchElement: '§cThere is no such element. Allowed elements are: §e{available_elements}'
     invalidPattern: '§cInvalid regex pattern §4{input}§c.'
-    comparisonTypeDefault: '§aChoose the comparison type you want among {available}. Default comparison is: §e§l{default}§r§a. Type §onull§r§a to use it.'
+    comparisonType: 'Choose the comparison type you want. The default comparison is §l{default}§r.'
     scoreboardObjectiveNotFound: '§cUnknown scoreboard objective.'
     pool:
       name: 'Write the name of the quests pool.'

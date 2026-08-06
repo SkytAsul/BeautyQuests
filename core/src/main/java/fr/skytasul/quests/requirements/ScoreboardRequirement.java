@@ -65,8 +65,8 @@ public class ScoreboardRequirement extends TargetNumberRequirement {
 	}
 
 	@Override
-	public void sendHelpString(Player p) {
-		Lang.CHOOSE_SCOREBOARD_TARGET.send(p);
+	public String getNumberIndication(Player p) {
+		return Lang.CHOOSE_SCOREBOARD_TARGET.toString();
 	}
 
 	@Override
