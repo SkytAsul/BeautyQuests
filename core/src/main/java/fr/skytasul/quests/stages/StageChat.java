@@ -3,6 +3,7 @@ package fr.skytasul.quests.stages;
 import com.cryptomorin.xseries.XMaterial;
 import fr.skytasul.quests.api.QuestsPlugin;
 import fr.skytasul.quests.api.editors.parsers.AbstractParser;
+import fr.skytasul.quests.api.editors.parsers.TransparentParser;
 import fr.skytasul.quests.api.gui.ItemUtils;
 import fr.skytasul.quests.api.localization.Lang;
 import fr.skytasul.quests.api.options.QuestOption;
@@ -23,6 +24,8 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
 import org.bukkit.event.player.PlayerCommandPreprocessEvent;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+
 import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
 
@@ -237,17 +240,20 @@ public class StageChat extends AbstractStage implements Listener {
 		}
 
 		private void launchEditor(Player p) {
-			var parser = new AbstractParser<String>() {
+			var parser = !isRegex ? new TransparentParser() : new AbstractParser<String>() {
 				@Override
 				public @NotNull String parse(@NotNull String string) throws ParsingError {
-					if (!isRegex)
-						return string;
 					try {
 						Pattern.compile(string.replace("{SLASH}", "/"));
 					} catch (PatternSyntaxException ex) {
 						throw new ParsingError(Lang.INVALID_PATTERN.format(PlaceholderRegistry.of("input", string)));
 					}
 					return string;
+				}
+
+				@Override
+				public @Nullable String getIndication() {
+					return Lang.TEXT_PARSER_REGEX.toString();
 				}
 			};
 

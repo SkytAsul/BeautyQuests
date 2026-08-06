@@ -36,6 +36,10 @@ public class LayoutedClickEvent extends GuiClickEvent {
 		gui.reopen(getPlayer());
 	}
 
+	public void refreshGui() {
+		gui.refresh(getPlayer());
+	}
+
 	public void refreshGuiReopen() {
 		gui.reopen(getPlayer(), true);
 	}

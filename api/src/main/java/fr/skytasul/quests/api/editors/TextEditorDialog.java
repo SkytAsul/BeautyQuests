@@ -71,11 +71,11 @@ public class TextEditorDialog<T> extends AbstractDialogEditor {
 		if (errorMessage != null)
 			bodies.add(DialogBody.plainMessage(legacyToComponent(errorMessage)));
 		if (indication != null)
-			bodies.add(DialogBody.plainMessage(legacyToComponent(indication)));
+			bodies.add(DialogBody.plainMessage(legacyToComponent(indication), 400));
 		if (parser != null) {
 			var parserIndication = parser.getIndication();
 			if (parserIndication != null)
-				bodies.add(DialogBody.plainMessage(legacyToComponent(parserIndication)));
+				bodies.add(DialogBody.plainMessage(legacyToComponent(parserIndication), 400));
 		}
 
 		var buttons = new ArrayList<ActionButton>();

@@ -35,7 +35,7 @@ public interface GuiFactory {
 	}
 
 	@NotNull
-	Gui createItemCreator(@NotNull Consumer<ItemStack> callback, boolean allowCancel);
+	Gui createItemCreator(@NotNull Consumer<ItemStack> callback, @NotNull Runnable cancelCallback);
 
 	@NotNull
 	Gui createItemsSelection(@NotNull Consumer<@NotNull List<@NotNull ItemStack>> callback,

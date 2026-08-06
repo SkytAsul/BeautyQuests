@@ -189,6 +189,10 @@ msg:
     text:
       argNotSupported: §cThe argument {arg} not supported.
       cannotBeEmpty: 'You must enter a value.'
+      parser:
+        regex: |-
+          Please enter a Regular Expression (regex).
+          Get help and test in real-time on https://regex101.com.
       chooseLvlRequired: '§aWrite the required amount of levels:'
       chooseJobRequired: '§aWrite name of the wanted job:'
       choosePermissionRequired: '§aWrite the required permission to start the quest:'
@@ -593,11 +597,15 @@ inv:
       withId: §6§l§o{quest_name}§r      §e#{quest_id}
   itemCreator:
     name: Item creator
+    needType: You must choose an item type!
     itemType: §bItem type
     itemFlags: Toggle item flags
     itemName: §bItem name
     itemLore: §bItem lore
-    isQuestItem: '§bQuest item:'
+    questItem: 'Quest item'
+    questItemDescription: |-
+      Make this item a Quest Item.
+      Such an item cannot be thrown on the ground and is not dropped at the death of the player.
   command:
     name: Command
     value: §eCommand

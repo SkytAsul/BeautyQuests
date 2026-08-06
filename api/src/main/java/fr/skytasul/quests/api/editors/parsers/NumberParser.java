@@ -1,10 +1,8 @@
 package fr.skytasul.quests.api.editors.parsers;
 
 import fr.skytasul.quests.api.localization.Lang;
-import fr.skytasul.quests.api.utils.messaging.DefaultErrors;
 import fr.skytasul.quests.api.utils.messaging.PlaceholderRegistry;
 
-import org.bukkit.entity.Player;
 import java.math.BigDecimal;
 
 public class NumberParser<T extends Number> implements AbstractParser<T> {
@@ -56,9 +54,11 @@ public class NumberParser<T extends Number> implements AbstractParser<T> {
 				}
 			}
 			return number;
-		}catch (Exception ex) {}
-		
-		throw new ParsingError(Lang.NUMBER_INVALID.format(PlaceholderRegistry.of("input", msg)));
+		} catch (ParsingError ex) {
+			throw ex;
+		} catch (Exception ex) {
+			throw new ParsingError(Lang.NUMBER_INVALID.format(PlaceholderRegistry.of("input", msg)));
+		}
 	}
 
 }

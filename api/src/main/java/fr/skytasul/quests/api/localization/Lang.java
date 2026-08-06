@@ -173,6 +173,7 @@ public enum Lang implements Locale {
 
 	CANNOT_BE_EMPTY("msg.editor.text.cannotBeEmpty", ErrorPrefix),
 	ARG_NOT_SUPPORTED("msg.editor.text.argNotSupported"),
+	TEXT_PARSER_REGEX("msg.editor.text.parser.regex", EditorPrefix),
 
 	CHOOSE_NPC_STARTER("msg.editor.npc.choseStarter"),
 	NPC_NOT_QUEST("msg.editor.npc.notStarter"),
@@ -596,11 +597,13 @@ public enum Lang implements Locale {
 	categoryOtherQuests("inv.listQuests.categoryOther"),
 
 	INVENTORY_CREATOR("inv.itemCreator.name"),
+	itemNeedType("inv.itemCreator.needType", ErrorPrefix),
 	itemType("inv.itemCreator.itemType"),
 	itemFlags("inv.itemCreator.itemFlags"),
 	itemName("inv.itemCreator.itemName"),
 	itemLore("inv.itemCreator.itemLore"),
-	itemQuest("inv.itemCreator.isQuestItem"),
+	itemQuest("inv.itemCreator.questItem"),
+	itemQuestDescription("inv.itemCreator.questItemDescription"),
 
 	INVENTORY_COMMAND("inv.command.name"),
 	commandValue("inv.command.value"),
