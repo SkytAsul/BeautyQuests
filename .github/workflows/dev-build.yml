@@ -7,6 +7,8 @@ on:
     paths-ignore:
       - .github/**
       - docs/**
+  # In order to create dev builds from specific branches
+  workflow_dispatch:
 
 jobs:
   prepare-build:
@@ -61,3 +63,4 @@ jobs:
             // pretty changelog here
           files: |
             ${{ steps.artifact.outputs.download-path }}/*.jar
+
