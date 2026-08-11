@@ -193,6 +193,10 @@ msg:
         regex: |-
           Please enter a Regular Expression (regex).
           Get help and test in real-time on https://regex101.com.
+        duration: |-
+          Please enter a duration, for instance: "2 weeks 1 day 3h 15min".
+          You can use the following units: {available_units} and their short forms.
+          The default unit is {default_unit}.
       chooseLvlRequired: '§aWrite the required amount of levels:'
       chooseJobRequired: '§aWrite name of the wanted job:'
       choosePermissionRequired: '§aWrite the required permission to start the quest:'

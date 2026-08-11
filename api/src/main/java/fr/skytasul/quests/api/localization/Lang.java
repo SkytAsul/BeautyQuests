@@ -175,6 +175,7 @@ public enum Lang implements Locale {
 	CANNOT_BE_EMPTY("msg.editor.text.cannotBeEmpty", ErrorPrefix),
 	ARG_NOT_SUPPORTED("msg.editor.text.argNotSupported"),
 	TEXT_PARSER_REGEX("msg.editor.text.parser.regex", EditorPrefix),
+	TEXT_PARSER_DURATION("msg.editor.text.parser.duration", EditorPrefix),
 
 	CHOOSE_NPC_STARTER("msg.editor.npc.choseStarter"),
 	NPC_NOT_QUEST("msg.editor.npc.notStarter"),

@@ -4,7 +4,14 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+
 import org.apache.commons.lang.StringUtils;
+import org.jetbrains.annotations.Nullable;
+
+import fr.skytasul.quests.api.localization.Lang;
+import fr.skytasul.quests.api.utils.messaging.PlaceholderRegistry;
 
 public class DurationParser implements AbstractParser<Long> {
 	
@@ -40,6 +47,14 @@ public class DurationParser implements AbstractParser<Long> {
 		return duration;
 	}
 	
+	@Override
+	public @Nullable String getIndication() {
+		var units = Stream.of(MinecraftTimeUnit.values()).skip(targetUnit.ordinal()).map(unit -> unit.names[0])
+				.collect(Collectors.joining(", "));
+		return Lang.TEXT_PARSER_DURATION
+				.format(PlaceholderRegistry.of("available_units", units, "default_unit", defaultUnit.names[0]));
+	}
+
 	public enum MinecraftTimeUnit {
 		TICK(0, "tick", "ticks", "t"),
 		SECOND(20, "second", "seconds", "s", "sec"),

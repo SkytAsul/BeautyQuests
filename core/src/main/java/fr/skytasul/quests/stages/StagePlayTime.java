@@ -3,7 +3,6 @@ package fr.skytasul.quests.stages;
 import com.cryptomorin.xseries.XMaterial;
 import fr.skytasul.quests.BeautyQuests;
 import fr.skytasul.quests.api.QuestsPlugin;
-import fr.skytasul.quests.api.editors.TextEditor;
 import fr.skytasul.quests.api.editors.parsers.DurationParser.MinecraftTimeUnit;
 import fr.skytasul.quests.api.gui.ItemUtils;
 import fr.skytasul.quests.api.localization.Lang;
@@ -260,11 +259,7 @@ public class StagePlayTime extends AbstractStage implements HasProgress {
 					"§n" + Lang.validationRequirements + "§c " + Lang.Disabled.toString().toUpperCase());
 
 			slotTicks = line.setItem(7, ItemUtils.item(XMaterial.CLOCK, Lang.changeTicksRequired.toString()), event -> {
-				Lang.GAME_TICKS.send(event.getPlayer());
-				new TextEditor<>(event.getPlayer(), event::reopen, obj -> {
-					setTicks(obj);
-					event.reopen();
-				}, MinecraftTimeUnit.TICK.getParser()).start();
+				openTicksEditor(event.getPlayer(), false);
 			});
 
 			slotTimeMode = line.setItem(8,
@@ -292,14 +287,22 @@ public class StagePlayTime extends AbstractStage implements HasProgress {
 			}
 		}
 
+		private void openTicksEditor(@NotNull Player player, boolean firstTime) {
+			QuestsPlugin.getPlugin().getEditorManager().getFactory()
+					.createTextEditorBuilderParser(player, MinecraftTimeUnit.TICK.getParser(),
+							firstTime ? context::removeAndReopenGui : context::reopenGui, ticks -> {
+								setTicks(ticks);
+								context.reopenGui();
+							})
+					.setIndication(Lang.GAME_TICKS.toString())
+					.setInitialString(firstTime ? null : Long.toString(ticks))
+					.build().start();
+		}
+
 		@Override
 		public void start(Player p) {
 			super.start(p);
-			Lang.GAME_TICKS.send(p);
-			new TextEditor<>(p, context::removeAndReopenGui, obj -> {
-				setTicks(obj);
-				context.reopenGui();
-			}, MinecraftTimeUnit.TICK.getParser()).start();
+			openTicksEditor(p, true);
 		}
 
 		@Override

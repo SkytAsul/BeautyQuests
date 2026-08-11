@@ -1,6 +1,6 @@
 package fr.skytasul.quests.gui.mobs;
 
-import fr.skytasul.quests.api.editors.TextEditor;
+import fr.skytasul.quests.api.QuestsPlugin;
 import fr.skytasul.quests.api.editors.parsers.NumberParser;
 import fr.skytasul.quests.api.gui.ItemUtils;
 import fr.skytasul.quests.api.gui.LoreBuilder;
@@ -39,28 +39,41 @@ public class MobsListGUI extends ListGUI<MutableCountableObject<Mob<?>>> {
 	public void clickObject(MutableCountableObject<Mob<?>> mob, ItemStack item, ClickType click) {
 		super.clickObject(mob, item, click);
 		if (click == ClickType.RIGHT) {
-			Lang.MOB_NAME.send(player);
-			new TextEditor<>(player, super::reopen, name -> {
-				mob.getObject().setCustomName((String) name);
-				setItems();
-				reopen();
-			}).passNullIntoEndConsumer().start();
+			QuestsPlugin.getPlugin().getEditorManager().getFactory()
+					.createTextEditorBuilderString(getViewer(), super::reopen, name -> {
+						mob.getObject().setCustomName(name);
+						setItems();
+						reopen();
+					})
+					.allowEmpty()
+					.setInitialString(mob.getObject().getCustomName())
+					.setIndication(Lang.MOB_NAME.toString())
+					.build().start();
 		} else if (click == ClickType.LEFT) {
-			Lang.MOB_AMOUNT.send(player);
-			new TextEditor<>(player, super::reopen, amount -> {
-				mob.setAmount(amount);
-				setItems();
-				reopen();
-			}, NumberParser.INTEGER_PARSER_STRICT_POSITIVE).start();
+			QuestsPlugin.getPlugin().getEditorManager().getFactory()
+					.createTextEditorBuilderParser(getViewer(), NumberParser.INTEGER_PARSER_STRICT_POSITIVE,
+							super::reopen, amount -> {
+								mob.setAmount(amount);
+								setItems();
+								reopen();
+							})
+					.setInitialString(Integer.toString(mob.getAmount()))
+					.setIndication(Lang.MOB_AMOUNT.toString())
+					.build().start();
 		} else if (click == ClickType.SHIFT_RIGHT) {
 			if (mob.getObject().getFactory() instanceof LeveledMobFactory) {
-				new TextEditor<>(player, super::reopen, level -> {
-					mob.getObject().setMinLevel(level);
-					setItems();
-					reopen();
-				}, new NumberParser<>(Double.class, true, false)).start();
+				QuestsPlugin.getPlugin().getEditorManager().getFactory()
+						.createTextEditorBuilderParser(getViewer(), new NumberParser<>(Double.class, true, false),
+								super::reopen, level -> {
+									mob.getObject().setMinLevel(level);
+									setItems();
+									reopen();
+								})
+						.setInitialString(
+								mob.getObject().getMinLevel() == null ? null : mob.getObject().getMinLevel().toString())
+						.build().start();
 			} else {
-				QuestUtils.playPluginSound(player.getLocation(), "ENTITY_VILLAGER_NO", 0.6f);
+				QuestUtils.playPluginSound(getViewer(), "ENTITY_VILLAGER_NO", 0.6f);
 			}
 		}
 	}
