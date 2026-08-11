@@ -39,6 +39,7 @@ public class TextEditorDialog<T> extends AbstractDialogEditor {
 	private final @NotNull Consumer<T> endCallback;
 	private final @NotNull AbstractParser<T> parser;
 	private final @Nullable Runnable resetCallback;
+	private final @Nullable String resetWord; // TODO remove once chat editors are deleted
 	private final boolean allowEmpty;
 	private final boolean allowMultiline;
 	private final @NotNull String title;
@@ -47,12 +48,13 @@ public class TextEditorDialog<T> extends AbstractDialogEditor {
 	private @Nullable String initialValue; // this one is not final on purpose
 
 	public TextEditorDialog(@NotNull Player player, @NotNull Runnable cancelCallback, @NotNull Consumer<T> endCallback,
-			@NotNull AbstractParser<T> parser, @Nullable Runnable resetCallback, boolean allowEmpty,
+			@NotNull AbstractParser<T> parser, @Nullable Runnable resetCallback, @Nullable String resetWord, boolean allowEmpty,
 			boolean allowMultiline, @NotNull String title, @Nullable String indication, @Nullable String initialValue) {
 		super(player, cancelCallback);
 		this.endCallback = Objects.requireNonNull(endCallback);
 		this.parser = Objects.requireNonNull(parser);
 		this.resetCallback = resetCallback;
+		this.resetWord = resetWord;
 		this.allowEmpty = allowEmpty;
 		this.allowMultiline = allowMultiline;
 		this.title = Objects.requireNonNull(title);
@@ -128,6 +130,8 @@ public class TextEditorDialog<T> extends AbstractDialogEditor {
 				} else {
 					showDialog(Lang.CANNOT_BE_EMPTY.toString());
 				}
+			} else if (text.equals(resetWord)) {
+				reset();
 			} else {
 				try {
 					initialValue = text;

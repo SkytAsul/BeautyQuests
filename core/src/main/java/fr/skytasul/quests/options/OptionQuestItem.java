@@ -2,7 +2,6 @@ package fr.skytasul.quests.options;
 
 import com.cryptomorin.xseries.XMaterial;
 import fr.skytasul.quests.api.QuestsPlugin;
-import fr.skytasul.quests.api.editors.TextEditor;
 import fr.skytasul.quests.api.gui.ItemUtils;
 import fr.skytasul.quests.api.localization.Lang;
 import fr.skytasul.quests.api.options.OptionSet;
@@ -68,22 +67,18 @@ public class OptionQuestItem extends QuestOption<ItemStack> {
 				event.getPlayer().setItemOnCursor(null);
 			});
 		} else {
-			Lang.QUEST_MATERIAL.send(event.getPlayer());
-			new TextEditor<>(event.getPlayer(), event::reopen, obj -> {
-				if (obj == null) {
-					resetValue();
-				} else {
-					setValue(obj.parseItem());
-				}
-				ItemStack setItem = event.getGui().getInventory().getItem(event.getSlot());
-				if (setItem == null || setItem.getType() == Material.AIR) {
-					// means that the material cannot be treated as an inventory item (ex: fire)
-					resetValue();
-					Lang.INVALID_ITEM_TYPE.send(event.getPlayer());
-				}
-				event.reopen();
-			}, QuestsPlugin.getPlugin().getEditorManager().getFactory().getMaterialParser(true, true))
-					.passNullIntoEndConsumer().start();
+			QuestsPlugin.getPlugin().getEditorManager().getFactory().createTextEditorBuilderParser(event.getPlayer(),
+					QuestsPlugin.getPlugin().getEditorManager().getFactory().getMaterialParser(true, false),
+					event::reopen, material -> {
+						setValue(material.parseItem());
+						event.reopen();
+					}).addReset(() -> {
+						resetValue();
+						event.reopen();
+					}, "null")
+					.setInitialString(getValue().getType().name())
+					.setIndication(Lang.QUEST_MATERIAL.toString())
+					.build().start();
 		}
 	}
 

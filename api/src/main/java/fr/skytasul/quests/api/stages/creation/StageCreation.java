@@ -2,7 +2,7 @@ package fr.skytasul.quests.api.stages.creation;
 
 import com.cryptomorin.xseries.XMaterial;
 import fr.skytasul.quests.api.QuestsAPI;
-import fr.skytasul.quests.api.editors.TextEditor;
+import fr.skytasul.quests.api.QuestsPlugin;
 import fr.skytasul.quests.api.gui.ItemUtils;
 import fr.skytasul.quests.api.localization.Lang;
 import fr.skytasul.quests.api.objects.QuestObjectLocation;
@@ -102,19 +102,25 @@ public abstract class StageCreation<T extends AbstractStage> {
 				}, rewards).open(event.getPlayer()));
 
 		line.setItem(SLOT_DESCRIPTION, DESCRITPION_MESSAGE_ITEM.clone(), event -> {
-			Lang.DESC_MESSAGE.send(event.getPlayer());
-			new TextEditor<String>(event.getPlayer(), event::reopen, obj -> {
-				setCustomDescription(obj);
-				event.reopen();
-			}).passNullIntoEndConsumer().start();
+			QuestsPlugin.getPlugin().getEditorManager().getFactory().createTextEditorBuilderString(event.getPlayer(),
+					event::reopen, description -> {
+						setCustomDescription(description);
+						event.reopen();
+					})
+					.allowEmpty().allowMultiline()
+					.setIndication(Lang.DESC_MESSAGE.toString())
+					.setInitialString(customDescription).build().start();
 		});
 
 		line.setItem(SLOT_MESSAGE, START_MESSAGE_ITEM.clone(), event -> {
-			Lang.START_TEXT.send(event.getPlayer());
-			new TextEditor<String>(event.getPlayer(), event::reopen, obj -> {
-				setStartMessage(obj);
-				event.reopen();
-			}).passNullIntoEndConsumer().start();
+			QuestsPlugin.getPlugin().getEditorManager().getFactory().createTextEditorBuilderString(event.getPlayer(),
+					event::reopen, startMessage -> {
+						setStartMessage(startMessage);
+						event.reopen();
+					})
+					.allowEmpty().allowMultiline()
+					.setIndication(Lang.START_TEXT.toString())
+					.setInitialString(startMessage).build().start();
 		});
 
 		line.setItem(SLOT_REQUIREMENTS, VALIDATION_REQUIREMENTS_ITEM.clone(), event -> {

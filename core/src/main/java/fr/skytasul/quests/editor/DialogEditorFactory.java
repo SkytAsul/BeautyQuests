@@ -27,7 +27,7 @@ public class DialogEditorFactory extends AbstractEditorFactory {
 
 		@Override
 		public Editor build() {
-			return new TextEditorDialog<>(player, cancelCallback, endCallback, parser, resetCallback, allowEmpty, allowMultiline, title, indication, initialString);
+			return new TextEditorDialog<>(player, cancelCallback, endCallback, parser, resetCallback, resetWord, allowEmpty, allowMultiline, title, indication, initialString);
 		}
 	}
 
