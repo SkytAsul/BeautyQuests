@@ -32,7 +32,7 @@ class FakeDatabaseConfig implements QuestsConfiguration.Database {
 
 	@Override
 	public @NotNull String databaseName() {
-		return "beautyquests";
+		return "unused"; // we use the JDBC URL
 	}
 
 	@Override
@@ -57,7 +57,7 @@ class FakeDatabaseConfig implements QuestsConfiguration.Database {
 
 	@Override
 	public @NotNull Map<String, String> tables() {
-		return Map.of("questers", "questers", "questers quests", "questers_quests", "questers pools", "questers_pools");
+		return Map.of("questers", "QUESTERS", "questers quests", "QUESTERS_QUESTS", "questers pools", "QUESTERS_POOLS");
 	}
 
 }

@@ -76,6 +76,13 @@ jobs:
           echo "Successfully built plugin with version $plugin_version."
           echo "plugin-version=$plugin_version" >> "$GITHUB_OUTPUT"
 
+      - name: Upload test failures
+        uses: actions/upload-artifact@v7
+        if: "${{ failure() && steps.build.outcome == 'failure' }}"
+        with:
+          path: |
+            **/surefire-reports
+
       - name: Upload artifact
         uses: actions/upload-artifact@v7
         with:

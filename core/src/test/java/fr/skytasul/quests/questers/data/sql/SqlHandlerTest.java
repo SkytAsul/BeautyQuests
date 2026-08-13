@@ -21,10 +21,11 @@ public class SqlHandlerTest {
 
         var config = new FakeDatabaseConfig(connectionString);
         assertDoesNotThrow(() -> {
-            var db = new Database(config);
-            db.testConnection();
+            try (var db = new Database(config)) {
+                db.testConnection();
 
-            new SqlHandler(db).createTables(mockQuestersManager);
+                new SqlHandler(db).createTables(mockQuestersManager);
+            }
         });
     }
 

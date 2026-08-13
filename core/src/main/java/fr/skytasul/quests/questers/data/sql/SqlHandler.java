@@ -103,7 +103,7 @@ public class SqlHandler {
 						statement.execute("ALTER TABLE %s ADD COLUMN %s".formatted(QUESTERS_TABLE,
 								SQLDataSaver.getColumnDefinition(data)));
 						LOGGER.info(
-								"Updated database by adding the missing {} column in the player accounts table.",
+								"Updated database by adding the missing {0} column in the player accounts table.",
 								data.getColumnName());
 					}
 				}
@@ -220,7 +220,7 @@ public class SqlHandler {
 	private void upgradeTable(Connection connection, String tableName,
 			ThrowingConsumer<List<String>, SQLException> columnsConsumer) throws SQLException {
 		List<String> columns = new ArrayList<>(14);
-		try (ResultSet set = connection.getMetaData().getColumns(db.getConfig().databaseName(), null, tableName, null)) {
+		try (ResultSet set = connection.getMetaData().getColumns(connection.getCatalog(), null, tableName, null)) {
 			while (set.next()) {
 				columns.add(set.getString("COLUMN_NAME").toLowerCase());
 			}
