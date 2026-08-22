@@ -12,7 +12,7 @@ import org.bukkit.entity.Player;
 import java.util.Arrays;
 import java.util.stream.Collectors;
 
-public class DialogEditor extends Editor{
+public class DialogEditor extends AbstractChatEditor {
 
 	private Runnable end;
 	public Dialog d;

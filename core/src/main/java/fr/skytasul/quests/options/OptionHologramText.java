@@ -6,7 +6,6 @@ import fr.skytasul.quests.api.QuestsConfiguration;
 import fr.skytasul.quests.api.localization.Lang;
 import fr.skytasul.quests.api.options.OptionSet;
 import fr.skytasul.quests.api.options.QuestOptionString;
-import org.bukkit.entity.Player;
 
 public class OptionHologramText extends QuestOptionString {
 
@@ -15,8 +14,8 @@ public class OptionHologramText extends QuestOptionString {
 	}
 
 	@Override
-	public void sendIndication(Player p) {
-		Lang.HOLOGRAM_TEXT.send(p);
+	public String getIndication() {
+		return Lang.HOLOGRAM_TEXT.getValue();
 	}
 
 	@Override

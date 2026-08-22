@@ -3,7 +3,7 @@ package fr.skytasul.quests.api.editors;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
-public abstract class InventoryClear extends Editor{
+public abstract class InventoryClear extends AbstractChatEditor {
 	
 	private ItemStack[] contents = new ItemStack[0];
 	private int heldItemSlot;
@@ -25,11 +25,6 @@ public abstract class InventoryClear extends Editor{
 		super.end();
 		player.getInventory().setContents(contents);
 		player.getInventory().setHeldItemSlot(heldItemSlot);
-	}
-	
-	@Override
-	protected String cancelWord() {
-		return "cancel";
 	}
 	
 }

@@ -39,8 +39,7 @@ msg:
     value: {xp_amount})'
   writeMobAmount: '§aWrite the amount of mobs to kill:'
   writeMobName: '§aWrite the custom name of the mob to kill:'
-  writeChatMessage: '§aWrite required message: (Add "\{SLASH}" to the beginning if
-    you want a command.)'
+  writeChatMessage: 'Write the text players should type in the chat.'
   writeMessage: '§aWrite the message that will be sent to the player'
   writeStartMessage: '§aWrite the message that will be sent at the beginning of the quest,
     "null" if you want the default one or "none" if you want none:'
@@ -189,6 +188,15 @@ msg:
       notStarter: §cThis NPC isn't a quest starter.
     text:
       argNotSupported: §cThe argument {arg} not supported.
+      cannotBeEmpty: 'You must enter a value.'
+      parser:
+        regex: |-
+          Please enter a Regular Expression (regex).
+          Get help and test in real-time on https://regex101.com.
+        duration: |-
+          Please enter a duration, for instance: "2 weeks 1 day 3h 15min".
+          You can use the following units: {available_units} and their short forms.
+          The default unit is {default_unit}.
       chooseLvlRequired: '§aWrite the required amount of levels:'
       chooseJobRequired: '§aWrite name of the wanted job:'
       choosePermissionRequired: '§aWrite the required permission to start the quest:'
@@ -282,7 +290,7 @@ msg:
     availableElements: 'Available elements: §e{available_elements}'
     noSuchElement: '§cThere is no such element. Allowed elements are: §e{available_elements}'
     invalidPattern: '§cInvalid regex pattern §4{input}§c.'
-    comparisonTypeDefault: '§aChoose the comparison type you want among {available}. Default comparison is: §e§l{default}§r§a. Type §onull§r§a to use it.'
+    comparisonType: 'Choose the comparison type you want. The default comparison is §l{default}§r.'
     scoreboardObjectiveNotFound: '§cUnknown scoreboard objective.'
     pool:
       name: 'Write the name of the quests pool.'
@@ -593,11 +601,15 @@ inv:
       withId: §6§l§o{quest_name}§r      §e#{quest_id}
   itemCreator:
     name: Item creator
+    needType: You must choose an item type!
     itemType: §bItem type
     itemFlags: Toggle item flags
     itemName: §bItem name
     itemLore: §bItem lore
-    isQuestItem: '§bQuest item:'
+    questItem: 'Quest item'
+    questItemDescription: |-
+      Make this item a Quest Item.
+      Such an item cannot be thrown on the ground and is not dropped at the death of the player.
   command:
     name: Command
     value: §eCommand

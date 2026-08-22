@@ -18,7 +18,7 @@ public class ColorParser implements AbstractParser<Color> {
 	private ColorParser() {}
 	
 	@Override
-	public Color parse(Player p, String msg) throws Throwable {
+	public Color parse(String msg) throws ParsingError {
 		int red, green, blue;
 		
 		Matcher hexMatcher = hexPattern.matcher(msg);
@@ -41,8 +41,7 @@ public class ColorParser implements AbstractParser<Color> {
 					green = awtColor.getGreen();
 					blue = awtColor.getBlue();
 				}catch (IllegalArgumentException | NullPointerException ex) {
-					Lang.INVALID_COLOR.send(p);
-					return null;
+					throw new ParsingError(Lang.INVALID_COLOR.format());
 				}
 			}
 		}

@@ -2,8 +2,8 @@ package fr.skytasul.quests.stages;
 
 import com.cryptomorin.xseries.XMaterial;
 import fr.skytasul.quests.api.QuestsConfiguration;
+import fr.skytasul.quests.api.QuestsPlugin;
 import fr.skytasul.quests.api.comparison.ItemComparisonMap;
-import fr.skytasul.quests.api.editors.TextEditor;
 import fr.skytasul.quests.api.gui.ItemUtils;
 import fr.skytasul.quests.api.localization.Lang;
 import fr.skytasul.quests.api.npcs.dialogs.Dialog;
@@ -222,10 +222,14 @@ public class StageBringBack extends StageNPC{
 				}, items).open(event.getPlayer());
 			});
 			line.setItem(9, stageMessage, event -> {
-				new TextEditor<String>(event.getPlayer(), event::reopen, x -> {
-					setMessage(x);
-					event.reopen();
-				}).passNullIntoEndConsumer().start();
+				QuestsPlugin.getPlugin().getEditorManager().getFactory()
+						.createTextEditorBuilderString(event.getPlayer(), event::reopen, msg -> {
+							setMessage(msg);
+							event.reopen();
+						})
+						.setInitialString(message)
+						.allowEmpty().allowMultiline()
+						.build().start();
 			});
 			line.setItem(10, stageComparison, event -> {
 				new ItemComparisonGUI(comparisons, () -> {

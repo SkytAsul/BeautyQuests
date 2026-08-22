@@ -1,5 +1,6 @@
 package fr.skytasul.quests.api.editors;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.StringJoiner;
@@ -11,18 +12,24 @@ import org.bukkit.entity.Player;
 import fr.skytasul.quests.api.localization.Lang;
 import fr.skytasul.quests.api.utils.messaging.PlaceholderRegistry;
 
-public class TextListEditor extends Editor{
+/**
+ * A textual editor that uses the in-game chatbox to input a list of strings.
+ * <p>
+ * This editor should not be instanciated directly, prefer using the EditorFactory.
+ */
+@Deprecated(forRemoval = true)
+public class TextListEditor extends AbstractChatEditor{
 	
 	protected Consumer<List<String>> run;
 	public Predicate<String> valid;
 	
 	private List<String> texts;
 	
-	public TextListEditor(Player p, Consumer<List<String>> end, List<String> texts){
-		super(p, null);
+	public TextListEditor(Player p, Runnable cancelCallback, Consumer<List<String>> end, List<String> texts){
+		super(p, cancelCallback);
 		Validate.notNull(texts, "Text list in Editor cannot be null.");
 		this.run = end;
-		this.texts = texts;
+		this.texts = new ArrayList<>(texts);
 	}
 	
 	@Override

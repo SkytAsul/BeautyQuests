@@ -1,7 +1,8 @@
 package fr.skytasul.quests.options;
 
 import com.cryptomorin.xseries.XMaterial;
-import fr.skytasul.quests.api.editors.TextEditor;
+
+import fr.skytasul.quests.api.QuestsPlugin;
 import fr.skytasul.quests.api.editors.parsers.DurationParser.MinecraftTimeUnit;
 import fr.skytasul.quests.api.gui.ItemUtils;
 import fr.skytasul.quests.api.localization.Lang;
@@ -55,15 +56,17 @@ public class OptionTimer extends QuestOption<Integer> {
 
 	@Override
 	public void click(QuestCreationGuiClickEvent event) {
-		Lang.TIMER.send(event.getPlayer());
-		new TextEditor<>(event.getPlayer(), event::reopen, obj -> {
-			if (obj == null)
-				resetValue();
-			else
-				setValue(obj.intValue());
-			ItemUtils.lore(event.getClicked(), getLore());
-			event.reopen();
-		}, MinecraftTimeUnit.MINUTE.getParser()).passNullIntoEndConsumer().start();
+		QuestsPlugin.getPlugin().getEditorManager().getFactory().createTextEditorBuilderParser(event.getPlayer(),
+				MinecraftTimeUnit.MINUTE.getParser(), event::reopen, time -> {
+					setValue(time.intValue());
+					event.reopen();
+				}).addReset(() -> {
+					resetValue();
+					event.reopen();
+				}, "null")
+				.setInitialString(getValue().toString())
+				.setIndication(Lang.TIMER.toString())
+				.build().start();
 	}
 
 }

@@ -59,6 +59,10 @@ public class Mob<D> implements Cloneable {
 		return factory.getDescriptiveLore(data);
 	}
 
+	public @Nullable String getCustomName() {
+		return customName;
+	}
+
 	public void setCustomName(@Nullable String customName) {
 		this.customName = customName;
 		formattedName = null;

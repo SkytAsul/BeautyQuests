@@ -39,8 +39,8 @@ public class FabledLevelRequirement extends TargetNumberRequirement {
 	}
 
 	@Override
-	public void sendHelpString(Player p) {
-		Lang.CHOOSE_XP_REQUIRED.send(p);
+	public String getNumberIndication(Player p) {
+		return Lang.CHOOSE_XP_REQUIRED.toString();
 	}
 
 	@Override

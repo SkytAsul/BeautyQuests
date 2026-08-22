@@ -17,6 +17,8 @@ import fr.skytasul.quests.api.utils.Utils;
 import fr.skytasul.quests.api.utils.Version;
 import fr.skytasul.quests.api.utils.logger.LoggerExpanded;
 import fr.skytasul.quests.commands.CommandsManagerImplementation;
+import fr.skytasul.quests.editor.ChatEditorFactory;
+import fr.skytasul.quests.editor.DialogEditorFactory;
 import fr.skytasul.quests.editor.EditorManagerImplementation;
 import fr.skytasul.quests.gui.GuiManagerImplementation;
 import fr.skytasul.quests.npcs.BqNpcManagerImplementation;
@@ -464,7 +466,9 @@ public abstract class BeautyQuests extends JavaPlugin implements QuestsPlugin {
 				DefaultQuestFeatures.registerMisc();
 				DefaultQuestFeatures.registerMessageProcessors();
 				getServer().getPluginManager().registerEvents(guiManager = new GuiManagerImplementation(), this);
-				getServer().getPluginManager().registerEvents(editorManager = new EditorManagerImplementation(), this);
+
+				var editorFactory = serverVersion.isAfter(1, 21, 8) ? new DialogEditorFactory() : new ChatEditorFactory();
+				getServer().getPluginManager().registerEvents(editorManager = new EditorManagerImplementation(editorFactory), this);
 			}
 		}catch (LoadingException ex) {
 			throw ex;

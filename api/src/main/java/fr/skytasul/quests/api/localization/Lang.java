@@ -1,5 +1,6 @@
 package fr.skytasul.quests.api.localization;
 
+import fr.skytasul.quests.api.editors.Editor;
 import fr.skytasul.quests.api.utils.messaging.MessageType;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -63,7 +64,7 @@ public enum Lang implements Locale {
 	XP_GAIN("msg.writeXPGain"),
 	MOB_AMOUNT("msg.writeMobAmount"),
 	MOB_NAME("msg.writeMobName"),
-	CHAT_MESSAGE("msg.writeChatMessage"),
+	CHAT_MESSAGE("msg.writeChatMessage", EditorPrefix),
 	WRITE_MESSAGE("msg.writeMessage"),
 	WRITE_START_MESSAGE("msg.writeStartMessage"),
 	WRITE_END_MESSAGE("msg.writeEndMsg"),
@@ -171,7 +172,10 @@ public enum Lang implements Locale {
 	CHAT_EDITOR("msg.editor.chat"),
 	NPC_EDITOR_ENTER("msg.editor.npc.enter"),
 
+	CANNOT_BE_EMPTY("msg.editor.text.cannotBeEmpty", ErrorPrefix),
 	ARG_NOT_SUPPORTED("msg.editor.text.argNotSupported"),
+	TEXT_PARSER_REGEX("msg.editor.text.parser.regex", EditorPrefix),
+	TEXT_PARSER_DURATION("msg.editor.text.parser.duration", EditorPrefix),
 
 	CHOOSE_NPC_STARTER("msg.editor.npc.choseStarter"),
 	NPC_NOT_QUEST("msg.editor.npc.notStarter"),
@@ -195,7 +199,7 @@ public enum Lang implements Locale {
 	NO_SUCH_ELEMENT("msg.editor.noSuchElement", EditorPrefix), // 0: available elements
 	INVALID_PATTERN("msg.editor.invalidPattern"), // 0: pattern
 
-	COMPARISON_TYPE("msg.editor.comparisonTypeDefault"), // 0: available comparisons, 1: default comparison
+	COMPARISON_TYPE("msg.editor.comparisonType", EditorPrefix),
 
 	SCOREBOARD_OBJECTIVE_NOT_FOUND("msg.editor.scoreboardObjectiveNotFound"),
 
@@ -595,11 +599,13 @@ public enum Lang implements Locale {
 	categoryOtherQuests("inv.listQuests.categoryOther"),
 
 	INVENTORY_CREATOR("inv.itemCreator.name"),
+	itemNeedType("inv.itemCreator.needType", ErrorPrefix),
 	itemType("inv.itemCreator.itemType"),
 	itemFlags("inv.itemCreator.itemFlags"),
 	itemName("inv.itemCreator.itemName"),
 	itemLore("inv.itemCreator.itemLore"),
-	itemQuest("inv.itemCreator.isQuestItem"),
+	itemQuest("inv.itemCreator.questItem"),
+	itemQuestDescription("inv.itemCreator.questItemDescription"),
 
 	INVENTORY_COMMAND("inv.command.name"),
 	commandValue("inv.command.value"),

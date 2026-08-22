@@ -6,7 +6,6 @@ import fr.skytasul.quests.api.QuestsPlugin;
 import fr.skytasul.quests.api.options.QuestOption;
 import fr.skytasul.quests.api.utils.ChatColorUtils;
 import fr.skytasul.quests.api.utils.MinecraftNames;
-import fr.skytasul.quests.api.utils.Utils;
 import org.apache.commons.lang.Validate;
 import org.bukkit.DyeColor;
 import org.bukkit.Material;
@@ -160,7 +159,7 @@ public final class ItemUtils {
 			im.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
 		if (im instanceof BookMeta || im instanceof PotionMeta || im instanceof EnchantmentStorageMeta
 				|| im instanceof KnowledgeBookMeta)
-			im.addItemFlags(Utils.valueOfEnum(ItemFlag.class, "HIDE_POTION_EFFECTS", "HIDE_ADDITIONAL_TOOLTIP"));
+			im.addItemFlags(ItemFlag.HIDE_ADDITIONAL_TOOLTIP);
 		if (im instanceof LeatherArmorMeta)
 			im.addItemFlags(ItemFlag.HIDE_DYE);
 

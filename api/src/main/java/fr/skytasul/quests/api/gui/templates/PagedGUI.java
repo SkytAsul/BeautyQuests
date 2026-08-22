@@ -1,9 +1,9 @@
 package fr.skytasul.quests.api.gui.templates;
 
 import com.cryptomorin.xseries.XMaterial;
+
 import fr.skytasul.quests.api.QuestsConfiguration;
 import fr.skytasul.quests.api.QuestsPlugin;
-import fr.skytasul.quests.api.editors.TextEditor;
 import fr.skytasul.quests.api.gui.AbstractGui;
 import fr.skytasul.quests.api.gui.GuiClickEvent;
 import fr.skytasul.quests.api.gui.ItemUtils;
@@ -126,12 +126,12 @@ public abstract class PagedGUI<T> extends AbstractGui {
 
 	public PagedGUI<T> addSearchButton(int barSlot, @NotNull Function<T, String> nameExtractor) {
 		barButtons.put(barSlot, new BarButton(itemSearch, event -> {
-			new TextEditor<String>(player, this::reopen, obj -> {
+			QuestsPlugin.getPlugin().getEditorManager().getFactory().createTextEditorBuilderString(getViewer(), this::reopen, string -> {
 				page = 0;
-				objects.sort(new LevenshteinComparator<>(nameExtractor, obj));
+				objects.sort(new LevenshteinComparator<>(nameExtractor, string));
 				setItems();
 				reopen();
-			}).start();
+			}).build().start();
 		}));
 		return this;
 	}

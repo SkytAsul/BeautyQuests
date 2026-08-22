@@ -87,11 +87,10 @@ public class ItemsGUI extends AbstractGui {
 			}else {
 				if (event.getClicked().equals(none)) {
 					QuestsPlugin.getPlugin().getGuiManager().getFactory().createItemCreator(item -> {
-						if (item != null)
-							getInventory().setItem(event.getSlot(), item);
+						getInventory().setItem(event.getSlot(), item);
 						if (!addItem(event.getPlayer(), item, event.getSlot()))
 							event.reopen();
-					}, true).open(event.getPlayer());
+					}, event::reopen).open(event.getPlayer());
 				} else {
 					if (event.getClick().isLeftClick() || (event.getClick().isRightClick() && event.getClicked().getAmount() == 1)) {
 						QuestUtils.runSync(() -> {
