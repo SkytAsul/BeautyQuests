@@ -1,5 +1,7 @@
 #!/bin/env fish
 
+set start_timeout 60
+
 function fail
     set reason $argv[1]
 
@@ -55,6 +57,12 @@ function test_ver
         if not test (podman inspect -f {{.State.Running}} mc) = 'true'
             fail "Server failed to start"
         end
+        if test (podman inspect -f {{.State.Health.Status}} mc 2>&1) = ''
+            # Known bug: https://github.com/podman-container-tools/podman/issues/18904
+            echo "Healthcheck not working; waiting for $start_timeout seconds."
+            sleep "$start_timeout"
+            break
+        end
         sleep 1
     end
     echo Server running!
@@ -62,7 +70,7 @@ function test_ver
     set debug_info (podman exec mc rcon-cli beautyquests debugInfo)
     set -e debug_info[-1] # rcon-cli adds a weird last line
 
-    if not {echo "$debug_info" | jq &> /dev/null}
+    if not begin; echo "$debug_info" | jq &> /dev/null; end
         # If the debugInfo command returned invalid JSON, we can assume it is
         # an "unknown command" error which means the plugin did not load
         # correctly.
