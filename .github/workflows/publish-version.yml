@@ -50,44 +50,44 @@ jobs:
         run: |
           curl ${{ github.event.release.assets[0].browser_download_url }} --output ${{ github.event.release.assets[0].name }}
 
-      - name: Upload to Modrinth
-        uses: cloudnode-pro/modrinth-publish@v2
-        continue-on-error: true
-        with:
-          token: ${{ secrets.MODRINTH_TOKEN }}
-          project: ZbvwkXKZ
-          name: "${{ github.event.release.name }}"
-          version: "${{ github.event.release.tag_name }}"
-          changelog: "${{ github.event.release.body }}"
-          game-versions: |-
-            1.20.6
-            1.21.x
-            26.1.x
-            26.2.x
-          status: "draft"
-          channel: ${{ github.event.release.prerelease && 'alpha' || 'release' }}
-          loaders: |-
-            paper
-          files: "${{ github.event.release.assets[0].name }}"
+      - parallel:
+        - name: Upload to Modrinth
+          uses: cloudnode-pro/modrinth-publish@v2
+          with:
+            token: ${{ secrets.MODRINTH_TOKEN }}
+            project: ZbvwkXKZ
+            name: "${{ github.event.release.name }}"
+            version: "${{ github.event.release.tag_name }}"
+            changelog: "${{ github.event.release.body }}"
+            game-versions: |-
+              1.20.6
+              1.21.x
+              26.1.x
+              26.2.x
+            status: "draft"
+            channel: ${{ github.event.release.prerelease && 'alpha' || 'release' }}
+            loaders: |-
+              paper
+            files: "${{ github.event.release.assets[0].name }}"
 
-      - name: Upload to Hangar
-        uses: milkdrinkers/Hangar-Publish@v2
-        continue-on-error: true
-        with:
-          api_token: ${{ secrets.HANGAR_TOKEN }}
-          slug: 'BeautyQuests'
-          version: "${{ github.event.release.tag_name }}"
-          channel: ${{ github.event.release.prerelease && 'Development' || 'Release' }}
-          description: "${{ github.event.release.body }}"
-          platform_dependencies: |
-            {
-              "PAPER": [">=1.20.6"]
-            }
-          files: |
-            [
+        - name: Upload to Hangar
+          uses: milkdrinkers/Hangar-Publish@v2
+          continue-on-error: true
+          with:
+            api_token: ${{ secrets.HANGAR_TOKEN }}
+            slug: 'BeautyQuests'
+            version: "${{ github.event.release.tag_name }}"
+            channel: ${{ github.event.release.prerelease && 'Development' || 'Release' }}
+            description: "${{ github.event.release.body }}"
+            platform_dependencies: |
               {
-                "externalUrl": "${{ github.event.release.assets[0].browser_download_url }}",
-                "url": true,
-                "platforms": ["PAPER"]
+                "PAPER": [">=1.20.6"]
               }
-            ]
+            files: |
+              [
+                {
+                  "externalUrl": "${{ github.event.release.assets[0].browser_download_url }}",
+                  "url": true,
+                  "platforms": ["PAPER"]
+                }
+              ]
