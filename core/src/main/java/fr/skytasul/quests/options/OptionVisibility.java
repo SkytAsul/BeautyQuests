@@ -19,6 +19,7 @@ import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.EnumMap;
@@ -27,12 +28,12 @@ import java.util.Map.Entry;
 import java.util.stream.Collectors;
 
 public class OptionVisibility extends QuestOption<List<QuestVisibilityLocation>> {
-	
+
 	@Override
 	public Object save() {
 		return getValue().stream().map(QuestVisibilityLocation::name).collect(Collectors.toList());
 	}
-	
+
 	@Override
 	public void load(ConfigurationSection config, String key) {
 		if (config.isBoolean(key)) {
@@ -41,21 +42,26 @@ public class OptionVisibility extends QuestOption<List<QuestVisibilityLocation>>
 			setValue(config.getStringList(key).stream().map(QuestVisibilityLocation::valueOf).collect(Collectors.toList()));
 		}
 	}
-	
+
 	@Override
 	public List<QuestVisibilityLocation> cloneValue(List<QuestVisibilityLocation> value) {
 		return new ArrayList<>(value);
 	}
-	
-	private String[] getLore() {
-		return new String[] { formatDescription(Lang.optionVisibilityLore.toString()), "", formatValue(getValue().stream().map(QuestVisibilityLocation::getName).collect(Collectors.joining(", "))) };
+
+	@Override
+	public @Nullable String getValueString() {
+		return getValue().stream().map(QuestVisibilityLocation::getName).collect(Collectors.joining(", "));
 	}
-	
+
+	private String[] getLore() {
+		return new String[] {formatDescription(Lang.optionVisibilityLore.toString()), "", formatValue()};
+	}
+
 	@Override
 	public ItemStack getItemStack(OptionSet options) {
 		return ItemUtils.item(XMaterial.SPYGLASS.or(XMaterial.BOOKSHELF), Lang.optionVisibility.toString(), getLore());
 	}
-	
+
 	@Override
 	public void click(QuestCreationGuiClickEvent event) {
 		new VisibilityGUI(() -> {
@@ -63,16 +69,16 @@ public class OptionVisibility extends QuestOption<List<QuestVisibilityLocation>>
 			event.reopen();
 		}).open(event.getPlayer());
 	}
-	
+
 	class VisibilityGUI extends AbstractGui {
-		
+
 		private EnumMap<QuestVisibilityLocation, Boolean> locations = new EnumMap<>(QuestVisibilityLocation.class);
 		private Runnable reopen;
-		
+
 		public VisibilityGUI(Runnable reopen) {
 			this.reopen = reopen;
 		}
-		
+
 		@Override
 		protected Inventory instanciate(@NotNull Player player) {
 			return Bukkit.createInventory(null, InventoryType.HOPPER, Lang.INVENTORY_VISIBILITY.toString());
@@ -88,7 +94,7 @@ public class OptionVisibility extends QuestOption<List<QuestVisibilityLocation>>
 			}
 			inventory.setItem(4, QuestsPlugin.getPlugin().getGuiManager().getItemFactory().getDone());
 		}
-		
+
 		@Override
 		public void onClick(GuiClickEvent event) {
 			if (event.getSlot() >= 0 && event.getSlot() < 4) {
@@ -98,12 +104,12 @@ public class OptionVisibility extends QuestOption<List<QuestVisibilityLocation>>
 				reopen.run();
 			}
 		}
-		
+
 		@Override
 		public CloseBehavior onClose(Player p) {
 			return new DelayCloseBehavior(reopen);
 		}
-		
+
 	}
-	
+
 }

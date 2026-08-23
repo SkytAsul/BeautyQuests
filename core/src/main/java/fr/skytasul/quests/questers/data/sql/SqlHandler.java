@@ -103,7 +103,7 @@ public class SqlHandler {
 						statement.execute("ALTER TABLE %s ADD COLUMN %s".formatted(QUESTERS_TABLE,
 								SQLDataSaver.getColumnDefinition(data)));
 						LOGGER.info(
-								"Updated database by adding the missing {} column in the player accounts table.",
+								"Updated database by adding the missing {0} column in the player accounts table.",
 								data.getColumnName());
 					}
 				}
@@ -123,7 +123,7 @@ public class SqlHandler {
 								ADD PRIMARY KEY (provider, identifier)
 							""".formatted(QUESTERS_TABLE));
 					statement.execute("UPDATE %s SET provider = '%s'".formatted(QUESTERS_TABLE,
-							PlayerManagerImplementation.KEY.asString()));
+							PlayerManagerImplementation.PLAYERS_KEY.asString()));
 
 					LOGGER
 							.info("Updated database by changing layout of the questers table.");
@@ -148,7 +148,7 @@ public class SqlHandler {
 					statement.execute("UPDATE %s SET state = NULL".formatted(QUESTS_DATAS_TABLE));
 					statement.execute("UPDATE %s SET quester_identifier = '_migration'".formatted(QUESTS_DATAS_TABLE));
 					statement.execute("UPDATE %s SET quester_provider = '%s'".formatted(QUESTS_DATAS_TABLE,
-							PlayerManagerImplementation.KEY.asString()));
+							PlayerManagerImplementation.PLAYERS_KEY.asString()));
 					statement.execute("""
 							UPDATE %1$s AS quests
 								INNER JOIN %2$s AS questers ON quests.account_id = questers.id
@@ -183,7 +183,7 @@ public class SqlHandler {
 								ADD COLUMN quester_identifier VARCHAR(255) NOT NULL
 							""".formatted(POOLS_DATAS_TABLE));
 					statement.execute("UPDATE %s SET quester_identifier = '_migration', quester_provider = '%s'"
-							.formatted(POOLS_DATAS_TABLE, PlayerManagerImplementation.KEY.asString()));
+							.formatted(POOLS_DATAS_TABLE, PlayerManagerImplementation.PLAYERS_KEY.asString()));
 					statement.execute("""
 							UPDATE %1$s AS pools
 								INNER JOIN %2$s AS questers ON pools.account_id = questers.id
@@ -220,7 +220,7 @@ public class SqlHandler {
 	private void upgradeTable(Connection connection, String tableName,
 			ThrowingConsumer<List<String>, SQLException> columnsConsumer) throws SQLException {
 		List<String> columns = new ArrayList<>(14);
-		try (ResultSet set = connection.getMetaData().getColumns(db.getConfig().databaseName(), null, tableName, null)) {
+		try (ResultSet set = connection.getMetaData().getColumns(connection.getCatalog(), null, tableName, null)) {
 			while (set.next()) {
 				columns.add(set.getString("COLUMN_NAME").toLowerCase());
 			}

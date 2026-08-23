@@ -384,9 +384,7 @@ public class Scoreboard implements Listener {
 				if (!hasPinnedEntry())
 					shown.clear();
 				shown.add(this);
-				shownIndex = OptionalInt.of(shown.indexOf(this));
-				resetChangeTime();
-				refreshQuestsLines(true);
+				setShownQuest(quest, quester, true);
 				this.pinned = true;
 			} else {
 				this.pinned = false;

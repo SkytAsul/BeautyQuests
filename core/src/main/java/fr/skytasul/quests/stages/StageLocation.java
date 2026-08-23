@@ -1,7 +1,8 @@
 package fr.skytasul.quests.stages;
 
 import com.cryptomorin.xseries.XMaterial;
-import fr.skytasul.quests.api.editors.TextEditor;
+
+import fr.skytasul.quests.api.QuestsPlugin;
 import fr.skytasul.quests.api.editors.WaitClick;
 import fr.skytasul.quests.api.editors.parsers.NumberParser;
 import fr.skytasul.quests.api.editors.parsers.PatternParser;
@@ -115,11 +116,12 @@ public class StageLocation extends AbstractStage implements Locatable.PreciseLoc
 			super.setupLine(line);
 
 			line.setItem(SLOT_RADIUS, ItemUtils.item(XMaterial.REDSTONE, Lang.stageLocationRadius.toString()), event -> {
-				Lang.LOCATION_RADIUS.send(event.getPlayer());
-				new TextEditor<>(event.getPlayer(), event::reopen, x -> {
-					setRadius(x);
-					event.reopen();
-				}, NumberParser.INTEGER_PARSER_STRICT_POSITIVE).start();
+				QuestsPlugin.getPlugin().getEditorManager().getFactory().createTextEditorBuilderParser(
+						event.getPlayer(), NumberParser.INTEGER_PARSER_STRICT_POSITIVE, event::reopen, radius -> {
+							setRadius(radius);
+							event.reopen();
+						}).setIndication(Lang.LOCATION_RADIUS.toString())
+						.setInitialString(Integer.toString(radius)).build().start();
 			});
 			line.setItem(SLOT_LOCATION, ItemUtils.item(XMaterial.STICK, Lang.stageLocationLocation.toString()), event -> {
 				Lang.LOCATION_GO.send(event.getPlayer());
@@ -129,11 +131,12 @@ public class StageLocation extends AbstractStage implements Locatable.PreciseLoc
 				}).start();
 			});
 			line.setItem(SLOT_WORLD_PATTERN, ItemUtils.item(XMaterial.NAME_TAG, Lang.stageLocationWorldPattern.toString(), QuestOption.formatDescription(Lang.stageLocationWorldPatternLore.toString())), event -> {
-				Lang.LOCATION_WORLDPATTERN.send(event.getPlayer());
-				new TextEditor<>(event.getPlayer(), event::reopen, pattern -> {
-					setPattern(pattern);
-					event.reopen();
-				}, PatternParser.PARSER).passNullIntoEndConsumer().start();
+				QuestsPlugin.getPlugin().getEditorManager().getFactory().createTextEditorBuilderParser(
+						event.getPlayer(), PatternParser.PARSER, event::reopen, pattern -> {
+							setPattern(pattern);
+							event.reopen();
+						}).setIndication(Lang.LOCATION_WORLDPATTERN.toString())
+						.setInitialValue(pattern).build().start();
 			});
 		}
 

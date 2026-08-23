@@ -15,10 +15,6 @@ import fr.skytasul.quests.api.options.OptionSet;
 import fr.skytasul.quests.api.options.QuestOption;
 import fr.skytasul.quests.api.options.QuestOptionCreator;
 import fr.skytasul.quests.api.options.UpdatableOptionSet;
-import fr.skytasul.quests.api.questers.Quester;
-import fr.skytasul.quests.api.questers.data.QuesterQuestData;
-import fr.skytasul.quests.api.questers.events.QuesterJoinEvent;
-import fr.skytasul.quests.api.quests.branches.EndingStage;
 import fr.skytasul.quests.api.quests.creation.QuestCreationGui;
 import fr.skytasul.quests.api.quests.creation.QuestCreationGuiClickEvent;
 import fr.skytasul.quests.api.quests.events.QuestCreateEvent;
@@ -110,7 +106,7 @@ public class QuestCreationGuiImplementation extends LayoutedGUI implements Quest
 				@Override
 				public void click(@NotNull LayoutedClickEvent event) {
 					option.click(new QuestCreationGuiClickEvent(event.getPlayer(), QuestCreationGuiImplementation.this, event.getClicked(),
-							event.getCursor(), event.getSlot(), event.getClick()));
+							event.getCursor(), event.getSlot(), event.getClick(), option));
 				}
 
 				@Override
@@ -201,14 +197,14 @@ public class QuestCreationGuiImplementation extends LayoutedGUI implements Quest
 							.resetQuestData(session.getQuestEdited().getId())
 							.whenComplete(QuestsPlugin.getPlugin().getLoggerExpanded()
 									.logError("An error occurred while removing player datas after quest edition",
-											session.getPlayerAudience()));
+											session.getPlayer()));
 			}
 
 			QuestsAPI.getAPI().getQuestsManager().addQuest(qu);
 			Lang msg = session.isEdition() ? Lang.SUCCESFULLY_EDITED : Lang.SUCCESFULLY_CREATED;
 			msg.send(session.getPlayer(), qu,
 					PlaceholderRegistry.of("quest_branches", qu.getBranchesManager().getBranches().size()));
-			QuestUtils.playPluginSound(session.getPlayerAudience(), "ENTITY_VILLAGER_YES", 1);
+			QuestUtils.playPluginSound(session.getPlayer(), "ENTITY_VILLAGER_YES", 1);
 			QuestsPlugin.getPlugin().getLoggerExpanded().info("New quest created: {}, ID {}, by {}", qu.getName(),
 					qu.getId(), session.getPlayer().getName());
 			if (session.isEdition()) {
@@ -218,12 +214,9 @@ public class QuestCreationGuiImplementation extends LayoutedGUI implements Quest
 			try {
 				qu.saveToFile();
 			}catch (Exception e) {
-				DefaultErrors.sendGeneric(session.getPlayerAudience(), "initial quest save");
+				DefaultErrors.sendGeneric(session.getPlayer(), "initial quest save");
 				QuestsPlugin.getPlugin().getLoggerExpanded().severe("Error when trying to save newly created quest.", e);
 			}
-
-			if (keepPlayerDatas)
-				keepDatas(qu);
 
 			QuestsAPI.getAPI().propagateQuestsHandlers(handler -> {
 				if (session.isEdition())
@@ -233,24 +226,6 @@ public class QuestCreationGuiImplementation extends LayoutedGUI implements Quest
 		}
 
 		close(session.getPlayer());
-	}
-
-	private void keepDatas(QuestImplementation qu) {
-		for (Quester quester : QuestsAPI.getAPI().getQuesterManager().getLoadedQuesters()) {
-			quester.getDataHolder().getQuestDataIfPresent(qu).filter(QuesterQuestData::hasStarted).ifPresent(data -> {
-				var branch = qu.getBranchesManager().getBranch(data.getBranch().getAsInt());
-				for (Player player : quester.getOnlinePlayers()) {
-					var joinEvent = new QuesterJoinEvent(quester, player, false);
-					if (data.getState() == QuesterQuestData.State.IN_ENDING_STAGES) {
-						for (EndingStage endingStage : branch.getEndingStages()) {
-							((StageControllerImplementation<?>) endingStage.getStage()).onJoin(joinEvent);
-						}
-					} else if (data.getState() == QuesterQuestData.State.IN_REGULAR_STAGE) {
-						branch.getRegularStage(data.getStage().getAsInt()).onJoin(joinEvent);
-					}
-				}
-			});
-		}
 	}
 
 	private boolean loadBranch(QuestBranchImplementation branch, StagesGUI stagesGui) {
@@ -270,7 +245,7 @@ public class QuestCreationGuiImplementation extends LayoutedGUI implements Quest
 				}else branch.addRegularStage(stage);
 			}catch (Exception ex) {
 				failure = true;
-				DefaultErrors.sendGeneric(session.getPlayerAudience(), " lineToStage");
+				DefaultErrors.sendGeneric(session.getPlayer(), " lineToStage");
 				QuestsPlugin.getPlugin().getLoggerExpanded().severe("An error occurred wheh creating branch from GUI.", ex);
 			}
 		}

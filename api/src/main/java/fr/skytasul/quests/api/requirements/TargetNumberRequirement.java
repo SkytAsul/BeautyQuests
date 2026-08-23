@@ -6,7 +6,8 @@ import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import fr.skytasul.quests.api.editors.TextEditor;
+
+import fr.skytasul.quests.api.QuestsPlugin;
 import fr.skytasul.quests.api.editors.parsers.NumberParser;
 import fr.skytasul.quests.api.gui.LoreBuilder;
 import fr.skytasul.quests.api.localization.Lang;
@@ -36,6 +37,10 @@ public abstract class TargetNumberRequirement extends AbstractRequirement {
 		return comparison;
 	}
 
+	protected @NotNull ComparisonMethod getDefaultComparisonMethod() {
+		return ComparisonMethod.GREATER_OR_EQUAL;
+	}
+
 	@Override
 	public boolean test(@NotNull Player p) {
 		double diff = getPlayerTarget(p) - target;
@@ -52,6 +57,10 @@ public abstract class TargetNumberRequirement extends AbstractRequirement {
 
 	protected @NotNull NumberFormat getNumberFormat() {
 		return numberClass() == Integer.class ? NumberFormat.getIntegerInstance() : NumberFormat.getInstance();
+	}
+
+	protected @NotNull String getRawNumberAsString() {
+		return numberClass() == Integer.class ? Integer.toString((int) target) : Double.toString(target);
 	}
 
 	@Override
@@ -76,7 +85,7 @@ public abstract class TargetNumberRequirement extends AbstractRequirement {
 
 	public abstract @NotNull Class<? extends Number> numberClass();
 	
-	public abstract void sendHelpString(@NotNull Player p);
+	public abstract String getNumberIndication(@NotNull Player p);
 	
 	@Override
 	public void save(@NotNull ConfigurationSection section) {
@@ -92,22 +101,36 @@ public abstract class TargetNumberRequirement extends AbstractRequirement {
 		target = section.getDouble("target");
 	}
 	
+	private void openTargetNumberEditor(@NotNull QuestObjectClickEvent event) {
+		QuestsPlugin.getPlugin().getEditorManager().getFactory().createTextEditorBuilderParser(event.getPlayer(),
+				new NumberParser<>(numberClass(), true), () -> {
+					if (target == 0)
+						event.getGUI().remove(this);
+					event.reopenGUI();
+				}, number -> {
+					this.target = number.doubleValue();
+					openComparisonEditor(event);
+				}).setIndication(getNumberIndication(event.getPlayer()))
+				.setInitialString(event.isInCreation() ? null : getRawNumberAsString()).build().start();
+	}
+
+	private void openComparisonEditor(@NotNull QuestObjectClickEvent event) {
+		QuestsPlugin.getPlugin().getEditorManager().getFactory()
+				.createTextEditorBuilderParser(event.getPlayer(), ComparisonMethod.getComparisonParser(),
+						event::reopenGUI, comparison -> {
+							this.comparison = comparison == null ? getDefaultComparisonMethod()
+									: comparison;
+							event.reopenGUI();
+						})
+				.setInitialValue(comparison).allowEmpty()
+				.setIndication(
+						Lang.COMPARISON_TYPE.quickFormat("default", getDefaultComparisonMethod().name()))
+				.build().start();
+	}
+
 	@Override
 	public void itemClick(@NotNull QuestObjectClickEvent event) {
-		sendHelpString(event.getPlayer());
-		new TextEditor<>(event.getPlayer(), () -> {
-			if (target == 0) event.getGUI().remove(this);
-			event.reopenGUI();
-		}, number -> {
-			target = number.doubleValue();
-			Lang.COMPARISON_TYPE.send(event.getPlayer(),
-					PlaceholderRegistry.of("available", ComparisonMethod.getComparisonParser().getNames(), "default",
-							ComparisonMethod.GREATER_OR_EQUAL.name().toLowerCase()));
-			new TextEditor<>(event.getPlayer(), null, comp -> {
-				this.comparison = comp == null ? ComparisonMethod.GREATER_OR_EQUAL : comp;
-				event.reopenGUI();
-			}, ComparisonMethod.getComparisonParser()).passNullIntoEndConsumer().start();
-		}, event::remove, new NumberParser<>(numberClass(), true)).start();
+		openTargetNumberEditor(event);
 	}
 
 }

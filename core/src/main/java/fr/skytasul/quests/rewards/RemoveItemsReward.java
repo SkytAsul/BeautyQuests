@@ -73,7 +73,7 @@ public class RemoveItemsReward extends AbstractReward {
 		loreBuilder.addDescription(getItemsSizeString());
 		loreBuilder.addDescription(getComparisonsSizeString());
 		loreBuilder.addClick(ClickType.LEFT, Lang.stageItems.toString());
-		loreBuilder.addClick(ClickType.RIGHT, Lang.stageItemsComparison.toString());
+		loreBuilder.addClick(ClickType.SHIFT_RIGHT, Lang.stageItemsComparison.toString());
 	}
 
 	@Override
@@ -83,7 +83,7 @@ public class RemoveItemsReward extends AbstractReward {
 				this.items = items;
 				event.reopenGUI();
 			}, items).open(event.getPlayer());
-		}else if (event.getClick().isRightClick()) {
+		}else if (event.getClick() == ClickType.SHIFT_RIGHT) {
 			new ItemComparisonGUI(comparisons, event::reopenGUI).open(event.getPlayer());
 		}
 	}

@@ -33,8 +33,8 @@ public abstract class AbstractReward extends QuestObject {
 	public abstract void give(@NotNull RewardGiveContext context);
 
 	@Override
-	protected void sendCustomDescriptionHelpMessage(@NotNull Player p) {
-		Lang.CHOOSE_REWARD_CUSTOM_DESCRIPTION.send(p);
+	protected String getCustomDescriptionIndication(@NotNull Player p) {
+		return Lang.CHOOSE_REWARD_CUSTOM_DESCRIPTION.toString();
 	}
 
 	@Override

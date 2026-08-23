@@ -26,8 +26,8 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.FurnaceExtractEvent;
-import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.PlayerInventory;
 import org.jetbrains.annotations.NotNull;
 import java.util.Map;
 
@@ -172,10 +172,10 @@ public class StageCraft extends AbstractStage implements HasSingleObject, Listen
 		return new StageCraft(controller, ItemStack.deserialize(section.getConfigurationSection("result").getValues(false)), section.contains("itemComparisons") ? new ItemComparisonMap(section.getConfigurationSection("itemComparisons")) : new ItemComparisonMap());
 	}
 
-	public static int fits(ItemStack stack, Inventory inv) {
+	public static int fits(ItemStack stack, PlayerInventory inv) {
 		int result = 0;
 
-		for (ItemStack is : inv.getContents())
+		for (ItemStack is : inv.getStorageContents())
 			if (is == null)
 				result += stack.getMaxStackSize();
 			else if (is.isSimilar(stack))

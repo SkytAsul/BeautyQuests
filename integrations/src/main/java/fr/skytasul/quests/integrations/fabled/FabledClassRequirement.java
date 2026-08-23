@@ -90,7 +90,7 @@ public class FabledClassRequirement extends AbstractRequirement {
 					public void click(FabledClass existing, ItemStack item, ClickType clickType) {
 						callback.apply(existing);
 					}
-				}.open(player);
+				}.open(getViewer());
 			}
 
 			@Override

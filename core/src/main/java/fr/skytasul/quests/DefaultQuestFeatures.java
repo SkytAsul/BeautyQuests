@@ -8,6 +8,7 @@ import fr.skytasul.quests.api.QuestsPlugin;
 import fr.skytasul.quests.api.comparison.ItemComparison;
 import fr.skytasul.quests.api.localization.Lang;
 import fr.skytasul.quests.api.objects.QuestObjectLocation;
+import fr.skytasul.quests.api.options.OptionRequirements;
 import fr.skytasul.quests.api.options.QuestOptionCreator;
 import fr.skytasul.quests.api.quests.quester.QuestQuesterStrategyCreator;
 import fr.skytasul.quests.api.requirements.RequirementCreator;
@@ -24,6 +25,7 @@ import fr.skytasul.quests.api.utils.messaging.MessageProcessor;
 import fr.skytasul.quests.api.utils.messaging.MessageType;
 import fr.skytasul.quests.api.utils.messaging.PlaceholderRegistry;
 import fr.skytasul.quests.api.utils.messaging.PlaceholdersContext;
+import fr.skytasul.quests.api.utils.messaging.PlaceholdersContext.QuesterPlaceholdersContext;
 import fr.skytasul.quests.api.utils.progress.HasProgress;
 import fr.skytasul.quests.mobs.BukkitEntityFactory;
 import fr.skytasul.quests.options.*;
@@ -35,6 +37,7 @@ import fr.skytasul.quests.stages.*;
 import fr.skytasul.quests.stages.options.StageOptionProgressBar;
 import fr.skytasul.quests.utils.QuestUtils;
 import net.kyori.adventure.identity.Identity;
+import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 import net.md_5.bungee.api.ChatColor;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
@@ -159,7 +162,8 @@ public final class DefaultQuestFeatures {
 		QuestsAPI.getAPI().registerQuestOption(new QuestOptionCreator<>("hideNoRequirements", 28,
 				OptionHideNoRequirements.class, OptionHideNoRequirements::new, false));
 		QuestsAPI.getAPI().registerQuestOption(
-				new QuestOptionCreator<>("auto", 29, OptionAutoQuest.class, OptionAutoQuest::new, false));
+				new QuestOptionCreator<>("auto", 29, OptionAutoQuest.class, OptionAutoQuest::new,
+						OptionAutoQuest.Mode.DISABLED));
 		QuestsAPI.getAPI().registerQuestOption(new QuestOptionCreator<>("repeatable", 30, OptionRepeatable.class,
 				OptionRepeatable::new, false, "multiple"));
 		QuestsAPI.getAPI().registerQuestOption(new QuestOptionCreator<>("timer", 31, OptionTimer.class, OptionTimer::new,
@@ -292,14 +296,6 @@ public final class DefaultQuestFeatures {
 	}
 
 	public static void registerMessageProcessors() {
-		PlaceholderRegistry defaultPlaceholders = new PlaceholderRegistry()
-				.registerContextual("player", PlaceholdersContext.class,
-						context -> context.getAudience().get(Identity.NAME).orElse(null))
-				.registerContextual("PLAYER", PlaceholdersContext.class,
-						context -> context.getAudience().get(Identity.NAME).orElse(null))
-				.register("prefix", () -> BeautyQuests.getInstance().getPrefix())
-				.register("nl", "\n");
-
 		QuestsAPI.getAPI().registerMessageProcessor("default_message_type", 1, new MessageProcessor() {
 			@Override
 			public String processString(String string, PlaceholdersContext context) {
@@ -313,13 +309,47 @@ public final class DefaultQuestFeatures {
 			}
 		});
 
-		QuestsAPI.getAPI().registerMessageProcessor("default_placeholders", 2, new MessageProcessor() {
+		QuestsAPI.getAPI().registerMessageProcessor("default_placeholders", 1, new MessageProcessor() {
+			final PlaceholderRegistry defaultPlaceholders = new PlaceholderRegistry()
+					.register("prefix", () -> BeautyQuests.getInstance().getPrefix())
+					.register("nl", "\n");
+
 			@Override
 			public PlaceholderRegistry processPlaceholders(PlaceholderRegistry placeholders, PlaceholdersContext context) {
 				if (context.replacePluginPlaceholders())
 					return placeholders == null ? defaultPlaceholders : placeholders.with(defaultPlaceholders);
 				else
 					return placeholders;
+			}
+		});
+
+		QuestsAPI.getAPI().registerMessageProcessor("quester_placeholders", 2, new MessageProcessor() {
+			@Override
+			public PlaceholderRegistry processPlaceholders(PlaceholderRegistry placeholders, PlaceholdersContext context) {
+				if (!(context instanceof QuesterPlaceholdersContext questerContext) || !context.replacePluginPlaceholders())
+					return placeholders;
+
+				return placeholders == null ? questerContext.getQuester().getPlaceholdersRegistry()
+						: placeholders.with(questerContext.getQuester());
+			}
+		});
+
+		QuestsAPI.getAPI().registerMessageProcessor("audience_placeholders", 5, new MessageProcessor() {
+			final PlaceholderRegistry audienceRegistry = new PlaceholderRegistry()
+					.registerContextual("player", PlaceholdersContext.class,
+							context -> context.getAudience().get(Identity.NAME).orElse(null))
+					.registerContextual("PLAYER", PlaceholdersContext.class,
+							context -> context.getAudience().get(Identity.NAME).orElse(null))
+					.registerContextual("player_display_name", PlaceholdersContext.class,
+							context -> context.getAudience().get(Identity.DISPLAY_NAME)
+									.map(LegacyComponentSerializer.legacySection()::serialize).orElse(null));
+
+			@Override
+			public PlaceholderRegistry processPlaceholders(PlaceholderRegistry placeholders, PlaceholdersContext context) {
+				if (!context.replacePluginPlaceholders())
+					return placeholders;
+
+				return placeholders == null ? audienceRegistry : placeholders.with(audienceRegistry);
 			}
 		});
 
@@ -350,9 +380,9 @@ public final class DefaultQuestFeatures {
 		QuestsAPI.getAPI().registerQuestOption(new QuestOptionCreator<>("hologramText", 17, OptionHologramText.class,
 				OptionHologramText::new, Lang.HologramText.toString()));
 		QuestsAPI.getAPI().registerQuestOption(new QuestOptionCreator<>("hologramLaunch", 25, OptionHologramLaunch.class,
-				OptionHologramLaunch::new, QuestsConfigurationImplementation.getConfiguration().getHoloLaunchItem()));
+				OptionHologramLaunch::new, QuestsConfiguration.getConfig().getHologramsConfig().launchItem()));
 		QuestsAPI.getAPI().registerQuestOption(new QuestOptionCreator<>("hologramLaunchNo", 26, OptionHologramLaunchNo.class,
-				OptionHologramLaunchNo::new, QuestsConfigurationImplementation.getConfiguration().getHoloLaunchNoItem()));
+				OptionHologramLaunchNo::new, QuestsConfiguration.getConfig().getHologramsConfig().cannotLaunchItem()));
 	}
 
 }

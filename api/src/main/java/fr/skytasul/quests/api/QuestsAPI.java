@@ -3,6 +3,7 @@ package fr.skytasul.quests.api;
 import fr.skytasul.quests.QuestsAPIProvider;
 import fr.skytasul.quests.api.blocks.BQBlocksManager;
 import fr.skytasul.quests.api.comparison.ItemComparison;
+import fr.skytasul.quests.api.holograms.BqHologramManager;
 import fr.skytasul.quests.api.mobs.MobFactory;
 import fr.skytasul.quests.api.mobs.MobStacker;
 import fr.skytasul.quests.api.npcs.BqInternalNpcFactory;
@@ -196,7 +197,7 @@ public interface QuestsAPI {
 	 * @return the current holograms manager
 	 */
 	@Nullable
-	AbstractHolograms<?> getHologramsManager();
+	BqHologramManager getHologramsManager();
 
 	/**
 	 * Sets the plugin's holograms manager to the one passed as argument.<br>
@@ -204,7 +205,7 @@ public interface QuestsAPI {
 	 *
 	 * @param newHologramsManager holograms manager to register
 	 */
-	void setHologramsManager(@NotNull AbstractHolograms<?> newHologramsManager);
+	void setHologramsManager(@NotNull BqHologramManager newHologramsManager);
 
 	/**
 	 * Gets the blocks manager, which provides methods to register custom block types and deserialize

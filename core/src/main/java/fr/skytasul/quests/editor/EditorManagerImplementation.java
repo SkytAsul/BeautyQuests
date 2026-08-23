@@ -4,6 +4,7 @@ import fr.skytasul.quests.api.QuestsPlugin;
 import fr.skytasul.quests.api.editors.Editor;
 import fr.skytasul.quests.api.editors.EditorFactory;
 import fr.skytasul.quests.api.editors.EditorManager;
+import fr.skytasul.quests.api.editors.parsers.NumberParser;
 import fr.skytasul.quests.api.localization.Lang;
 import fr.skytasul.quests.api.utils.messaging.DefaultErrors;
 import fr.skytasul.quests.utils.QuestUtils;
@@ -12,9 +13,7 @@ import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
-import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
-import org.bukkit.event.player.AsyncPlayerChatEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.jetbrains.annotations.NotNull;
 import java.util.ArrayList;
@@ -28,11 +27,11 @@ public class EditorManagerImplementation implements EditorManager, Listener {
 
 	private @NotNull EditorFactory factory;
 
-	public EditorManagerImplementation() {
+	public EditorManagerImplementation(@NotNull EditorFactory factory) {
+		this.factory = factory;
+
 		bar = BossBar.bossBar(Component.text("Quests Editor", NamedTextColor.GOLD), 0, BossBar.Color.YELLOW,
 				BossBar.Overlay.PROGRESS);
-
-		setFactory(new DefaultEditorFactory());
 	}
 
 	@Override
@@ -49,7 +48,7 @@ public class EditorManagerImplementation implements EditorManager, Listener {
 				.debug(player.getName() + " is entering editor " + editor.getClass().getName() + ".");
 
 		player.sendTitle(Lang.ENTER_EDITOR_TITLE.toString(), Lang.ENTER_EDITOR_SUB.toString(), 5, 50, 5);
-		QuestsPlugin.getPlugin().getAudiences().player(player).showBossBar(bar);
+		player.showBossBar(bar);
 
 		QuestUtils.autoRegister(editor);
 
@@ -57,7 +56,7 @@ public class EditorManagerImplementation implements EditorManager, Listener {
 			editor.begin();
 		} catch (Exception ex) {
 			QuestsPlugin.getPlugin().getLoggerExpanded().severe("An error occurred while beginning editor", ex);
-			DefaultErrors.sendGeneric(QuestsPlugin.getPlugin().getAudiences().player(player), "impossible to begin editor");
+			DefaultErrors.sendGeneric(player, "impossible to begin editor");
 			editor.cancel();
 		}
 
@@ -71,7 +70,7 @@ public class EditorManagerImplementation implements EditorManager, Listener {
 			return;
 
 		QuestsPlugin.getPlugin().getLoggerExpanded().debug(player.getName() + " has left the editor.");
-		QuestsPlugin.getPlugin().getAudiences().player(player).hideBossBar(bar);
+		player.hideBossBar(bar);
 		editor.end();
 
 		QuestUtils.autoUnregister(editor);
@@ -95,16 +94,6 @@ public class EditorManagerImplementation implements EditorManager, Listener {
 	@Override
 	public void setFactory(@NotNull EditorFactory factory) {
 		this.factory = factory;
-	}
-
-	@EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = false)
-	public void onChat(AsyncPlayerChatEvent e) {
-		Editor editor = players.get(e.getPlayer());
-		if (editor == null)
-			return;
-
-		e.setCancelled(true);
-		QuestUtils.runOrSync(() -> editor.callChat(e.getMessage()));
 	}
 
 	@EventHandler

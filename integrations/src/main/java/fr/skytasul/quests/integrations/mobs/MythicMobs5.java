@@ -45,7 +45,7 @@ public class MythicMobs5 implements LeveledMobFactory<MythicMob>, Listener {
 
 	@Override
 	public void itemClick(Player p, Consumer<MythicMob> run) {
-		new PagedGUI<MythicMob>("List of MythicMobs", DyeColor.PINK, MythicBukkit.inst().getMobManager().getMobTypes(), null, MythicMob::getInternalName) {
+		new PagedGUI<MythicMob>("List of MythicMobs", DyeColor.PINK, MythicBukkit.inst().getMobManager().getMobTypes()) {
 			@Override
 			public ItemStack getItemStack(MythicMob object) {
 				XMaterial mobItem;
@@ -63,7 +63,7 @@ public class MythicMobs5 implements LeveledMobFactory<MythicMob>, Listener {
 				close();
 				run.accept(existing);
 			}
-		}.sortValues(MythicMob::getInternalName).open(p);
+		}.addSearchButton(3, MythicMob::getInternalName).sortValues(MythicMob::getInternalName).open(p);
 	}
 
 	@Override
@@ -92,9 +92,7 @@ public class MythicMobs5 implements LeveledMobFactory<MythicMob>, Listener {
 	public String getName(MythicMob data) {
 		PlaceholderString displayName = data.getDisplayName();
 		if (displayName != null) {
-			return QuestsPlugin.getPlugin().isRunningPaper()
-					? Text.toLegacy(Text.parse(displayName.get()))
-					: displayName.get();
+			return Text.toLegacy(Text.parse(displayName.get()));
 		}
 		return data.getInternalName();
 	}

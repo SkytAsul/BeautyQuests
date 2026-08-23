@@ -35,20 +35,18 @@ public class Database implements Closeable {
 		if (connectionString == null || connectionString.isEmpty())
 			connectionString = "jdbc:mysql://" + config.host() + ":" + config.port() + "/" + config.databaseName();
 
-		Matcher matcher = Pattern.compile("^jdbc:(\\w+):\\/\\/").matcher(connectionString);
+		Matcher matcher = Pattern.compile("^jdbc:(\\w+):").matcher(connectionString);
 		if (matcher.find()) {
-			switch (matcher.group(1).toLowerCase()) {
-				case "mysql":
-					type = DbType.MySQL;
-					break;
-				case "postgresql":
-					type = DbType.PostgreSQL;
-					break;
-				default:
-					LOGGER.warning("Unsupported database provider: " + matcher.group(1));
-					type = DbType.MySQL;
-					break;
-			}
+			type = switch (matcher.group(1).toLowerCase()) {
+				case "mysql" -> DbType.MySQL;
+				case "postgresql" -> DbType.PostgreSQL;
+				case "sqlite" -> DbType.SQLite;
+				case "h2" -> DbType.H2;
+				default -> {
+					LOGGER.warning("Unsupported database dialect {0}. Falling back to MySQL.", matcher.group(1));
+					yield DbType.MySQL;
+				}
+			};
 		} else {
 			LOGGER.warning("Malformed database connection string!");
 			type = DbType.MySQL;
@@ -98,7 +96,11 @@ public class Database implements Closeable {
 	}
 
 	public enum DbType {
-		MySQL("INT NOT NULL AUTO_INCREMENT", "TINYINT", "LONGTEXT"), PostgreSQL("SERIAL", "BOOLEAN", "TEXT");
+		MySQL("INT NOT NULL AUTO_INCREMENT", "TINYINT", "LONGTEXT"),
+		PostgreSQL("SERIAL", "BOOLEAN", "TEXT"),
+		SQLite("INT NOT NULL AUTO_INCREMENT", "BOOLEAN", "TEXT"),
+		H2("INT NOT NULL AUTO_INCREMENT", "BOOLEAN", "CLOB"),
+		;
 
 		private final String serialType;
 		private final String booleanType;

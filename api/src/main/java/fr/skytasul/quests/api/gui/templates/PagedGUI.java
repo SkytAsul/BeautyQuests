@@ -1,15 +1,14 @@
 package fr.skytasul.quests.api.gui.templates;
 
 import com.cryptomorin.xseries.XMaterial;
+
 import fr.skytasul.quests.api.QuestsConfiguration;
 import fr.skytasul.quests.api.QuestsPlugin;
-import fr.skytasul.quests.api.editors.TextEditor;
 import fr.skytasul.quests.api.gui.AbstractGui;
 import fr.skytasul.quests.api.gui.GuiClickEvent;
 import fr.skytasul.quests.api.gui.ItemUtils;
 import fr.skytasul.quests.api.localization.Lang;
 import fr.skytasul.quests.api.utils.LevenshteinComparator;
-import org.apache.commons.lang.Validate;
 import org.bukkit.Bukkit;
 import org.bukkit.DyeColor;
 import org.bukkit.Material;
@@ -19,9 +18,7 @@ import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
+import java.util.*;
 import java.util.function.Consumer;
 import java.util.function.Function;
 
@@ -46,24 +43,16 @@ public abstract class PagedGUI<T> extends AbstractGui {
 	private final int columns;
 	private final int dataSlots;
 
+	private final Map<Integer, BarButton> barButtons = new HashMap<>();
+
 	private String name;
 	private DyeColor color;
 	protected List<T> objects;
-	protected Consumer<List<T>> validate;
-	private ItemStack validationItem = QuestsPlugin.getPlugin().getGuiManager().getItemFactory().getDone();
-	protected LevenshteinComparator<T> comparator;
 
-	protected PagedGUI(@NotNull String name, @Nullable DyeColor color, @NotNull Collection<T> objects) {
-		this(name, color, objects, null, null);
-	}
-
-	protected PagedGUI(@NotNull String name, @Nullable DyeColor color, @NotNull Collection<T> objects,
-			@Nullable Consumer<List<T>> validate, @Nullable Function<T, String> searchName) {
+	protected PagedGUI(@NotNull String name, @Nullable DyeColor color, @NotNull Collection<? extends T> objects) {
 		this.name = name;
 		this.color = color;
 		this.objects = new ArrayList<>(objects);
-		this.validate = validate;
-		if (searchName != null) this.comparator = new LevenshteinComparator<>(searchName);
 
 		columns = QuestsConfiguration.getConfig().getGuiConfig().showVerticalSeparator() ? 7 : 8;
 		dataSlots = columns * 5;
@@ -81,8 +70,7 @@ public abstract class PagedGUI<T> extends AbstractGui {
 
 		setBarItem(0, QuestsPlugin.getPlugin().getGuiManager().getItemFactory().getPreviousPage());
 		setBarItem(4, QuestsPlugin.getPlugin().getGuiManager().getItemFactory().getNextPage());
-		if (validate != null) setBarItem(2, validationItem);
-		if (comparator != null) setBarItem(3, itemSearch);
+		barButtons.forEach((barSlot, button) -> setBarItem(barSlot, button.item()));
 
 		displaySeparator();
 
@@ -102,22 +90,6 @@ public abstract class PagedGUI<T> extends AbstractGui {
 		return player;
 	}
 
-	public PagedGUI<T> setValidate(Consumer<List<T>> validate, ItemStack validationItem) {
-		if (this.validate != null) throw new IllegalStateException("A validation has already be added.");
-		if (this.getInventory() != null)
-			throw new IllegalStateException("Cannot add a validation after inventory opening.");
-		if (validationItem == null) throw new IllegalArgumentException("Cannot set a null validation item.");
-		this.validate = validate;
-		this.validationItem = validationItem;
-		return this;
-	}
-
-	public PagedGUI<T> sortValuesByName() {
-		Validate.notNull(comparator);
-		sortValues(comparator.getFunction());
-		return this;
-	}
-
 	public <C extends Comparable<C>> PagedGUI<T> sortValues(Function<T, C> mapper) {
 		objects.sort((o1, o2) -> {
 			C map1;
@@ -126,6 +98,7 @@ public abstract class PagedGUI<T> extends AbstractGui {
 			if (o2 == null || (map2 = mapper.apply(o2)) == null) return -1;
 			return map1.compareTo(map2);
 		});
+		setItems();
 		return this;
 	}
 
@@ -142,11 +115,41 @@ public abstract class PagedGUI<T> extends AbstractGui {
 		setItems();
 	}
 
+	public void setBarButton(int barSlot, @NotNull BarButton button) {
+		if (barSlot == 0 || barSlot == 4)
+			throw new IllegalArgumentException("Cannot use bar slots reserved for page buttons");
+
+		barButtons.put(barSlot, button);
+		if (getInventory() != null)
+			setBarItem(barSlot, button.item());
+	}
+
+	public PagedGUI<T> addSearchButton(int barSlot, @NotNull Function<T, String> nameExtractor) {
+		barButtons.put(barSlot, new BarButton(itemSearch, event -> {
+			QuestsPlugin.getPlugin().getEditorManager().getFactory().createTextEditorBuilderString(getViewer(), this::reopen, string -> {
+				page = 0;
+				objects.sort(new LevenshteinComparator<>(nameExtractor, string));
+				setItems();
+				reopen();
+			}).build().start();
+		}));
+		return this;
+	}
+
+	public PagedGUI<T> addValidateButton(int barSlot, @NotNull Consumer<List<T>> validation) {
+		barButtons.put(barSlot, new BarButton(QuestsPlugin.getPlugin().getGuiManager().getItemFactory().getDone(),
+				(event) -> validation.accept(objects)));
+		return this;
+	}
+
 	protected void calcMaxPages() {
 		this.maxPage = objects.isEmpty() ? 1 : (int) Math.ceil(objects.size() * 1D / 35D);
 	}
 
-	protected void setItems() {
+	public void setItems() {
+		if (getInventory() == null)
+			return;
+
 		for (int i = 0; i < dataSlots; i++)
 			setMainItem(i, null);
 		for (int i = page * dataSlots; i < objects.size(); i++) {
@@ -164,7 +167,7 @@ public abstract class PagedGUI<T> extends AbstractGui {
 		return slot;
 	}
 
-	protected int setBarItem(int barSlot, ItemStack is) {
+	private int setBarItem(int barSlot, ItemStack is) {
 		int slot = barSlot * 9 + 8; // always at last column so +8
 		setItem(is, slot);
 		return slot;
@@ -208,12 +211,16 @@ public abstract class PagedGUI<T> extends AbstractGui {
 		} else if (!QuestsConfiguration.getConfig().getGuiConfig().showVerticalSeparator() || column != 7) {
 			int line = (int) Math.floor(event.getSlot() * 1D / 9D);
 			int objectSlot = event.getSlot() - line * (9 - columns) + page * dataSlots;
+
+			if (objectSlot >= objects.size())
+				return; // player clicked on an empty slot
+
 			click(objects.get(objectSlot), event.getClicked(), event.getClick());
 			// inv.setItem(slot, getItemStack(objects.get(objectSlot)));
 		}
 	}
 
-	protected void barClick(GuiClickEvent event, int barSlot) {
+	private void barClick(GuiClickEvent event, int barSlot) {
 		switch (barSlot) {
 			case 0:
 				if (page == 0) break;
@@ -226,17 +233,9 @@ public abstract class PagedGUI<T> extends AbstractGui {
 				setItems();
 				break;
 
-			case 2:
-				validate.accept(objects);
-				break;
-
-			case 3:
-				new TextEditor<String>(player, this::reopen, obj -> {
-					objects.sort(comparator.setReference(obj));
-					page = 0;
-					setItems();
-					reopen();
-				}).start();
+			default:
+				if (barButtons.containsKey(barSlot))
+					barButtons.get(barSlot).clickHandler.accept(event);
 				break;
 			}
 	}
@@ -262,5 +261,8 @@ public abstract class PagedGUI<T> extends AbstractGui {
 	 * @param clickType click type
 	 */
 	public abstract void click(@NotNull T existing, @NotNull ItemStack item, @NotNull ClickType clickType);
+
+	public record BarButton(@NotNull ItemStack item, @NotNull Consumer<GuiClickEvent> clickHandler) {
+	}
 
 }

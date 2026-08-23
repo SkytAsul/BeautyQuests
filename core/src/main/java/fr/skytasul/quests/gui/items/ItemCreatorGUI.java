@@ -1,146 +1,80 @@
 package fr.skytasul.quests.gui.items;
 
-import com.cryptomorin.xseries.XMaterial;
-import fr.skytasul.quests.api.QuestsPlugin;
-import fr.skytasul.quests.api.editors.TextEditor;
-import fr.skytasul.quests.api.editors.TextListEditor;
-import fr.skytasul.quests.api.editors.parsers.NumberParser;
-import fr.skytasul.quests.api.gui.AbstractGui;
-import fr.skytasul.quests.api.gui.GuiClickEvent;
-import fr.skytasul.quests.api.gui.ItemUtils;
-import fr.skytasul.quests.api.localization.Lang;
-import org.bukkit.Bukkit;
-import org.bukkit.Material;
-import org.bukkit.entity.Player;
-import org.bukkit.inventory.Inventory;
-import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.ItemMeta;
-import org.jetbrains.annotations.NotNull;
-import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.function.Consumer;
 
-public class ItemCreatorGUI extends AbstractGui {
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
-	private Consumer<ItemStack> run;
-	private boolean allowCancel;
+import com.cryptomorin.xseries.XMaterial;
 
-	private XMaterial type;
+import fr.skytasul.quests.api.QuestsPlugin;
+import fr.skytasul.quests.api.editors.parsers.NumberParser;
+import fr.skytasul.quests.api.gui.ItemUtils;
+import fr.skytasul.quests.api.gui.close.DelayCloseBehavior;
+import fr.skytasul.quests.api.gui.layout.LayoutedButton;
+import fr.skytasul.quests.api.gui.layout.LayoutedClickEvent;
+import fr.skytasul.quests.api.gui.layout.LayoutedGUI;
+import fr.skytasul.quests.api.localization.Lang;
+import fr.skytasul.quests.api.options.QuestOption;
+
+public class ItemCreatorGUI extends LayoutedGUI.LayoutedRowsGUI {
+
+	private final @NotNull Consumer<ItemStack> endCallback;
+	private final @NotNull Runnable cancelCallback;
+
+	private @Nullable XMaterial type;
 	private int amount = 1;
-	private String name;
-	private List<String> lore = new ArrayList<>();
+	private @Nullable String name;
+	private @Nullable String lore;
 	private boolean quest = false;
 	private boolean flags = false;
 
-	public ItemCreatorGUI(Consumer<ItemStack> end, boolean allowCancel) {
-		run = end;
-		this.allowCancel = allowCancel;
+	public ItemCreatorGUI(@NotNull Consumer<ItemStack> endCallback, @NotNull Runnable cancelCallback) {
+		super(Lang.INVENTORY_CREATOR.toString(), new HashMap<>(), new DelayCloseBehavior(cancelCallback), 2);
+		this.endCallback = endCallback;
+		this.cancelCallback = cancelCallback;
+
+		super.buttons.put(0,
+				LayoutedButton.create(
+						() -> ItemUtils.item(type == null ? XMaterial.SPONGE : type, Lang.itemType.toString()),
+						this::handleTypeClick));
+		super.buttons.put(1,
+				LayoutedButton.create(XMaterial.REDSTONE, () -> Lang.Amount.quickFormat("amount", amount), List.of(),
+						this::handleAmountClick));
+		super.buttons.put(2, LayoutedButton.createLoreValue(XMaterial.NAME_TAG, Lang.itemName.toString(), () -> name,
+				this::handleNameClick));
+		super.buttons.put(3, LayoutedButton.createLoreValue(XMaterial.FEATHER, Lang.itemLore.toString(),
+				() -> lore, this::handleLoreClick));
+		super.buttons.put(5,
+				LayoutedButton.createSwitch(() -> flags, Lang.itemFlags.toString(), null, this::handleFlagsClick));
+		super.buttons.put(6, LayoutedButton.createSwitch(() -> quest, Lang.itemQuest.toString(),
+				List.of(QuestOption.formatDescription(Lang.itemQuestDescription.toString())), this::handleQuestItemClick));
+
+		super.buttons.put(13, LayoutedButton.create(() -> isValid() ? generateItem() : null, this::handleGeneratedItemClick));
+
+		super.buttons.put(8, LayoutedButton.create(
+				QuestsPlugin.getPlugin().getGuiManager().getItemFactory().getCancel(), event -> cancelCallback.run()));
+		super.buttons.put(17,
+				LayoutedButton.create(
+						() -> isValid()
+								? QuestsPlugin.getPlugin().getGuiManager().getItemFactory().getDone()
+								: ItemUtils.loreAdd(QuestsPlugin.getPlugin().getGuiManager().getItemFactory().getNotDone(),
+										Lang.itemNeedType.toString()),
+						event -> {
+							if (isValid())
+								endCallback.accept(generateItem());
+						}));
 	}
 
-	@Override
-	protected Inventory instanciate(@NotNull Player player) {
-		return Bukkit.createInventory(null, 18, Lang.INVENTORY_CREATOR.toString());
+	private boolean isValid() {
+		return type != null;
 	}
 
-	@Override
-	protected void populate(@NotNull Player player, @NotNull Inventory inventory) {
-		inventory.setItem(0, ItemUtils.item(XMaterial.GRASS_BLOCK, Lang.itemType.toString()));
-		inventory.setItem(1, ItemUtils.item(XMaterial.REDSTONE, Lang.Amount.quickFormat("amount", 1)));
-		inventory.setItem(2, ItemUtils.itemSwitch(Lang.itemFlags.toString(), false));
-		inventory.setItem(3, ItemUtils.item(XMaterial.NAME_TAG, Lang.itemName.toString()));
-		inventory.setItem(4, ItemUtils.item(XMaterial.FEATHER, Lang.itemLore.toString()));
-		inventory.setItem(6, ItemUtils.item(XMaterial.BOOK, Lang.itemQuest.toString() + " §c" + Lang.No.toString()));
-		if (allowCancel)
-			inventory.setItem(8, QuestsPlugin.getPlugin().getGuiManager().getItemFactory().getCancel());
-		inventory.setItem(17, QuestsPlugin.getPlugin().getGuiManager().getItemFactory().getDone());
-		inventory.getItem(17).setType(Material.COAL);
-	}
-
-	private void refresh() {
-		if (type != null) {
-			getInventory().setItem(13, build());
-			if (getInventory().getItem(17).getType() != Material.DIAMOND)
-				getInventory().getItem(17).setType(Material.DIAMOND);
-		}
-	}
-
-	@Override
-	public void onClick(GuiClickEvent event) {
-		switch (event.getSlot()) {
-			case 0:
-				Lang.CHOOSE_ITEM_TYPE.send(event.getPlayer());
-				new TextEditor<>(event.getPlayer(), event::reopen, obj -> {
-					type = obj;
-					event.reopen();
-					refresh();
-				}, QuestsPlugin.getPlugin().getEditorManager().getFactory().getMaterialParser(true, false)).start();
-				break;
-
-			case 1:
-				Lang.CHOOSE_ITEM_AMOUNT.send(event.getPlayer());
-				new TextEditor<>(event.getPlayer(), event::reopen, obj -> {
-					amount = obj;
-					ItemUtils.name(event.getClicked(), Lang.Amount.quickFormat("amount", amount));
-					event.reopen();
-					refresh();
-				}, new NumberParser<>(Integer.class, 1, 64)).start();
-				break;
-
-			case 2:
-				flags = ItemUtils.toggleSwitch(event.getClicked());
-				refresh();
-				break;
-
-			case 3:
-				Lang.CHOOSE_ITEM_NAME.send(event.getPlayer());
-				new TextEditor<String>(event.getPlayer(), event::reopen, obj -> {
-					name = obj;
-					event.reopen();
-					refresh();
-				}).start();
-				break;
-
-			case 4:
-				Lang.CHOOSE_ITEM_LORE.send(event.getPlayer());
-				new TextListEditor(event.getPlayer(), list -> {
-					lore = list;
-					event.reopen();
-					refresh();
-				}, lore).start();
-				break;
-
-			case 6:
-				if (!quest) {
-					ItemUtils.name(event.getClicked(), Lang.itemQuest.toString() + " §a" + Lang.Yes.toString());
-					quest = true;
-				} else {
-					ItemUtils.name(event.getClicked(), Lang.itemQuest.toString() + " §c" + Lang.No.toString());
-					quest = false;
-				}
-				refresh();
-				break;
-
-			case 8:
-				close(event.getPlayer());
-				run.accept(null);
-				break;
-
-			case 17: // VALIDATE
-				if (event.getClicked().getType() == Material.DIAMOND) {
-					close(event.getPlayer());
-					run.accept(build());
-				}
-				break;
-
-			case 13: // GIVE
-				if (type != null)
-					event.getPlayer().setItemOnCursor(build());
-				break;
-
-		}
-	}
-
-	private ItemStack build() {
+	private @NotNull ItemStack generateItem() {
 		ItemStack is = type.parseItem();
 		ItemMeta im = is.getItemMeta();
 		if (name != null)
@@ -156,6 +90,76 @@ public class ItemCreatorGUI extends AbstractGui {
 		if (quest)
 			ItemUtils.loreAdd(is, " ", Lang.QuestItemLore.toString());
 		return is;
+	}
+
+	private void handleGeneratedItemClick(LayoutedClickEvent event) {
+		event.getPlayer().setItemOnCursor(generateItem());
+	}
+
+	private void handleTypeClick(LayoutedClickEvent event) {
+		QuestsPlugin.getPlugin().getEditorManager().getFactory().createTextEditorBuilderParser(
+				event.getPlayer(),
+				QuestsPlugin.getPlugin().getEditorManager().getFactory().getMaterialParser(true, false),
+				event::reopen,
+				material -> {
+					type = material;
+					event.refreshGuiReopen();
+				})
+				.setIndication(Lang.CHOOSE_ITEM_TYPE.toString())
+				.setInitialValue(type)
+				.build().start();
+	}
+
+	private void handleAmountClick(LayoutedClickEvent event) {
+		QuestsPlugin.getPlugin().getEditorManager().getFactory().createTextEditorBuilderParser(
+				event.getPlayer(),
+				NumberParser.INTEGER_PARSER_STRICT_POSITIVE,
+				event::reopen,
+				amount -> {
+					this.amount = amount;
+					event.refreshGuiReopen();
+				})
+				.setIndication(Lang.CHOOSE_ITEM_AMOUNT.toString())
+				.setInitialString(Integer.toString(amount))
+				.build().start();
+	}
+
+	private void handleFlagsClick(LayoutedClickEvent event) {
+		flags = !flags;
+		event.refreshGui();
+	}
+
+	private void handleNameClick(LayoutedClickEvent event) {
+		QuestsPlugin.getPlugin().getEditorManager().getFactory().createTextEditorBuilderString(
+				event.getPlayer(),
+				event::reopen,
+				name -> {
+					this.name = name;
+					event.refreshGuiReopen();
+				})
+				.setIndication(Lang.CHOOSE_ITEM_NAME.toString())
+				.setInitialString(name)
+				.allowEmpty()
+				.build().start();
+	}
+
+	private void handleLoreClick(LayoutedClickEvent event) {
+		QuestsPlugin.getPlugin().getEditorManager().getFactory().createTextEditorBuilderString(
+				event.getPlayer(),
+				event::reopen,
+				lore -> {
+					this.lore = lore;
+					event.refreshGuiReopen();
+				})
+				.setIndication(Lang.CHOOSE_ITEM_LORE.toString())
+				.setInitialString(lore)
+				.allowMultiline().forceMultiline()
+				.build().start();
+	}
+
+	private void handleQuestItemClick(LayoutedClickEvent event) {
+		quest = !quest;
+		event.refreshGui();
 	}
 
 }

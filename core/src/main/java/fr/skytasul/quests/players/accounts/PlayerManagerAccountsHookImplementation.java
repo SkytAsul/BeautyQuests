@@ -20,7 +20,7 @@ import java.util.Optional;
 
 public class PlayerManagerAccountsHookImplementation extends PlayerManagerImplementation {
 
-	private static final @NotNull Key KEY = Key.key("BeautyQuests", "players-accounts-hook");
+	private static final @NotNull Key KEY = Key.key("beautyquests", "players-accounts-hook");
 
 	public PlayerManagerAccountsHookImplementation(@NotNull QuestsPlugin plugin) {
 		super(plugin);
@@ -44,7 +44,7 @@ public class PlayerManagerAccountsHookImplementation extends PlayerManagerImplem
 					.warning("Cannot fetch player identifier of an offline player with AccountsHook");
 			return Optional.empty();
 		}
-		return Optional.of(getAccountsProvider().getCurrentAccount(p.getPlayer()).getIdentifier().toString());
+		return getAccountsProvider().getCurrentAccount(p.getPlayer()).map(acc -> acc.getIdentifier().toString());
 	}
 
 	@Override

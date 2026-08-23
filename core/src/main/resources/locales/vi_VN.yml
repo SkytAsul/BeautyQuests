@@ -138,26 +138,6 @@ msg:
       own:
         hidden: '§6Bảng thông tin của bạn hiện tại đã bị ẩn.'
         shown: '§6Bảng thông tin của bạn hiện đã được hiển thị lại.'
-    help:
-      header: '§6§lBeautyQuest - Help'
-      create: '§6/{label} create: §eTạo nhiệm vụ mới'
-      edit: '§6/{label} edit: §eChỉnh sửa nhiệm vụ'
-      remove: '§6/{label} remove <id nhiệm vụ>: §eXóa nhiệm vụ với id của nó hoặc click vào NPC khi chưa xác định'
-      finishAll: '§6/{label} fisnishAll <tên người chơi>: §e Hoàn thành tất cả nhiệm vụ mà người chơi đó đang nhận'
-      setStage: '§6/{label} setStage <tên người chơi> <id nhiệm vụ> [nhánh nhiệm vụ mới] [giai đoạn mới]: §eBỏ qua giai đoạn hiện tại để bắt đầu một nhanh nhiệm vụ mới'
-      startDialog: '§6/{label} startDialog <Người chơi> <Mã nhiệm vụ>: §eBắt đầu hộp thoại đang chờ xử lý cho một giai đoạn của NPC hoặc hộp thoại bắt đầu cho một nhiệm vụ.'
-      resetPlayer: '§6/{label} resetPlayer <tên người chơi>: §eXóa toàn bộ thông tin người chơi'
-      resetPlayerQuest: '§6/{label} resetPlayerQuest <tên người chơi> [id nhiệm vụ] §eXóa thông tin nhiệm vụ từ người chơi'
-      seePlayer: '§6/{label} seePlayer <player>: §eXem thông tin của người chơi'
-      reload: '§6/{label} reload : §eLưu và tải lại tất cả mọi thứ §c(Lệnh này có thể mang lại lỗi cho máy chủ bạn đến 99.9% nên hãy restart lại máy chủ)'
-      start: '§6/{label} start <tên người chơi> [id nhiệm vụ]:§e Bắt buộc người chơi bắt đầu nhiệm vụ'
-      setItem: '§6/{label} setItem <talk|laucher>:§e Lưu vật phẩm hologram'
-      setFirework: '§6/{label} setFirework: §eChỉnh sửa pháo hoa mặc định lúc kết thúc.'
-      adminMode: '§6/{label} adminMode:§e Bật/tắt chế độ admin (Nó khá hữu dụng cho hiện một vài thông tin log)'
-      version: '§6/{label} version: §eKiểm tra phiên bản của plugins'
-      downloadTranslations: '§6/{label} downloadTranslations <Ngôn ngữ>: §eTải xuống một tệp bản dịch vanilla'
-      save: '§6/{label} save: §eLưu plugins cách thủ công'
-      list: '§6/{label} list:§e Xem tất cả các nhiệm vụ (Chỉ cho phiên bản được hỗ trợ)'
   typeCancel: '§aGõ "cancel" để trở lại dòng tin nhắn cuối cùng'
   editor:
     blockAmount: '§aViết số lượng khối'
@@ -612,7 +592,6 @@ inv:
   poolsManage:
     name: Nhóm Nhiệm vụ
     itemName: '§aPool {pool}'
-    poolNPC: '§8NPC: §7{pool_npc_id}'
     poolMaxQuests: '§8Nhiệm vụ tối đa: §7{pool_max_quests}'
     poolQuestsPerLaunch: '§8Nhiệm vụ được cho mỗi lần chạy: §7{pool_quests_per_launch}'
     poolRedo: '§8Có thể hoàn tác nhiệm vụ đã hoàn thành: §7{pool_redo}'
@@ -621,7 +600,6 @@ inv:
     poolAvoidDuplicates: '§8Tránh trừng lặp: §7{pool_duplicates}'
     poolQuestsList: '§7{pool_quests_amount} §8nhiệm vụ: §7{pool_quests}'
     create: '§aTạo nhóm nhiệm vụ'
-    edit: '§e> §6§oChỉnh sửa nhóm... §e<'
     choose: '§e> §6§oChọn nhóm này §e<'
   poolCreation:
     name: Tạo nhóm nhiệm vụ

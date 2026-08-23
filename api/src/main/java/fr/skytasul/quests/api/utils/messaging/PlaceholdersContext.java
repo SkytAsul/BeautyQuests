@@ -1,6 +1,5 @@
 package fr.skytasul.quests.api.utils.messaging;
 
-import fr.skytasul.quests.api.QuestsPlugin;
 import fr.skytasul.quests.api.players.PlayerManager;
 import fr.skytasul.quests.api.players.PlayerQuester;
 import fr.skytasul.quests.api.questers.Quester;
@@ -64,11 +63,6 @@ public interface PlaceholdersContext {
 			@Nullable MessageType messageType) {
 		return new PlayerPlaceholdersContext() {
 			@Override
-			public @Nullable Audience getAudience() {
-				return actor == null ? null : QuestsPlugin.getPlugin().getAudiences().player(actor);
-			}
-
-			@Override
 			public boolean replacePluginPlaceholders() {
 				return replacePluginPlaceholders;
 			}
@@ -110,7 +104,7 @@ public interface PlaceholdersContext {
 
 		@Override
 		default @NotNull Audience getAudience() {
-			return QuestsPlugin.getPlugin().getAudiences().player(getActor());
+			return getActor();
 		}
 
 	}

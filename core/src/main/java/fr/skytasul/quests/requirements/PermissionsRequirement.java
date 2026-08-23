@@ -53,8 +53,8 @@ public class PermissionsRequirement extends AbstractRequirement {
 	}
 
 	@Override
-	protected void sendCustomReasonHelpMessage(Player p) {
-		Lang.CHOOSE_PERM_REQUIRED_MESSAGE.send(p);
+	protected String getCustomReasonIndication(Player p) {
+		return Lang.CHOOSE_PERM_REQUIRED_MESSAGE.toString();
 	}
 
 	@Override

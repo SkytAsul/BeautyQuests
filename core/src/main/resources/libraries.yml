@@ -1,0 +1,7 @@
+libraries:
+- io.github.revxrsal:lamp.bukkit:${lamp.version}
+- io.github.revxrsal:lamp.common:${lamp.version}
+- com.github.cryptomorin:XSeries:${xseries.version}
+- com.zaxxer:HikariCP:${hikaricp.version}
+- fr.mrmicky:fastboard:${fastboard.version}
+- commons-lang:commons-lang:${commons-lang.version}

@@ -48,6 +48,15 @@ public interface Quester extends HasPlaceholders, Audience {
 	String getFriendlyName();
 
 	/**
+	 * @return the display name of the quester. This name can change multiple times in a regular quester
+	 *         lifecycle and should not be used for logging or identifying.
+	 */
+	@NotNull
+	default String getDisplayName() {
+		return getFriendlyName();
+	}
+
+	/**
 	 * @return a detailed name describing this quester. This name should only be used for logging
 	 *         purpose.
 	 */

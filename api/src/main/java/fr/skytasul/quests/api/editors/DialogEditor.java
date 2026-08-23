@@ -12,7 +12,7 @@ import org.bukkit.entity.Player;
 import java.util.Arrays;
 import java.util.stream.Collectors;
 
-public class DialogEditor extends Editor{
+public class DialogEditor extends AbstractChatEditor {
 
 	private Runnable end;
 	public Dialog d;
@@ -64,9 +64,9 @@ public class DialogEditor extends Editor{
 				if (removed != null){
 					Lang.DIALOG_MSG_REMOVED.send(player, PlaceholderRegistry.of("msg", removed.text));
 				} else
-					DefaultErrors.sendOutOfBounds(getPlayerAudience(), index, 0, d.getMessages().size());
+					DefaultErrors.sendOutOfBounds(player, index, 0, d.getMessages().size());
 			}catch (IllegalArgumentException ex){
-				DefaultErrors.sendInvalidNumber(getPlayerAudience(), args[1]);
+				DefaultErrors.sendInvalidNumber(player, args[1]);
 			}
 			break;
 
@@ -92,7 +92,7 @@ public class DialogEditor extends Editor{
 				d.insert(msg, sender, Integer.parseInt(args[1]));
 				Lang.valueOf("DIALOG_MSG_ADDED_" + cmd.name()).send(player, PlaceholderRegistry.of("msg", msg));
 			}catch (NumberFormatException ex){
-				DefaultErrors.sendInvalidNumber(getPlayerAudience(), args[1]);
+				DefaultErrors.sendInvalidNumber(player, args[1]);
 			}
 			break;
 
@@ -107,9 +107,9 @@ public class DialogEditor extends Editor{
 				message.text = msg;
 				Lang.DIALOG_MSG_EDITED.send(player, PlaceholderRegistry.of("msg", msg));
 			}catch (IllegalArgumentException ex){
-				DefaultErrors.sendInvalidNumber(getPlayerAudience(), args[1]);
+				DefaultErrors.sendInvalidNumber(player, args[1]);
 			}catch (IndexOutOfBoundsException ex) {
-				DefaultErrors.sendOutOfBounds(getPlayerAudience(), Integer.parseInt(args[1]), 0, d.getMessages().size());
+				DefaultErrors.sendOutOfBounds(player, Integer.parseInt(args[1]), 0, d.getMessages().size());
 			}
 			break;
 
@@ -122,9 +122,9 @@ public class DialogEditor extends Editor{
 				Message imsg = d.getMessages().get(Integer.parseInt(args[1]));
 				Lang.DIALOG_SOUND_ADDED.send(player, PlaceholderRegistry.of("sound", imsg.sound = args[2], "msg", args[1]));
 			}catch (IllegalArgumentException ex){
-				DefaultErrors.sendInvalidNumber(getPlayerAudience(), args[1]);
+				DefaultErrors.sendInvalidNumber(player, args[1]);
 			}catch (IndexOutOfBoundsException ex) {
-				DefaultErrors.sendOutOfBounds(getPlayerAudience(), Integer.parseInt(args[1]), 0, d.getMessages().size());
+				DefaultErrors.sendOutOfBounds(player, Integer.parseInt(args[1]), 0, d.getMessages().size());
 			}
 			break;
 
@@ -144,9 +144,9 @@ public class DialogEditor extends Editor{
 					Lang.DIALOG_TIME_SET.send(player, PlaceholderRegistry.of("msg", args[1], "time", imsg.wait = time));
 				}
 			}catch (IllegalArgumentException ex) {
-				DefaultErrors.sendInvalidNumber(getPlayerAudience(), args[1]);
+				DefaultErrors.sendInvalidNumber(player, args[1]);
 			}catch (IndexOutOfBoundsException ex) {
-				DefaultErrors.sendOutOfBounds(getPlayerAudience(), Integer.parseInt(args[1]), 0, d.getMessages().size());
+				DefaultErrors.sendOutOfBounds(player, Integer.parseInt(args[1]), 0, d.getMessages().size());
 			}
 			break;
 

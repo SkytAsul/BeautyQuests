@@ -119,8 +119,6 @@ msg:
     cancelQuest: '§6Você cancelou a missão {quest}.'
     cancelQuestUnavailable: '§cA missão {quest} não pode ser cancelada.'
     backupCreated: '§6Você criou backups de todas as missões e informações de jogadores com sucesso.'
-    backupPlayersFailed: '§cFalha ao criar um backup de todas as informações dos jogadores.'
-    backupQuestsFailed: '§cFalha ao criar um backup de todas as missões.'
     adminModeEntered: '§aVocê entrou no Modo Admin.'
     adminModeLeft: '§aVocê saiu do Modo Admin.'
     resetPlayerPool:
@@ -140,26 +138,6 @@ msg:
       own:
         hidden: '§6Seu scoreboard agora está oculto.'
         shown: '§6Seu soreboard está visível novamente.'
-    help:
-      header: '§6§lBeautyQuests — Ajuda'
-      create: '§6/{label} create: §eCriar uma missão.'
-      edit: '§6/{label} edit: §eEdita uma missão.'
-      remove: '§6/{label} remove <id>: §eExclua uma missão com um id específico ou clique no NPC quando não for definido.'
-      finishAll: '§6/{label} finishAll <player>: §eTermina todas as missões de um jogador.'
-      setStage: '§6/{label} setStage <jogador> <id> [novo ramo] [novo estágio]: §ePula o estágio atual/inicia o ramo/define um estágio para um ramo.'
-      startDialog: '§6/{label} startDialog <jogador> <id da missão>: §eInicia a caixa de diálogo pendente para um estágio de NPC ou a caixa de diálogo inicial para uma missão.'
-      resetPlayer: '§6/{label} resetPlayer <jogador>: §eRemove todas as informações sobre um jogador.'
-      resetPlayerQuest: '§6/{label} resetPlayerQuest <jogador> [id]: §eExclui informações de uma missão de um jogador.'
-      seePlayer: '§6/{label} seePlayer <jogador>: §eVer informações sobre um jogador.'
-      reload: '§6/{label} reload: §eSalvar e recarregar todas as configurações e arquivos. (§cobsoleto§e)'
-      start: '§6/{label} start <jogador> [id]: §eForce o início de uma missão.'
-      setItem: '§6/{label} setItem <conversar|lançamento>: §eSalve o item de holograma.'
-      setFirework: '§6/{label} setFirework: §eEditar os fogos de artifício padrão.'
-      adminMode: '§6/ adminMode:{label} §eAlterne o Modo Admin. (Útil para exibir pequenas mensagens de registro).'
-      version: '§6/{label} version: §eVeja a versão atual do plugin.'
-      downloadTranslations: '§6/{label} downloadTranslations <idioma>: §eBaixa um arquivo de tradução padrão'
-      save: '§6/{label} save: §eFaz um salvamento manual do plugin.'
-      list: '§6/{label} list: §eVeja a lista de quests. (Somente para versões suportadas).'
   typeCancel: '§aEscreva "cancel" para voltar ao último texto.'
   editor:
     blockAmount: '§aEscreva a quantidade de blocos:'
@@ -600,7 +578,6 @@ inv:
     poolAvoidDuplicates: '§8Evitar duplicatas: §7{pool_duplicates}'
     poolQuestsList: '§7{pool_quests_amount} §8Missão(ões): §7{pool_quests}'
     create: '§aCrie um grupo de missões'
-    edit: '§e> §6§oEditar o grupo... §e<'
     choose: '§e> §6§oEscolha este grupo §e<'
   poolCreation:
     name: Criação de grupo de missões

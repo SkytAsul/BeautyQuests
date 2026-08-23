@@ -1,5 +1,6 @@
 package fr.skytasul.quests.api.localization;
 
+import fr.skytasul.quests.api.editors.Editor;
 import fr.skytasul.quests.api.utils.messaging.MessageType;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -20,6 +21,8 @@ public enum Lang implements Locale {
 	ErrorPrefix("misc.format.errorPrefix"),
 	SuccessPrefix("misc.format.successPrefix"),
 	RequirementNotMetPrefix("misc.format.requirementNotMetPrefix"),
+	ImportantItemPrefix("misc.format.importantItem"),
+	MiscItemPrefix("misc.format.miscItem"),
 
 	/* Messages */
 	FINISHED_BASE("msg.quest.finished.base"),
@@ -61,7 +64,7 @@ public enum Lang implements Locale {
 	XP_GAIN("msg.writeXPGain"),
 	MOB_AMOUNT("msg.writeMobAmount"),
 	MOB_NAME("msg.writeMobName"),
-	CHAT_MESSAGE("msg.writeChatMessage"),
+	CHAT_MESSAGE("msg.writeChatMessage", EditorPrefix),
 	WRITE_MESSAGE("msg.writeMessage"),
 	WRITE_START_MESSAGE("msg.writeStartMessage"),
 	WRITE_END_MESSAGE("msg.writeEndMsg"),
@@ -161,26 +164,6 @@ public enum Lang implements Locale {
 	COMMAND_TRANSLATION_EXISTS("msg.command.downloadTranslations.exists"), // 0: file
 	COMMAND_TRANSLATION_DOWNLOADED("msg.command.downloadTranslations.downloaded"), // 0: lang
 
-	COMMAND_HELP("msg.command.help.header", MessageType.DefaultMessageType.UNPREFIXED),
-	COMMAND_HELP_CREATE("msg.command.help.create", MessageType.DefaultMessageType.UNPREFIXED),
-	COMMAND_HELP_EDIT("msg.command.help.edit", MessageType.DefaultMessageType.UNPREFIXED),
-	COMMAND_HELP_REMOVE("msg.command.help.remove", MessageType.DefaultMessageType.UNPREFIXED),
-	COMMAND_HELP_FINISH("msg.command.help.finishAll", MessageType.DefaultMessageType.UNPREFIXED),
-	COMMAND_HELP_STAGE("msg.command.help.setStage", MessageType.DefaultMessageType.UNPREFIXED),
-	COMMAND_HELP_DIALOG("msg.command.help.startDialog", MessageType.DefaultMessageType.UNPREFIXED),
-	COMMAND_HELP_RESET("msg.command.help.resetPlayer", MessageType.DefaultMessageType.UNPREFIXED),
-	COMMAND_HELP_RESETQUEST("msg.command.help.resetPlayerQuest", MessageType.DefaultMessageType.UNPREFIXED),
-	COMMAND_HELP_SEE("msg.command.help.seePlayer", MessageType.DefaultMessageType.UNPREFIXED),
-	COMMAND_HELP_RELOAD("msg.command.help.reload", MessageType.DefaultMessageType.UNPREFIXED),
-	COMMAND_HELP_START("msg.command.help.start", MessageType.DefaultMessageType.UNPREFIXED),
-	COMMAND_HELP_SETITEM("msg.command.help.setItem", MessageType.DefaultMessageType.UNPREFIXED),
-	COMMAND_HELP_SETFIREWORK("msg.command.help.setFirework", MessageType.DefaultMessageType.UNPREFIXED),
-	COMMAND_HELP_ADMINMODE("msg.command.help.adminMode", MessageType.DefaultMessageType.UNPREFIXED),
-	COMMAND_HELP_VERSION("msg.command.help.version", MessageType.DefaultMessageType.UNPREFIXED),
-	COMMAND_HELP_DOWNLOAD_TRANSLATIONS("msg.command.help.downloadTranslations", MessageType.DefaultMessageType.UNPREFIXED),
-	COMMAND_HELP_SAVE("msg.command.help.save", MessageType.DefaultMessageType.UNPREFIXED),
-	COMMAND_HELP_LIST("msg.command.help.list", MessageType.DefaultMessageType.UNPREFIXED),
-
 	// * Editors *
 	ALREADY_EDITOR("msg.editor.already"),
 	ENTER_EDITOR_TITLE("msg.editor.enter.title"),
@@ -189,7 +172,10 @@ public enum Lang implements Locale {
 	CHAT_EDITOR("msg.editor.chat"),
 	NPC_EDITOR_ENTER("msg.editor.npc.enter"),
 
+	CANNOT_BE_EMPTY("msg.editor.text.cannotBeEmpty", ErrorPrefix),
 	ARG_NOT_SUPPORTED("msg.editor.text.argNotSupported"),
+	TEXT_PARSER_REGEX("msg.editor.text.parser.regex", EditorPrefix),
+	TEXT_PARSER_DURATION("msg.editor.text.parser.duration", EditorPrefix),
 
 	CHOOSE_NPC_STARTER("msg.editor.npc.choseStarter"),
 	NPC_NOT_QUEST("msg.editor.npc.notStarter"),
@@ -213,10 +199,11 @@ public enum Lang implements Locale {
 	NO_SUCH_ELEMENT("msg.editor.noSuchElement", EditorPrefix), // 0: available elements
 	INVALID_PATTERN("msg.editor.invalidPattern"), // 0: pattern
 
-	COMPARISON_TYPE("msg.editor.comparisonTypeDefault"), // 0: available comparisons, 1: default comparison
+	COMPARISON_TYPE("msg.editor.comparisonType", EditorPrefix),
 
 	SCOREBOARD_OBJECTIVE_NOT_FOUND("msg.editor.scoreboardObjectiveNotFound"),
 
+	POOL_NAME("msg.editor.pool.name", EditorPrefix),
 	POOL_HOLOGRAM_TEXT("msg.editor.pool.hologramText", EditorPrefix),
 	POOL_MAXQUESTS("msg.editor.pool.maxQuests", EditorPrefix),
 	POOL_QUESTS_PER_LAUNCH("msg.editor.pool.questsPerLaunch", EditorPrefix),
@@ -316,6 +303,32 @@ public enum Lang implements Locale {
 	TEXTLIST_TEXT_HELP_LIST("msg.editor.textList.help.list", MessageType.DefaultMessageType.UNPREFIXED),
 	TEXTLIST_TEXT_HELP_CLOSE("msg.editor.textList.help.close", MessageType.DefaultMessageType.UNPREFIXED),
 
+	/* Command syntax */
+	COMMAND_HELP_HEADER("command.header"),
+	COMMAND_HELP_BASE("command.base"),
+	COMMAND_HELP_CREATE("command.create"),
+	COMMAND_HELP_EDIT("command.edit"),
+	COMMAND_HELP_REMOVE("command.remove"),
+	COMMAND_HELP_FINISH_ALL("command.finishAll"),
+	COMMAND_HELP_STAGE("command.setStage"),
+	COMMAND_HELP_DIALOG("command.startDialog"),
+	COMMAND_HELP_RESET("command.resetPlayer"),
+	COMMAND_HELP_RESETPLAYERQUEST("command.resetPlayerQuest"),
+	COMMAND_HELP_RESETQUEST("command.resetQuest"),
+	COMMAND_HELP_SEE("command.seePlayer"),
+	COMMAND_HELP_START("command.start"),
+	COMMAND_HELP_CANCEL("command.cancel"),
+	COMMAND_HELP_FINISH("command.finish"),
+	COMMAND_HELP_CHECKPOINT("command.checkpoint"),
+	COMMAND_HELP_POOLS("command.pools"),
+	COMMAND_HELP_SETITEM("command.setItem"),
+	COMMAND_HELP_SETFIREWORK("command.setFirework"),
+	COMMAND_HELP_ADMINMODE("command.adminMode"),
+	COMMAND_HELP_VERSION("command.version"),
+	COMMAND_HELP_DOWNLOAD_TRANSLATIONS("command.downloadTranslations"),
+	COMMAND_HELP_SAVE("command.save"),
+	COMMAND_HELP_LIST("command.list"),
+
 	// * Quests lists*
 
 	Finished("advancement.finished"),
@@ -412,6 +425,9 @@ public enum Lang implements Locale {
 	stagePlayTimeModeOffline("inv.create.stage.playTime.modes.offline"),
 	stagePlayTimeModeRealtime("inv.create.stage.playTime.modes.realtime"),
 
+	stageChatIsRegex("inv.create.stage.chat.isRegex"),
+	stageChatIsRegexDescription("inv.create.stage.chat.isRegexDescription"),
+
 	INVENTORY_STAGES("inv.stages.name"),
 	nextPage("inv.stages.nextPage"),
 	laterPage("inv.stages.laterPage"),
@@ -437,8 +453,11 @@ public enum Lang implements Locale {
 	hideNoRequirementsLore("inv.details.hideNoRequirementsItemLore"),
 	bypass("inv.details.bypassLimit"),
 	bypassLore("inv.details.bypassLimitLore"),
-	auto("inv.details.auto"),
-	autoLore("inv.details.autoLore"),
+	autoModeTitle("inv.details.autoMode.title"),
+	autoModeDescription("inv.details.autoMode.description"),
+	autoModeDisabled("inv.details.autoMode.disabled"),
+	autoModeAllPlayers("inv.details.autoMode.allPlayers"),
+	autoModeNewPlayers("inv.details.autoMode.newPlayers"),
 	questName("inv.details.questName"),
 	questNameLore("inv.details.questNameLore"),
 	rewardItems("inv.details.setItemsRewards"),
@@ -577,13 +596,16 @@ public enum Lang implements Locale {
 	timesFinished("inv.listQuests.timesFinished"), // 0: times finished
 	formatNormal("inv.listQuests.format.normal"),
 	formatId("inv.listQuests.format.withId"),
+	categoryOtherQuests("inv.listQuests.categoryOther"),
 
 	INVENTORY_CREATOR("inv.itemCreator.name"),
+	itemNeedType("inv.itemCreator.needType", ErrorPrefix),
 	itemType("inv.itemCreator.itemType"),
 	itemFlags("inv.itemCreator.itemFlags"),
 	itemName("inv.itemCreator.itemName"),
 	itemLore("inv.itemCreator.itemLore"),
-	itemQuest("inv.itemCreator.isQuestItem"),
+	itemQuest("inv.itemCreator.questItem"),
+	itemQuestDescription("inv.itemCreator.questItemDescription"),
 
 	INVENTORY_COMMAND("inv.command.name"),
 	commandValue("inv.command.value"),
@@ -639,12 +661,16 @@ public enum Lang implements Locale {
 	poolItemTime("inv.poolsManage.poolTime"),
 	poolItemHologram("inv.poolsManage.poolHologram"),
 	poolItemAvoidDuplicates("inv.poolsManage.poolAvoidDuplicates"),
+	poolItemShowAsCategory("inv.poolsManage.showAsCategory"),
 	poolItemQuestsList("inv.poolsManage.poolQuestsList"), // 0: size, 1: quests
-	poolEdit("inv.poolsManage.edit"),
+	poolItemRequirements("inv.poolsManage.requirements"),
+	poolItemStartRewards("inv.poolsManage.startRewards"),
+	poolItemEndRewards("inv.poolsManage.endRewards"),
 	poolChoose("inv.poolsManage.choose"),
 	poolCreate("inv.poolsManage.create"),
 
 	INVENTORY_POOL_CREATE("inv.poolCreation.name"),
+	poolEditName("inv.poolCreation.poolName"),
 	poolEditHologramText("inv.poolCreation.hologramText"),
 	poolMaxQuests("inv.poolCreation.maxQuests"),
 	poolQuestsPerLaunch("inv.poolCreation.questsPerLaunch"),
@@ -652,7 +678,10 @@ public enum Lang implements Locale {
 	poolRedo("inv.poolCreation.redoAllowed"),
 	poolAvoidDuplicates("inv.poolCreation.avoidDuplicates"),
 	poolAvoidDuplicatesLore("inv.poolCreation.avoidDuplicatesLore"),
+	poolShowAsCategory("inv.poolCreation.showAsCategory"),
 	poolRequirements("inv.poolCreation.requirements"),
+	poolStartRewards("inv.poolCreation.startRewards", Lang.MiscItemPrefix),
+	poolEndRewards("inv.poolCreation.endRewards", Lang.MiscItemPrefix),
 
 	INVENTORY_POOLS_LIST("inv.poolsList.name"),
 
@@ -911,6 +940,14 @@ public enum Lang implements Locale {
 	@Override
 	public String toString() {
 		return getValue();
+	}
+
+	public static @Nullable Lang getFromPath(@NotNull String path) {
+		for (Lang lang : values()) {
+			if (lang.path.equals(path))
+				return lang;
+		}
+		return null;
 	}
 
 }

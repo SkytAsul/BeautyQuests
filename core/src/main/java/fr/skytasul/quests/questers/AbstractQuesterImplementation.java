@@ -46,20 +46,15 @@ public abstract class AbstractQuesterImplementation implements Quester {
 	protected void createdPlaceholdersRegistry(@NotNull PlaceholderRegistry placeholders) {
 		placeholders
 				.registerIndexed("quester_name", this::getFriendlyName)
+				.register("quester_display_name", this::getDisplayName)
 				.register("quester_identifier", this::getIdentifier)
 				.register("quester_detailed_name", this::getDetailedName);
-
-		// TODO eventually remove: for backward compatibility (2.0)
-		placeholders
-				.register("player_name", this::getFriendlyName)
-				.register("player", this::getDetailedName);
 	}
 
 	protected void createdPointers(@NotNull Pointers.Builder builder) {
 		builder
-				.withDynamic(Identity.NAME, this::getDetailedName)
-				.withDynamic(Identity.DISPLAY_NAME, () -> Component.text(getFriendlyName()))
-				.build();
+				.withDynamic(Identity.NAME, this::getFriendlyName)
+				.withDynamic(Identity.DISPLAY_NAME, () -> Component.text(getDisplayName()));
 	}
 
 	@Override

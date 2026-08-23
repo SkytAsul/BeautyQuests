@@ -1,15 +1,18 @@
 package fr.skytasul.quests.api.utils.messaging;
 
+import fr.skytasul.quests.api.utils.logger.LoggerExpanded;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 import java.util.function.Function;
 import java.util.function.Supplier;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 public final class PlaceholderRegistry implements HasPlaceholders {
+
+	private static final LoggerExpanded LOGGER = LoggerExpanded.get("BeautyQuests.PlaceholderRegistry");
 
 	private final List<Placeholder> placeholders;
 	private final List<Placeholder> indexed = new ArrayList<>(2);
@@ -24,11 +27,22 @@ public final class PlaceholderRegistry implements HasPlaceholders {
 		this.placeholders = new ArrayList<>(Arrays.asList(placeholders));
 	}
 
+	@Override
+	public String toString() {
+		return "{placeholders=%s,indexed=%d}".formatted(placeholders, indexed.size());
+	}
+
 	public @Nullable Placeholder getPlaceholder(@NotNull String key) {
 		try {
 			int index = Integer.parseInt(key);
-			if (index < indexed.size())
+			if (index < indexed.size()) {
+				LOGGER.namedWarning(
+						"Use of indexed placeholder detected: '{'{0}'}'. This is deprecated and will be deleted in the future.",
+						"indexedPlaceholder" + index,
+						30,
+						index);
 				return indexed.get(index);
+			}
 		} catch (NumberFormatException ex) {
 			// means the key is not indexed
 		}

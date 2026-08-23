@@ -3,12 +3,12 @@ package fr.skytasul.quests.stages;
 import com.cryptomorin.xseries.XMaterial;
 import fr.skytasul.quests.BeautyQuests;
 import fr.skytasul.quests.QuestsConfigurationImplementation;
-import fr.skytasul.quests.api.AbstractHolograms;
 import fr.skytasul.quests.api.QuestsAPI;
 import fr.skytasul.quests.api.QuestsConfiguration;
 import fr.skytasul.quests.api.QuestsPlugin;
 import fr.skytasul.quests.api.editors.DialogEditor;
 import fr.skytasul.quests.api.gui.ItemUtils;
+import fr.skytasul.quests.api.holograms.BqHologram;
 import fr.skytasul.quests.api.localization.Lang;
 import fr.skytasul.quests.api.npcs.BqNpc;
 import fr.skytasul.quests.api.npcs.dialogs.Dialog;
@@ -56,7 +56,7 @@ public class StageNPC extends AbstractStage implements Locatable.PreciseLocatabl
 	private BukkitTask task;
 
 	private List<Player> cached = new ArrayList<>();
-	protected AbstractHolograms<?>.BQHologram hologram;
+	protected BqHologram hologram;
 
 	public StageNPC(StageController controller) {
 		super(controller);
@@ -85,7 +85,7 @@ public class StageNPC extends AbstractStage implements Locatable.PreciseLocatabl
 					tmp.add(p);
 				}
 
-				if (QuestsConfigurationImplementation.getConfiguration().getHoloTalkItem() != null
+				if (QuestsConfiguration.getConfig().getHologramsConfig().talkItem() != null
 						&& QuestsAPI.getAPI().hasHologramsManager()
 						&& QuestsAPI.getAPI().getHologramsManager().supportItems()
 						&& QuestsAPI.getAPI().getHologramsManager().supportPerPlayerVisibility()) {
@@ -105,9 +105,9 @@ public class StageNPC extends AbstractStage implements Locatable.PreciseLocatabl
 	}
 
 	private void createHoloLaunch() {
-		ItemStack item = QuestsConfigurationImplementation.getConfiguration().getHoloTalkItem();
+		ItemStack item = QuestsConfiguration.getConfig().getHologramsConfig().talkItem();
 		hologram = QuestsAPI.getAPI().getHologramsManager().createHologram(npc.getNpc().getLocation(), false);
-		if (QuestsConfigurationImplementation.getConfiguration().isCustomHologramNameShown() && item.hasItemMeta()
+		if (QuestsConfiguration.getConfig().getHologramsConfig().customItemName() && item.hasItemMeta()
 				&& item.getItemMeta().hasDisplayName())
 			hologram.appendTextLine(item.getItemMeta().getDisplayName());
 		hologram.appendItem(item);
@@ -281,7 +281,7 @@ public class StageNPC extends AbstractStage implements Locatable.PreciseLocatabl
 	public void load() {
 		super.load();
 		if (QuestsConfigurationImplementation.getConfiguration().showTalkParticles()
-				|| QuestsConfigurationImplementation.getConfiguration().getHoloTalkItem() != null) {
+				|| QuestsConfiguration.getConfig().getHologramsConfig().talkItem() != null) {
 			if (!hide)
 				launchRefreshTask();
 		}

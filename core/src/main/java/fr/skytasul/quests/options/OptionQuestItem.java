@@ -2,17 +2,19 @@ package fr.skytasul.quests.options;
 
 import com.cryptomorin.xseries.XMaterial;
 import fr.skytasul.quests.api.QuestsPlugin;
-import fr.skytasul.quests.api.editors.TextEditor;
 import fr.skytasul.quests.api.gui.ItemUtils;
 import fr.skytasul.quests.api.localization.Lang;
 import fr.skytasul.quests.api.options.OptionSet;
 import fr.skytasul.quests.api.options.QuestOption;
 import fr.skytasul.quests.api.quests.creation.QuestCreationGuiClickEvent;
+import fr.skytasul.quests.api.utils.Utils;
 import fr.skytasul.quests.utils.QuestUtils;
 import org.bukkit.Material;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.inventory.ItemStack;
+import org.jetbrains.annotations.Nullable;
 
+// TODO refactor to use QuestOptionItem
 public class OptionQuestItem extends QuestOption<ItemStack> {
 
 	@Override
@@ -40,6 +42,11 @@ public class OptionQuestItem extends QuestOption<ItemStack> {
 		return value.clone();
 	}
 
+	@Override
+	public @Nullable String getValueString() {
+		return getValue() == null ? null : Utils.getStringFromItemStack(getValue(), "", false);
+	}
+
 	private String[] getLore() {
 		String description = formatDescription(Lang.customMaterialLore.toString());
 		if (!hasCustomValue()) return new String[] { description, "", Lang.defaultValue.toString() };
@@ -60,22 +67,18 @@ public class OptionQuestItem extends QuestOption<ItemStack> {
 				event.getPlayer().setItemOnCursor(null);
 			});
 		} else {
-			Lang.QUEST_MATERIAL.send(event.getPlayer());
-			new TextEditor<>(event.getPlayer(), event::reopen, obj -> {
-				if (obj == null) {
-					resetValue();
-				} else {
-					setValue(obj.parseItem());
-				}
-				ItemStack setItem = event.getGui().getInventory().getItem(event.getSlot());
-				if (setItem == null || setItem.getType() == Material.AIR) {
-					// means that the material cannot be treated as an inventory item (ex: fire)
-					resetValue();
-					Lang.INVALID_ITEM_TYPE.send(event.getPlayer());
-				}
-				event.reopen();
-			}, QuestsPlugin.getPlugin().getEditorManager().getFactory().getMaterialParser(true, true))
-					.passNullIntoEndConsumer().start();
+			QuestsPlugin.getPlugin().getEditorManager().getFactory().createTextEditorBuilderParser(event.getPlayer(),
+					QuestsPlugin.getPlugin().getEditorManager().getFactory().getMaterialParser(true, false),
+					event::reopen, material -> {
+						setValue(material.parseItem());
+						event.reopen();
+					}).addReset(() -> {
+						resetValue();
+						event.reopen();
+					}, "null")
+					.setInitialString(getValue().getType().name())
+					.setIndication(Lang.QUEST_MATERIAL.toString())
+					.build().start();
 		}
 	}
 

@@ -1,7 +1,7 @@
 package fr.skytasul.quests.api.requirements;
 
 import fr.skytasul.quests.api.QuestsAPI;
-import fr.skytasul.quests.api.editors.TextEditor;
+import fr.skytasul.quests.api.QuestsPlugin;
 import fr.skytasul.quests.api.gui.LoreBuilder;
 import fr.skytasul.quests.api.localization.Lang;
 import fr.skytasul.quests.api.objects.QuestObject;
@@ -89,23 +89,29 @@ public abstract class AbstractRequirement extends QuestObject {
 		return ClickType.SHIFT_RIGHT;
 	}
 
-	protected void sendCustomReasonHelpMessage(@NotNull Player p) {
-		Lang.CHOOSE_REQUIREMENT_CUSTOM_REASON.send(p);
+	protected @Nullable String getCustomReasonIndication(@NotNull Player p) {
+		return Lang.CHOOSE_REQUIREMENT_CUSTOM_REASON.toString();
 	}
 
 	@Override
-	protected void sendCustomDescriptionHelpMessage(@NotNull Player p) {
-		Lang.CHOOSE_REQUIREMENT_CUSTOM_DESCRIPTION.send(p);
+	protected String getCustomDescriptionIndication(@NotNull Player p) {
+		return Lang.CHOOSE_REQUIREMENT_CUSTOM_DESCRIPTION.toString();
 	}
 
 	@Override
 	protected final void clickInternal(@NotNull QuestObjectClickEvent event) {
 		if (event.getClick() == getCustomReasonClick()) {
-			sendCustomReasonHelpMessage(event.getPlayer());
-			new TextEditor<String>(event.getPlayer(), event::reopenGUI, msg -> {
-				setCustomReason(msg);
+			QuestsPlugin.getPlugin().getEditorManager().getFactory().createTextEditorBuilderString(event.getPlayer(), event::reopenGUI, reason -> {
+				setCustomReason(reason == null ? "none" : reason);
 				event.reopenGUI();
-			}).passNullIntoEndConsumer().start();
+			}).addReset(() -> {
+				setCustomReason(null);
+				event.reopenGUI();
+			}, "reset")
+			.allowEmpty().allowMultiline()
+			.setInitialString(customReason)
+			.setIndication(getCustomReasonIndication(event.getPlayer()))
+			.build().start();
 		} else {
 			itemClick(event);
 		}

@@ -42,8 +42,8 @@ public class DefaultGuiFactory implements GuiFactory {
 	}
 
 	@Override
-	public @NotNull Gui createItemCreator(@NotNull Consumer<ItemStack> callback, boolean allowCancel) {
-		return new ItemCreatorGUI(callback, allowCancel);
+	public @NotNull Gui createItemCreator(@NotNull Consumer<ItemStack> callback, @NotNull Runnable cancelCallback) {
+		return new ItemCreatorGUI(callback, cancelCallback);
 	}
 
 	@Override

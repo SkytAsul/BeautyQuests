@@ -22,13 +22,13 @@ import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
 public class ItemsGUI extends AbstractGui {
-	
+
 	public static ItemStack none = ItemUtils.item(XMaterial.RED_STAINED_GLASS_PANE, "§c", Lang.itemsNone.toString());
-	
+
 	private Consumer<List<ItemStack>> end;
 	private Map<Integer, ItemStack> items = new HashMap<>();
 	private int size;
-	
+
 	public ItemsGUI(Consumer<List<ItemStack>> end, List<ItemStack> itemsList) {
 		this.end = end;
 		Utils.extractItems(itemsList).forEach(item -> items.put(items.size(), item));
@@ -43,14 +43,14 @@ public class ItemsGUI extends AbstractGui {
 	@Override
 	protected void populate(@NotNull Player player, @NotNull Inventory inv) {
 		inv.setItem(size - 1, QuestsPlugin.getPlugin().getGuiManager().getItemFactory().getDone());
-		
+
 		for (int i = 0; i < size - 1; i++) {
 			if (i < items.size()) {
 				inv.setItem(i, items.get(i));
 			}else inv.setItem(i, none);
 		}
 	}
-	
+
 	private boolean addItem(Player p, ItemStack item, int slot) {
 		items.put(slot, item);
 		for (int i = 0; i < size - 1; i++) {
@@ -58,7 +58,8 @@ public class ItemsGUI extends AbstractGui {
 			if (is.equals(none)) return false;
 		}
 		size += 9;
-		reopen(p, true);
+		createInventory(p);
+		showInternal(p);
 		return true;
 	}
 
@@ -86,11 +87,10 @@ public class ItemsGUI extends AbstractGui {
 			}else {
 				if (event.getClicked().equals(none)) {
 					QuestsPlugin.getPlugin().getGuiManager().getFactory().createItemCreator(item -> {
-						if (item != null)
-							getInventory().setItem(event.getSlot(), item);
+						getInventory().setItem(event.getSlot(), item);
 						if (!addItem(event.getPlayer(), item, event.getSlot()))
 							event.reopen();
-					}, true).open(event.getPlayer());
+					}, event::reopen).open(event.getPlayer());
 				} else {
 					if (event.getClick().isLeftClick() || (event.getClick().isRightClick() && event.getClicked().getAmount() == 1)) {
 						QuestUtils.runSync(() -> {

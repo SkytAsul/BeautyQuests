@@ -52,7 +52,7 @@ public class ItemGUI extends AbstractGui {
 				event.setCancelled(false);
 				QuestUtils.runSync(() -> end.accept(event.getCursor()));
 			} else {
-				QuestsPlugin.getPlugin().getGuiManager().getFactory().createItemCreator(end, false).open(event.getPlayer());
+				QuestsPlugin.getPlugin().getGuiManager().getFactory().createItemCreator(end, event::reopen).open(event.getPlayer());
 			}
 		}
 	}

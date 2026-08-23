@@ -84,6 +84,12 @@ public class StagesGUI extends AbstractGui {
 		return session;
 	}
 
+	@Override
+	protected void refreshInternal(@NotNull Player player) {
+		// don't call super.refreshInternal since it will call populate and we DON'T want that
+		refresh();
+	}
+
 	public void reopen() {
 		reopen(session.getPlayer());
 	}
@@ -135,8 +141,7 @@ public class StagesGUI extends AbstractGui {
 				}
 			}else if (slot == 52) {
 				if (isEmpty() && previousBranch == null) {
-					QuestUtils.playPluginSound(QuestsPlugin.getPlugin().getAudiences().player(event.getPlayer()),
-							"ENTITY_VILLAGER_NO", 0.6f);
+					QuestUtils.playPluginSound(event.getPlayer(), "ENTITY_VILLAGER_NO", 0.6f);
 				}else {
 					session.openCreationGUI(event.getPlayer());
 				}
@@ -285,7 +290,8 @@ public class StagesGUI extends AbstractGui {
 			StageCreation creation = setStageCreation(stage.getStageType());
 
 			if (branch != null) {
-				context.getEndingBranch().repopulate(session.getPlayer());
+				// this is to populate the inventory for the first time
+				context.getEndingBranch().createInventory(session.getPlayer());
 				context.getEndingBranch().editBranch((QuestBranchImplementation) branch);
 			}
 

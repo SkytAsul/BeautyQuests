@@ -76,9 +76,11 @@ gui:
   next page item: ARROW
   # Show a vertical separator made of glass pane between the items pane and the arrow buttons
   vertical separator: true
+  # Should the category folder be hidden if there is only one category in the GUI
+  hide folder if single category: true
 
 # - Dialogs -
-# Various options related to dialogs 
+# Various options related to dialogs
 dialogs:
   # Dialogs are shown in the action bar instead of the chat
   inActionBar: false
@@ -137,6 +139,8 @@ questsMenu:
   allowPlayerCancelQuest: true
   # Keep menu open after accepting or cancelling a quest
   keep menu open: true
+  # Should the quests be categorized by quest pools as expandable folders
+  categorize quests by pools: true
 
 # - Integrations -
 # Enable or disable AccountsHook managing player accounts
@@ -144,16 +148,22 @@ accountsHook: false
 # If set to "true" and the PlayerBlockTracker plugin is enabled on this server, then player-placed blocks will be tracked
 # using PlayerBlockTracker: it allows for persistence after restart, piston tracking, and more.
 usePlayerBlockTracker: true
-# (Holograms) Disable the hologram above NPC's head
-disableTextHologram: false
-# (Holograms) Value added to the hologram height (decimal value)
-hologramsHeight: 0.0
-# (Holograms) Material name of the hologram showed above head of Quests starter. If ProtocolLib is enabled, holograms will be visible only by players who can start the quest
-holoLaunchItemName: BOOK
-# (Holograms) Material name of the hologram showed above head of Stage NPC. If ProtocolLib is enabled, holograms will be visible only by players who has to talk with this NPC
-holoTalkItemName: COAL
-# (Holograms) Is the custom name of the hologram in datas.yml shown
-showCustomHologramName: true
+# Holograms-related settings
+holograms:
+  # Disable the hologram that is always shown above NPCs heads
+  disable text hologram: false
+  # Y-value added to the hologram height
+  additional height: 0.0
+  # Hologram shown above the head of NPCs when the player can launch a quest from them.
+  launch item: BOOK
+  # Hologram shown above the head of NPCs when the player cannot launch any quest from them.
+  cannot launch item: ''
+  # Material name of the hologram showed above head of Stage NPC.
+  talk item: COAL
+  # If enabled, items having custom name will display them in a new hologram above the item.
+  custom item name: true
+  # Preferred plugin to use as holograms manager. If empty (the default), the plugin will use whatever compatible hologram plugin has loaded last.
+  preferred plugin: ''
 # (PlaceholdersAPI) Configuration for %beautyquests_started_ordered_X% placeholder
 startedQuestsPlaceholder:
   # Max length of a line if using splitted placeholder
@@ -204,6 +214,8 @@ stage description:
   boss bar format: "§6{quest_name}: §e{progress_done}/{progress_total}"
   # Seconds before the progress bar disappear (set it to 0 to make it persistent)
   boss bar timeout: 15
+  # Show active progress bars when players join the server
+  show progress bars on join: true
 
 # - Quest descriptions -
 # How is formatted the quest description in GUIs
@@ -223,8 +235,8 @@ questDescription:
 
 # - Particles configuration -
 # enabled: will the particle be shown?
-# particleEffect: name of the particle
-# particleColor: for colored particles, RGB value of the color
+# particleEffect: name of the particle (see a list at https://jd.papermc.io/paper/org/bukkit/Particle.html)
+# particleColor: RGB value of the color (only used for colored particles)
 # particleShape: shape of the particle effect (available: point, near, bar, exclamation, spot)
 
 # Particles shown on a NPC when the player can start the quest

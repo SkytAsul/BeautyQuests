@@ -138,26 +138,6 @@ msg:
       own:
         hidden: '§6已隐藏你的计分板。'
         shown: '§6已显示你的计分板。'
-    help:
-      header: '§6§lBeautyQuests - §6帮助§r'
-      create: '§6/{label} create: §a创建任务'
-      edit: '§6/{label} edit: §a编辑任务'
-      remove: '§6/{label} remove [id]: §a删除ID为 [id] 的任务或点击任务NPC来删除'
-      finishAll: '§6/{label} finishAll <玩家名>: §a结束一名玩家所有进行中的任务。'
-      setStage: '§6/{label} setStage <玩家名> <id> [新任务分支] [新任务阶段]: §e跳过玩家当前的任务阶段/开始任务分支/s为任务分支设置任务阶段。'
-      startDialog: '§6/{label} startDialog <player> <quest id>: §e播放NPC任务阶段的待定对话或任务起始对话。'
-      resetPlayer: '§6/{label} resetPlayer <玩家名>: §e删除一名玩家的所有任务数据。'
-      resetPlayerQuest: '§6/{label} resetPlayerQuest <玩家名> [id]: §e删除一名玩家的一个任务数据'
-      seePlayer: '§6/{label} seePlayer <玩家名>: §a查看玩家的任务数据。'
-      reload: '§e/{label} reload: §a保存并重载配置和插件数据 - §c§o不推荐使用'
-      start: '§6/{label} start <玩家名> [id] : §e强制玩家接受任务.'
-      setItem: '§6/{label} setItem <talk|launch> : §e保存全息物品到数据文件内.'
-      setFirework: '§6/{label} setFirework: §e编辑默认结束烟花。'
-      adminMode: '§6/{label} adminMode : §e切换管理员模式 (显示消息)'
-      version: '§6/{label} version: §e查看插件版本.'
-      downloadTranslations: '§6/{label} downloadTranslations <language>: §e下载翻译文件'
-      save: '§6/{label} save: §a手动保存数据.'
-      list: '§e/{label} list: §a查看任务列表 (部分版本无效)'
   typeCancel: '§a输入 "cancel" 返回到上一条消息.'
   editor:
     blockAmount: '§e请输入所需方块数：'
@@ -616,7 +596,6 @@ inv:
   poolsManage:
     name: 任务池
     itemName: '§a任务池 {pool}'
-    poolNPC: '§8NPC：§7{pool_npc_id}'
     poolMaxQuests: '§8最大任务数：§7{pool_max_quests}'
     poolQuestsPerLaunch: '§8每次给予的任务：§7{pool_quests_per_launch}'
     poolRedo: '§8可以重新接受已完成的任务：§7{pool_redo}'
@@ -625,7 +604,6 @@ inv:
     poolAvoidDuplicates: '§8避免重复：§7{pool_duplicates}'
     poolQuestsList: '§7{pool_quests_amount} §8任务：§7{pool_quests}'
     create: '§a创建一个任务池'
-    edit: '§e> §6§o编辑任务池…… §e<'
     choose: '§e> §6§o选择该任务池 §e<'
   poolCreation:
     name: 创建任务池

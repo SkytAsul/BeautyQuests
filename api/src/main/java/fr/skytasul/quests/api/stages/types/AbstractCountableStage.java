@@ -115,7 +115,7 @@ public abstract class AbstractCountableStage<T> extends AbstractStage implements
 	public long getRemainingAmount(@NotNull Quester quester, CountableObject<T> object) {
 		// we do not use default implementation in HasMultipleObjects to avoid conversion from UUID to
 		// CountableObject
-		return getRawRemainingAmounts(quester, false).get(object.getUUID());
+		return getRawRemainingAmounts(quester, false).getOrDefault(object.getUUID(), 0);
 	}
 
 	@Override

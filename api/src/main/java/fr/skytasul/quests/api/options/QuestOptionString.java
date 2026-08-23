@@ -1,17 +1,13 @@
 package fr.skytasul.quests.api.options;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.stream.Collectors;
-import org.bukkit.configuration.ConfigurationSection;
-import org.bukkit.entity.Player;
-import org.bukkit.inventory.ItemStack;
 import com.cryptomorin.xseries.XMaterial;
-import fr.skytasul.quests.api.editors.TextEditor;
-import fr.skytasul.quests.api.editors.TextListEditor;
+
+import fr.skytasul.quests.api.QuestsPlugin;
 import fr.skytasul.quests.api.gui.ItemUtils;
 import fr.skytasul.quests.api.quests.creation.QuestCreationGuiClickEvent;
+import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.inventory.ItemStack;
+import org.jetbrains.annotations.Nullable;
 
 public abstract class QuestOptionString extends QuestOption<String> {
 
@@ -34,11 +30,19 @@ public abstract class QuestOptionString extends QuestOption<String> {
 		return value;
 	}
 
+	@Override
+	public @Nullable String getValueString() {
+		if (isMultiline() && getValue() != null)
+			return "{nl}" + getValue();
+		return getValue();
+	}
+
 	private String[] getLore() {
-		if (getItemDescription() == null) return new String[] { formatValue(getValue()) };
+		if (getItemDescription() == null)
+			return new String[] {formatValue()};
 
 		String description = formatDescription(getItemDescription());
-		return new String[] { description, "", formatValue((isMultiline() && getValue() != null ? "{nl}" : "") + getValue()) };
+		return new String[] {description, "", formatValue()};
 	}
 
 	@Override
@@ -48,29 +52,29 @@ public abstract class QuestOptionString extends QuestOption<String> {
 
 	@Override
 	public void click(QuestCreationGuiClickEvent event) {
-		sendIndication(event.getPlayer());
+		var editorBuilder = QuestsPlugin.getPlugin().getEditorManager().getFactory().createTextEditorBuilderString(event.getPlayer(), event::reopen, string -> {
+			if (getOptionCreator().defaultValue != null && "none".equals(string))
+				setValue(null);
+			else
+				setValue(string);
+			ItemUtils.lore(event.getClicked(), getLore());
+			event.reopen();
+		}).addReset(() -> {
+			resetValue();
+			ItemUtils.lore(event.getClicked(), getLore());
+			event.reopen();
+		}, "null").setIndication(getIndication()).allowEmpty();
 		if (isMultiline()) {
-			List<String> splitText = getValue() == null || getValue().isEmpty()
-					? new ArrayList<>()
-					: new ArrayList<>(Arrays.asList(getValue().split("\\{nl\\}")));
-			new TextListEditor(event.getPlayer(), list -> {
-				setValue(list.stream().collect(Collectors.joining("{nl}")));
-				ItemUtils.lore(event.getClicked(), getLore());
-				event.reopen();
-			}, splitText).start();
-		}else {
-			new TextEditor<String>(event.getPlayer(), event::reopen, obj -> {
-				if (obj == null)
-					resetValue();
-				else
-					setValue(obj);
-				ItemUtils.lore(event.getClicked(), getLore());
-				event.reopen();
-			}).passNullIntoEndConsumer().start();
+			editorBuilder.allowMultiline().forceMultiline();
+			if (getValue() != null)
+				editorBuilder.setInitialString(getValue().replace("{nl}", "\n"));
+		} else {
+			editorBuilder.setInitialString(getValue());
 		}
+		editorBuilder.build().start();
 	}
 
-	public abstract void sendIndication(Player p);
+	public abstract String getIndication();
 
 	public abstract XMaterial getItemMaterial();
 

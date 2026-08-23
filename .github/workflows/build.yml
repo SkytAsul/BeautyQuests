@@ -1,37 +1,46 @@
 name: Build
 
 on:
-  push:
-    branches:
-      - '**'
+  pull_request:
     paths-ignore:
       - .github/**
-  pull_request:
+      - docs/**
+  workflow_call:
+    inputs:
+      build-number:
+        type: number
+        required: false
+        default: -1
+        description: "Build number. If absent, the build will be a release."
+    outputs:
+      plugin-version:
+        description: Version of the built plugin
+        value: ${{ jobs.build.outputs.plugin-version }}
 
 jobs:
   build:
     name: Build
     runs-on: ubuntu-latest
+    outputs:
+      plugin-version: ${{ steps.build.outputs.plugin-version }}
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
 
       - name: Setup JDKs
-        uses: actions/setup-java@v4
+        uses: actions/setup-java@v5
         with:
           distribution: temurin
           java-version: |
-            21
+            25
           # maybe necessary to add more since we want to compile for lower?
           cache: maven
-      
-      - name: Download private dependencies
+
+      - name: Download and install private dependencies
         run: |
           mkdir jars
           curl -s https://skytasul.fr/protected/bq-jars.tar.gz --header 'Token: ${{ secrets.PrivateDownloadToken }}' --output - | tar xzfv - --directory ./jars
-
-      - name: Install private dependencies
-        run: "./integrations/libs.sh mvn ./jars"
+          ./integrations/libs.sh mvn ./jars
 
       - name: Install missing dependencies
         run: |
@@ -40,12 +49,40 @@ jobs:
           curl -s https://skytasul.fr/ConfigUpdater-2.2-SNAPSHOT-offline.jar -o ./jars/ConfigUpdater-2.2-SNAPSHOT-offline.jar
           mvn org.apache.maven.plugins:maven-install-plugin:2.5.2:install-file -Dfile=./jars/ConfigUpdater-2.2-SNAPSHOT-offline.jar
 
-      - name: Build and package with Maven
+      - name: Prepare Paper NMS
         run: |
-          profile=$([ "${{ github.ref_name }}" == "${{ github.event.repository.default_branch }}" ] && echo "release" || echo "devbuild")
-          echo "Building with profile $profile"
-          mvn -B clean package --file pom.xml -Dbuild.number=${{ github.run_number }} -P $profile
-    
+          mvn -pl paper-nms paper-nms:init
+
+      - name: Build and package with Maven
+        id: build
+        run: |
+          mvn_args=()
+          # There is no easy way to know if the build is coming from a workflow_call
+          # https://github.com/orgs/community/discussions/160735
+          # Thus, we test if the inputs are completely empty instead
+          if [ "${{ toJSON(inputs) }}" != "{}" ]; then
+            if [ "${{ inputs.build-number }}" == "-1" ]; then
+              mvn_args+=(-P release)
+              echo ::notice::Doing a release build
+            else
+              mvn_args+=(-P devbuild -Dbuild.number=${{ inputs.build-number }})
+              echo ::notice::Doing a dev build with number ${{ inputs.build-number }}
+            fi
+          fi
+
+          plugin_version=$(mvn help:evaluate -Dexpression=beautyquests.version -q -DforceStdout ${mvn_args[@]})
+
+          mvn -B clean package --file pom.xml ${mvn_args[@]}
+          echo "Successfully built plugin with version $plugin_version."
+          echo "plugin-version=$plugin_version" >> "$GITHUB_OUTPUT"
+
+      - name: Upload test failures
+        uses: actions/upload-artifact@v7
+        if: "${{ failure() && steps.build.outcome == 'failure' }}"
+        with:
+          path: |
+            **/surefire-reports
+
       - name: Upload artifact
         uses: actions/upload-artifact@v7
         with:

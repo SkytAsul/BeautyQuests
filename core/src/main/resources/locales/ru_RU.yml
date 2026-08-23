@@ -142,26 +142,6 @@ msg:
       own:
         hidden: '§6Ваше табло теперь скрыто.'
         shown: '§6Снова отобразится ваше табло.'
-    help:
-      header: '§6§lBeautyQuests — Помощь'
-      create: '§6/{label} create: §eСоздать квест.'
-      edit: '§6/{label} edit: §eОтредактировать квест.'
-      remove: '§6/{label} remove <id>: §eУдалить квест с указанным идентификатором или нажать на NPC, если квест не будет определен.'
-      finishAll: '§6/{label} finishAll <игрок>: §eЗавершить все квесты игрока.'
-      setStage: '§6/{label} setStage <игрок> <id> [новое ответвление] [новый этап]: §eПропустить текущий этап/запустить ответвление/установить этап для ответвления.'
-      startDialog: '§6/{label} startDialog <player> <quest id>: Запускает ожидающий диалог для этапа NPC или начальный диалог для задания.'
-      resetPlayer: '§6/{label} resetPlayer <игрок>: §eУдалить всю информацию о игроке.'
-      resetPlayerQuest: '§6/{label} resetPlayerQuest <игрок> [id]: §eУдалить информацию о квестах игрока.'
-      seePlayer: '§6/{label} seePlayer <игрок>: §e Посмотреть информацию об игроке.'
-      reload: '§6/{label} reload: §eСохранить и перезагрузить все настройки и файлы. (§cустарело§e)'
-      start: '§6/{label} start <игрок> [id]: §eПринудительно начинает квест.'
-      setItem: '§6/{label} setitem <talk|launch>: §eСохранить голографический предмет.'
-      setFirework: '§6/{label} setFirework: Отредактируйте конечный фейерверк по умолчанию.'
-      adminMode: '§6/{label} adminMode: §eПереключить режим администратора. (полезно для отображения небольших log сообщений.)'
-      version: '§6/{label} version: §eПосмотреть текущую версию плагина.'
-      downloadTranslations: '§6/{label} downloadTranslations <language>: §eЗагружает файл ванильного перевода'
-      save: '§6/{label} save: §eСохранить справочник плагина.'
-      list: '§6/{label} list: §eПосмотреть список заданий. (Только для поддерживаемых версий.)'
   typeCancel: '§aНапишите "cancel", чтобы вернуться к прежнему тексту.'
   editor:
     blockAmount: '§aНапишите количество блоков:'
@@ -624,7 +604,6 @@ inv:
     poolAvoidDuplicates: '§8Избегайте дублирования: §7{pool_duplicates}'
     poolQuestsList: '§7{pool_quests_amount} §8задание(й): §7{pool_quests}'
     create: '§aСоздать Объединенные задания'
-    edit: '§e> §6§oРедактировать Объединенные... §e<'
     choose: '§e> §6§oВыберите этот список §e<'
   poolCreation:
     name: Создание Объединенных заданий

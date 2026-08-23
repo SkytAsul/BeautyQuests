@@ -8,6 +8,9 @@ import de.oliver.fancynpcs.api.events.NpcInteractEvent;
 import fr.skytasul.quests.api.npcs.BqInternalNpc;
 import fr.skytasul.quests.api.npcs.BqInternalNpcFactory.BqInternalNpcFactoryCreatable;
 import fr.skytasul.quests.api.npcs.NpcClickType;
+import net.kyori.adventure.text.minimessage.MiniMessage;
+import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
+import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer;
 import org.bukkit.Location;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
@@ -49,18 +52,23 @@ public class BQFancyNPCs implements BqInternalNpcFactoryCreatable, Listener {
     @Override
     public @NotNull BqInternalNpc create(@NotNull Location location, @NotNull EntityType type, @NotNull String name,
                                          @Nullable String skin) {
-        String id;
+		var nameComponent = LegacyComponentSerializer.legacySection().deserialize(name);
+		String idBase = PlainTextComponentSerializer.plainText().serialize(nameComponent);
+		String id;
         int i = 1;
-        while (FancyNpcsPlugin.get().getNpcManager().getNpc(id = name + "-" + i) != null) {
+		while (FancyNpcsPlugin.get().getNpcManager().getNpc(id = idBase + "-" + i) != null) {
             i++;
         }
 
         NpcData npcData = new NpcData(id, null, location);
+		npcData.setDisplayName(MiniMessage.miniMessage().serialize(nameComponent));
         npcData.setType(type);
 
 
         Npc npc = FancyNpcsPlugin.get().getNpcAdapter().apply(npcData);
+		npc.create();
         FancyNpcsPlugin.get().getNpcManager().registerNpc(npc);
+		npc.spawnForAll();
 
         return new BQFancyNpc(npc);
     }

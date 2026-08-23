@@ -113,8 +113,6 @@ public class ScoreboardManager implements Listener, QuestsHandler {
 	public void load() {
 		if (!QuestsConfiguration.getConfig().getQuestsConfig().scoreboards())
 			return;
-		if (plugin.isUnitTesting())
-			return;
 
 		try {
 			new FastBoard(null); // trigger class initialization
@@ -203,6 +201,23 @@ public class ScoreboardManager implements Listener, QuestsHandler {
 	public void questRemove(Quest quest) {
 		if (!quest.isScoreboardEnabled()) return;
 		scoreboards.forEach((p, scoreboard) -> scoreboard.questRemove(quest));
+	}
+
+	@Override
+	public void questUnload(Quest quest) {
+		if (!quest.isScoreboardEnabled())
+			return;
+		scoreboards.forEach((p, scoreboard) -> scoreboard.questRemove(quest));
+	}
+
+	@Override
+	public void questLoaded(Quest quest) {
+		if (!quest.isScoreboardEnabled())
+			return;
+		for (Quester quester : plugin.getQuesterManager().getLoadedQuesters()) {
+			if (quest.hasStarted(quester))
+				questEvent(quester, x -> x.questAdd(quest, quester));
+		}
 	}
 
 	@Override

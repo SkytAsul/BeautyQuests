@@ -35,7 +35,7 @@
 		</repository>
 		<repository>
 			<id>fancyplugins-repo</id>
-			<url>https://repo.fancyplugins.de/releases</url>
+			<url>https://repo.fancyinnovations.com/releases</url>
 		</repository>
 		<repository>
 			<id>jitpack.io</id>
@@ -79,8 +79,8 @@
 			<url>https://repo.pyr.lol/snapshots</url>
 		</repository>
 		<repository>
-			<id>sonatype</id>
-			<url>https://s01.oss.sonatype.org/content/repositories/snapshots</url>
+			<id>magemonkey-snapshots</id>
+			<url>https://repo.travja.dev/snapshots</url>
 		</repository>
 	</repositories>
 
@@ -122,7 +122,13 @@
 		<dependency>
 			<groupId>de.oliver</groupId>
 			<artifactId>FancyNpcs</artifactId>
-			<version>2.4.0</version>
+			<version>2.8.1</version>
+			<scope>provided</scope>
+		</dependency>
+		<dependency>
+			<groupId>de.oliver</groupId>
+			<artifactId>FancyHolograms</artifactId>
+			<version>2.8.0</version>
 			<scope>provided</scope>
 		</dependency>
 		<dependency>
@@ -147,12 +153,6 @@
 			<groupId>me.clip</groupId>
 			<artifactId>placeholderapi</artifactId>
 			<version>2.11.5</version>
-			<scope>provided</scope>
-		</dependency>
-		<dependency>
-			<groupId>com.gmail.filoghost.holographicdisplays</groupId>
-			<artifactId>holographicdisplays-api</artifactId>
-			<version>2.4.9</version>
 			<scope>provided</scope>
 		</dependency>
 		<dependency>
@@ -188,7 +188,7 @@
 		<dependency>
 			<groupId>studio.magemonkey</groupId>
 			<artifactId>fabled</artifactId>
-			<version>1.0.0-R0.33-SNAPSHOT</version>
+			<version>1.0.4-R0.73-SNAPSHOT</version>
 			<scope>provided</scope>
 		</dependency>
 		<dependency>
@@ -209,7 +209,7 @@
 			<version>2.8.5</version>
 			<scope>provided</scope>
 		</dependency>
-<!--		<dependency>
+		<!--		<dependency>
 			<groupId>io.github.arcaneplugins</groupId>
 			<artifactId>levelledmobs-plugin</artifactId>
 			<version>4.0.3.1</version>

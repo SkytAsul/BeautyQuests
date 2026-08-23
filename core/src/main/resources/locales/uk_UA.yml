@@ -115,8 +115,6 @@ msg:
     cancelQuest: '§6Ви відмінили квест {quest}.'
     cancelQuestUnavailable: '§cКвест {quest} не може бути скасовано.'
     backupCreated: '§6Ви успішно створили бекапи для всіх завдань та інформації про гравця.'
-    backupPlayersFailed: '§cСтворення резервної копії для всіх даних гравця зазнало невдачі.'
-    backupQuestsFailed: '§cСтворення резервної копії для всіх квестів невдале.'
     adminModeEntered: '§aВи увійшли в Режим Адміністратора.'
     adminModeLeft: '§aВи вийшли з Режиму Адміністратора.'
     resetPlayerPool:
@@ -136,26 +134,6 @@ msg:
       own:
         hidden: '§6Ваша таблиця прихована.'
         shown: '§6Ваша таблиця показана знову.'
-    help:
-      header: '§6§lBeautyQuests - Допомога'
-      create: '§6/{label} create: §eСтворити квест.'
-      edit: '§6/{label} edit: §eРедагувати квест.'
-      remove: '§6/{label} remove<id>: §eВидалити квест з зазначеним id або натисніть на NPC якщо не визначено.'
-      finishAll: '§6/{label} finishAll <player>: §eЗавершіть всі квести гравця.'
-      setStage: '§6/{label} setStage <player> <id> [нова гілка] [нова стадія]: §eПропустити поточний етап/почати етап для гілки.'
-      startDialog: '§6/{label} startDialog <player> <quest id>: §eЗапустити діалогове вікно для етапу NPC або початкове діалогове вікно для квесту.'
-      resetPlayer: '§6/{label} resetPlayer <player>: §eВидалити всі відомості про гравця.'
-      resetPlayerQuest: '§6/{label} resetPlayerQuest <player> [id]: §eВидалити інформацію про квест для гравця.'
-      seePlayer: '§6/{label} seePlayer <player>: §eПереглянути інформацію про гравця.'
-      reload: '§6/{label} reload: §eЗберегти і перезавантажити всі конфігурації і файли. (§cзастарілий§e)'
-      start: '§6/{label} start <player> [id]: §eПримусовий початок завдання.'
-      setItem: '§6/{label} setItem <talk|launch>: §eЗберегти предмет голограми.'
-      setFirework: '§6/{label} setFirework: §eРедагувати стандартний завершальний феєрверк.'
-      adminMode: '§6/{label} adminMode: §eПеремикання режиму адміністратора. (Використовується для відображення невеликих повідомлень журналу.)'
-      version: '§6/{label} version: §eПереглянути поточну версію плагіна.'
-      downloadTranslations: '§6/{label} downloadTranslations <language>: §eЗавантажує стандартний файл перекладу'
-      save: '§6/{label} save: §eРучне збереження змін плагіну'
-      list: '§6/{label} list: §eЩоб відобразити список квестів (Лише для підтримуваних версій.)'
   typeCancel: '§aНапишіть "cancel", щоб повернутися до останнього тексту.'
   editor:
     blockAmount: '§aНапишіть кількість блоків:'
@@ -598,7 +576,6 @@ inv:
     poolAvoidDuplicates: '§8Уникайте дублікатів: §7{pool_duplicates}'
     poolQuestsList: '§7{pool_quests_amount} §8квест(и): §7{pool_quests}'
     create: '§aСтворення пулу квестів'
-    edit: '§e> §6§oРедагувати пул... §e<'
     choose: '§e> §6§oОберіть цей пул§e<'
   poolCreation:
     name: Створення пулу квестів

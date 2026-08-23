@@ -7,7 +7,7 @@ import fr.skytasul.quests.api.commands.OutsideEditor;
 import fr.skytasul.quests.api.commands.QuesterSelector;
 import fr.skytasul.quests.api.localization.Lang;
 import fr.skytasul.quests.api.npcs.BqNpc;
-import fr.skytasul.quests.api.pools.QuestPool;
+import fr.skytasul.quests.api.pools.QuestPoolController;
 import fr.skytasul.quests.api.questers.Quester;
 import fr.skytasul.quests.api.quests.Quest;
 import fr.skytasul.quests.api.utils.messaging.MessageType;
@@ -18,7 +18,9 @@ import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 import revxrsal.commands.Lamp;
 import revxrsal.commands.bukkit.BukkitLamp;
+import revxrsal.commands.bukkit.BukkitLampConfig;
 import revxrsal.commands.bukkit.actor.BukkitCommandActor;
+import revxrsal.commands.bukkit.brigadier.MinecraftArgumentType;
 import revxrsal.commands.exception.CommandErrorException;
 import revxrsal.commands.orphan.OrphanCommand;
 import revxrsal.commands.orphan.Orphans;
@@ -31,16 +33,18 @@ public class CommandsManagerImplementation implements CommandsManager {
 	private Lamp<BukkitCommandActor> lamp;
 
 	public CommandsManagerImplementation(BeautyQuests plugin) {
-		var builder = BukkitLamp.builder(plugin);
-		// handler.failOnTooManyArguments();
+		var bukkitConfigBuilder = BukkitLampConfig.builder(plugin);
 
-		// TODO
-		// builder.accept(BukkitVisitors.brigadier(ArgumentTypes.builder().addType(QuesterSelector.class,
-		// MinecraftArgumentType.ENTITY.create(false, true)), null));
+		bukkitConfigBuilder.argumentTypes(types -> {
+			types.addTypeLast(Quester.class, MinecraftArgumentType.ENTITY.create(true, true));
+			types.addTypeLast(QuesterSelector.class, MinecraftArgumentType.ENTITY.create(false, true));
+		});
+
+		var builder = BukkitLamp.builder(bukkitConfigBuilder.build());
 
 		builder.parameterTypes(parameters -> {
 			parameters.addParameterType(Quest.class, new QuestParameter());
-			parameters.addParameterType(QuestPool.class, new QuestPoolParameter());
+			parameters.addParameterType(QuestPoolController.class, new QuestPoolParameter());
 			parameters.addParameterType(BqNpc.class, new BqNpcParameter());
 			parameters.addParameterType(Quester.class,
 					new QuesterParameter(plugin.getQuesterManager(), plugin.getPlayersManager()));
@@ -94,11 +98,10 @@ public class CommandsManagerImplementation implements CommandsManager {
 		Orphans path;
 		if (subpath == null || subpath.isEmpty()) {
 			path = Orphans.path(COMMAND_ALIASES);
-		}else {
+		} else {
 			path = Orphans.path(Arrays.stream(COMMAND_ALIASES).map(x -> x + " " + subpath).toArray(String[]::new));
 		}
 		lamp.register(Arrays.stream(commands).map(path::handler).toArray());
-		// if (locked) QuestsPlugin.getPlugin().getLoggerExpanded().warning("Registered commands after final locking.");
 	}
 
 	public void unload() {

@@ -37,7 +37,7 @@ public class BQBoss implements MobFactory<Boss>, Listener {
 
 	@Override
 	public void itemClick(Player p, Consumer<Boss> run) {
-		new PagedGUI<Boss>("List of Bosses", DyeColor.ORANGE, org.mineacademy.boss.api.BossAPI.getBosses(), null, x -> x.getName()) {
+		new PagedGUI<Boss>("List of Bosses", DyeColor.ORANGE, org.mineacademy.boss.api.BossAPI.getBosses()) {
 			@Override
 			public ItemStack getItemStack(Boss object) {
 				return ItemUtils.item(Utils.mobItem(object.getType()), object.getName());
@@ -48,7 +48,7 @@ public class BQBoss implements MobFactory<Boss>, Listener {
 				close();
 				run.accept(existing);
 			}
-		}.open(p);
+		}.addSearchButton(3, Boss::getName).open(p);
 	}
 
 	@Override

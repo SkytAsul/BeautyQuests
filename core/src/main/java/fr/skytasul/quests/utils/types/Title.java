@@ -7,6 +7,7 @@ import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 import net.kyori.adventure.title.Title.Times;
 import net.kyori.adventure.util.Ticks;
 import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -36,14 +37,18 @@ public class Title {
 		this.fadeOut = fadeOut;
 
 		this.adventureTitle = net.kyori.adventure.title.Title.title(deserializeText(title), deserializeText(subtitle),
-				Times.of(Ticks.duration(fadeIn), Ticks.duration(stay), Ticks.duration(fadeOut)));
+				Times.times(Ticks.duration(fadeIn), Ticks.duration(stay), Ticks.duration(fadeOut)));
 	}
 
 	public Title(Title other) {
 		this(other.title, other.subtitle, other.fadeIn, other.stay, other.fadeOut);
 	}
 
-	public void send(Audience audience) {
+	public void send(@NotNull Player player) {
+		player.sendTitle(title, subtitle, fadeIn, stay, fadeOut);
+	}
+
+	public void send(@NotNull Audience audience) {
 		audience.showTitle(adventureTitle);
 	}
 

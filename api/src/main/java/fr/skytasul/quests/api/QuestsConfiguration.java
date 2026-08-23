@@ -39,6 +39,9 @@ public interface QuestsConfiguration {
 	@NotNull
 	QuestDescription getQuestDescriptionConfig();
 
+	@NotNull
+	Holograms getHologramsConfig();
+
 	interface Quests {
 
 		int getDefaultTimer();
@@ -85,6 +88,8 @@ public interface QuestsConfiguration {
 
 		boolean showVerticalSeparator();
 
+		boolean hideFolderIfSingleCategory();
+
 	}
 
 	interface Dialogs {
@@ -129,6 +134,8 @@ public interface QuestsConfiguration {
 
 		boolean keepMenuOpen();
 
+		boolean categorizeQuestsByPools();
+
 	}
 
 	interface StageDescription extends ItemsDescriptionConfiguration, ProgressBarConfig {
@@ -162,6 +169,28 @@ public interface QuestsConfiguration {
 
 		@NotNull
 		Map<String, String> tables();
+
+	}
+
+	interface Holograms {
+
+		@Nullable
+		String preferredPlugin();
+
+		boolean disableTextHologram();
+
+		double additionalHeight();
+
+		@Nullable
+		ItemStack launchItem();
+
+		@Nullable
+		ItemStack cannotLaunchItem();
+
+		@Nullable
+		ItemStack talkItem();
+
+		boolean customItemName();
 
 	}
 

@@ -6,8 +6,6 @@ import fr.skytasul.quests.api.QuestsPlugin;
 import fr.skytasul.quests.api.options.QuestOption;
 import fr.skytasul.quests.api.utils.ChatColorUtils;
 import fr.skytasul.quests.api.utils.MinecraftNames;
-import fr.skytasul.quests.api.utils.MinecraftVersion;
-import fr.skytasul.quests.api.utils.Utils;
 import org.apache.commons.lang.Validate;
 import org.bukkit.DyeColor;
 import org.bukkit.Material;
@@ -25,8 +23,8 @@ public final class ItemUtils {
 
 	private ItemUtils() {}
 
-	private static final int LORE_LINE_LENGTH = 40;
-	private static final int LORE_LINE_LENGTH_CRITICAL = 1000;
+	public static final int LORE_LINE_LENGTH = 40;
+	public static final int LORE_LINE_LENGTH_CRITICAL = 1000;
 
 	/**
 	 * Create an ItemStack instance from a generic XMaterial
@@ -161,7 +159,7 @@ public final class ItemUtils {
 			im.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
 		if (im instanceof BookMeta || im instanceof PotionMeta || im instanceof EnchantmentStorageMeta
 				|| im instanceof KnowledgeBookMeta)
-			im.addItemFlags(Utils.valueOfEnum(ItemFlag.class, "HIDE_POTION_EFFECTS", "HIDE_ADDITIONAL_TOOLTIP"));
+			im.addItemFlags(ItemFlag.HIDE_ADDITIONAL_TOOLTIP);
 		if (im instanceof LeatherArmorMeta)
 			im.addItemFlags(ItemFlag.HIDE_DYE);
 
@@ -315,7 +313,7 @@ public final class ItemUtils {
 			ItemMeta meta = is.getItemMeta();
 			if (meta.hasDisplayName())
 				return meta.getDisplayName();
-			if (MinecraftVersion.isHigherThan(20, 5) && meta.hasItemName())
+			if (QuestsPlugin.getPlugin().getServerVersion().isAfter(1, 20, 5) && meta.hasItemName())
 				return meta.getItemName();
 		}
 		return format ? MinecraftNames.getMaterialName(is) : XMaterial.matchXMaterial(is).name();
@@ -341,13 +339,14 @@ public final class ItemUtils {
 
 	public static boolean isGlittering(ItemStack is) {
 		ItemMeta im = is.getItemMeta();
-		return (MinecraftVersion.isHigherThan(20, 6) && im.hasEnchantmentGlintOverride() && im.getEnchantmentGlintOverride())
-				|| im.hasEnchants();
+		return (QuestsPlugin.getPlugin().getServerVersion().isAfter(1, 20, 6)
+				&& im.hasEnchantmentGlintOverride()
+				&& im.getEnchantmentGlintOverride()) || im.hasEnchants();
 	}
 
 	public static void setGlittering(ItemStack is, boolean glitter) {
 		ItemMeta im = is.getItemMeta();
-		if (MinecraftVersion.isHigherThan(20, 6)) {
+		if (QuestsPlugin.getPlugin().getServerVersion().isAfter(1, 20, 6)) {
 			im.setEnchantmentGlintOverride(glitter ? Boolean.TRUE : null);
 		} else {
 			if (glitter) {

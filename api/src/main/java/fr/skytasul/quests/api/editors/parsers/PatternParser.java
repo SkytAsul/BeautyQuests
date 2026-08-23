@@ -2,7 +2,10 @@ package fr.skytasul.quests.api.editors.parsers;
 
 import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
-import org.bukkit.entity.Player;
+
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+
 import fr.skytasul.quests.api.localization.Lang;
 import fr.skytasul.quests.api.utils.messaging.PlaceholderRegistry;
 
@@ -13,13 +16,22 @@ public class PatternParser implements AbstractParser<Pattern> {
 	private PatternParser() {}
 	
 	@Override
-	public Pattern parse(Player p, String msg) throws Throwable {
+	public Pattern parse(String msg) throws ParsingError {
 		try {
 			return Pattern.compile(msg);
 		}catch (PatternSyntaxException ex) {
-			Lang.INVALID_PATTERN.send(p, PlaceholderRegistry.of("input", msg));
-			return null;
+			throw new ParsingError(Lang.INVALID_PATTERN.format(PlaceholderRegistry.of("input", msg)));
 		}
+	}
+
+	@Override
+	public @Nullable String serialize(@NotNull Pattern value) {
+		return value.pattern();
+	}
+
+	@Override
+	public @Nullable String getIndication() {
+		return Lang.TEXT_PARSER_REGEX.toString();
 	}
 	
 }

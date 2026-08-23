@@ -1,7 +1,11 @@
 package fr.skytasul.quests;
 
-import fr.skytasul.quests.api.*;
+import fr.skytasul.quests.api.QuestsAPI;
+import fr.skytasul.quests.api.QuestsConfiguration;
+import fr.skytasul.quests.api.QuestsHandler;
+import fr.skytasul.quests.api.QuestsPlugin;
 import fr.skytasul.quests.api.comparison.ItemComparison;
+import fr.skytasul.quests.api.holograms.BqHologramManager;
 import fr.skytasul.quests.api.localization.Lang;
 import fr.skytasul.quests.api.mobs.MobFactory;
 import fr.skytasul.quests.api.mobs.MobStacker;
@@ -48,7 +52,7 @@ public class QuestsAPIImplementation implements QuestsAPI {
 	private QuestObjectsRegistry<AbstractReward, RewardCreator> rewards;
 	private SerializableRegistry<QuestQuesterStrategy, QuestQuesterStrategyCreator> questerStrategies;
 
-	private AbstractHolograms<?> hologramsManager = null;
+	private BqHologramManager hologramsManager = null;
 	private BQBlocksManagerImplementation blocksManager = new BQBlocksManagerImplementation();
 	private MessageSender messageSender;
 
@@ -162,18 +166,29 @@ public class QuestsAPIImplementation implements QuestsAPI {
 	}
 
 	@Override
-	public @Nullable AbstractHolograms<?> getHologramsManager() {
+	public @Nullable BqHologramManager getHologramsManager() {
 		return hologramsManager;
 	}
 
 	@Override
-	public void setHologramsManager(@NotNull AbstractHolograms<?> newHologramsManager) {
+	public void setHologramsManager(@NotNull BqHologramManager newHologramsManager) {
 		Validate.notNull(newHologramsManager);
+
+		String preferred = plugin.getConfiguration().getHologramsConfig().preferredPlugin();
+		if (preferred != null && !preferred.isBlank()) {
+			if (!preferred.equals(newHologramsManager.name())) {
+				LOGGER.warning("The holograms manager {} has loaded but is not the preferred one. Ignoring it.",
+						newHologramsManager.name());
+				return;
+			}
+		}
+
 		if (hologramsManager != null)
-			LOGGER.warning(newHologramsManager.getClass().getSimpleName()
-					+ " will replace " + hologramsManager.getClass().getSimpleName() + " as the new holograms manager.");
+			LOGGER.warning("{} will replace {} as the new holograms manager.", newHologramsManager.name(),
+					hologramsManager.name());
+
 		hologramsManager = newHologramsManager;
-		LOGGER.debug("Holograms manager has been registered: " + newHologramsManager.getClass().getName());
+		LOGGER.debug("Holograms manager has been registered: {}", newHologramsManager.name());
 	}
 
 	@Override
@@ -259,6 +274,10 @@ public class QuestsAPIImplementation implements QuestsAPI {
 	}
 
 	private class MessageProcessorInfo implements Comparable<MessageProcessorInfo> {
+		private static final Comparator<MessageProcessorInfo> COMPARATOR = Comparator
+				.<MessageProcessorInfo>comparingInt(info -> info.priority)
+				.thenComparing(info -> info.key);
+
 		private String key;
 		private int priority;
 		private MessageProcessor processor;
@@ -271,7 +290,7 @@ public class QuestsAPIImplementation implements QuestsAPI {
 
 		@Override
 		public int compareTo(MessageProcessorInfo o) {
-			return Integer.compare(priority, o.priority);
+			return COMPARATOR.compare(this, o);
 		}
 	}
 

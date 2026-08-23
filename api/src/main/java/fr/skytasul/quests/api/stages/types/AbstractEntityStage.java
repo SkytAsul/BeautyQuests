@@ -2,7 +2,6 @@ package fr.skytasul.quests.api.stages.types;
 
 import com.cryptomorin.xseries.XMaterial;
 import fr.skytasul.quests.api.QuestsPlugin;
-import fr.skytasul.quests.api.editors.TextEditor;
 import fr.skytasul.quests.api.editors.parsers.NumberParser;
 import fr.skytasul.quests.api.gui.ItemUtils;
 import fr.skytasul.quests.api.localization.Lang;
@@ -137,10 +136,10 @@ public abstract class AbstractEntityStage extends AbstractStage implements Locat
 			});
 
 			line.setItem(7, ItemUtils.item(XMaterial.REDSTONE, Lang.Amount.quickFormat("amount", 1)), event -> {
-				new TextEditor<>(event.getPlayer(), event::reopen, x -> {
-					setAmount(x);
+				QuestsPlugin.getPlugin().getEditorManager().getFactory().createTextEditorBuilderParser(event.getPlayer(), NumberParser.INTEGER_PARSER_STRICT_POSITIVE, event::reopen, amount -> {
+					setAmount(amount);
 					event.reopen();
-				}, NumberParser.INTEGER_PARSER_STRICT_POSITIVE).start();
+				}).setInitialValue(amount).build().start();
 			});
 		}
 

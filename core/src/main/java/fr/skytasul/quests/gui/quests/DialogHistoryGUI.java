@@ -38,8 +38,10 @@ public class DialogHistoryGUI extends PagedGUI<WrappedDialogable> {
 	private final Runnable end;
 
 	public DialogHistoryGUI(@NotNull Quester quester, Quest quest, Runnable end) {
-		super(quest.getName(), DyeColor.LIGHT_BLUE, Collections.emptyList(), x -> end.run(), null);
+		super(quest.getName(), DyeColor.LIGHT_BLUE, Collections.emptyList());
 		this.end = end;
+
+		addValidateButton(2, (__) -> end.run());
 
 		Validate.isTrue(quester.getDataHolder().hasQuestData(quest), "Quester must have started the quest");
 
@@ -63,15 +65,13 @@ public class DialogHistoryGUI extends PagedGUI<WrappedDialogable> {
 			if (existing.page > 0) {
 				existing.page--;
 				changed = true;
-				QuestUtils.playPluginSound(QuestsPlugin.getPlugin().getAudiences().player(player),
-						"ENTITY_BAT_TAKEOFF", 0.4f, 1.5f);
+				QuestUtils.playPluginSound(getViewer(), "ENTITY_BAT_TAKEOFF", 0.4f, 1.5f);
 			}
 		}else if (clickType.isRightClick()) {
 			if (existing.page + 1 < existing.pages.size()) {
 				existing.page++;
 				changed = true;
-				QuestUtils.playPluginSound(QuestsPlugin.getPlugin().getAudiences().player(player),
-						"ENTITY_BAT_TAKEOFF", 0.4f, 1.7f);
+				QuestUtils.playPluginSound(getViewer(), "ENTITY_BAT_TAKEOFF", 0.4f, 1.7f);
 			}
 		}
 
@@ -118,7 +118,8 @@ public class DialogHistoryGUI extends PagedGUI<WrappedDialogable> {
 				Message msg = messages.get(i);
 				String formatted = msg.formatMessage(getViewer(), dialogable.getNPC(),
 						dialogable.getDialog().getNPCName(dialogable.getNPC()), i, messages.size());
-				lines.add(ChatColorUtils.wordWrap(formatted, 40, 100));
+				lines.add(
+						ChatColorUtils.wordWrap(formatted, ItemUtils.LORE_LINE_LENGTH, ItemUtils.LORE_LINE_LENGTH_CRITICAL));
 			}
 
 			if (lines.isEmpty()) {

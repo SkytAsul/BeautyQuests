@@ -39,8 +39,7 @@ msg:
     value: {xp_amount})'
   writeMobAmount: '§aWrite the amount of mobs to kill:'
   writeMobName: '§aWrite the custom name of the mob to kill:'
-  writeChatMessage: '§aWrite required message: (Add "\{SLASH}" to the beginning if
-    you want a command.)'
+  writeChatMessage: 'Write the text players should type in the chat.'
   writeMessage: '§aWrite the message that will be sent to the player'
   writeStartMessage: '§aWrite the message that will be sent at the beginning of the quest,
     "null" if you want the default one or "none" if you want none:'
@@ -161,32 +160,6 @@ msg:
       own:
         hidden: §6Your scoreboard is now hidden.
         shown: §6Your scoreboard is shown again.
-    help:
-      header: §6§lBeautyQuests — Help
-      create: '§6/{label} create: §eCreate a quest.'
-      edit: '§6/{label} edit: §eEdit a quest.'
-      remove: '§6/{label} remove <id>: §eDelete a quest with a specified id or click on
-        the NPC when not defined.'
-      finishAll: '§6/{label} finishAll <player>: §eFinish all quests of a player.'
-      setStage: '§6/{label} setStage <player> <id> [new branch] [new stage]: §eSkip the
-        current stage/start the branch/set a stage for a branch.'
-      startDialog: '§6/{label} startDialog <player> <quest id>: §eStarts the pending dialog
-        for a NPC stage or the starting dialog for a quest.'
-      resetPlayer: '§6/{label} resetPlayer <player>: §eRemove all informations about a
-        player.'
-      resetPlayerQuest: '§6/{label} resetPlayerQuest <player> [id]: §eDelete informations
-        of a quest for a player.'
-      seePlayer: '§6/{label} seePlayer <player>: §eView informations about a player.'
-      reload: '§6/{label} reload: §eSave and reload all configurations and files. (§cdeprecated§e)'
-      start: '§6/{label} start <player> [id]: §eForce the starting of a quest.'
-      setItem: '§6/{label} setItem <talk|launch>: §eSave the hologram item.'
-      setFirework: '§6/{label} setFirework: §eEdit the default ending firework.'
-      adminMode: '§6/{label} adminMode: §eToggle the Admin Mode. (Useful for displaying
-        little log messages.)'
-      version: '§6/{label} version: §eSee the current plugin version.'
-      downloadTranslations: '§6/{label} downloadTranslations <language>: §eDownloads a vanilla translation file'
-      save: '§6/{label} save: §eMake a manual plugin save.'
-      list: '§6/{label} list: §eSee the quest list. (Only for supported versions.)'
   typeCancel: §aWrite "cancel" to come back to the last text.
   editor:
     blockAmount: '§aWrite the amount of blocks:'
@@ -215,6 +188,15 @@ msg:
       notStarter: §cThis NPC isn't a quest starter.
     text:
       argNotSupported: §cThe argument {arg} not supported.
+      cannotBeEmpty: 'You must enter a value.'
+      parser:
+        regex: |-
+          Please enter a Regular Expression (regex).
+          Get help and test in real-time on https://regex101.com.
+        duration: |-
+          Please enter a duration, for instance: "2 weeks 1 day 3h 15min".
+          You can use the following units: {available_units} and their short forms.
+          The default unit is {default_unit}.
       chooseLvlRequired: '§aWrite the required amount of levels:'
       chooseJobRequired: '§aWrite name of the wanted job:'
       choosePermissionRequired: '§aWrite the required permission to start the quest:'
@@ -308,9 +290,10 @@ msg:
     availableElements: 'Available elements: §e{available_elements}'
     noSuchElement: '§cThere is no such element. Allowed elements are: §e{available_elements}'
     invalidPattern: '§cInvalid regex pattern §4{input}§c.'
-    comparisonTypeDefault: '§aChoose the comparison type you want among {available}. Default comparison is: §e§l{default}§r§a. Type §onull§r§a to use it.'
+    comparisonType: 'Choose the comparison type you want. The default comparison is §l{default}§r.'
     scoreboardObjectiveNotFound: '§cUnknown scoreboard objective.'
     pool:
+      name: 'Write the name of the quests pool.'
       hologramText: 'Write the custom hologram text for this pool (or "null" if you want the default one).'
       maxQuests: 'Write the maximum amount of quests launcheable from this pool.'
       questsPerLaunch: 'Write the amount of quests given when players click on the NPC.'
@@ -424,6 +407,11 @@ inv:
           online: 'Player has to be connected to the server'
           offline: 'Player can be offline, but server has to be running for the time to be counted'
           realtime: 'Time is counted even if the player and the server are offline'
+      chat:
+        isRegex: 'Match as a RegExp §d(ADVANCED)'
+        isRegexDescription: |-
+          If you want the stage to complete for any chat matching the input as a regular expression, turn on this option.
+          For instance, if this option is turned on, the "Hello .+" input would match any player message starting with "Hello".
   stages:
     name: Create stages
     nextPage: §eNext page
@@ -459,8 +447,6 @@ inv:
     hideNoRequirementsItemLore: If enabled, the quest will not be displayed in the Quests Menu when the requirements are not met.
     bypassLimit: Don't count quest limit
     bypassLimitLore: If enabled, the quest will be startable even if the player has reached its maximum amount of started quests.
-    auto: Start automatically on first join
-    autoLore: If enabled, the quest will be started automatically when the player joins the server for the first time.
     questName: §a§lEdit quest name
     questNameLore: A name must be set to complete quest creation.
     setItemsRewards: §eEdit reward items
@@ -528,6 +514,12 @@ inv:
     optionValue: '§8Value: §7{value}'
     defaultValue: '§8(default value)'
     requiredParameter: '§7Required parameter'
+    autoMode:
+      title: Automatic quest
+      description: Whether the quest should be started automatically or not.
+      disabled: Disabled
+      allPlayers: All players
+      newPlayers: New players only
   itemsSelect:
     name: Edit items
     none: |-
@@ -603,16 +595,21 @@ inv:
     timeToWaitRedo: §7§oYou can restart this quest in {time_left}...
     canRedo: §e§oYou can restart this quest!
     timesFinished: §eCompleted §6{times_finished} x§e.
+    categoryOther: Other quests
     format:
       normal: §6§l§o{quest_name}
       withId: §6§l§o{quest_name}§r      §e#{quest_id}
   itemCreator:
     name: Item creator
+    needType: You must choose an item type!
     itemType: §bItem type
     itemFlags: Toggle item flags
     itemName: §bItem name
     itemLore: §bItem lore
-    isQuestItem: '§bQuest item:'
+    questItem: 'Quest item'
+    questItemDescription: |-
+      Make this item a Quest Item.
+      Such an item cannot be thrown on the ground and is not dropped at the death of the player.
   command:
     name: Command
     value: §eCommand
@@ -670,19 +667,23 @@ inv:
   poolsManage:
     name: Quest Pools
     itemName: '§aPool {pool}'
-    poolNPC: '§8NPC: §7{pool_npc_id}'
+    poolNPC: '§8NPC: §7{pool_npc_name} ({pool_npc_id})'
     poolMaxQuests: '§8Max quests: §7{pool_max_quests}'
     poolQuestsPerLaunch: '§8Quests given per launch: §7{pool_quests_per_launch}'
     poolRedo: '§8Can redo completed quests: §7{pool_redo}'
     poolTime: '§8Time between quests: §7{pool_time}'
     poolHologram: '§8Hologram text: §7{pool_hologram}'
     poolAvoidDuplicates: '§8Avoid duplicates: §7{pool_duplicates}'
+    showAsCategory: '§8Show as category: §7{pool_show_as_category}'
+    requirements: '§8Requirements: §7{pool_requirements_amount}'
+    startRewards: '§8Start rewards: §7{pool_start_rewards_amount}'
+    endRewards: '§8End rewards: §7{pool_end_rewards_amount}'
     poolQuestsList: '§7{pool_quests_amount} §8quest(s): §7{pool_quests}'
     create: §aCreate a quest pool
-    edit: §e> §6§oEdit the pool... §e<
     choose: §e> §6§oChoose this pool §e<
   poolCreation:
     name: Quest pool creation
+    poolName: Pool name
     hologramText: §ePool custom hologram
     maxQuests: §aMax quests
     questsPerLaunch: §aQuests started per launch
@@ -690,7 +691,10 @@ inv:
     redoAllowed: Is redo allowed
     avoidDuplicates: Avoid duplicates
     avoidDuplicatesLore: §8> §7Try to avoid doing\n  the same quest over and over
+    showAsCategory: Show as category
     requirements: §bRequirements to start a quest
+    startRewards: Rewards given when a player starts the pool for the first time
+    endRewards: Rewards given when a player finishes the last quest of the pool
   poolsList.name: Quest pools
   itemComparisons:
     name: Item Comparisons
@@ -792,6 +796,32 @@ description:
     quest: 'Finish quest §e{quest_name}'
   reward:
     title: '§8§lRewards:'
+
+command:
+  header: §6§lBeautyQuests — Help §e(page {page_id}/{page_count})
+  base: 'Open the Quests menu.'
+  create: 'Create a quest.'
+  edit: 'Edit a quest.'
+  remove: 'Delete a quest with a specified id or click on NPC when not defined.'
+  finishAll: 'Force finish all quests of a player.'
+  setStage: 'Skip the current stage OR start a branch OR go to a stage in a branch.'
+  startDialog: 'Start the pending dialog a NPC stage or the starting dialog for a quest.'
+  resetPlayer: 'Remove all data of a quester.'
+  resetPlayerQuest: 'Delete quest data for a quester.'
+  resetQuest: 'Delete data of all questers for a quest.'
+  seePlayer: 'See all quests data for a player.'
+  start: 'Start a quest manually.'
+  cancel: 'Cancel a started quest.'
+  finish: 'Force finish a started quest.'
+  checkpoint: 'Go back to the last checkpoint reached for a quest.'
+  pools: 'Manage quest pools.'
+  setItem: 'Change the hologram item globally.'
+  setFirework: 'Edit the default ending firework.'
+  adminMode: 'Enter/exit the Admin Mode: get log messages in the chat when players do quest actions.'
+  version: 'See the current plugin version.'
+  downloadTranslations: 'Download a vanilla translation file for blocks, items...'
+  save: 'Make a manual plugin save.'
+  list: 'See a list of created quests.'
     
 misc:
   format:
@@ -803,6 +833,8 @@ misc:
     errorPrefix: §4✖ §c
     successPrefix: §2✔ §a
     requirementNotMetPrefix: §c
+    importantItem: §a
+    miscItem: §e
   time:
     weeks: '{weeks_amount} weeks'
     days: '{days_amount} days'

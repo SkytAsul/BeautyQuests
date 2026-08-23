@@ -8,6 +8,7 @@ import fr.skytasul.quests.api.data.DataLoadingException;
 import fr.skytasul.quests.api.data.DataSavingException;
 import fr.skytasul.quests.api.localization.Lang;
 import fr.skytasul.quests.api.npcs.BqNpc;
+import fr.skytasul.quests.api.options.OptionRequirements;
 import fr.skytasul.quests.api.options.QuestOption;
 import fr.skytasul.quests.api.options.QuestOptionCreator;
 import fr.skytasul.quests.api.options.description.DescriptionSource;
@@ -27,10 +28,8 @@ import fr.skytasul.quests.api.utils.PlayerListCategory;
 import fr.skytasul.quests.api.utils.QuestVisibilityLocation;
 import fr.skytasul.quests.api.utils.Utils;
 import fr.skytasul.quests.api.utils.messaging.*;
-import fr.skytasul.quests.npcs.BqNpcImplementation;
 import fr.skytasul.quests.options.*;
 import fr.skytasul.quests.players.AdminMode;
-import fr.skytasul.quests.structure.pools.QuestPoolImplementation;
 import fr.skytasul.quests.utils.QuestUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.ConfigurationSection;
@@ -49,6 +48,8 @@ import java.util.concurrent.CompletableFuture;
 import java.util.regex.Pattern;
 
 public class QuestImplementation implements Quest, QuestDescriptionProvider, Comparable<Quest> {
+
+	private static final String NULL_OPTION_VALUE = "null-option-value";
 
 	private static final Pattern PERMISSION_PATTERN = Pattern.compile("^beautyquests\\.start\\.(\\d+)$");
 
@@ -74,6 +75,7 @@ public class QuestImplementation implements Quest, QuestDescriptionProvider, Com
 
 	public void load() {
 		QuestsAPI.getAPI().propagateQuestsHandlers(handler -> handler.questLoaded(this));
+		manager.loadBranches();
 	}
 
 	@Override
@@ -97,7 +99,7 @@ public class QuestImplementation implements Quest, QuestDescriptionProvider, Com
 		for (QuestOption<?> option : options) {
 			if (clazz.isInstance(option)) return (T) option;
 		}
-		throw new NullPointerException("Quest " + id + " do not have option " + clazz.getName());
+		throw new IllegalArgumentException("Quest " + id + " do not have option " + clazz.getName());
 	}
 
 	@Override
@@ -312,7 +314,7 @@ public class QuestImplementation implements Quest, QuestDescriptionProvider, Com
 			if (sendMessage) Lang.ALREADY_STARTED.send(p);
 			return false;
 		}
-		if (!getOptionValueOrDef(OptionRepeatable.class) && hasFinished(quester))
+		if (!isRepeatable() && hasFinished(quester))
 			return false;
 		if (!testTimer(quester, sendMessage))
 			return false;
@@ -561,7 +563,7 @@ public class QuestImplementation implements Quest, QuestDescriptionProvider, Com
 				questDatas.incrementFinished();
 				questDatas.setStartingTime(OptionalLong.empty());
 				if (hasOption(OptionQuestPool.class))
-					((QuestPoolImplementation) getOptionValueOrDef(OptionQuestPool.class)).questCompleted(quester, this);
+					getOptionValueOrDef(OptionQuestPool.class).questCompleted(quester, this);
 				if (isRepeatable()) {
 					Calendar cal = Calendar.getInstance();
 					cal.add(Calendar.MINUTE, Math.max(0, getOptionValueOrDef(OptionTimer.class)));
@@ -582,8 +584,6 @@ public class QuestImplementation implements Quest, QuestDescriptionProvider, Com
 	public void delete(boolean silently, boolean keepDatas) {
 		questsManager.removeQuest(this);
 		unload();
-		if (hasOption(OptionStarterNPC.class))
-			((BqNpcImplementation) getOptionValueOrDef(OptionStarterNPC.class)).removeQuest(this);
 
 		if (!keepDatas) {
 			BeautyQuests.getInstance().getQuesterManager().getDataManager().resetQuestData(id).whenComplete(
@@ -640,7 +640,12 @@ public class QuestImplementation implements Quest, QuestDescriptionProvider, Com
 	private void save(@NotNull ConfigurationSection section) throws DataSavingException {
 		for (QuestOption<?> option : options) {
 			try {
-				if (option.hasCustomValue()) section.set(option.getOptionCreator().id, option.save());
+				if (option.hasCustomValue()) {
+					var optionObject = option.save();
+					if (optionObject == null)
+						optionObject = NULL_OPTION_VALUE;
+					section.set(option.getOptionCreator().id, optionObject);
+				}
 			}catch (Exception ex) {
 				throw new DataSavingException("Failed to save option " + option.getOptionCreator().id, ex);
 			}
@@ -677,7 +682,10 @@ public class QuestImplementation implements Quest, QuestDescriptionProvider, Com
 				if (creator.applies(key)) {
 					try {
 						QuestOption<?> option = creator.optionSupplier.get();
-						option.load(map, key);
+						if (NULL_OPTION_VALUE.equals(map.get(key)))
+							option.setValue(null);
+						else
+							option.load(map, key);
 						qu.addOption(option);
 						iterator.remove();
 					}catch (Exception ex) {

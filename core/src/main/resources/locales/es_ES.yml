@@ -28,6 +28,7 @@ msg:
     drop: '§c¡No puedes soltar un objeto de misión!'
     craft: '§c¡No puedes usar un objeto de misión para fabricar!'
     eat: '§c¡No puedes comer un objeto de misión!'
+    place: '§c¡No puedes colocar un objeto de misión!'
   stageMobs:
     listMobs: '§aDebes matar {mobs}.'
   writeNPCText: '§aEscribe el dialogo que se le dirá al jugador por el NPC: (Escribe "help" para recibir ayuda.)'
@@ -112,12 +113,12 @@ msg:
       player: '§6Toda la información sobre la misión {quest} fue borrada por {deleter_name}.'
       remover: '§6{player} información de {quest} ha sido eliminado.'
     resetQuest: '§6Removida información de misiones de {player_amount} jugadores.'
+    startQuest: '§6Has forzado el comienzo de la misión {quest} para {player}.'
     startQuestNoRequirements: '§cEl jugador no cumple con los requisitos para la misión {quest}... Añade "-overrideRequirements" al final de tu comando para evitar la comprobación de requisitos.'
     cancelQuest: '§6Cancelaste la misión {quest}.'
     cancelQuestUnavailable: '&cLa misión {quest} no puede ser cancelada.'
     backupCreated: '&6Creaste correctamente copias de seguridad de misiones e información.'
-    backupPlayersFailed: '§cLa creación de la copia de seguridad para toda la información de los jugadores ha fallado.'
-    backupQuestsFailed: '§cLa creación de la copia de seguridad para todas las misiones ha fallado.'
+    backupFailed: Creación de respaldo fallida.
     adminModeEntered: '&aEntraste en el modo Admin.'
     adminModeLeft: '&aSaliste del modo Admin.'
     resetPlayerPool:
@@ -134,24 +135,6 @@ msg:
       own:
         hidden: Su marcador ahora está oculto.
         shown: Su marcador se muestra de nuevo
-    help:
-      header: '§6§lBeautyQuests — Ayuda'
-      create: '§6/{label} create: §eCrea una misión.'
-      edit: '§6/{label} edit: §eEditar una misión.'
-      remove: '§6/{label} remove <id>: §eElimina una misión con un id especificado o haz clic en el NPC cuando no se haya definido.'
-      startDialog: '§6/{label} startDialog <player> <quest id>: §eComienza el diálogo pendiente para una etapa del NPC o el diálogo de inicio para una misión.'
-      resetPlayer: '§6/{label} restablecido jugador <player>: §eElimina toda la información sobre un jugador.'
-      resetPlayerQuest: '§6/{label} restablecida la Misión de Jugador <player> [id]: §eElimina información de una misión para un jugador.'
-      seePlayer: '§6/{label} seePlayer <player>: §eVer la informacion sobre un jugador'
-      reload: '§6/{label} reload: §eGuarda y recarga todas las configuraciones y archivos. (§cdeprecado§e)'
-      start: '§6/{label} start <player> [id]: §eForzar el inicio de una mision'
-      setItem: '§6/{label} setItem <talk|launch>: §eGuarda el elemento del holograma.'
-      setFirework: '§6/{label} setFirework: §eEdita el fuego artificial por defecto al finalizar.'
-      adminMode: '§6/{label} adminMode: §eActiva el Modo de administración. (Útil para mostrar mensajes de poco registro.)'
-      version: '§6/{label} version: §eVer la versión actual del plugin.'
-      downloadTranslations: '§6/{label} descargaTraducciones <language>: §eDescargas un archivo de traducción de vaina'
-      save: '§6/{label} save: §eHacer un guardado manual.'
-      list: '§6/{label} list: §eVer la lista de misiones. (Sólo para versiones soportadas.)'
   typeCancel: '§aEscribe "cancel" para volver al último texto.'
   editor:
     blockAmount: '§aEscribe la cantidad de bloques:'
@@ -364,6 +347,9 @@ inv:
         targetMobs: '§cMobs para dañar'
       eatDrink:
         items: '§eEditar items para comer o beber'
+      playTime:
+        modes:
+          online: 'El jugador tiene que estar conectando al servidor'
   stages:
     name: Crear etapas
     nextPage: '§eSiguiente página'
@@ -591,7 +577,6 @@ inv:
     poolAvoidDuplicates: '§8Evitar duplicados: §7{pool_duplicates}'
     poolQuestsList: '§7{pool_quests_amount} §8Misión(s): §7{pool_quests}'
     create: '§aCrear conjunto de misiones'
-    edit: '§e> §6§oEditar el conjunto... §e<'
     choose: '§e> §6§oElige este grupo §e<'
   poolCreation:
     name: Creación del conjunto de misiones
@@ -618,6 +603,8 @@ inv:
     enchantsLore: Comparar los encantamientos de los articulos
     repairCost: Coste de reparación
     repairCostLore: Compara el coste de reparación de armaduras y espadas
+    itemsAdder: ItemsAdder
+    mmoItems: Objeto de MMOItems
   editTitle:
     name: Editar título
     title: '§6Título'

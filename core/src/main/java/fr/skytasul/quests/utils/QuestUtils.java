@@ -6,12 +6,14 @@ import fr.skytasul.quests.QuestsConfigurationImplementation;
 import fr.skytasul.quests.api.QuestsConfiguration;
 import fr.skytasul.quests.api.QuestsPlugin;
 import fr.skytasul.quests.api.utils.AutoRegistered;
-import fr.skytasul.quests.api.utils.MinecraftVersion;
-import fr.skytasul.quests.utils.nms.NMS;
 import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.identity.Identity;
+import net.kyori.adventure.key.Key;
+import net.kyori.adventure.sound.Sound;
+
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
+import org.bukkit.Registry;
 import org.bukkit.entity.Firework;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
@@ -41,7 +43,8 @@ public final class QuestUtils {
 
 	public static Location upLocationForEntity(LivingEntity en, double value) {
 		double height = value;
-		height += QuestsConfigurationImplementation.getConfiguration().getHologramsHeight();
+		height += 0.28;
+		height += QuestsConfiguration.getConfig().getHologramsConfig().additionalHeight();
 		height += en.getHeight();
 		if (en instanceof Player) {
 			if (cachedScoreboardPresenceExp < System.currentTimeMillis()) {
@@ -62,7 +65,8 @@ public final class QuestUtils {
 	public static boolean isSimilar(ItemStack item1, ItemStack item2) {
 		if (item2.getType() == item1.getType() && item2.getDurability() == item1.getDurability()) {
 			try {
-				return NMS.getNMS().equalsWithoutNBT(item1.getItemMeta(), item2.getItemMeta());
+				return BeautyQuests.getInstance().getInternalsAccess().equalsWithoutNBT(item1.getItemMeta(),
+						item2.getItemMeta());
 			} catch (ReflectiveOperationException ex) {
 				QuestsPlugin.getPlugin().getLoggerExpanded()
 						.severe("An error occurred while attempting to compare items using NMS", ex);
@@ -116,8 +120,11 @@ public final class QuestUtils {
 		if (xsoundOpt.isPresent())
 			return xsoundOpt.get().record();
 
-		QuestsPlugin.getPlugin().getLoggerExpanded().warning("Cannot find sound {0}", sound);
-		return new XSound.Record().withSound(sound);
+		Key soundKey = Key.key(sound);
+		if (soundKey.namespace() == "minecraft")
+			QuestsPlugin.getPlugin().getLoggerExpanded().namedWarning("Cannot find sound {0}", sound, 3600, sound);
+
+		return new XSound.Record().withSound(soundKey.asString());
 	}
 
 	public static void playPluginSound(Audience audience, String sound, float volume) {
@@ -129,6 +136,8 @@ public final class QuestUtils {
 			return;
 		if ("none".equals(sound))
 			return;
+
+		// TODO improve this now we are Paper-only
 
 		// ugly-ass mix of Adventure and XSeries code to have both Spigot/Paper compatibility
 		// and pre/post-registry flattening
@@ -161,7 +170,7 @@ public final class QuestUtils {
 				fw.setMetadata("questFinish", new FixedMetadataValue(BeautyQuests.getInstance(), true));
 				fw.setFireworkMeta(meta);
 			};
-			if (MinecraftVersion.isHigherThan(20, 6)) {
+			if (QuestsPlugin.getPlugin().getServerVersion().isAfter(1, 20, 6)) {
 				lc.getWorld().spawn(lc, Firework.class, fw -> fwConsumer.accept(fw));
 				// Much better to use the built-in method to do operations on entity
 				// before it is sent to the players, as it will not create flickering.

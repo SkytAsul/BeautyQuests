@@ -40,8 +40,11 @@ public class TitleReward extends AbstractReward {
 
 	@Override
 	public void give(RewardGiveContext context) {
-		if (title != null)
-			title.send(context.getQuester());
+		if (title != null) {
+			// XXX: not working with adventure-platform-bukkit
+			// title.send(context.getQuester());
+			context.getQuester().getOnlinePlayers().forEach(title::send);
+		}
 	}
 
 	@Override

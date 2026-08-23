@@ -142,26 +142,6 @@ msg:
       own:
         hidden: '§6Votre scoreboard est désormais caché.'
         shown: '§6Votre scoreboard est de nouveau visible.'
-    help:
-      header: '§6§lBeautyQuests — Aide'
-      create: '§6/{label} create : §eCréer une quête.'
-      edit: '§6/{label} edit : §eModifier une quête.'
-      remove: '§6/{label} remove <id> : §eSupprimer une quête avec un ID spécifié ou en cliquant sur son NPC.'
-      finishAll: '§6/{label} finishAll <joueur> : §eFinir toutes les quêtes d''un joueur.'
-      setStage: '§6/{label} setStage <joueur> <id> [nouvelle branche] [nouvelle étape]: §ePasser l''étape en cours/lancer une branche/lancer une étape pour une branche.'
-      startDialog: '§6/{label} startDialog <joueur> <id de quête>: §eDémarre le dialogue en attente pour une étape "NPC" ou le dialogue de début d''une quête.'
-      resetPlayer: '§6/{label} resetPlayer <joueur> : §eSupprimer les données d''un joueur.'
-      resetPlayerQuest: '§6/{label} resetPlayerQuest <joueur> [id] : §eSupprimer les données d''une seule quête pour un joueur.'
-      seePlayer: '§6/{label} seePlayer <joueur> : §eVoir les données d''un joueur.'
-      reload: '§6/{label} reload : §eSauvegarder et recharger les fichiers de configuration/sauvegarde. (§cdéconseillé§e)'
-      start: '§6/{label} start <joueur> [id] : §eForcer le lancement d''une quête.'
-      setItem: '§6/{label} setItem <talk|launch> : §eSauvegarder l''item de l''hologramme dans le fichier de données.'
-      setFirework: '§6/{label} setFirework : §eModifie le feu d''artifice de fin par défaut.'
-      adminMode: '§6/{label} adminMode : §eMode administrateur (réception d''informations journal)'
-      version: '§6/{label} version : §eVoir la version du plugin.'
-      downloadTranslations: '§6/{label} downloadTranslations <langage>: §eTélécharge un fichier de traductions vanilla'
-      save: '§6/{label} save: §eFaire une sauvegarde manuelles des données.'
-      list: '§6/{label} list : §eVoir la liste des quêtes (seulement pour les versions supportées).'
   typeCancel: '§aTapez "cancel" pour revenir à l''ancien texte.'
   editor:
     blockAmount: '§aÉcrivez le nombre de blocs :'
@@ -277,6 +257,7 @@ msg:
     comparisonTypeDefault: '§aChoissez le type de comparaison que vous voulez parmi {available}. La comparaison par défaut est: §e§l{default}§r§a. Tapez §onull§r§a pour l''utiliser.'
     scoreboardObjectiveNotFound: '§cObjectif de scoreboard inconnu.'
     pool:
+      name: 'Écrivez le nom du groupe de quêtes.'
       hologramText: 'Écrivez le texte personnalisé de l''hologramme pour ce groupe (ou "null" si vous voulez le texte par défaut).'
       maxQuests: 'Écrivez le nombre maximum de quêtes lancées dans ce groupe.'
       questsPerLaunch: 'Écrivez le nombre de quêtes données lorsque les joueurs cliquent sur le NPC.'
@@ -425,8 +406,6 @@ inv:
     hideNoRequirementsItemLore: Si activé, la quête ne sera pas affichée dans le menu des quêtes lorsque les conditions ne sont pas remplies.
     bypassLimit: Ne pas compter la limite de quêtes
     bypassLimitLore: Si activé, la quête sera démarrée même si le joueur a atteint son nombre maximum de quêtes en cours.
-    auto: Démarrer automatiquement à la première connexion
-    autoLore: Si activé, la quête sera lancée automatiquement lorsque le joueur rejoindra le serveur pour la première fois.
     questName: '§a§lModifier le nom de la quête'
     questNameLore: Un nom doit être défini pour terminer la création de quête.
     setItemsRewards: '§eModifier les gains d''item'
@@ -492,6 +471,12 @@ inv:
     optionValue: '§8Valeur : §7{value}'
     defaultValue: '§8(valeur par défaut)'
     requiredParameter: '§7Paramètre requis'
+    autoMode:
+      title: Quête automatique
+      description: Est-ce que la quête devrait être commencée automatiquement ou non.
+      disabled: Désactivé
+      allPlayers: Pour tous les joueurs
+      newPlayers: Seulement pour les nouveaux joueurs
   itemsSelect:
     name: Modifier les items
     none: |-
@@ -567,6 +552,7 @@ inv:
     timeToWaitRedo: '§7§oVous pouvez refaire cette quête dans {time_left}...'
     canRedo: '§e§oVous pouvez refaire cette quête !'
     timesFinished: '§eTerminé §6{times_finished} x§e.'
+    categoryOther: Autres quêtes
     format:
       normal: '§6§l§o{quest_name}'
       withId: '§6§l§o{quest_name}§r      §e#{quest_id}'
@@ -632,19 +618,23 @@ inv:
   poolsManage:
     name: Groupe de quêtes
     itemName: '§aGroupe {pool}'
-    poolNPC: '§8NPC : §7{pool_npc_id}'
+    poolNPC: '§8NPC : §7{pool_npc_name} ({pool_npc_id})'
     poolMaxQuests: '§8Nombre maximum de quêtes : §7{pool_max_quests}'
     poolQuestsPerLaunch: '§8Quêtes données par lancement : §7{pool_quests_per_launch}'
     poolRedo: '§8Peut refaire les quêtes : §7{pool_redo}'
     poolTime: '§8Temps entre les quêtes : §7{pool_time}'
     poolHologram: '§8Hologramme : §7{pool_hologram}'
     poolAvoidDuplicates: '§8Éviter les doublons : §7{pool_duplicates}'
+    showAsCategory: '§8Afficher comme catégorie : §7{pool_show_as_category}'
+    requirements: '§8Conditions : §7{pool_requirements_amount}'
+    startRewards: '§8Récompenses de début : §7{pool_start_rewards_amount}'
+    endRewards: '§8Récompenses de fin : §7{pool_end_rewards_amount}'
     poolQuestsList: '§7{pool_quests_amount} §8quête(s) : §7{pool_quests}'
     create: '§aCréer un groupe de quêtes'
-    edit: '§e> §6§oModifier le groupe de quêtes... §e<'
     choose: '§e> §6§oChoisir ce groupe §e<'
   poolCreation:
     name: Création du groupe de quêtes
+    poolName: Nom du groupe
     hologramText: '§eHologramme personnalisé du groupe'
     maxQuests: '§aNombre maximum de quêtes'
     questsPerLaunch: '§aQuêtes commencées par lancement'
@@ -652,7 +642,10 @@ inv:
     redoAllowed: Est-il recommençable ?
     avoidDuplicates: Éviter les doublons
     avoidDuplicatesLore: '§8> §7Essaye d''éviter de faire\n  la même quête encore et encore'
+    showAsCategory: Afficher en tant que catégorie
     requirements: '§bExigences pour démarrer une quête'
+    startRewards: Récompenses données lorsqu'un joueur démarre le groupe de quêtes pour la première fois
+    endRewards: Récompenses données quand un joueur termine la dernière quête du groupe
   poolsList.name: Groupe de quêtes
   itemComparisons:
     name: Comparaisons d'item
@@ -753,6 +746,31 @@ description:
     quest: 'Terminer la quête §e{quest_name}'
   reward:
     title: '§8§lRécompenses :'
+command:
+  header: '§6§lBeautyQuests — Aide §e(page {page_id}/{page_count})'
+  base: 'Ouvrir le menu des Quêtes.'
+  create: 'Créer une quête.'
+  edit: 'Modifier une quête.'
+  remove: 'Supprimer une quête avec un ID spécifié ou en cliquant sur son NPC.'
+  finishAll: 'Forcer la fin de toutes les quêtes d''un joueur.'
+  setStage: 'Passer l''étape courante OU démarrer une branche OU aller à une étape dans une branche.'
+  startDialog: 'Démarrer le dialogue en attente pour une étape "NPC" ou le dialogue de début d''une quête.'
+  resetPlayer: 'Supprimer toutes les données d''un quêteur.'
+  resetPlayerQuest: 'Supprimer les données d''une quête pour un quêteur.'
+  resetQuest: 'Supprimer les données d''une quête pour tous les quêteurs.'
+  seePlayer: 'Voir toutes les données de quêtes pour un joueur.'
+  start: 'Démarrer une quête manuellement.'
+  cancel: 'Annuler une quête commencée.'
+  finish: 'Forcer la fin d''une quête en cours.'
+  checkpoint: 'Revenir au dernier checkpoint atteint pour une quête.'
+  pools: 'Gérer les groupes de quêtes.'
+  setItem: 'Changer l''item d''hologramme par défaut.'
+  setFirework: 'Modifier le feu d''artifice de fin par défaut.'
+  adminMode: 'Entrer/sortir du mode Admin : obtenez des messages dans le chat lorsque les joueurs font des actions de quêtes.'
+  version: 'Voir la version actuelle du plugin.'
+  downloadTranslations: 'Télécharger un fichier de traduction vanilla pour les blocs, les items...'
+  save: 'Faire une sauvegarde manuelle du plugin.'
+  list: 'Voir la liste des quêtes créées.'
 misc:
   format:
     prefix: '§6<§e§lQuêtes§r§6> §r'

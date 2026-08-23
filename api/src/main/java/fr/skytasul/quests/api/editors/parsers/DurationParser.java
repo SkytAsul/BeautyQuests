@@ -4,8 +4,15 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+
 import org.apache.commons.lang.StringUtils;
-import org.bukkit.entity.Player;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+
+import fr.skytasul.quests.api.localization.Lang;
+import fr.skytasul.quests.api.utils.messaging.PlaceholderRegistry;
 
 public class DurationParser implements AbstractParser<Long> {
 	
@@ -24,7 +31,7 @@ public class DurationParser implements AbstractParser<Long> {
 	}
 	
 	@Override
-	public Long parse(Player p, String msg) throws Throwable {
+	public Long parse(String msg) throws ParsingError {
 		Matcher matcher = DURATION_PATTERN.matcher(msg);
 		long duration = 0;
 		while (matcher.find()) {
@@ -34,15 +41,26 @@ public class DurationParser implements AbstractParser<Long> {
 			if (StringUtils.isEmpty(unit)) unit = matcher.group(4);
 			
 			MinecraftTimeUnit munit = StringUtils.isEmpty(unit) ? defaultUnit : MinecraftTimeUnit.of(unit);
-			if (munit == null) {
-				p.sendMessage("§cUnknown unit " + unit);
-				return null;
-			}
+			if (munit == null)
+				throw new ParsingError("§cUnknown unit " + unit);
 			duration += munit.in(targetUnit, Long.parseLong(num));
 		}
 		return duration;
 	}
+
+	@Override
+	public @Nullable String serialize(@NotNull Long value) {
+		return value.toString() + " " + targetUnit.names[1];
+	}
 	
+	@Override
+	public @Nullable String getIndication() {
+		var units = Stream.of(MinecraftTimeUnit.values()).skip(targetUnit.ordinal()).map(unit -> unit.names[0])
+				.collect(Collectors.joining(", "));
+		return Lang.TEXT_PARSER_DURATION
+				.format(PlaceholderRegistry.of("available_units", units, "default_unit", defaultUnit.names[0]));
+	}
+
 	public enum MinecraftTimeUnit {
 		TICK(0, "tick", "ticks", "t"),
 		SECOND(20, "second", "seconds", "s", "sec"),
@@ -51,7 +69,7 @@ public class DurationParser implements AbstractParser<Long> {
 		DAY(24, "day", "days", "d"),
 		WEEK(7, "week", "weeks", "w");
 		
-		private static final Map<String, MinecraftTimeUnit> UNITS = new HashMap<>();;
+		private static final Map<String, MinecraftTimeUnit> UNITS = new HashMap<>();
 		
 		private int previousDuration;
 		private String[] names;

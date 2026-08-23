@@ -38,7 +38,8 @@ public class MythicMobs implements LeveledMobFactory<MythicMob>, Listener {
 
 	@Override
 	public void itemClick(Player p, Consumer<MythicMob> run) {
-		new PagedGUI<MythicMob>("List of MythicMobs", DyeColor.PINK, io.lumine.xikage.mythicmobs.MythicMobs.inst().getMobManager().getMobTypes(), null, MythicMob::getInternalName) {
+		new PagedGUI<MythicMob>("List of MythicMobs", DyeColor.PINK,
+				io.lumine.xikage.mythicmobs.MythicMobs.inst().getMobManager().getMobTypes()) {
 			@Override
 			public ItemStack getItemStack(MythicMob object) {
 				XMaterial mobItem;
@@ -56,7 +57,7 @@ public class MythicMobs implements LeveledMobFactory<MythicMob>, Listener {
 				close();
 				run.accept(existing);
 			}
-		}.sortValues(MythicMob::getInternalName).open(p);
+		}.addSearchButton(3, MythicMob::getInternalName).sortValues(MythicMob::getInternalName).open(p);
 	}
 
 	@Override

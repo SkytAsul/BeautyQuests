@@ -15,9 +15,9 @@ import java.util.function.Consumer;
 import java.util.function.Function;
 
 public class DamageCausesGUI extends ListGUI<DamageCause> {
-	
+
 	private static final Map<DamageCause, ItemStack> MAPPED_ITEMS;
-	
+
 	static {
 		MAPPED_ITEMS = new EnumMap<>(DamageCause.class);
 		for (DamageCause cause : DamageCause.values()) {
@@ -35,28 +35,28 @@ public class DamageCausesGUI extends ListGUI<DamageCause> {
 			MAPPED_ITEMS.put(cause, ItemUtils.item(type, "§7" + cause.name()));
 		}
 	}
-	
+
 	private final Consumer<List<DamageCause>> end;
 
 	public DamageCausesGUI(List<DamageCause> causes, Consumer<List<DamageCause>> end) {
 		super(Lang.INVENTORY_DAMAGE_CAUSE.toString(), DyeColor.RED, causes);
 		this.end = end;
 	}
-	
+
 	@Override
 	public void finish(List<DamageCause> objects) {
 		end.accept(objects);
 	}
-	
+
 	@Override
 	public ItemStack getObjectItemStack(DamageCause object) {
 		return MAPPED_ITEMS.get(object);
 	}
-	
+
 	@Override
 	public void createObject(Function<DamageCause, ItemStack> callback) {
 		new StaticPagedGUI<DamageCause>(Lang.INVENTORY_DAMAGE_CAUSES_LIST.toString(), DyeColor.ORANGE, MAPPED_ITEMS,
-				callback::apply, DamageCause::name).open(player);
+				callback::apply).addSearchButton(DamageCause::name, true).open(getViewer());
 	}
-	
+
 }

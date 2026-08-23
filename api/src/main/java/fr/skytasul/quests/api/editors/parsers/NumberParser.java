@@ -1,10 +1,12 @@
 package fr.skytasul.quests.api.editors.parsers;
 
-import fr.skytasul.quests.api.QuestsPlugin;
 import fr.skytasul.quests.api.localization.Lang;
-import fr.skytasul.quests.api.utils.messaging.DefaultErrors;
-import org.bukkit.entity.Player;
+import fr.skytasul.quests.api.utils.messaging.PlaceholderRegistry;
+
 import java.math.BigDecimal;
+
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 public class NumberParser<T extends Number> implements AbstractParser<T> {
 
@@ -36,31 +38,35 @@ public class NumberParser<T extends Number> implements AbstractParser<T> {
 	}
 
 	@Override
-	public T parse(Player p, String msg) {
+	public T parse(String msg) throws ParsingError {
 		try{
 			String tname = numberType != Integer.class ? numberType.getSimpleName() : "Int";
 			T number = (T) numberType.getDeclaredMethod("parse" + tname, String.class).invoke(null, msg);
 			if (positive || noZero){
 				int compare = new BigDecimal(msg).compareTo(new BigDecimal(0));
 				if (positive && compare < 0){
-					Lang.NUMBER_NEGATIVE.send(p);
-					return null;
+					throw new ParsingError(Lang.NUMBER_NEGATIVE.format());
 				}else if (noZero && compare == 0) {
-					Lang.NUMBER_ZERO.send(p);
-					return null;
+					throw new ParsingError(Lang.NUMBER_ZERO.format());
 				}
 			}
 			if (min != null || max != null) {
 				BigDecimal bd = new BigDecimal(msg);
 				if ((min != null && bd.compareTo(min) < 0) || (max != null && bd.compareTo(max) > 0)) {
-					DefaultErrors.sendOutOfBounds(QuestsPlugin.getPlugin().getAudiences().player(p), min, max);
-					return null;
+					throw new ParsingError(Lang.NUMBER_NOT_IN_BOUNDS.format(PlaceholderRegistry.of("min", min, "max", max)));
 				}
 			}
 			return number;
-		}catch (Exception ex) {}
-		DefaultErrors.sendInvalidNumber(QuestsPlugin.getPlugin().getAudiences().player(p), msg);
-		return null;
+		} catch (ParsingError ex) {
+			throw ex;
+		} catch (Exception ex) {
+			throw new ParsingError(Lang.NUMBER_INVALID.format(PlaceholderRegistry.of("input", msg)));
+		}
+	}
+
+	@Override
+	public @Nullable String serialize(@NotNull T value) {
+		return value.toString();
 	}
 
 }

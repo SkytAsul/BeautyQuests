@@ -1,7 +1,6 @@
 package fr.skytasul.quests.integrations;
 
 import com.cryptomorin.xseries.XMaterial;
-import fr.skytasul.quests.api.AbstractHolograms;
 import fr.skytasul.quests.api.QuestsAPI;
 import fr.skytasul.quests.api.QuestsPlugin;
 import fr.skytasul.quests.api.gui.ItemUtils;
@@ -14,6 +13,10 @@ import fr.skytasul.quests.integrations.fabled.FabledClassRequirement;
 import fr.skytasul.quests.integrations.fabled.FabledLevelRequirement;
 import fr.skytasul.quests.integrations.fabled.FabledXpReward;
 import fr.skytasul.quests.integrations.factions.FactionRequirement;
+import fr.skytasul.quests.integrations.holograms.BQCMI;
+import fr.skytasul.quests.integrations.holograms.BQDecentHolograms;
+import fr.skytasul.quests.integrations.holograms.BQFancyHolograms;
+import fr.skytasul.quests.integrations.holograms.BQHolographicDisplays3;
 import fr.skytasul.quests.integrations.jobs.JobLevelRequirement;
 import fr.skytasul.quests.integrations.maps.BQBlueMap;
 import fr.skytasul.quests.integrations.maps.BQDynmap;
@@ -110,6 +113,8 @@ public class IntegrationsLoader {
 		manager.addDependency(new BQDependency("HolographicDisplays", this::registerHolographicDisplays));
 		manager.addDependency(
 				new BQDependency("DecentHolograms", () -> QuestsAPI.getAPI().setHologramsManager(new BQDecentHolograms())));
+		manager.addDependency(
+				new BQDependency("FancyHolograms", () -> QuestsAPI.getAPI().setHologramsManager(new BQFancyHolograms())));
 
 
 		// OTHERS
@@ -145,21 +150,13 @@ public class IntegrationsLoader {
 	}
 
 	private void registerHolographicDisplays() {
-		AbstractHolograms<?> holograms;
 		try {
-			Class.forName("com.gmail.filoghost.holographicdisplays.HolographicDisplays"); // v2
-			holograms = new BQHolographicDisplays2();
+			Class.forName("me.filoghost.holographicdisplays.plugin.HolographicDisplays");
+			QuestsAPI.getAPI().setHologramsManager(new BQHolographicDisplays3());
 		} catch (ClassNotFoundException ex) {
-			try {
-				Class.forName("me.filoghost.holographicdisplays.plugin.HolographicDisplays"); // v3
-				holograms = new BQHolographicDisplays3();
-			} catch (ClassNotFoundException ex1) {
-				QuestsPlugin.getPlugin().getLoggerExpanded().warning(
-						"Your version of HolographicDisplays is unsupported. Please make sure you are running the LATEST dev build of HolographicDisplays.");
-				return;
-			}
+			QuestsPlugin.getPlugin().getLoggerExpanded().warning(
+					"Your version of HolographicDisplays is unsupported. Please make sure you are running HolographicDisplays v3.");
 		}
-		QuestsAPI.getAPI().setHologramsManager(holograms);
 	}
 
 	private void registerMcCombatLevel() {

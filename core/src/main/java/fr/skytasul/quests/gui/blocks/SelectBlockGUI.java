@@ -14,7 +14,6 @@ import fr.skytasul.quests.api.gui.layout.LayoutedGUI;
 import fr.skytasul.quests.api.localization.Lang;
 import fr.skytasul.quests.api.options.QuestOption;
 import fr.skytasul.quests.api.utils.messaging.PlaceholderRegistry;
-import fr.skytasul.quests.utils.nms.NMS;
 import net.kyori.adventure.key.Key;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
@@ -135,7 +134,8 @@ public class SelectBlockGUI extends LayoutedGUI.LayoutedRowsGUI {
 
 	private void dataClick(LayoutedClickEvent event) {
 		Lang.BLOCK_DATA.quickSend(event.getPlayer(), "available_datas",
-				String.join(", ", NMS.getNMS().getAvailableBlockProperties(type.parseMaterial())));
+				String.join(", ",
+						BeautyQuests.getInstance().getInternalsAccess().getAvailableBlockProperties(type.parseMaterial())));
 		new TextEditor<>(event.getPlayer(), event::reopen, obj -> {
 			String tmp = "[" + obj + "]";
 			try {
@@ -154,7 +154,7 @@ public class SelectBlockGUI extends LayoutedGUI.LayoutedRowsGUI {
 	}
 
 	private void tagClick(LayoutedClickEvent event) {
-		String tagList = NMS.getNMS().getAvailableBlockTags().stream().map(key -> {
+		String tagList = BeautyQuests.getInstance().getInternalsAccess().getAvailableBlockTags().stream().map(key -> {
 			if (key.namespace() == Key.MINECRAFT_NAMESPACE)
 				return key.value();
 			return key.asString();

@@ -20,13 +20,13 @@ import java.util.Map;
 import java.util.function.Consumer;
 
 public class EquipmentRequirement extends AbstractRequirement {
-	
+
 	private EquipmentSlot slot;
 	private ItemStack item;
 	private ItemComparisonMap comparisons;
-	
+
 	public EquipmentRequirement() {}
-	
+
 	public EquipmentRequirement(String customDescription, String customReason, EquipmentSlot slot, ItemStack item,
 			ItemComparisonMap comparisons) {
 		super(customDescription, customReason);
@@ -34,18 +34,18 @@ public class EquipmentRequirement extends AbstractRequirement {
 		this.item = item;
 		this.comparisons = comparisons;
 	}
-	
+
 	@Override
 	public boolean test(Player p) {
 		ItemStack playerItem = p.getInventory().getItem(slot);
 		return comparisons.isSimilar(playerItem, item) && playerItem.getAmount() >= item.getAmount();
 	}
-	
+
 	@Override
 	public AbstractRequirement clone() {
 		return new EquipmentRequirement(getCustomDescription(), getCustomReason(), slot, item, comparisons);
 	}
-	
+
 	@Override
 	protected void addLore(LoreBuilder loreBuilder) {
 		super.addLore(loreBuilder);
@@ -53,17 +53,17 @@ public class EquipmentRequirement extends AbstractRequirement {
 			loreBuilder.addDescription(slot.name() + ": " + ItemUtils.getName(item));
 		}
 	}
-	
+
 	@Override
 	public void itemClick(QuestObjectClickEvent event) {
 		if (event.isInCreation()) comparisons = new ItemComparisonMap();
-		
+
 		new EquipmentSlotGUI(newSlot -> {
 			if (newSlot == null) {
 				event.cancel();
 				return;
 			}
-			
+
 			QuestsPlugin.getPlugin().getGuiManager().getFactory().createItemSelection(newItem -> {
 				if (newItem == null) {
 					event.cancel();
@@ -72,13 +72,13 @@ public class EquipmentRequirement extends AbstractRequirement {
 
 				slot = newSlot;
 				item = newItem;
-				
+
 				new ItemComparisonGUI(comparisons, event::reopenGUI).open(event.getPlayer());
 			}, true).open(event.getPlayer());
-			
+
 		}).allowCancel().open(event.getPlayer());
 	}
-	
+
 	@Override
 	public void save(ConfigurationSection section) {
 		super.save(section);
@@ -86,7 +86,7 @@ public class EquipmentRequirement extends AbstractRequirement {
 		section.set("item", item);
 		if (!comparisons.isDefault()) section.set("comparisons", comparisons.getNotDefault());
 	}
-	
+
 	@Override
 	public void load(ConfigurationSection section) {
 		super.load(section);
@@ -94,9 +94,9 @@ public class EquipmentRequirement extends AbstractRequirement {
 		item = section.getItemStack("item");
 		comparisons = section.contains("comparisons") ? new ItemComparisonMap(section.getConfigurationSection("comparisons")) : new ItemComparisonMap();
 	}
-	
+
 	public static class EquipmentSlotGUI extends StaticPagedGUI<EquipmentSlot>{
-		
+
 		private static final Map<EquipmentSlot, ItemStack> OBJECTS = ImmutableMap.<EquipmentSlot, ItemStack>builder()
 				.put(EquipmentSlot.HAND, ItemUtils.item(XMaterial.GOLDEN_SWORD, "§6Main hand"))
 				.put(EquipmentSlot.OFF_HAND, ItemUtils.item(XMaterial.SHIELD, "§eOff hand"))
@@ -107,9 +107,10 @@ public class EquipmentRequirement extends AbstractRequirement {
 				.build();
 
 		public EquipmentSlotGUI(Consumer<EquipmentSlot> clicked) {
-			super(Lang.INVENTORY_EQUIPMENT_SLOTS.toString(), DyeColor.BROWN, OBJECTS, clicked, EquipmentSlot::name);
+			super(Lang.INVENTORY_EQUIPMENT_SLOTS.toString(), DyeColor.BROWN, OBJECTS, clicked);
+			addSearchButton(EquipmentSlot::name, false);
 		}
-		
+
 	}
-	
+
 }

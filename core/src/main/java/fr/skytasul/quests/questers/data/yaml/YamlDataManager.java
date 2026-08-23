@@ -1,5 +1,6 @@
 package fr.skytasul.quests.questers.data.yaml;
 
+import fr.skytasul.quests.api.QuestsPlugin;
 import fr.skytasul.quests.api.data.DataLoadingException;
 import fr.skytasul.quests.api.data.DataSavingException;
 import fr.skytasul.quests.api.questers.QuesterManager;
@@ -7,7 +8,6 @@ import fr.skytasul.quests.api.questers.data.QuesterData;
 import fr.skytasul.quests.api.questers.data.QuesterDataManager;
 import fr.skytasul.quests.api.questers.data.QuesterDataManager.QuesterFetchResult.Type;
 import fr.skytasul.quests.api.utils.logger.LoggerExpanded;
-import fr.skytasul.quests.players.PlayerManagerImplementation;
 import net.kyori.adventure.key.Key;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
@@ -72,7 +72,7 @@ public class YamlDataManager implements QuesterDataManager {
 		for (String key : oldDataFile.getConfigurationSection("players").getKeys(false)) {
 			String identifier = oldDataFile.getString("players." + key);
 			var section = newConfig.createSection("identifiers." + key);
-			section.set("provider", PlayerManagerImplementation.KEY.asString());
+			section.set("provider", QuestsPlugin.getPlugin().getPlayersManager().key().asString());
 			section.set("identifier", identifier);
 		}
 		oldDataFile.set("players", null);

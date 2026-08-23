@@ -1,7 +1,8 @@
 package fr.skytasul.quests.options;
 
 import com.cryptomorin.xseries.XMaterial;
-import fr.skytasul.quests.api.editors.TextEditor;
+
+import fr.skytasul.quests.api.QuestsPlugin;
 import fr.skytasul.quests.api.editors.parsers.NumberParser;
 import fr.skytasul.quests.api.gui.ItemUtils;
 import fr.skytasul.quests.api.localization.Lang;
@@ -32,9 +33,13 @@ public class OptionCustomOrder extends QuestOption<OptionalInt> {
 		return value;
 	}
 
+	@Override
+	public @Nullable String getValueString() {
+		return getValue().isEmpty() ? null : Integer.toString(getValue().getAsInt());
+	}
+
 	private String[] getLore() {
-		return new String[] {QuestOption.formatDescription(Lang.optionCustomOrderLore.toString()), "",
-				QuestOption.formatNullableValue(getValue().isEmpty() ? null : getValue().getAsInt(), !hasCustomValue())};
+		return new String[] {QuestOption.formatDescription(Lang.optionCustomOrderLore.toString()), "", formatValue()};
 	}
 
 	@Override
@@ -44,15 +49,16 @@ public class OptionCustomOrder extends QuestOption<OptionalInt> {
 
 	@Override
 	public void click(@NotNull QuestCreationGuiClickEvent event) {
-		Lang.QUEST_CUSTOM_ORDER.send(event.getPlayer());
-		new TextEditor<>(event.getPlayer(), event::reopen, newValue -> {
-			if (newValue == null)
-				resetValue();
-			else
-				setValue(OptionalInt.of(newValue));
-			ItemUtils.lore(event.getClicked(), getLore());
-			event.reopen();
-		}, NumberParser.INTEGER_PARSER).passNullIntoEndConsumer().start();
+		QuestsPlugin.getPlugin().getEditorManager().getFactory().createTextEditorBuilderParser(event.getPlayer(),
+				NumberParser.INTEGER_PARSER, event::reopen, newOrder -> {
+					setValue(OptionalInt.of(newOrder));
+					event.reopen();
+				}).addReset(() -> {
+					resetValue();
+					event.reopen();
+				}, "null")
+				.setInitialString(getValue().isEmpty() ? null : Integer.toString(getValue().getAsInt()))
+				.setIndication(Lang.QUEST_CUSTOM_ORDER.toString()).build().start();
 	}
 
 }

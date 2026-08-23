@@ -1,0 +1,40 @@
+---
+title: Data storage
+description: Under how BeautyQuests stores data and how you can configure it.
+---
+
+import { Steps } from '@astrojs/starlight/components';
+
+BeautyQuests stores different types of persistent data:
+- The quests created by the admins. Those are saved as YAML files and stored in the plugin's folder (in `plugins/BeautyQuests/quests`).
+- The pools created by the admins. Similarly to the quests, they are stored in a YAML file at `plugins/BeautyQuests/pools.yml`.
+- Questers data (= players data) is stored in a configurable location, see below.
+- Miscellaneous data stored in a YAML file at `plugins/BeautyQuests/data.yml`. This file should not be edited by hand.
+
+## Quester data storage format
+BeautyQuests comes with two supported formats to store questers data:
+| Format | Description | Pros | Cons | Reccomended use |
+| --- | --- | --- | --- | --- |
+| **YAML** | Data is stored in YAML files in the plugin's folder, one file per quester. | Easy to view and edit manually. Trivial to setup (the default). | Less performant at scale, does not allow leaderboard in the Expansion. | Only recommended for very small and/or experimental servers. |
+| **Database** (SQL) | Data is stored in a relational database (MySQL, PostgreSQL, H2 or SQLite). | More performant at scale. Has all features. Allows multi-server (see below). | More complex to setup. Difficult to inspect and edit manually. | Recommended for all. |
+
+## Storage format migration
+If you want to migrate **from the YAML data storage** to the **database** one, follow those instructions:
+:::caution
+Since the migration can take a little while (depending on the amount of data to migrate) we recommend to disallow players to join the servers while migration is ongoing. You can use a "maintenance mode" plugin or simply turn on a whitelist.
+:::
+<Steps>
+1. In `config.yml`, properly configure the `database` section BUT keep the `enabled` parameter to `false`.
+2. Restart the server. 
+3. Once everything is loaded, use the command `/quests migrateDatas`. If everything went right, you will receive a success message.
+4. Shut down your server.
+5. Enable the `database.enabled` setting in `config.yml`.
+6. Start your server. BeautyQuests will now store questers data in your database!
+</Steps>
+
+## Multi-servers
+The database storage allows multiple servers to share the same BeautyQuests database. However, this comes with clear limitations:
+- Only the questers data are stored in the database. You _must_ ensure that all other BeautyQuests data are the same between all the servers. (the `quests` folder, the configuration file, etc.)
+- The servers must be _exact mirrors of each others_: same worlds, same locations, same NPCs (with same IDs), etc. This is because the quests reference those objects. Since the quests should be the same across the servers (see above bullet), the referenced objects should also be the same.
+
+Basically, you can only use BeautyQuests on multiple servers if you are making a kind of "multi-instances MMORPG", where all servers are mirrors to balance the load (like on [Wynncraft](https://wynncraft.com) for example).

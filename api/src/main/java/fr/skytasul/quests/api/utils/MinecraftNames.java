@@ -2,6 +2,7 @@ package fr.skytasul.quests.api.utils;
 
 import com.cryptomorin.xseries.XMaterial;
 import com.google.gson.GsonBuilder;
+import com.google.gson.JsonParseException;
 import fr.skytasul.quests.api.QuestsPlugin;
 import org.apache.commons.lang.WordUtils;
 import org.bukkit.entity.EntityType;
@@ -9,6 +10,7 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.PotionMeta;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -25,47 +27,43 @@ public class MinecraftNames {
 	private static Map<EntityType, String> cachedEntities = new HashMap<>();
 	private static Map<XMaterial, String> cachedMaterials = new HashMap<>();
 
-	private static final boolean POTIONS_ENABLED = MinecraftVersion.isHigherThan(20, 5);
+	private static final boolean POTIONS_ENABLED = QuestsPlugin.getPlugin().getServerVersion().isAfter(1, 20, 5);
 
-	public static boolean intialize(@NotNull Path path) {
-		try {
-			if (!Files.exists(path)) {
-				QuestsPlugin.getPlugin().getLoggerExpanded()
-						.warning("File " + path.getFileName() + " not found for translations.");
-				return false;
-			}
-
-			map = new GsonBuilder().create().fromJson(Files.newBufferedReader(path, StandardCharsets.UTF_8), HashMap.class);
-			QuestsPlugin.getPlugin().getLoggerExpanded().info("Loaded vanilla translation file for language: " + map.get("language.name") + ". Sorting values.");
-			for (Entry<String, Object> en : map.entrySet()) {
-				String key = en.getKey();
-				String value = (String) en.getValue();
-				if (key.startsWith("entity.minecraft.")) {
-					cachedEntities.put(EntityType.fromName(key.substring(17)), value);
-				}else if (key.startsWith("block.minecraft.")) {
-					cachedMaterials.put(XMaterial.matchXMaterial(key.substring(16)).orElse(null), value);
-				}else if (key.startsWith("item.minecraft.")) {
-					String item = key.substring(15);
-					if (item.startsWith("potion.effect.")) {
-						if (POTIONS_ENABLED)
-							PotionMapping.matchFromTranslationKey(item.substring(14))
-									.forEachRemaining(potion -> potion.setNormalName(value));
-					} else if (item.startsWith("splash_potion.effect.")) {
-						if (POTIONS_ENABLED)
-							PotionMapping.matchFromTranslationKey(item.substring(21))
-								.forEachRemaining(potion -> potion.setSplashName(value));
-					} else if (item.startsWith("lingering_potion.effect.")) {
-						if (POTIONS_ENABLED)
-							PotionMapping.matchFromTranslationKey(item.substring(24))
-								.forEachRemaining(potion -> potion.setLingeringName(value));
-					} else
-						XMaterial.matchXMaterial(item).ifPresent(material -> cachedMaterials.put(material, value));
-				}
-			}
-		}catch (Exception e) {
-			QuestsPlugin.getPlugin().getLoggerExpanded().severe("Problem when loading Minecraft Translations.", e);
+	public static void intialize(@NotNull Path path) throws JsonParseException, IOException {
+		if (!Files.exists(path)) {
+			QuestsPlugin.getPlugin().getLoggerExpanded()
+					.warning("File " + path.getFileName() + " not found for translations.");
+			return;
 		}
-		return true;
+
+		map = new GsonBuilder().create().fromJson(Files.newBufferedReader(path, StandardCharsets.UTF_8), HashMap.class);
+		QuestsPlugin.getPlugin().getLoggerExpanded()
+				.info("Loaded vanilla translation file for language: " + map.get("language.name") + ". Sorting values.");
+		for (Entry<String, Object> en : map.entrySet()) {
+			String key = en.getKey();
+			String value = (String) en.getValue();
+			if (key.startsWith("entity.minecraft.")) {
+				cachedEntities.put(EntityType.fromName(key.substring(17)), value);
+			} else if (key.startsWith("block.minecraft.")) {
+				cachedMaterials.put(XMaterial.matchXMaterial(key.substring(16)).orElse(null), value);
+			} else if (key.startsWith("item.minecraft.")) {
+				String item = key.substring(15);
+				if (item.startsWith("potion.effect.")) {
+					if (POTIONS_ENABLED)
+						PotionMapping.matchFromTranslationKey(item.substring(14))
+								.forEachRemaining(potion -> potion.setNormalName(value));
+				} else if (item.startsWith("splash_potion.effect.")) {
+					if (POTIONS_ENABLED)
+						PotionMapping.matchFromTranslationKey(item.substring(21))
+								.forEachRemaining(potion -> potion.setSplashName(value));
+				} else if (item.startsWith("lingering_potion.effect.")) {
+					if (POTIONS_ENABLED)
+						PotionMapping.matchFromTranslationKey(item.substring(24))
+								.forEachRemaining(potion -> potion.setLingeringName(value));
+				} else
+					XMaterial.matchXMaterial(item).ifPresent(material -> cachedMaterials.put(material, value));
+			}
+		}
 	}
 
 	public static @Nullable Object getRaw(@Nullable String path) {
