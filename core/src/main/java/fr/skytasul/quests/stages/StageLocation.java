@@ -136,7 +136,7 @@ public class StageLocation extends AbstractStage implements Locatable.PreciseLoc
 							setPattern(pattern);
 							event.reopen();
 						}).setIndication(Lang.LOCATION_WORLDPATTERN.toString())
-						.setInitialString(pattern == null ? null : pattern.pattern()).build().start();
+						.setInitialValue(pattern).build().start();
 			});
 		}
 

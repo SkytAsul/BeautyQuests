@@ -139,7 +139,7 @@ public abstract class AbstractEntityStage extends AbstractStage implements Locat
 				QuestsPlugin.getPlugin().getEditorManager().getFactory().createTextEditorBuilderParser(event.getPlayer(), NumberParser.INTEGER_PARSER_STRICT_POSITIVE, event::reopen, amount -> {
 					setAmount(amount);
 					event.reopen();
-				}).setInitialString(Integer.toString(amount)).build().start();
+				}).setInitialValue(amount).build().start();
 			});
 		}
 

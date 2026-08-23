@@ -5,6 +5,7 @@ import fr.skytasul.quests.api.editors.parsers.AbstractParser;
 import fr.skytasul.quests.api.localization.Lang;
 import org.bukkit.Material;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 public class MaterialParser implements AbstractParser<XMaterial> {
 
@@ -36,6 +37,11 @@ public class MaterialParser implements AbstractParser<XMaterial> {
 				throw new ParsingError(Lang.INVALID_BLOCK_TYPE.getValue());
 		}
 		return tmp;
+	}
+
+	@Override
+	public @Nullable String serialize(@NotNull XMaterial value) {
+		return value.name();
 	}
 
 }

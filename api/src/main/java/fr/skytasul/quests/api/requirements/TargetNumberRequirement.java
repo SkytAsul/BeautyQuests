@@ -122,7 +122,7 @@ public abstract class TargetNumberRequirement extends AbstractRequirement {
 									: comparison;
 							event.reopenGUI();
 						})
-				.setInitialString(comparison.name()).allowEmpty()
+				.setInitialValue(comparison).allowEmpty()
 				.setIndication(
 						Lang.COMPARISON_TYPE.quickFormat("default", getDefaultComparisonMethod().name()))
 				.build().start();

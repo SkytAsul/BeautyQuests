@@ -5,6 +5,9 @@ import fr.skytasul.quests.api.utils.messaging.PlaceholderRegistry;
 
 import java.math.BigDecimal;
 
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+
 public class NumberParser<T extends Number> implements AbstractParser<T> {
 
 	public static final NumberParser<Integer> INTEGER_PARSER = new NumberParser<>(Integer.class, false, false);
@@ -59,6 +62,11 @@ public class NumberParser<T extends Number> implements AbstractParser<T> {
 		} catch (Exception ex) {
 			throw new ParsingError(Lang.NUMBER_INVALID.format(PlaceholderRegistry.of("input", msg)));
 		}
+	}
+
+	@Override
+	public @Nullable String serialize(@NotNull T value) {
+		return value.toString();
 	}
 
 }

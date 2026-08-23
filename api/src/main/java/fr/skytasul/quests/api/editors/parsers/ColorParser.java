@@ -4,7 +4,9 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import org.bukkit.ChatColor;
 import org.bukkit.Color;
-import org.bukkit.entity.Player;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+
 import fr.skytasul.quests.api.localization.Lang;
 
 public class ColorParser implements AbstractParser<Color> {
@@ -46,6 +48,16 @@ public class ColorParser implements AbstractParser<Color> {
 			}
 		}
 		return Color.fromRGB(red, green, blue);
+	}
+
+	@Override
+	public @Nullable String getIndication() {
+		return Lang.COLOR_EDITOR.toString();
+	}
+
+	@Override
+	public @Nullable String serialize(@NotNull Color value) {
+		return "#" + Integer.toString(value.asRGB(), 16);
 	}
 	
 }

@@ -252,6 +252,11 @@ public class StageChat extends AbstractStage implements Listener {
 				}
 
 				@Override
+				public @Nullable String serialize(@NotNull String value) {
+					return value;
+				}
+
+				@Override
 				public @Nullable String getIndication() {
 					return Lang.TEXT_PARSER_REGEX.toString();
 				}

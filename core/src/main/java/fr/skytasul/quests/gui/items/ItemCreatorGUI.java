@@ -106,7 +106,7 @@ public class ItemCreatorGUI extends LayoutedGUI.LayoutedRowsGUI {
 					event.refreshGuiReopen();
 				})
 				.setIndication(Lang.CHOOSE_ITEM_TYPE.toString())
-				.setInitialString(type == null ? null : type.name())
+				.setInitialValue(type)
 				.build().start();
 	}
 

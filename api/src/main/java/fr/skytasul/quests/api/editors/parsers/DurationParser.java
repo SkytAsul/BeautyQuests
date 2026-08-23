@@ -8,6 +8,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import org.apache.commons.lang.StringUtils;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import fr.skytasul.quests.api.localization.Lang;
@@ -46,6 +47,11 @@ public class DurationParser implements AbstractParser<Long> {
 		}
 		return duration;
 	}
+
+	@Override
+	public @Nullable String serialize(@NotNull Long value) {
+		return value.toString() + " " + targetUnit.names[1];
+	}
 	
 	@Override
 	public @Nullable String getIndication() {
@@ -63,7 +69,7 @@ public class DurationParser implements AbstractParser<Long> {
 		DAY(24, "day", "days", "d"),
 		WEEK(7, "week", "weeks", "w");
 		
-		private static final Map<String, MinecraftTimeUnit> UNITS = new HashMap<>();;
+		private static final Map<String, MinecraftTimeUnit> UNITS = new HashMap<>();
 		
 		private int previousDuration;
 		private String[] names;

@@ -3,6 +3,7 @@ package fr.skytasul.quests.api.editors.parsers;
 import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
 
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import fr.skytasul.quests.api.localization.Lang;
@@ -21,6 +22,11 @@ public class PatternParser implements AbstractParser<Pattern> {
 		}catch (PatternSyntaxException ex) {
 			throw new ParsingError(Lang.INVALID_PATTERN.format(PlaceholderRegistry.of("input", msg)));
 		}
+	}
+
+	@Override
+	public @Nullable String serialize(@NotNull Pattern value) {
+		return value.pattern();
 	}
 
 	@Override

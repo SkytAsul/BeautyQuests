@@ -2,7 +2,6 @@ package fr.skytasul.quests.gui.particles;
 
 import com.cryptomorin.xseries.XMaterial;
 import fr.skytasul.quests.api.QuestsPlugin;
-import fr.skytasul.quests.api.editors.TextEditor;
 import fr.skytasul.quests.api.editors.parsers.ColorParser;
 import fr.skytasul.quests.api.gui.ItemUtils;
 import fr.skytasul.quests.api.gui.close.DelayCloseBehavior;
@@ -99,11 +98,12 @@ public class ParticleEffectGUI extends LayoutedGUI.LayoutedRowsGUI {
 	}
 
 	private void colorClick(LayoutedClickEvent event) {
-		Lang.COLOR_EDITOR.send(event.getPlayer());
-		new TextEditor<>(event.getPlayer(), event::reopen, newColor -> {
+		QuestsPlugin.getPlugin().getEditorManager().getFactory().createTextEditorBuilderParser(event.getPlayer(), ColorParser.PARSER, event::reopen, newColor -> {
 			color = newColor;
-			event.refreshItemReopen();
-		}, ColorParser.PARSER).start();
+			event.refreshItemReopen();	
+		})
+		.setInitialValue(color)
+		.build().start();
 	}
 
 	private void cancelClick(LayoutedClickEvent event) {

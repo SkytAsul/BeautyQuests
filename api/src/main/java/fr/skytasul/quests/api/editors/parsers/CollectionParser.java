@@ -4,16 +4,20 @@ import java.util.Collection;
 import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Collectors;
+
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+
 import fr.skytasul.quests.api.localization.Lang;
 import fr.skytasul.quests.api.utils.messaging.PlaceholderRegistry;
 
-public class CollectionParser<T> implements AbstractParser<T> {
+public abstract class CollectionParser<T> implements AbstractParser<T> {
 	
 	protected Map<String, T> names;
 	protected String namesString;
 
-	public CollectionParser(Collection<T> collection, Function<T, String> namer) {
-		names = collection.stream().collect(Collectors.toMap(namer, Function.identity()));
+	public CollectionParser(Collection<T> collection) {
+		names = collection.stream().collect(Collectors.toMap(this::serialize, Function.identity()));
 		namesString = String.join(", ", names.keySet());
 	}
 

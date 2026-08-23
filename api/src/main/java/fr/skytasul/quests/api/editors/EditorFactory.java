@@ -96,6 +96,14 @@ public interface EditorFactory {
 			this.initialString = string;
 			return this;
 		}
+		
+		public @NotNull TextEditorBuilder<T> setInitialValue(@Nullable T value) {
+			if (value == null)
+				this.initialString = null;
+			else
+				this.initialString = parser.serialize(value);
+			return this;
+		}
 
 		public abstract Editor build();
 		
