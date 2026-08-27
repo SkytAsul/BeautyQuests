@@ -9,3 +9,6 @@ fast-build:
 
 server-test:
   fish ./test-runs.fish target/*.jar
+
+deploy:
+  mvn deploy -pl api -P release
