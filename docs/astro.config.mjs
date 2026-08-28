@@ -38,6 +38,13 @@ export default defineConfig({
 					label: 'Reference',
 					items: [{ autogenerate: { directory: 'reference' } }],
 				},
+				{
+					label: 'API',
+					collapsed: true,
+					items: [
+						"api/getting-started",
+					],
+				},
 			],
 			credits: true
 		}),

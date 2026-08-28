@@ -1,0 +1,41 @@
+---
+title: Getting started with the API
+---
+
+## Maven setup
+BeautyQuests' API module is published in Maven Central. To use it, add this dependency in the `dependencies` section of your `pom.xml` file:
+```xml
+<dependency>
+  <groupId>fr.skytasul</groupId>
+  <artifactId>beautyquests-api</artifactId>
+  <version>{VERSION}</version>
+  <scope>provided</scope>
+</dependency>
+```
+:::note
+Replace `{VERSION}` with the version of BeautyQuests you actually want, e.g. `2.1.0`.
+:::
+
+## Plugin setup
+Most of the time, you'll want to add BeautyQuests as a dependency of your plugin. To do so, edit your `paper-plugin.yml` file and add BeautyQuests in the `dependencies` section, like this:
+```yml
+dependencies:
+  server:
+    BeautyQuests:
+      required: false
+      load: BEFORE
+```
+For more information, see the [official PaperMC documentation](https://docs.papermc.io/paper/dev/getting-started/paper-plugins/#dependency-declaration).
+
+## API entrypoints
+The main entrypoint is the `QuestsAPI` instance: you can get it using
+```java
+QuestsAPI.getAPI()
+```
+
+From there, you can access most of the parts of BeautyQuests: register custom stages, rewards, holograms manager, NPCs...
+
+To access inner parts of BeautyQuests (players manager, editors, GUIs...) you can use the `QuestsPlugin` instance that you can get using
+```java
+QuestsPlugin.getPlugin()
+```
