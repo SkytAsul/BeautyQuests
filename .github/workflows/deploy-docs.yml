@@ -2,6 +2,11 @@ name: Deploy docs to GitHub Pages
 
 on:
   workflow_dispatch:
+  push:
+    branches:
+      - 'master'
+    paths:
+      - 'docs/**'
 
 # Allow this job to clone the repo and create a page deployment
 permissions:
