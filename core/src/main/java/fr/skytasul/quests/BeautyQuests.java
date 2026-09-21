@@ -372,29 +372,17 @@ public abstract class BeautyQuests extends JavaPlugin implements QuestsPlugin {
 
 	private void launchUpdateChecker(String pluginVersion) {
 		logger.debug("Starting Spigot updater");
-		UpdateChecker checker;
-		if (pluginVersion.contains("_")) {
-			Matcher matcher = Pattern.compile("\\+build\\.(\\d+)").matcher(pluginVersion);
-			if (matcher.find()) {
-				String build = matcher.group(1);
-				checker = new UpdateChecker(this, UpdateCheckSource.GITHUB_RELEASE_TAG, "SkytAsul/BeautyQuests")
-						.setUserAgent("")
-						.setDownloadLink("https://ci.codemc.io/job/SkytAsul/job/BeautyQuests")
-						.setUsedVersion("build/" + build)
-						.setNameFreeVersion("(dev builds)");
-			}else {
-				logger.warning("Unknown plugin version, cannot check for updates.");
-				return;
-			}
-		}else {
-			checker = new UpdateChecker(this, UpdateCheckSource.SPIGOT, "39255")
-					.setDownloadLink(39255);
-		}
-		checker
+
+		boolean isDevBuild = getPluginMeta().getVersion().contains("build");
+		String hangarChannel = isDevBuild ? "Development" : "Release";
+
+		new UpdateChecker(this, UpdateCheckSource.HANGAR, "SkytAsul/BeautyQuests/" + hangarChannel)
 				.setDonationLink("https://ko-fi.com/skytasul")
 				.setSupportLink("https://discord.gg/H8fXrkD")
+				.setDownloadLink("https://modrinth.com/plugin/beautyquests")
+				.setChangelogLink("https://modrinth.com/plugin/beautyquests/changelog")
 				.setNotifyOpsOnJoin(false)
-				.setColoredConsoleOutput(true)
+				.setColoredConsoleOutput(false)
 				.checkNow();
 	}
 
