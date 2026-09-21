@@ -42,7 +42,7 @@
 		<maven.compiler.release>21</maven.compiler.release>
 
 		<build.number>unknown</build.number>
-		<revision.raw>2.1.0</revision.raw>
+		<revision.raw>2.2.0</revision.raw>
 
 		<!-- Sometimes not the latest version since MockBukkit is long to update -->
 		<minecraft.version>26.2</minecraft.version>
