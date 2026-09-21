@@ -190,6 +190,10 @@ public class DialogRunnerImplementation implements DialogRunner {
 		}
 		// warning: if the event is cancelled, we do NOT call MessageSender#stopDisplayingMessages
 
+		boolean isLastMessage = id + 1 == dialog.getMessages().size();
+		if (isLastMessage && QuestsConfiguration.getConfig().getDialogsConfig().instantFinish())
+			return true;
+
 		return false;
 	}
 

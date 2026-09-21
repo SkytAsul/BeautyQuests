@@ -109,6 +109,8 @@ public interface QuestsConfiguration {
 		int getMaxDistance();
 
 		int getMaxDistanceSquared();
+		
+		boolean instantFinish();
 
 		String getDefaultPlayerSound();
 

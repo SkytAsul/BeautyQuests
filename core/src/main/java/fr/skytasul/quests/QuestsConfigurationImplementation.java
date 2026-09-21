@@ -498,6 +498,7 @@ public class QuestsConfigurationImplementation implements QuestsConfiguration {
 		private boolean history = true;
 		private int maxMessagesPerHistoryPage = -1;
 		private int maxDistance = 15, maxDistanceSquared = 15 * 15;
+		private boolean instantFinish = false;
 
 		private String defaultPlayerSound = null;
 		private String defaultNPCSound = null;
@@ -528,6 +529,7 @@ public class QuestsConfigurationImplementation implements QuestsConfiguration {
 			maxMessagesPerHistoryPage = config.getInt("max messages per history page");
 			maxDistance = config.getInt("maxDistance");
 			maxDistanceSquared = maxDistance <= 0 ? 0 : (maxDistance * maxDistance);
+			instantFinish = config.getBoolean("instant finish");
 
 			defaultPlayerSound = config.getString("defaultPlayerSound");
 			defaultNPCSound = config.getString("defaultNPCSound");
@@ -571,6 +573,11 @@ public class QuestsConfigurationImplementation implements QuestsConfiguration {
 		@Override
 		public int getMaxDistanceSquared() {
 			return maxDistanceSquared;
+		}
+
+		@Override
+		public boolean instantFinish() {
+			return instantFinish;
 		}
 
 		@Override
