@@ -45,12 +45,12 @@
 		<revision.raw>2.1.0</revision.raw>
 
 		<!-- Sometimes not the latest version since MockBukkit is long to update -->
-		<minecraft.version>26.1.2</minecraft.version>
+		<minecraft.version>26.2</minecraft.version>
 
-		<lamp.version>4.0.0-rc.17</lamp.version>
+		<lamp.version>4.0.0-rc.18</lamp.version>
 		<xseries.version>13.7.1</xseries.version>
-		<hikaricp.version>6.0.0</hikaricp.version>
-		<fastboard.version>2.2.0</fastboard.version>
+		<hikaricp.version>7.1.0</hikaricp.version>
+		<fastboard.version>2.2.2</fastboard.version>
 		<commons-lang.version>2.6</commons-lang.version>
 	</properties>
 
@@ -73,7 +73,7 @@
 			<dependency>
 				<groupId>io.papermc.paper</groupId>
 				<artifactId>paper-api</artifactId>
-				<version>26.1.2.build.72-stable</version>
+				<version>26.2.build.126-stable</version>
 			</dependency>
 		</dependencies>
 	</dependencyManagement>

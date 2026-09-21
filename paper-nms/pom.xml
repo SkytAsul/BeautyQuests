@@ -33,7 +33,7 @@
 		<dependency>
 			<groupId>ca.bkaw</groupId>
 			<artifactId>paper-nms</artifactId>
-			<version>${minecraft.version}.build.53-stable-SNAPSHOT</version>
+			<version>${minecraft.version}.build.126-stable</version>
 			<scope>provided</scope>
 		</dependency>
 	</dependencies>
@@ -50,7 +50,7 @@
 			<plugin>
 				<groupId>ca.bkaw</groupId>
 				<artifactId>paper-nms-maven-plugin</artifactId>
-				<version>1.4.11-SNAPSHOT</version>
+				<version>1.5</version>
 			</plugin>
 		</plugins>
 	</build>
