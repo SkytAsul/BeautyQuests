@@ -18,6 +18,7 @@ import net.kyori.adventure.key.Key;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
+import org.bukkit.Tag;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;
@@ -26,6 +27,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.function.BiConsumer;
 import java.util.stream.Collectors;
+import java.util.stream.StreamSupport;
 
 public class SelectBlockGUI extends LayoutedGUI.LayoutedRowsGUI {
 
@@ -154,11 +156,12 @@ public class SelectBlockGUI extends LayoutedGUI.LayoutedRowsGUI {
 	}
 
 	private void tagClick(LayoutedClickEvent event) {
-		String tagList = BeautyQuests.getInstance().getInternalsAccess().getAvailableBlockTags().stream().map(key -> {
-			if (key.namespace() == Key.MINECRAFT_NAMESPACE)
-				return key.value();
-			return key.asString();
-		}).sorted().collect(Collectors.joining(", "));
+		String tagList = StreamSupport.stream(Bukkit.getTags(Tag.REGISTRY_BLOCKS, Material.class).spliterator(), false)
+				.map(tag -> {
+					if (tag.key().namespace() == Key.MINECRAFT_NAMESPACE)
+						return tag.key().value();
+					return tag.key().asString();
+				}).sorted().collect(Collectors.joining(", "));
 		Lang.BLOCK_TAGS.quickSend(event.getPlayer(), "available_tags", tagList);
 
 		new TextEditor<>(event.getPlayer(), event::reopen, obj -> {

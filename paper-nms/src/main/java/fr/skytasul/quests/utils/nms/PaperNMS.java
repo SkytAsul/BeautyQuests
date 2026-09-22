@@ -1,9 +1,6 @@
 package fr.skytasul.quests.utils.nms;
 
 import fr.skytasul.quests.api.QuestsPlugin;
-import io.papermc.paper.registry.RegistryAccess;
-import io.papermc.paper.registry.RegistryKey;
-import net.kyori.adventure.key.Key;
 import net.minecraft.core.Holder.Reference;
 import net.minecraft.core.HolderLookup.RegistryLookup;
 import net.minecraft.core.Registry;
@@ -64,12 +61,6 @@ public class PaperNMS extends NMS {
 		Reference<Block> block = blockRegistry.getOrThrow(createResourceKey(Registries.BLOCK, material.getKey()));
 		StateDefinition<Block, BlockState> stateList = block.value().getStateDefinition();
 		return stateList.getProperties().stream().map(Property::getName).toList();
-	}
-
-	@Override
-	public List<Key> getAvailableBlockTags() {
-		return RegistryAccess.registryAccess().getRegistry(RegistryKey.BLOCK).getTags().stream()
-				.map(x -> x.tagKey().key()).toList();
 	}
 
 	@Override

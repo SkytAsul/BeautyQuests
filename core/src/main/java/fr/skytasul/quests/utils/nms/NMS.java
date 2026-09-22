@@ -1,7 +1,6 @@
 package fr.skytasul.quests.utils.nms;
 
 import fr.skytasul.quests.utils.ReflectUtils;
-import net.kyori.adventure.key.Key;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.inventory.meta.ItemMeta;
@@ -33,10 +32,6 @@ public abstract class NMS{
 	}
 
 	public List<String> getAvailableBlockProperties(Material material){
-		throw new UnsupportedOperationException();
-	}
-
-	public List<Key> getAvailableBlockTags() {
 		throw new UnsupportedOperationException();
 	}
 

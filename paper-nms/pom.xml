@@ -31,6 +31,11 @@
 		</dependency>
 
 		<dependency>
+			<groupId>io.papermc.paper</groupId>
+			<artifactId>paper-api</artifactId>
+			<scope>provided</scope>
+		</dependency>
+		<dependency>
 			<groupId>ca.bkaw</groupId>
 			<artifactId>paper-nms</artifactId>
 			<version>${minecraft.version}.build.126-stable</version>
