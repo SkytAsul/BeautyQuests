@@ -89,7 +89,6 @@ msg:
   indexOutOfBounds: §cThe number {index} is out of bounds! It has to be between {min} and
     {max}.
   invalidBlockData: §cThe blockdata {block_data} is invalid or incompatible with the block {block_material}.
-  invalidBlockTag: §cUnavailable block tag {block_tag}.
   bringBackObjects: Bring me back {items}.
   inventoryFull: §cYour inventory is full, the item has been dropped on the floor.
   versionRequired: 'Version required: §l{version}'
@@ -165,7 +164,7 @@ msg:
     blockAmount: '§aWrite the amount of blocks:'
     blockName: '§aWrite the name of the block:'
     blockData: '§aWrite the blockdata (available blockdatas: §7{available_datas}§a):'
-    blockTag: '§aWrite the block tag (available tags: §7{available_tags}§a):'
+    blockTag: 'Write the block tag:'
     typeBucketAmount: '§aWrite the amount of buckets to fill:'
     typeDamageAmount: 'Write the amount of damage player have to deal:'
     goToLocation: §aGo to the wanted location for the stage.

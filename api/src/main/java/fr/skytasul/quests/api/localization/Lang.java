@@ -104,7 +104,6 @@ public enum Lang implements Locale {
 	ERROR_OCCURED("msg.errorOccurred"),
 	OUT_OF_BOUNDS("msg.indexOutOfBounds"),
 	INVALID_BLOCK_DATA("msg.invalidBlockData"), // 0: blockdata, 1: material
-	INVALID_BLOCK_TAG("msg.invalidBlockTag"), // 0: tag
 
 	NEED_OBJECTS("msg.bringBackObjects"),
 	ITEM_DROPPED("msg.inventoryFull"),
@@ -184,7 +183,7 @@ public enum Lang implements Locale {
 	BLOCKS_AMOUNT("msg.editor.blockAmount"),
 	BLOCK_NAME("msg.editor.blockName"),
 	BLOCK_DATA("msg.editor.blockData"), // 0: available block datas
-	BLOCK_TAGS("msg.editor.blockTag"), // 0: available block tags
+	BLOCK_TAG("msg.editor.blockTag", EditorPrefix),
 
 	BUCKET_AMOUNT("msg.editor.typeBucketAmount"),
 	DAMAGE_AMOUNT("msg.editor.typeDamageAmount", EditorPrefix),
