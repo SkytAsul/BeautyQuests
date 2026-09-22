@@ -1,8 +1,12 @@
 package fr.skytasul.quests.stages;
 
 import com.cryptomorin.xseries.XMaterial;
+import com.google.common.cache.Cache;
+import com.google.common.cache.CacheBuilder;
+
 import fr.skytasul.quests.api.gui.ItemUtils;
 import fr.skytasul.quests.api.localization.Lang;
+import fr.skytasul.quests.api.quests.Quest;
 import fr.skytasul.quests.api.stages.AbstractStage;
 import fr.skytasul.quests.api.stages.StageController;
 import fr.skytasul.quests.api.stages.StageDescriptionPlaceholdersContext;
@@ -13,16 +17,22 @@ import fr.skytasul.quests.gui.misc.DamageCausesGUI;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
 import org.bukkit.event.entity.PlayerDeathEvent;
 import org.jetbrains.annotations.NotNull;
+
+import java.time.Duration;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
 public class StageDeath extends AbstractStage implements Listener {
+
+	public static final Cache<Quest, PlayerDeathEvent> ACKNOWLEDGED_DEATHS = CacheBuilder.newBuilder()
+			.expireAfterWrite(Duration.ofMillis(100)).build();
 
 	private List<DamageCause> causes;
 
@@ -31,7 +41,7 @@ public class StageDeath extends AbstractStage implements Listener {
 		this.causes = causes;
 	}
 
-	@EventHandler
+	@EventHandler(priority = EventPriority.HIGH)
 	public void onPlayerDeath(PlayerDeathEvent event) {
 		Player p = event.getEntity();
 
@@ -41,8 +51,10 @@ public class StageDeath extends AbstractStage implements Listener {
 			if (!causes.contains(lastDamage.getCause())) return;
 		}
 
-		if (matchesRequirements(p, true))
+		if (matchesRequirements(p, true) && hasApplicableQuester(p)) {
+			ACKNOWLEDGED_DEATHS.put(getController().getBranch().getQuest(), event);
 			controller.getApplicableQuesters(p).forEach(this::finishStage);
+		}
 	}
 
 	@Override
