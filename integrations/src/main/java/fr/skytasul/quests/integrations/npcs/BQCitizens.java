@@ -116,7 +116,7 @@ public class BQCitizens implements BqInternalNpcFactoryCreatable, Listener {
 
 		@Override
 		public String getName() {
-			return npc.getName();
+			return npc.getFullName();
 		}
 
 		@Override
