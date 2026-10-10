@@ -2,6 +2,9 @@
 
 set start_timeout 60
 
+set container_name "mc"
+set container_engine "docker"
+
 function fail
     set reason $argv[1]
 
@@ -35,9 +38,9 @@ function test_ver
 
     set -l extra_args $argv[4..]
 
-    podman pull -q "$container_image:$container_image_version"
+    $container_engine pull -q "$container_image:$container_image_version"
 
-    podman run -d \
+    $container_engine run -d \
         --user 1000:1000 \
         -e EULA=TRUE \
         -e TYPE=$server_type \
@@ -48,16 +51,16 @@ function test_ver
         -v mc_cache:/data/cache:Z \
         -v mc_libraries:/data/libraries:Z \
         -v "$(realpath $bq_jar):/plugins/bq.jar:ro,Z" \
-        --name mc \
+        --name "$container_name" \
         $extra_args \
         "$container_image:$container_image_version" > /dev/null
 
     echo Waiting for server to be running...
-    while not test (podman inspect -f {{.State.Health.Status}} mc 2>&1) = 'healthy'
-        if not test (podman inspect -f {{.State.Running}} mc) = 'true'
+    while not test ($container_engine inspect -f {{.State.Health.Status}} "$container_name" 2>&1) = 'healthy'
+        if not test ($container_engine inspect -f {{.State.Running}} "$container_name") = 'true'
             fail "Server failed to start"
         end
-        if test (podman inspect -f {{.State.Health.Status}} mc 2>&1) = ''
+        if test ($container_engine inspect -f {{.State.Health.Status}} "$container_name" 2>&1) = ''
             # Known bug: https://github.com/podman-container-tools/podman/issues/18904
             echo "Healthcheck not working; waiting for $start_timeout seconds."
             sleep "$start_timeout"
@@ -67,7 +70,7 @@ function test_ver
     end
     echo Server running!
 
-    set debug_info (podman exec mc rcon-cli beautyquests debugInfo)
+    set debug_info ($container_engine exec "$container_name" rcon-cli beautyquests debugInfo)
     set -e debug_info[-1] # rcon-cli adds a weird last line
 
     if not begin; echo "$debug_info" | jq &> /dev/null; end
@@ -89,13 +92,13 @@ function test_ver
     end
     echo "All good."
 
-    podman kill mc > /dev/null # no need to gracefully shutdown
-    podman rm mc &> /dev/null
+    $container_engine kill "$container_name" > /dev/null # no need to gracefully shutdown
+    $container_engine rm "$container_name" &> /dev/null
 end
 
 # We reset the state at the beginning
-podman kill mc &> /dev/null
-podman rm mc &> /dev/null
+$container_engine kill "$container_name" &> /dev/null
+$container_engine rm "$container_name" &> /dev/null
 
 for mc_version in "1.20.6" "1.21.4" "1.21.11"
     test_ver $mc_version paper java21
