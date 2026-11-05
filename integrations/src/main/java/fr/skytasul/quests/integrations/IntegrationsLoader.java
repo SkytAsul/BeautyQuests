@@ -202,11 +202,11 @@ public class IntegrationsLoader {
 
 	private boolean isUltimateTimberValid(Plugin plugin) {
 		try {
-			Class.forName("com.craftaro.ultimatetimber.UltimateTimber");
+			Class.forName("com.songoda.ultimatetimber.api.event.TreeFallEvent");
 		} catch (ClassNotFoundException ex) {
 			QuestsPlugin.getPlugin().getLoggerExpanded().warning("Your version of UltimateTimber ("
 					+ plugin.getDescription().getVersion()
-					+ ") is not compatible with BeautyQuests. Please use 3.0.0 or higher.");
+					+ ") is not compatible with BeautyQuests. Please use 5.0.0 or higher.");
 			return false;
 		}
 		return true;
