@@ -199,9 +199,8 @@ public class QuestsListener implements Listener{
 		}
 	}
 
-	@EventHandler(priority = EventPriority.HIGHEST)
+	@EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
 	public void onBreak(BlockBreakEvent e) {
-		if (e.isCancelled()) return;
 		if (e.getPlayer() == null) return;
 		Bukkit.getPluginManager().callEvent(new BQBlockBreakEvent(e.getPlayer(), Arrays.asList(e.getBlock())));
 	}
