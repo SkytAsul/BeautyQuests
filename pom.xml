@@ -47,7 +47,7 @@
 		<!-- Sometimes not the latest version since MockBukkit is long to update -->
 		<paper.build>26.3.build.244-stable</paper.build>
 
-		<lamp.version>4.0.0-rc.18</lamp.version>
+		<lamp.version>4.0.1</lamp.version>
 		<xseries.version>14.0.0</xseries.version>
 		<hikaricp.version>7.1.0</hikaricp.version>
 		<fastboard.version>2.2.2</fastboard.version>

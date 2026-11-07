@@ -9,7 +9,6 @@ import fr.skytasul.quests.api.quests.Quest;
 import fr.skytasul.quests.rewards.CheckpointReward;
 import org.bukkit.entity.Player;
 import revxrsal.commands.annotation.CommandPlaceholder;
-import revxrsal.commands.annotation.CommandPriority;
 import revxrsal.commands.annotation.Subcommand;
 import revxrsal.commands.bukkit.actor.BukkitCommandActor;
 import revxrsal.commands.bukkit.annotation.CommandPermission;
@@ -21,7 +20,6 @@ import java.util.Optional;
 public class CommandsPlayer implements OrphanCommand {
 
 	@CommandPlaceholder
-	@CommandPriority.Low
 	@CommandPermission ("beautyquests.command.listPlayer")
 	public void menu(BukkitCommandActor actor, @revxrsal.commands.annotation.Optional String subcommand) {
 		if (subcommand != null)
