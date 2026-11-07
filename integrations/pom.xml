@@ -82,6 +82,10 @@
 			<id>magemonkey-snapshots</id>
 			<url>https://repo.travja.dev/snapshots</url>
 		</repository>
+		<repository>
+			<id>songoda-repo</id>
+			<url>https://repo.songoda-reborn.com/repository/maven-public/</url>
+		</repository>
 	</repositories>
 
 	<dependencies>
@@ -260,9 +264,9 @@
 			<scope>provided</scope>
 		</dependency>
 		<dependency>
-			<groupId>com.craftaro</groupId>
-			<artifactId>UltimateTimber</artifactId>
-			<version>3.0.1</version>
+			<groupId>com.songoda</groupId>
+			<artifactId>UltimateTimber-API</artifactId>
+			<version>5.0.0</version>
 			<scope>provided</scope>
 		</dependency>
 		<dependency>
