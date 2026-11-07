@@ -20,6 +20,10 @@
 			<id>papermc</id>
 			<url>https://repo.papermc.io/repository/maven-public/</url>
 		</repository>
+		<repository> <!-- For DFU -->
+			<id>minecraft-repo</id>
+			<url>https://libraries.minecraft.net/</url>
+		</repository>
 	</repositories>
 
 	<dependencies>
@@ -38,7 +42,14 @@
 		<dependency>
 			<groupId>ca.bkaw</groupId>
 			<artifactId>paper-nms</artifactId>
-			<version>${minecraft.version}.build.126-stable</version>
+			<version>${paper.build}</version>
+			<scope>provided</scope>
+		</dependency>
+
+		<dependency>
+			<groupId>com.mojang</groupId>
+			<artifactId>datafixerupper</artifactId>
+			<version>8.0.16</version>
 			<scope>provided</scope>
 		</dependency>
 	</dependencies>

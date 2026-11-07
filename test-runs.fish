@@ -104,6 +104,6 @@ for mc_version in "1.20.6" "1.21.4" "1.21.11"
     test_ver $mc_version paper java21
 end
 
-for mc_version in "26.1.2" "26.2"
+for mc_version in "26.1.2" "26.2" "26.3"
     test_ver $mc_version paper java25
 end
