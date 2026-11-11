@@ -329,7 +329,10 @@ public class CommandsPlayerManagement implements OrphanCommand {
 	public void cancel(BukkitCommandActor actor, ExecutableCommand<BukkitCommandActor> command,
 			QuesterSelector questers, @Optional Quest quest) {
 		if (actor.isPlayer() && !cancelOtherPermission.isExecutableBy(actor)) {
-			if (questers.isEmpty() || questers.size() > 1 || (questers.get(0) != actor.asPlayer()))
+			if (questers.isEmpty() || questers.size() > 1)
+				// selecting multiple questers is disallowed
+				throw new NoPermissionException(command);
+			if (!QuestsPlugin.getPlugin().getPlayersManager().getQuester(actor.asPlayer()).equals(questers.get(0)))
 				throw new NoPermissionException(command);
 		}
 		// TODO same
