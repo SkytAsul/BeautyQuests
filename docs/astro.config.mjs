@@ -43,6 +43,10 @@ export default defineConfig({
 					collapsed: true,
 					items: [
 						"api/getting-started",
+						{
+							label: 'Custom features',
+							items: [{ autogenerate: { directory: 'api/custom-features' } }],
+						}
 					],
 				},
 			],
