@@ -25,8 +25,9 @@ jobs:
             ${{ github.event.release.body }}
 
             ## Download
-            Download the dev build here:
-            - [${{ github.event.release.assets[0].name }}](${{ github.event.release.assets[0].browser_download_url }})
+            Download the dev build from:
+            - [Modrinth](https://modrinth.com/plugin/beautyquests/version/${{ github.event.release.tag_name }})
+            - [Hangar](https://hangar.papermc.io/SkytAsul/BeautyQuests/versions/${{ github.event.release.tag_name }})
 
       - name: Send release notification on Discord
         uses: sarisia/actions-status-discord@v1
