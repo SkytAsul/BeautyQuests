@@ -74,6 +74,8 @@ public class StageLocation extends AbstractStage implements Locatable.PreciseLoc
 	@Override
 	protected void createdPlaceholdersRegistry(@NotNull PlaceholderRegistry placeholders) {
 		super.createdPlaceholdersRegistry(placeholders);
+		placeholders.compose(lc);
+
 		placeholders.registerIndexed("target_x", lc.getBlockX());
 		placeholders.registerIndexed("target_y", lc.getBlockY());
 		placeholders.registerIndexed("target_z", lc.getBlockZ());

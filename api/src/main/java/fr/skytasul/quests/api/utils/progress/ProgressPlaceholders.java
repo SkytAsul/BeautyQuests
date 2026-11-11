@@ -73,7 +73,7 @@ public final class ProgressPlaceholders {
 					objectsDescription);
 		});
 
-		placeholders.register(Placeholder.ofPatternContextual(key + "_(\\d+)(?:_(remaining|done|total|percentage))?",
+		placeholders.register(Placeholder.ofPatternContextual(key + "_(\\d+)(?:_(remaining|done|total|percentage|name))?",
 				QuesterPlaceholdersContext.class, (matcher, context) -> {
 					int index = Integer.parseInt(matcher.group(1));
 					CountableObject<T> object = objects.getObject(index);
