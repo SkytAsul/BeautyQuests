@@ -74,7 +74,7 @@ Furthermore, since a lot of stages share a similar structure (e.g. do some actio
 
 #### _Shared between stages with multiple `<object_type>`_
 * `<object_type>`: preformatted information about the objects, following the `stage description.item formats` section in config.yml
-* `<object_type>_remaining|done|total|percentage|name`: informations about the objects, see "Entity stage"
+* `<object_type>_remaining|done|total|percentage`: informations about the global progress of the objects, see "Entity stage"
 * `<object_type>_<id>_remaining|done|total|percentage|name`: informations about the `id`-th object, see "Entity stage"
 
 #### Breed animals
@@ -140,5 +140,9 @@ Furthermore, since a lot of stages share a similar structure (e.g. do some actio
 * `world_name`: the name of the world to interact in, if it is defined
 * `world_pattern`: the regular expression describing in which world the interaction is allowed, if it is defined
 * `world`:  either the name or the regular expression for the world, depending on which is defined
+
+#### Go to location
+* _same placeholders as in [Interact at location](#interact-at-location)_
+* `target_x`, `target_y`, `target_z` and `target_world` for historical reasons
 
 <!--- Todo continue --->
