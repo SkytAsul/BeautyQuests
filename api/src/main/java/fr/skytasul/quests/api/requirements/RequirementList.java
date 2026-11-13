@@ -4,6 +4,7 @@ import fr.skytasul.quests.api.QuestsPlugin;
 import fr.skytasul.quests.api.localization.Lang;
 import fr.skytasul.quests.api.quests.Quest;
 import fr.skytasul.quests.api.serializable.SerializableObject;
+import fr.skytasul.quests.api.utils.Utils;
 import fr.skytasul.quests.api.utils.messaging.MessageType;
 import fr.skytasul.quests.api.utils.messaging.MessageUtils;
 import org.bukkit.entity.Player;
@@ -54,18 +55,24 @@ public class RequirementList extends ArrayList<@NotNull AbstractRequirement> {
 		return result.result();
 	}
 
-	public boolean anyMatch(@NotNull Player p) {
+	public @NotNull MatchResult anyMatch(@NotNull Player p) {
+		var reasons = new ArrayList<String>();
 		for (AbstractRequirement requirement : this) {
 			try {
-				if (requirement.isValid() && requirement.test(p))
-					return true;
+				if (!requirement.isValid())
+					continue;
+				if (requirement.test(p))
+					return new MatchResult(true, null);
+				String reason = requirement.getReason(p);
+				if (reason != null)
+					reasons.add(reason);
 			} catch (Exception ex) {
 				QuestsPlugin.getPlugin().getLoggerExpanded().severe(
 						"Cannot test requirement " + requirement.getClass().getSimpleName() + " for player " + p.getName(),
 						ex);
 			}
 		}
-		return false;
+		return new MatchResult(false, MessageUtils.itemsToFormattedString(reasons.toArray(String[]::new)));
 	}
 
 	public void attachQuest(@NotNull Quest quest) {

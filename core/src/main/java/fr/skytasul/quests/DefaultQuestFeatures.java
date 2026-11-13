@@ -31,7 +31,7 @@ import fr.skytasul.quests.mobs.BukkitEntityFactory;
 import fr.skytasul.quests.options.*;
 import fr.skytasul.quests.quests.questers.PlayerQuesterStrategy;
 import fr.skytasul.quests.requirements.*;
-import fr.skytasul.quests.requirements.logical.LogicalOrRequirement;
+import fr.skytasul.quests.requirements.logical.LogicalCombinationRequirement;
 import fr.skytasul.quests.rewards.*;
 import fr.skytasul.quests.stages.*;
 import fr.skytasul.quests.stages.options.StageOptionProgressBar;
@@ -226,8 +226,10 @@ public final class DefaultQuestFeatures {
 	}
 
 	public static void registerRequirements() {
-		QuestsAPI.getAPI().getRequirements().register(new RequirementCreator("logicalOr", LogicalOrRequirement.class,
-				item(XMaterial.REDSTONE_TORCH, Lang.RLOR.toString()), LogicalOrRequirement::new));
+		QuestsAPI.getAPI().getRequirements().register(new RequirementCreator("logicalOr", LogicalCombinationRequirement.LogicalOrRequirement.class,
+				item(XMaterial.REDSTONE_TORCH, Lang.RLOR.toString()), LogicalCombinationRequirement.LogicalOrRequirement::new));
+		QuestsAPI.getAPI().getRequirements().register(new RequirementCreator("logicalAnd", LogicalCombinationRequirement.LogicalAndRequirement.class,
+				item(XMaterial.TORCH, Lang.RLAND.toString()), LogicalCombinationRequirement.LogicalAndRequirement::new));
 		QuestsAPI.getAPI().getRequirements().register(new RequirementCreator("questRequired", QuestRequirement.class,
 				item(XMaterial.ARMOR_STAND, Lang.RQuest.toString()), QuestRequirement::new));
 		QuestsAPI.getAPI().getRequirements().register(new RequirementCreator("levelRequired", LevelRequirement.class,

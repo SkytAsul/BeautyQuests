@@ -835,6 +835,7 @@ public enum Lang implements Locale {
 	ComparisonGreaterOrEquals("misc.comparison.greaterOrEquals"),
 
 	RLOR("misc.requirement.logicalOr"),
+	RLAND("misc.requirement.logicalAnd"),
 	RClass("misc.requirement.class"),
 	RSkillAPILevel("misc.requirement.skillAPILevel"),
 	RFaction("misc.requirement.faction"),

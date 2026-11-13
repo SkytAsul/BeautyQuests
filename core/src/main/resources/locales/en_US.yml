@@ -874,6 +874,7 @@ misc:
     greaterOrEquals: greater than {number}
   requirement:
     logicalOr: §dLogical OR (requirements)
+    logicalAnd: §dLogical AND (requirements)
     skillAPILevel: §bSkillAPI level required
     class: §bClass(es) required
     faction: §bFaction(s) required
