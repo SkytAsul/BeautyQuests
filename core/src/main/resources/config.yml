@@ -144,6 +144,8 @@ questsMenu:
   keep menu open: true
   # Should the quests be categorized by quest pools as expandable folders
   categorize quests by pools: true
+  # Default icon to show for a category
+  default category icon: CHEST
 
 # - Integrations -
 # Enable or disable AccountsHook managing player accounts

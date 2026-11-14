@@ -132,7 +132,11 @@ public class PlayerListGUI extends CategorizedPagedGUI<Quest> {
 		if (itemName == null)
 			itemName = "Category #%d".formatted(pool.getId());
 
-		return ItemUtils.item(XMaterial.CHEST, "§e" + itemName);
+		ItemStack baseItem = pool.getPoolData().icon();
+		if (baseItem == null)
+			baseItem = QuestsConfiguration.getConfig().getQuestsMenuConfig().defaultCategoryIcon();
+
+		return ItemUtils.name(baseItem.clone(), "§e" + itemName);
 	}
 
 	@Override

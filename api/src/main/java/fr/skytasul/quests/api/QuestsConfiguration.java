@@ -138,6 +138,8 @@ public interface QuestsConfiguration {
 
 		boolean categorizeQuestsByPools();
 
+		@NotNull ItemStack defaultCategoryIcon();
+
 	}
 
 	interface StageDescription extends ItemsDescriptionConfiguration, ProgressBarConfig {

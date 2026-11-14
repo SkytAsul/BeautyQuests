@@ -3,6 +3,7 @@ package fr.skytasul.quests.structure.pools;
 import com.cryptomorin.xseries.XMaterial;
 import fr.skytasul.quests.BeautyQuests;
 import fr.skytasul.quests.api.QuestsAPI;
+import fr.skytasul.quests.api.QuestsConfiguration;
 import fr.skytasul.quests.api.QuestsPlugin;
 import fr.skytasul.quests.api.gui.ItemUtils;
 import fr.skytasul.quests.api.localization.Lang;
@@ -114,7 +115,10 @@ public class QuestPoolControllerImplementation implements QuestPoolController, C
 
 	@Override
 	public ItemStack getItemStack() {
-		return ItemUtils.item(XMaterial.CHEST, Lang.poolItemName.format(this),
+		ItemStack baseItem = data.icon();
+		if (baseItem == null)
+			baseItem = QuestsConfiguration.getConfig().getQuestsMenuConfig().defaultCategoryIcon();
+		return ItemUtils.nameAndLore(baseItem.clone(), Lang.poolItemName.format(this),
 				Lang.poolItemShowAsCategory.format(this),
 				Lang.poolItemNPC.format(this),
 				Lang.poolItemMaxQuests.format(this),

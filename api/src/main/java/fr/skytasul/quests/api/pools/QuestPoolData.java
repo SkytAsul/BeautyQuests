@@ -3,6 +3,7 @@ package fr.skytasul.quests.api.pools;
 import fr.skytasul.quests.api.requirements.RequirementList;
 import fr.skytasul.quests.api.rewards.RewardList;
 import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -10,6 +11,7 @@ public record QuestPoolData(
 		@Nullable String name,
 		@Nullable String npcId,
 		@Nullable String hologram,
+		@Nullable ItemStack icon,
 		int maxQuests,
 		int questsPerLaunch,
 		boolean redoAllowed,
@@ -36,6 +38,8 @@ public record QuestPoolData(
 			config.set("startRewards", startRewards.serialize());
 		if (!endRewards.isEmpty())
 			config.set("endRewards", endRewards.serialize());
+		if (icon != null)
+			config.set("icon", icon);
 	}
 
 	public static QuestPoolData deserialize(ConfigurationSection config) {
@@ -43,6 +47,7 @@ public record QuestPoolData(
 				config.getString("name"),
 				config.getString("npcID"),
 				config.getString("hologram"),
+				config.getItemStack("icon"),
 				config.getInt("maxQuests"),
 				config.getInt("questsPerLaunch", 1),
 				config.getBoolean("redoAllowed"),

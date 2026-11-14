@@ -681,6 +681,7 @@ public enum Lang implements Locale {
 	poolRequirements("inv.poolCreation.requirements"),
 	poolStartRewards("inv.poolCreation.startRewards", Lang.MiscItemPrefix),
 	poolEndRewards("inv.poolCreation.endRewards", Lang.MiscItemPrefix),
+	poolIcon("inv.poolCreation.icon", Lang.MiscItemPrefix),
 
 	INVENTORY_POOLS_LIST("inv.poolsList.name"),
 

@@ -689,6 +689,7 @@ public class QuestsConfigurationImplementation implements QuestsConfiguration {
 		private boolean allowPlayerCancelQuest = true;
 		private boolean keepMenuOpen = false;
 		private boolean categorizeQuestsByPools = true;
+		private ItemStack defaultCategoryIcon;
 
 		private ConfigurationSection config;
 
@@ -732,6 +733,7 @@ public class QuestsConfigurationImplementation implements QuestsConfiguration {
 			allowPlayerCancelQuest = config.getBoolean("allowPlayerCancelQuest");
 			keepMenuOpen = config.getBoolean("keep menu open");
 			categorizeQuestsByPools = config.getBoolean("categorize quests by pools");
+			defaultCategoryIcon = loadItem(config, "default category icon", XMaterial.CHEST.parseItem());
 		}
 
 		@Override
@@ -757,6 +759,11 @@ public class QuestsConfigurationImplementation implements QuestsConfiguration {
 		@Override
 		public boolean categorizeQuestsByPools() {
 			return categorizeQuestsByPools;
+		}
+
+		@Override
+		public ItemStack defaultCategoryIcon() {
+			return defaultCategoryIcon;
 		}
 
 	}

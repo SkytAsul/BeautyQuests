@@ -2,11 +2,13 @@ package fr.skytasul.quests.gui.pools;
 
 import com.cryptomorin.xseries.XMaterial;
 import fr.skytasul.quests.api.QuestsAPI;
+import fr.skytasul.quests.api.QuestsConfiguration;
 import fr.skytasul.quests.api.QuestsPlugin;
 import fr.skytasul.quests.api.editors.TextEditor;
 import fr.skytasul.quests.api.editors.parsers.DurationParser;
 import fr.skytasul.quests.api.editors.parsers.DurationParser.MinecraftTimeUnit;
 import fr.skytasul.quests.api.editors.parsers.NumberParser;
+import fr.skytasul.quests.api.gui.ItemUtils;
 import fr.skytasul.quests.api.gui.close.DelayCloseBehavior;
 import fr.skytasul.quests.api.gui.layout.LayoutedButton;
 import fr.skytasul.quests.api.gui.layout.LayoutedClickEvent;
@@ -20,6 +22,9 @@ import fr.skytasul.quests.api.utils.Utils;
 import java.util.HashMap;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
+
+import org.bukkit.event.inventory.ClickType;
+import org.bukkit.inventory.ItemStack;
 
 public class PoolEditGUI extends LayoutedRowsGUI {
 
@@ -37,6 +42,7 @@ public class PoolEditGUI extends LayoutedRowsGUI {
 	private RequirementList requirements = new RequirementList();
 	private RewardList startRewards = new RewardList();
 	private RewardList endRewards = new RewardList();
+	private ItemStack icon;
 
 	public PoolEditGUI(Runnable cancel, Consumer<QuestPoolData> end) {
 		super(Lang.INVENTORY_POOL_CREATE.toString(), new HashMap<>(), new DelayCloseBehavior(cancel), 2);
@@ -88,6 +94,12 @@ public class PoolEditGUI extends LayoutedRowsGUI {
 				LayoutedButton.createLoreValue(XMaterial.ENDER_CHEST, Lang.poolEndRewards.toString(),
 						() -> endRewards.getSizeString(),
 						this::onEndRewardsClick));
+		buttons.put(12,
+				LayoutedButton.create(() -> {
+					var item =  icon == null ? QuestsConfiguration.getConfig().getQuestsMenuConfig().defaultCategoryIcon() : icon;
+					return ItemUtils.nameAndLore(item.clone(), Lang.poolIcon.toString(), "§8" + Lang.ClickShiftRight.toString() + " > §7" + Lang.Reset.toString());
+				},
+						this::onIconClick));
 
 		buttons.put(16, LayoutedButton.create(QuestsPlugin.getPlugin().getGuiManager().getItemFactory().getCancel(),
 				event -> cancel.run()));
@@ -181,8 +193,20 @@ public class PoolEditGUI extends LayoutedRowsGUI {
 		}, endRewards).open(event.getPlayer());
 	}
 
+	private void onIconClick(LayoutedClickEvent event) {
+		if (event.getClick() == ClickType.SHIFT_RIGHT) {
+			icon = null;
+			event.refreshItem();
+		}else {
+			QuestsPlugin.getPlugin().getGuiManager().getFactory().createItemSelection(is -> {
+				icon = ItemUtils.clearVisibleAttributes(is);
+				event.refreshItemReopen();
+			}, event::reopen).open(event.getPlayer());
+		}
+	}
+
 	private void onDoneClick(LayoutedClickEvent event) {
-		var poolData = new QuestPoolData(name, npcID, hologram, maxQuests, questsPerLaunch, redoAllowed, timeDiff,
+		var poolData = new QuestPoolData(name, npcID, hologram, icon, maxQuests, questsPerLaunch, redoAllowed, timeDiff,
 				avoidDuplicates, showAsCategory, requirements, startRewards, endRewards);
 		end.accept(poolData);
 	}

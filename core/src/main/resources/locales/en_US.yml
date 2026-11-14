@@ -694,6 +694,7 @@ inv:
     requirements: §bRequirements to start a quest
     startRewards: Rewards given when a player starts the pool for the first time
     endRewards: Rewards given when a player finishes the last quest of the pool
+    icon: Icon of the category in the menu
   poolsList.name: Quest pools
   itemComparisons:
     name: Item Comparisons
